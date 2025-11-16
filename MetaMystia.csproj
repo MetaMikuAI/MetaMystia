@@ -29,6 +29,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>..\..\Steam\steamapps\common\Touhou Mystia Izakaya\BepInEx\interop\Assembly-CSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="BepInEx.Core">
       <HintPath>..\..\Steam\steamapps\common\Touhou Mystia Izakaya\BepInEx\core\BepInEx.Core.dll</HintPath>
       <Private>False</Private>
@@ -63,6 +67,10 @@
     </Reference>
     <Reference Include="UnityEngine.IMGUIModule">
       <HintPath>..\..\Steam\steamapps\common\Touhou Mystia Izakaya\BepInEx\interop\UnityEngine.IMGUIModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.Physics2DModule">
+      <HintPath>..\..\Steam\steamapps\common\Touhou Mystia Izakaya\BepInEx\interop\UnityEngine.Physics2DModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

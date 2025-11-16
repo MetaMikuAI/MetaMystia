@@ -29,7 +29,9 @@ public class NetConsole
         {
             { "help", HelpCommand },
             { "echo", EchoCommand },
-            { "log", LogCommand }
+            { "log", LogCommand },
+            { "get", GetCommand },
+            { "set", SetCommand }
         };
     }
 
@@ -257,5 +259,84 @@ public class NetConsole
         string message = string.Join(" ", args);
         Log.LogMessage($"[NetConsole] {message}");
         SendToClient(client, $"Logged: {message}\n");
+    }
+
+    // Command: get - Get a field value
+    private void GetCommand(string[] args, TcpClient client)
+    {
+        if (args.Length == 0)
+        {
+            SendToClient(client, "Usage: get <field>\n");
+            SendToClient(client, "Available fields: playerposition\n");
+            return;
+        }
+
+        string field = args[0].ToLower();
+
+        switch (field)
+        {
+            case "playerposition":
+                var position = Utils.GetPlayerPosition();
+                if (position.HasValue)
+                {
+                    SendToClient(client, $"PlayerPosition: ({position.Value.x}, {position.Value.y})\n");
+                }
+                else
+                {
+                    SendToClient(client, "Failed to get player position\n");
+                }
+                break;
+
+            default:
+                SendToClient(client, $"Unknown field: {field}\n");
+                SendToClient(client, "Available fields: playerposition\n");
+                break;
+        }
+    }
+
+    // Command: set - Set a field value
+    private void SetCommand(string[] args, TcpClient client)
+    {
+        if (args.Length == 0)
+        {
+            SendToClient(client, "Usage: set <field> <value...>\n");
+            SendToClient(client, "Available fields: playerposition <x> <y>\n");
+            return;
+        }
+
+        string field = args[0].ToLower();
+
+        switch (field)
+        {
+            case "playerposition":
+                if (args.Length < 3)
+                {
+                    SendToClient(client, "Usage: set playerposition <x> <y>\n");
+                    break;
+                }
+
+                if (!float.TryParse(args[1], out float x) || !float.TryParse(args[2], out float y))
+                {
+                    SendToClient(client, "Invalid coordinates. Usage: set playerposition <x> <y>\n");
+                    break;
+                }
+
+                var success = Utils.SetPlayerPosition(x, y);
+                if (success)
+                {
+                    SendToClient(client, $"PlayerPosition set to ({x}, {y})\n");
+                    break;
+                }
+                else 
+                {
+                    SendToClient(client, "Failed to set player position\n");
+                    break;
+                }
+
+            default:
+                SendToClient(client, $"Unknown field: {field}\n");
+                SendToClient(client, "Available fields: playerposition <x> <y>\n");
+                break;
+        }
     }
 }
