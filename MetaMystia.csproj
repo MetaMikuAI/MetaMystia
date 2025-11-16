@@ -55,5 +55,9 @@
       <HintPath>..\..\Steam\steamapps\common\Touhou Mystia Izakaya\BepInEx\interop\UnityEngine.UI.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>..\..\Steam\steamapps\common\Touhou Mystia Izakaya\BepInEx\interop\UnityEngine.IMGUIModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
 </Project>

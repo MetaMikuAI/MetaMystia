@@ -1,5 +1,6 @@
 using BepInEx.Logging;
 using UnityEngine;
+using UnityEngine.UI;
 using System;
 using Il2CppInterop.Runtime;
 
@@ -8,6 +9,8 @@ public class PluginManager : MonoBehaviour
 {
     public static PluginManager Instance { get; private set; }
     public static ManualLogSource Log => Plugin.Instance.Log;
+
+    private bool isTextVisible = true;
 
     public PluginManager(IntPtr ptr) : base(ptr)
     {
@@ -24,10 +27,28 @@ public class PluginManager : MonoBehaviour
         return gameObject;
     }
 
+    private void Awake()
+    {
+        
+    }
+
+    private void OnGUI()
+    {
+        if (isTextVisible)
+        {
+            GUI.Label(new Rect(10, Screen.height - 50, 300, 50), "MetaMystia loaded");
+        }
+    }
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.RightShift)) {
             Log.LogMessage("hello world from MetaMystia");
+        }
+
+        if (Input.GetKeyDown(KeyCode.Backslash)) {
+            isTextVisible = !isTextVisible;
+            Log.LogMessage("Toggled text visibility: " + isTextVisible);
         }
     }
 }
