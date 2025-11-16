@@ -11,6 +11,7 @@ public class PluginManager : MonoBehaviour
     public static ManualLogSource Log => Plugin.Instance.Log;
 
     private bool isTextVisible = true;
+    private NetConsole netConsole;
 
     public PluginManager(IntPtr ptr) : base(ptr)
     {
@@ -29,7 +30,9 @@ public class PluginManager : MonoBehaviour
 
     private void Awake()
     {
-        
+        netConsole = new NetConsole();
+        netConsole.Start();
+        Log.LogInfo("NetConsole initialized");
     }
 
     private void OnGUI()
@@ -49,6 +52,15 @@ public class PluginManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Backslash)) {
             isTextVisible = !isTextVisible;
             Log.LogMessage("Toggled text visibility: " + isTextVisible);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (netConsole != null)
+        {
+            netConsole.Stop();
+            Log.LogInfo("NetConsole stopped");
         }
     }
 }
