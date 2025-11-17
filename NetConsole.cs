@@ -45,7 +45,7 @@ public class NetConsole
 
         try
         {
-            listener = new TcpListener(IPAddress.Parse("127.0.0.1"), 40815);
+            listener = new TcpListener(IPAddress.Parse("127.0.0.1"), 40814);
             listener.Start();
             isRunning = true;
 
