@@ -16,7 +16,9 @@ public class MultiplayerManager
 
     private const int TCP_PORT = 40815;
 
-    private string _localId;
+    private string playerId = System.Environment.MachineName;
+    private string peerId = "<Unknown>";
+
     private TcpListener _tcpListener;
     private Thread _tcpListenerThread;
     private bool _isRunning = false;
@@ -45,21 +47,6 @@ public class MultiplayerManager
 
     private MultiplayerManager()
     {
-        GenerateLocalId();
-    }
-
-    private void GenerateLocalId()
-    {
-        // 基于硬件信息和随机数生成唯一ID
-        string hwInfo = SystemInfo.deviceUniqueIdentifier;
-        string randomPart = Guid.NewGuid().ToString("N").Substring(0, 8);
-        _localId = $"{hwInfo.Substring(0, Math.Min(8, hwInfo.Length))}-{randomPart}";
-        Log.LogInfo($"生成本地 ID: {_localId}");
-    }
-
-    public string GetLocalId()
-    {
-        return _localId;
     }
 
     public bool IsRunning()
@@ -81,14 +68,14 @@ public class MultiplayerManager
     {
         if (_isRunning)
         {
-            Log.LogWarning("MultiplayerManager 已在运行中");
+            Log.LogWarning("MultiplayerManager is already running");
             return;
         }
 
         _isRunning = true;
-        Log.LogInfo("启动 MultiplayerManager");
+        Log.LogInfo("Starting MultiplayerManager");
+        peerId = "<Unknown>";
 
-        // 启动 TCP 监听器
         StartTcpListener();
     }
 
@@ -97,23 +84,39 @@ public class MultiplayerManager
         if (!_isRunning)
             return;
 
-        Log.LogInfo("停止 MultiplayerManager");
+        Log.LogInfo("Stopping MultiplayerManager");
         _isRunning = false;
 
-        // 断开对等连接
         DisconnectPeer();
 
-        // 停止 TCP 监听器
         try
         {
             _tcpListener?.Stop();
         }
         catch (Exception e)
         {
-            Log.LogError($"停止 TCP 监听器时出错: {e.Message}");
+            Log.LogError($"Error stopping TCP listener: {e.Message}");
         }
 
-        Log.LogInfo("MultiplayerManager 已停止");
+        peerId = "<Unknown>";
+        Log.LogInfo("MultiplayerManager has stopped");
+    }
+
+    public void Restart()
+    {
+        Stop();
+        Start();
+    }
+
+    public string GetPlayerId()
+    {
+        return playerId;
+    }
+
+    public void SetPlayerId(string newId)
+    {
+        playerId = newId;
+        Log.LogInfo($"Player ID set to: {playerId}");
     }
 
     private void StartTcpListener()
@@ -122,7 +125,7 @@ public class MultiplayerManager
         {
             _tcpListener = new TcpListener(IPAddress.Any, TCP_PORT);
             _tcpListener.Start();
-            Log.LogInfo($"TCP 监听器启动在端口 {TCP_PORT}");
+            Log.LogInfo($"TCP listener started on port {TCP_PORT}");
 
             _tcpListenerThread = new Thread(TcpListenerLoop);
             _tcpListenerThread.IsBackground = true;
@@ -130,7 +133,7 @@ public class MultiplayerManager
         }
         catch (Exception e)
         {
-            Log.LogError($"启动 TCP 监听器失败: {e.Message}");
+            Log.LogError($"Error starting TCP listener: {e.Message}");
         }
     }
 
@@ -144,16 +147,16 @@ public class MultiplayerManager
                 {
                     if (_isConnected)
                     {
-                        // 已有连接，拒绝新连接
                         TcpClient rejectedClient = _tcpListener.AcceptTcpClient();
-                        Log.LogInfo($"拒绝来自 {rejectedClient.Client.RemoteEndPoint} 的连接（已有活动连接）");
+                        Log.LogInfo($"Connection from {rejectedClient.Client.RemoteEndPoint} rejected (already connected)");
                         rejectedClient.Close();
                     }
                     else
                     {
                         TcpClient client = _tcpListener.AcceptTcpClient();
-                        Log.LogInfo($"接受来自 {client.Client.RemoteEndPoint} 的连接");
+                        Log.LogInfo($"Connection from {client.Client.RemoteEndPoint} accepted");
                         AcceptPeerConnection(client);
+                        SendHello();
                     }
                 }
                 else
@@ -165,7 +168,7 @@ public class MultiplayerManager
             {
                 if (_isRunning)
                 {
-                    Log.LogError($"TCP 监听循环出错: {e.Message}");
+                    Log.LogError($"Error in TCP listener loop: {e.Message}");
                 }
             }
         }
@@ -175,22 +178,21 @@ public class MultiplayerManager
     {
         if (_isConnected)
         {
-            Log.LogWarning("已有活动连接，请先断开");
+            Log.LogWarning("Already connected to a peer. Please disconnect first.");
             return false;
         }
 
         try
         {
-            Log.LogInfo($"正在连接到 {peerIp}:{TCP_PORT}...");
+            Log.LogInfo($"Connecting to {peerIp}:{TCP_PORT}...");
             TcpClient client = new TcpClient();
             client.Connect(peerIp, TCP_PORT);
-            Log.LogInfo($"成功连接到对等端 {peerIp}:{TCP_PORT}");
+            Log.LogInfo($"Successfully connected to peer {peerIp}:{TCP_PORT}");
 
             _peerAddress = peerIp;
             _isConnected = true;
             _peerConnection = client;
 
-            // 启动对等连接处理线程
             _peerHandlerThread = new Thread(() => HandlePeerConnection(client));
             _peerHandlerThread.IsBackground = true;
             _peerHandlerThread.Start();
@@ -199,7 +201,7 @@ public class MultiplayerManager
         }
         catch (Exception e)
         {
-            Log.LogError($"连接到对等端失败: {e.Message}");
+            Log.LogError($"Error connecting to peer: {e.Message}");
             return false;
         }
     }
@@ -208,7 +210,7 @@ public class MultiplayerManager
     {
         if (_isConnected)
         {
-            Log.LogWarning("已有活动连接，拒绝新连接");
+            Log.LogWarning("Already connected to a peer. Please disconnect first.");
             client.Close();
             return;
         }
@@ -216,10 +218,9 @@ public class MultiplayerManager
         _isConnected = true;
         _peerConnection = client;
         _peerAddress = ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString();
-        
-        Log.LogInfo($"接受对等连接来自 {_peerAddress}");
 
-        // 启动对等连接处理线程
+        Log.LogInfo($"Connection from {_peerAddress} accepted");
+
         _peerHandlerThread = new Thread(() => HandlePeerConnection(client));
         _peerHandlerThread.IsBackground = true;
         _peerHandlerThread.Start();
@@ -243,7 +244,6 @@ public class MultiplayerManager
                         string data = Encoding.UTF8.GetString(buffer, 0, bytesRead);
                         messageBuilder.Append(data);
 
-                        // 处理完整的行
                         string accumulated = messageBuilder.ToString();
                         int newlineIndex;
                         while ((newlineIndex = accumulated.IndexOf('\n')) >= 0)
@@ -268,18 +268,18 @@ public class MultiplayerManager
         }
         catch (Exception e)
         {
-            Log.LogError($"处理对等连接时出错: {e.Message}");
+            Log.LogError($"Error handling peer connection: {e.Message}");
         }
         finally
         {
-            Log.LogInfo("对等连接已断开");
+            Log.LogInfo("Peer connection disconnected");
             DisconnectPeer();
         }
     }
 
     private void ProcessPeerMessage(string message, TcpClient client)
     {
-        Log.LogInfo($"收到对等消息: {message}");
+        Log.LogInfo($"Received peer message: {message}");
 
         string[] parts = message.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
         if (parts.Length == 0)
@@ -291,26 +291,35 @@ public class MultiplayerManager
         {
             case "ping":
                 SendToPeer("pong\n");
-                Log.LogInfo("响应 ping，发送 pong");
+                Log.LogInfo("Responding to ping with pong");
                 break;
 
             case "pong":
-                Log.LogInfo("收到 pong 响应");
+                Log.LogInfo("Received pong response from peer");
+                break;
+
+            case "hello":
+                if (parts.Length >= 2)
+                {
+                    string peerId = parts[1];
+                    HandleHello(peerId);
+                }
                 break;
 
             case "move":
-                // 格式: move <x> <y>
-                if (parts.Length >= 3)
+                // format: move <vx> <vy> <px> <py>
+                if (parts.Length >= 5)
                 {
-                    if (float.TryParse(parts[1], out float x) && float.TryParse(parts[2], out float y))
+                    if (float.TryParse(parts[1], out float vx) && float.TryParse(parts[2], out float vy) &&
+                        float.TryParse(parts[3], out float px) && float.TryParse(parts[4], out float py))
                     {
-                        KyoukoManager.Instance.UpdateInputDirection(new UnityEngine.Vector2(x, y));
+                        KyoukoManager.Instance.UpdateInputDirection(new UnityEngine.Vector2(vx, vy), new UnityEngine.Vector2(px, py)); // todo: change to MystiaManager 
                     }
                 }
                 break;
 
             default:
-                Log.LogWarning($"未知的对等命令: {command}");
+                Log.LogWarning($"Unknown peer command: {command}");
                 break;
         }
     }
@@ -319,7 +328,7 @@ public class MultiplayerManager
     {
         if (!_isConnected || _peerConnection == null)
         {
-            Log.LogWarning("没有活动的对等连接");
+            Log.LogWarning("Cannot send message: not connected to a peer");
             return;
         }
 
@@ -332,7 +341,7 @@ public class MultiplayerManager
         }
         catch (Exception e)
         {
-            Log.LogError($"发送到对等端失败: {e.Message}");
+            Log.LogError($"Error sending to peer: {e.Message}");
             DisconnectPeer();
         }
     }
@@ -341,22 +350,45 @@ public class MultiplayerManager
     {
         if (_isConnected)
         {
-            Log.LogInfo("发送 ping 到对等端");
+            Log.LogInfo("Sending ping to peer");
             SendToPeer("ping\n");
         }
         else
         {
-            Log.LogWarning("无法发送 ping：未连接");
+            Log.LogWarning("Cannot send ping: not connected");
         }
+    }
+
+    public void SendHello()
+    {
+        if (_isConnected)
+        {
+            Log.LogInfo("Sending hello to peer");
+            SendToPeer($"hello {GetPlayerId()}\n");
+        }
+        else
+        {
+            Log.LogWarning("Cannot send hello: not connected");
+        }
+    }
+
+    public void HandleHello(string peerId)
+    {
+        this.peerId = peerId;
+        Log.LogInfo($"Received hello from peer: {peerId}");
     }
 
     public void SendMoveData(UnityEngine.Vector2 inputDirection)
     {
         if (_isConnected)
         {
-            // 格式: move <x> <y>
-            string message = $"move {inputDirection.x} {inputDirection.y}\n";
-            SendToPeer(message);
+            // format: move <vx> <vy> <px> <py>
+            var position = MystiaManager.Instance.GetPosition();
+            if (position.HasValue)
+            {
+                string message = $"move {inputDirection.x} {inputDirection.y} {position.Value.x} {position.Value.y}\n";
+                SendToPeer(message);
+            }
         }
     }
 
@@ -381,7 +413,7 @@ public class MultiplayerManager
     public string GetStatus()
     {
         StringBuilder status = new StringBuilder();
-        status.AppendLine($"Local ID: {_localId}");
+        status.AppendLine($"Player ID: {GetPlayerId()}");
         status.AppendLine($"Local Port: {TCP_PORT}");
         status.AppendLine($"Running: {(_isRunning ? "Yes" : "No")}");
         status.AppendLine($"Connected: {(_isConnected ? "Yes" : "No")}");

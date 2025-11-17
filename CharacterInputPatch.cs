@@ -16,11 +16,9 @@ public class CharacterInputPatch
     {
         try
         {
-            // 检查这是否是玩家角色的输入（Mystia）
             var playerInputGenerator = MystiaManager.Instance.GetInputGenerator();
             if (playerInputGenerator != null && __instance == playerInputGenerator)
             {
-                // 这是玩家的输入，发送给对等端
                 MultiplayerManager.Instance.SendMoveData(inputDirection);
             }
         }

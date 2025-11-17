@@ -684,8 +684,12 @@ public class NetConsole
                 break;
 
             case "id":
-                string localId = MultiplayerManager.Instance.GetLocalId();
-                SendToClient(client, $"Local ID: {localId}\n");
+                if (args.Length < 2)
+                {
+                    SendToClient(client, "Usage: mp id <new_id>\n");
+                    break;
+                }
+                MultiplayerManager.Instance.SetPlayerId(args[1]);
                 break;
 
             case "connect":

@@ -13,6 +13,10 @@ public class KyoukoManager
     
     private const string KYOUKO_ID = "Kyouko";
     private static ManualLogSource Log => Plugin.Instance.Log;
+    private static Vector2 positionOffset;          // 位置偏移量 (收到同步信息时)= 同步位置 - 本地 Kyouko 位置         (FixedUpdate 时计算) positionOffset -= actualCurrectVelocity * Time.fixedDeltaTime;
+    private static Vector2 expectedCurrectVelocity; // 预期修正速度 = 位置偏移量 / 修正系数 / Time.fixedDeltaTime               (同步时计算)
+    private static Vector2 actualCurrectVelocity;   // 实际修正速度 = min{预期修正速度, positionOffset / Time.fixedDeltaTime}   (FixedUpdate)
+    private static float currectCoefficient = 10.0f;        // 修正系数
 
     public static KyoukoManager Instance
     {
@@ -34,6 +38,27 @@ public class KyoukoManager
 
     private KyoukoManager()
     {
+    }
+
+    public void OnFixedUpdate()
+    {
+        // 在每个 FixedUpdate 执行位置修正
+        if (positionOffset.magnitude > 0.001f)
+        {
+            // 计算实际修正速度
+            float maxCorrection = positionOffset.magnitude / Time.fixedDeltaTime;
+            actualCurrectVelocity = Vector2.ClampMagnitude(expectedCurrectVelocity, maxCorrection);
+            
+            // 应用修正
+            positionOffset -= actualCurrectVelocity * Time.fixedDeltaTime;
+            
+            var rb = GetRigidbody2D();
+            if (rb != null)
+            {
+                rb.position += actualCurrectVelocity * Time.fixedDeltaTime;
+                Log.LogMessage($"[FixedUpdate] Kyouko position correction: offset={positionOffset.magnitude:F4}, velocity={actualCurrectVelocity.magnitude:F4}");
+            }
+        }
     }
 
     public CharacterConditionComponent GetCharacterComponent()
@@ -100,7 +125,7 @@ public class KyoukoManager
     public Vector2? GetPosition()
     {
         var rb = GetRigidbody2D();
-        return rb?.position;
+        return rb?.position ?? Vector2.zero;
     }
 
     public bool SetPosition(float x, float y)
@@ -143,18 +168,22 @@ public class KyoukoManager
         return component?.gameObject;
     }
 
-    public void UpdateInputDirection(Vector2 inputDirection)
+    public void UpdateInputDirection(Vector2 inputDirection, Vector2 syncPosition)
     {
         var characterUnit = GetCharacterUnit();
         if (characterUnit == null)
         {
-            Log.LogWarning("无法应用移动输入：CharacterControllerUnit 为空");
+            Log.LogWarning("Cannot update input direction: CharacterControllerUnit is null");
             return;
         }
 
+        
         characterUnit.UpdateInputVelocity(inputDirection);
-        characterUnit.IsMoving = inputDirection.magnitude > 0; // 强制更新 isMoving 状态
-        Log.LogMessage($"已应用移动输入方向 ({inputDirection.x}, {inputDirection.y})");
+        characterUnit.IsMoving = inputDirection.magnitude > 0;
+        Log.LogMessage($"Update input direction: ({inputDirection.x}, {inputDirection.y})");
+
+        positionOffset = syncPosition - characterUnit.rb2d.position;
+        expectedCurrectVelocity = positionOffset / currectCoefficient / Time.fixedDeltaTime;
     }
 
     public float? GetMoveSpeed()
