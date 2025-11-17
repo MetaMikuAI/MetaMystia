@@ -55,6 +55,13 @@ public class PluginManager : MonoBehaviour
         }
     }
 
+    private void FixedUpdate()
+    {
+        // 在这里执行固定时间步长的逻辑
+        // 例如：KyoukoManager 的位置修正逻辑
+        KyoukoManager.Instance.OnFixedUpdate();
+    }
+
     private void OnDestroy()
     {
         if (netConsole != null)

@@ -103,6 +103,95 @@ public class MystiaManager
         return rb?.position;
     }
 
+    public bool SetPosition(float x, float y)
+    {
+        var rb = GetRigidbody2D();
+        if (rb == null)
+        {
+            Log.LogWarning("Failed to get Rigidbody2D for Mystia");
+            return false;
+        }
+
+        rb.position = new Vector2(x, y);
+        Log.LogInfo($"Mystia position set to ({x}, {y})");
+        return true;
+    }
+
+    public bool? GetMoving()
+    {
+        var characterUnit = GetCharacterUnit();
+        if (characterUnit == null)
+        {
+            return null;
+        }
+
+        return characterUnit.IsMoving;
+    }
+
+    public bool SetMoving(bool isMoving)
+    {
+        var characterUnit = GetCharacterUnit();
+        if (characterUnit == null)
+        {
+            Log.LogWarning("Failed to get CharacterControllerUnit for Mystia");
+            return false;
+        }
+
+        characterUnit.IsMoving = isMoving;
+        Log.LogInfo($"Mystia moving status set to {isMoving}");
+        return true;
+    }
+
+    public float? GetMoveSpeed()
+    {
+        var characterUnit = GetCharacterUnit();
+        if (characterUnit == null)
+        {
+            return null;
+        }
+
+        return characterUnit.CurrentMoveSpeed;
+    }
+
+    public bool SetMoveSpeed(float speed)
+    {
+        var characterUnit = GetCharacterUnit();
+        if (characterUnit == null)
+        {
+            Log.LogWarning("Failed to get CharacterControllerUnit for Mystia");
+            return false;
+        }
+
+        characterUnit.MoveSpeedMultiplier = speed;
+        Log.LogInfo($"Mystia move speed set to {speed}");
+        return true;
+    }
+
+    public Vector3? GetInputDirection()
+    {
+        var characterUnit = GetCharacterUnit();
+        if (characterUnit == null)
+        {
+            return null;
+        }
+
+        return characterUnit.inputDirection;
+    }
+
+    public bool SetInputDirection(float x, float y, float z = 0)
+    {
+        var characterUnit = GetCharacterUnit();
+        if (characterUnit == null)
+        {
+            Log.LogWarning("Failed to get CharacterControllerUnit for Mystia");
+            return false;
+        }
+
+        characterUnit.inputDirection = new Vector3(x, y, z);
+        Log.LogInfo($"Mystia input direction set to ({x}, {y}, {z})");
+        return true;
+    }
+
     public string GetMapLabel()
     {
         var sceneManager = DayScene.SceneManager.Instance;

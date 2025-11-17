@@ -38,9 +38,14 @@ public class Plugin : BasePlugin
         try {
             var harmony = new Harmony(MyPluginInfo.PLUGIN_GUID);
 
+            // Bootstrap patch
             var originalHandle = AccessTools.Method(typeof(CanvasScaler), "Handle");
             var postHandle = AccessTools.Method(typeof(BootstrapPatch), "Handle");
             harmony.Patch(originalHandle, postfix: new HarmonyMethod(postHandle));
+
+            // Character input patch for multiplayer
+            harmony.PatchAll(typeof(CharacterInputPatch));
+            Log.LogInfo("Applied CharacterInputPatch");
         }
         catch {
             Log.LogError("FAILED to Apply Hooks!");

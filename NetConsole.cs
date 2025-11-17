@@ -31,7 +31,8 @@ public class NetConsole
             { "echo", EchoCommand },
             { "log", LogCommand },
             { "get", GetCommand },
-            { "set", SetCommand }
+            { "set", SetCommand },
+            { "mp", MultiplayerCommand }
         };
     }
 
@@ -267,43 +268,67 @@ public class NetConsole
         if (args.Length == 0)
         {
             SendToClient(client, "Usage: get <field>\n");
-            SendToClient(client, "Available fields: playerposition, currentactivemaplabel, kyoukoposition, kyoukomoving\n");
+            SendToClient(client, "Available fields: mystia position, mystia moving, mystia movespeed, mystia inputdirection, kyouko position, kyouko moving, kyouko movespeed, kyouko inputdirection, currentactivemaplabel\n");
             return;
         }
 
-        string field = args[0].ToLower();
+        string field = string.Join(" ", args).ToLower();
 
         switch (field)
         {
-            case "playerposition":
-                var position = Utils.GetPlayerPosition();
-                if (position.HasValue)
+            case "mystia position":
+                var mystiaPos = MystiaManager.Instance.GetPosition();
+                if (mystiaPos.HasValue)
                 {
-                    SendToClient(client, $"PlayerPosition: ({position.Value.x}, {position.Value.y})\n");
+                    SendToClient(client, $"Mystia Position: ({mystiaPos.Value.x}, {mystiaPos.Value.y})\n");
                 }
                 else
                 {
-                    SendToClient(client, "Failed to get player position\n");
+                    SendToClient(client, "Failed to get Mystia position\n");
                 }
                 break;
 
-            case "currentactivemaplabel":
-                var mapLabel = Utils.GetCurrentActiveMapLabel();
-                if (mapLabel != null)
+            case "mystia moving":
+                var mystiaMoving = MystiaManager.Instance.GetMoving();
+                if (mystiaMoving.HasValue)
                 {
-                    SendToClient(client, $"CurrentActiveMapLabel: {mapLabel}\n");
+                    SendToClient(client, $"Mystia Moving: {mystiaMoving.Value}\n");
                 }
                 else
                 {
-                    SendToClient(client, "Failed to get current active map label\n");
+                    SendToClient(client, "Failed to get Mystia moving status\n");
                 }
                 break;
 
-            case "kyoukoposition":
+            case "mystia movespeed":
+                var mystiaMoveSpeed = MystiaManager.Instance.GetMoveSpeed();
+                if (mystiaMoveSpeed.HasValue)
+                {
+                    SendToClient(client, $"Mystia Move Speed: {mystiaMoveSpeed.Value}\n");
+                }
+                else
+                {
+                    SendToClient(client, "Failed to get Mystia move speed\n");
+                }
+                break;
+
+            case "mystia inputdirection":
+                var mystiaInputDir = MystiaManager.Instance.GetInputDirection();
+                if (mystiaInputDir.HasValue)
+                {
+                    SendToClient(client, $"Mystia Input Direction: ({mystiaInputDir.Value.x}, {mystiaInputDir.Value.y}, {mystiaInputDir.Value.z})\n");
+                }
+                else
+                {
+                    SendToClient(client, "Failed to get Mystia input direction\n");
+                }
+                break;
+
+            case "kyouko position":
                 var kyoukoPos = KyoukoManager.Instance.GetPosition();
                 if (kyoukoPos.HasValue)
                 {
-                    SendToClient(client, $"KyoukoPosition: ({kyoukoPos.Value.x}, {kyoukoPos.Value.y})\n");
+                    SendToClient(client, $"Kyouko Position: ({kyoukoPos.Value.x}, {kyoukoPos.Value.y})\n");
                 }
                 else
                 {
@@ -311,11 +336,11 @@ public class NetConsole
                 }
                 break;
 
-            case "kyoukomoving":
+            case "kyouko moving":
                 var kyoukoMoving = KyoukoManager.Instance.GetMoving();
                 if (kyoukoMoving.HasValue)
                 {
-                    SendToClient(client, $"KyoukoMoving: {kyoukoMoving.Value}\n");
+                    SendToClient(client, $"Kyouko Moving: {kyoukoMoving.Value}\n");
                 }
                 else
                 {
@@ -323,9 +348,45 @@ public class NetConsole
                 }
                 break;
 
+            case "kyouko movespeed":
+                var kyoukoMoveSpeed = KyoukoManager.Instance.GetMoveSpeed();
+                if (kyoukoMoveSpeed.HasValue)
+                {
+                    SendToClient(client, $"Kyouko Move Speed: {kyoukoMoveSpeed.Value}\n");
+                }
+                else
+                {
+                    SendToClient(client, "Failed to get Kyouko move speed\n");
+                }
+                break;
+
+            case "kyouko inputdirection":
+                var kyoukoInputDir = KyoukoManager.Instance.GetInputDirection();
+                if (kyoukoInputDir.HasValue)
+                {
+                    SendToClient(client, $"Kyouko Input Direction: ({kyoukoInputDir.Value.x}, {kyoukoInputDir.Value.y}, {kyoukoInputDir.Value.z})\n");
+                }
+                else
+                {
+                    SendToClient(client, "Failed to get Kyouko input direction\n");
+                }
+                break;
+
+            case "currentactivemaplabel":
+                var mapLabel = Utils.GetCurrentActiveMapLabel();
+                if (mapLabel != null)
+                {
+                    SendToClient(client, $"Current Active Map Label: {mapLabel}\n");
+                }
+                else
+                {
+                    SendToClient(client, "Failed to get current active map label\n");
+                }
+                break;
+
             default:
                 SendToClient(client, $"Unknown field: {field}\n");
-                SendToClient(client, "Available fields: playerposition, currentactivemaplabel, kyoukoposition, kyoukomoving\n");
+                SendToClient(client, "Available fields: mystia position, mystia moving, mystia movespeed, mystia inputdirection, kyouko position, kyouko moving, kyouko movespeed, kyouko inputdirection, currentactivemaplabel\n");
                 break;
         }
     }
@@ -336,55 +397,153 @@ public class NetConsole
         if (args.Length == 0)
         {
             SendToClient(client, "Usage: set <field> <value...>\n");
-            SendToClient(client, "Available fields: playerposition <x> <y>, kyoukoposition <x> <y>, kyoukomoving <true|false>\n");
+            SendToClient(client, "Available fields: mystia position <x> <y>, mystia moving <true|false>, mystia movespeed <float>, mystia inputdirection <x> <y> [z], kyouko position <x> <y>, kyouko moving <true|false>, kyouko movespeed <float>, kyouko inputdirection <x> <y> [z]\n");
             return;
         }
 
-        string field = args[0].ToLower();
+        // Parse field name (may be multiple words like "mystia position")
+        string firstWord = args[0].ToLower();
+        string secondWord = args.Length > 1 ? args[1].ToLower() : "";
+        string field = "";
+        int valueStartIndex = 0;
+
+        if ((firstWord == "mystia" || firstWord == "kyouko") && (secondWord == "position" || secondWord == "moving" || secondWord == "movespeed" || secondWord == "inputdirection"))
+        {
+            field = $"{firstWord} {secondWord}";
+            valueStartIndex = 2;
+        }
+        else
+        {
+            SendToClient(client, "Invalid field name\n");
+            SendToClient(client, "Available fields: mystia position <x> <y>, mystia moving <true|false>, mystia movespeed <float>, mystia inputdirection <x> <y> [z], kyouko position <x> <y>, kyouko moving <true|false>, kyouko movespeed <float>, kyouko inputdirection <x> <y> [z]\n");
+            return;
+        }
 
         switch (field)
         {
-            case "playerposition":
-                if (args.Length < 3)
+            case "mystia position":
+                if (args.Length < valueStartIndex + 2)
                 {
-                    SendToClient(client, "Usage: set playerposition <x> <y>\n");
+                    SendToClient(client, "Usage: set mystia position <x> <y>\n");
                     break;
                 }
 
-                if (!float.TryParse(args[1], out float x) || !float.TryParse(args[2], out float y))
+                if (!float.TryParse(args[valueStartIndex], out float mystiaX) || !float.TryParse(args[valueStartIndex + 1], out float mystiaY))
                 {
-                    SendToClient(client, "Invalid coordinates. Usage: set playerposition <x> <y>\n");
+                    SendToClient(client, "Invalid coordinates. Usage: set mystia position <x> <y>\n");
                     break;
                 }
 
-                var success = Utils.SetPlayerPosition(x, y);
-                if (success)
+                var mystiaPosSuccess = MystiaManager.Instance.SetPosition(mystiaX, mystiaY);
+                if (mystiaPosSuccess)
                 {
-                    SendToClient(client, $"PlayerPosition set to ({x}, {y})\n");
+                    SendToClient(client, $"Mystia Position set to ({mystiaX}, {mystiaY})\n");
                 }
-                else 
+                else
                 {
-                    SendToClient(client, "Failed to set player position\n");
+                    SendToClient(client, "Failed to set Mystia position\n");
                 }
                 break;
 
-            case "kyoukoposition":
-                if (args.Length < 3)
+            case "mystia moving":
+                if (args.Length < valueStartIndex + 1)
                 {
-                    SendToClient(client, "Usage: set kyoukoposition <x> <y>\n");
+                    SendToClient(client, "Usage: set mystia moving <true|false>\n");
                     break;
                 }
 
-                if (!float.TryParse(args[1], out float kyoukoX) || !float.TryParse(args[2], out float kyoukoY))
+                if (!bool.TryParse(args[valueStartIndex], out bool mystiaMoving))
                 {
-                    SendToClient(client, "Invalid coordinates. Usage: set kyoukoposition <x> <y>\n");
+                    SendToClient(client, "Invalid value. Usage: set mystia moving <true|false>\n");
+                    break;
+                }
+
+                var mystiaMovingSuccess = MystiaManager.Instance.SetMoving(mystiaMoving);
+                if (mystiaMovingSuccess)
+                {
+                    SendToClient(client, $"Mystia Moving set to {mystiaMoving}\n");
+                }
+                else
+                {
+                    SendToClient(client, "Failed to set Mystia moving status\n");
+                }
+                break;
+
+            case "mystia movespeed":
+                if (args.Length < valueStartIndex + 1)
+                {
+                    SendToClient(client, "Usage: set mystia movespeed <float>\n");
+                    break;
+                }
+
+                if (!float.TryParse(args[valueStartIndex], out float mystiaMoveSpeed))
+                {
+                    SendToClient(client, "Invalid value. Usage: set mystia movespeed <float>\n");
+                    break;
+                }
+
+                var mystiaMoveSpeedSuccess = MystiaManager.Instance.SetMoveSpeed(mystiaMoveSpeed);
+                if (mystiaMoveSpeedSuccess)
+                {
+                    SendToClient(client, $"Mystia Move Speed set to {mystiaMoveSpeed}\n");
+                }
+                else
+                {
+                    SendToClient(client, "Failed to set Mystia move speed\n");
+                }
+                break;
+
+            case "mystia inputdirection":
+                if (args.Length < valueStartIndex + 2)
+                {
+                    SendToClient(client, "Usage: set mystia inputdirection <x> <y> [z]\n");
+                    break;
+                }
+
+                if (!float.TryParse(args[valueStartIndex], out float mystiaInputX) || !float.TryParse(args[valueStartIndex + 1], out float mystiaInputY))
+                {
+                    SendToClient(client, "Invalid coordinates. Usage: set mystia inputdirection <x> <y> [z]\n");
+                    break;
+                }
+
+                float mystiaInputZ = 0;
+                if (args.Length >= valueStartIndex + 3)
+                {
+                    if (!float.TryParse(args[valueStartIndex + 2], out mystiaInputZ))
+                    {
+                        SendToClient(client, "Invalid z coordinate. Usage: set mystia inputdirection <x> <y> [z]\n");
+                        break;
+                    }
+                }
+
+                var mystiaInputDirSuccess = MystiaManager.Instance.SetInputDirection(mystiaInputX, mystiaInputY, mystiaInputZ);
+                if (mystiaInputDirSuccess)
+                {
+                    SendToClient(client, $"Mystia Input Direction set to ({mystiaInputX}, {mystiaInputY}, {mystiaInputZ})\n");
+                }
+                else
+                {
+                    SendToClient(client, "Failed to set Mystia input direction\n");
+                }
+                break;
+
+            case "kyouko position":
+                if (args.Length < valueStartIndex + 2)
+                {
+                    SendToClient(client, "Usage: set kyouko position <x> <y>\n");
+                    break;
+                }
+
+                if (!float.TryParse(args[valueStartIndex], out float kyoukoX) || !float.TryParse(args[valueStartIndex + 1], out float kyoukoY))
+                {
+                    SendToClient(client, "Invalid coordinates. Usage: set kyouko position <x> <y>\n");
                     break;
                 }
 
                 var kyoukoPosSuccess = KyoukoManager.Instance.SetPosition(kyoukoX, kyoukoY);
                 if (kyoukoPosSuccess)
                 {
-                    SendToClient(client, $"KyoukoPosition set to ({kyoukoX}, {kyoukoY})\n");
+                    SendToClient(client, $"Kyouko Position set to ({kyoukoX}, {kyoukoY})\n");
                 }
                 else
                 {
@@ -392,23 +551,23 @@ public class NetConsole
                 }
                 break;
 
-            case "kyoukomoving":
-                if (args.Length < 2)
+            case "kyouko moving":
+                if (args.Length < valueStartIndex + 1)
                 {
-                    SendToClient(client, "Usage: set kyoukomoving <true|false>\n");
+                    SendToClient(client, "Usage: set kyouko moving <true|false>\n");
                     break;
                 }
 
-                if (!bool.TryParse(args[1], out bool isMoving))
+                if (!bool.TryParse(args[valueStartIndex], out bool kyoukoMoving))
                 {
-                    SendToClient(client, "Invalid value. Usage: set kyoukomoving <true|false>\n");
+                    SendToClient(client, "Invalid value. Usage: set kyouko moving <true|false>\n");
                     break;
                 }
 
-                var kyoukoMovingSuccess = KyoukoManager.Instance.SetMoving(isMoving);
+                var kyoukoMovingSuccess = KyoukoManager.Instance.SetMoving(kyoukoMoving);
                 if (kyoukoMovingSuccess)
                 {
-                    SendToClient(client, $"KyoukoMoving set to {isMoving}\n");
+                    SendToClient(client, $"Kyouko Moving set to {kyoukoMoving}\n");
                 }
                 else
                 {
@@ -416,9 +575,156 @@ public class NetConsole
                 }
                 break;
 
+            case "kyouko movespeed":
+                if (args.Length < valueStartIndex + 1)
+                {
+                    SendToClient(client, "Usage: set kyouko movespeed <float>\n");
+                    break;
+                }
+
+                if (!float.TryParse(args[valueStartIndex], out float kyoukoMoveSpeed))
+                {
+                    SendToClient(client, "Invalid value. Usage: set kyouko movespeed <float>\n");
+                    break;
+                }
+
+                var kyoukoMoveSpeedSuccess = KyoukoManager.Instance.SetMoveSpeed(kyoukoMoveSpeed);
+                if (kyoukoMoveSpeedSuccess)
+                {
+                    SendToClient(client, $"Kyouko Move Speed set to {kyoukoMoveSpeed}\n");
+                }
+                else
+                {
+                    SendToClient(client, "Failed to set Kyouko move speed\n");
+                }
+                break;
+
+            case "kyouko inputdirection":
+                if (args.Length < valueStartIndex + 2)
+                {
+                    SendToClient(client, "Usage: set kyouko inputdirection <x> <y> [z]\n");
+                    break;
+                }
+
+                if (!float.TryParse(args[valueStartIndex], out float kyoukoInputX) || !float.TryParse(args[valueStartIndex + 1], out float kyoukoInputY))
+                {
+                    SendToClient(client, "Invalid coordinates. Usage: set kyouko inputdirection <x> <y> [z]\n");
+                    break;
+                }
+
+                float kyoukoInputZ = 0;
+                if (args.Length >= valueStartIndex + 3)
+                {
+                    if (!float.TryParse(args[valueStartIndex + 2], out kyoukoInputZ))
+                    {
+                        SendToClient(client, "Invalid z coordinate. Usage: set kyouko inputdirection <x> <y> [z]\n");
+                        break;
+                    }
+                }
+
+                var kyoukoInputDirSuccess = KyoukoManager.Instance.SetInputDirection(kyoukoInputX, kyoukoInputY, kyoukoInputZ);
+                if (kyoukoInputDirSuccess)
+                {
+                    SendToClient(client, $"Kyouko Input Direction set to ({kyoukoInputX}, {kyoukoInputY}, {kyoukoInputZ})\n");
+                }
+                else
+                {
+                    SendToClient(client, "Failed to set Kyouko input direction\n");
+                }
+                break;
+        }
+    }
+
+    // Command: mp - Multiplayer commands
+    private void MultiplayerCommand(string[] args, TcpClient client)
+    {
+        if (args.Length == 0)
+        {
+            SendToClient(client, "Usage: mp <subcommand> [args]\n");
+            SendToClient(client, "Subcommands:\n");
+            SendToClient(client, "  start            - Start multiplayer\n");
+            SendToClient(client, "  stop             - Stop multiplayer\n");
+            SendToClient(client, "  status           - Show connection status\n");
+            SendToClient(client, "  ping             - Send ping to peer\n");
+            SendToClient(client, "  id               - Show local ID\n");
+            SendToClient(client, "  connect <ip>     - Connect to peer IP\n");
+            SendToClient(client, "  disconnect       - Disconnect from peer\n");
+            return;
+        }
+
+        string subcommand = args[0].ToLower();
+
+        switch (subcommand)
+        {
+            case "start":
+                MultiplayerManager.Instance.Start();
+                SendToClient(client, "Multiplayer started\n");
+                break;
+
+            case "stop":
+                MultiplayerManager.Instance.Stop();
+                SendToClient(client, "Multiplayer stopped\n");
+                break;
+
+            case "status":
+                string status = MultiplayerManager.Instance.GetStatus();
+                SendToClient(client, status);
+                break;
+
+            case "ping":
+                if (!MultiplayerManager.Instance.IsConnected())
+                {
+                    SendToClient(client, "Error: Not connected to peer\n");
+                }
+                else
+                {
+                    MultiplayerManager.Instance.SendPing();
+                    SendToClient(client, "Ping sent\n");
+                }
+                break;
+
+            case "id":
+                if (args.Length < 2)
+                {
+                    SendToClient(client, "Usage: mp id <new_id>\n");
+                    break;
+                }
+                MultiplayerManager.Instance.SetPlayerId(args[1]);
+                break;
+
+            case "connect":
+                if (args.Length < 2)
+                {
+                    SendToClient(client, "Usage: mp connect <ip>\n");
+                    break;
+                }
+
+                string targetIp = args[1];
+                if (MultiplayerManager.Instance.ConnectToPeer(targetIp))
+                {
+                    SendToClient(client, $"Connected to {targetIp}\n");
+                }
+                else
+                {
+                    SendToClient(client, $"Failed to connect to {targetIp}\n");
+                }
+                break;
+
+            case "disconnect":
+                if (!MultiplayerManager.Instance.IsConnected())
+                {
+                    SendToClient(client, "No active connection\n");
+                }
+                else
+                {
+                    MultiplayerManager.Instance.DisconnectPeer();
+                    SendToClient(client, "Disconnected\n");
+                }
+                break;
+
             default:
-                SendToClient(client, $"Unknown field: {field}\n");
-                SendToClient(client, "Available fields: playerposition <x> <y>, kyoukoposition <x> <y>, kyoukomoving <true|false>\n");
+                SendToClient(client, $"Unknown subcommand: {subcommand}\n");
+                SendToClient(client, "Available subcommands: start, stop, status, ping, id, connect, disconnect\n");
                 break;
         }
     }
