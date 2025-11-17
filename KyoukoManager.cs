@@ -153,6 +153,57 @@ public class KyoukoManager
         }
 
         characterUnit.UpdateInputVelocity(inputDirection);
+        characterUnit.IsMoving = inputDirection.magnitude > 0; // 强制更新 isMoving 状态
         Log.LogMessage($"已应用移动输入方向 ({inputDirection.x}, {inputDirection.y})");
+    }
+
+    public float? GetMoveSpeed()
+    {
+        var characterUnit = GetCharacterUnit();
+        if (characterUnit == null)
+        {
+            return null;
+        }
+
+        return characterUnit.MoveSpeedMultiplier;
+    }
+
+    public bool SetMoveSpeed(float speed)
+    {
+        var characterUnit = GetCharacterUnit();
+        if (characterUnit == null)
+        {
+            Log.LogWarning("Failed to get CharacterControllerUnit for Kyouko");
+            return false;
+        }
+
+        characterUnit.MoveSpeedMultiplier = speed;
+        Log.LogInfo($"Kyouko move speed set to {speed}");
+        return true;
+    }
+
+    public Vector3? GetInputDirection()
+    {
+        var characterUnit = GetCharacterUnit();
+        if (characterUnit == null)
+        {
+            return null;
+        }
+
+        return characterUnit.inputDirection;
+    }
+
+    public bool SetInputDirection(float x, float y, float z = 0)
+    {
+        var characterUnit = GetCharacterUnit();
+        if (characterUnit == null)
+        {
+            Log.LogWarning("Failed to get CharacterControllerUnit for Kyouko");
+            return false;
+        }
+
+        characterUnit.inputDirection = new Vector3(x, y, z);
+        Log.LogInfo($"Kyouko input direction set to ({x}, {y}, {z})");
+        return true;
     }
 }
