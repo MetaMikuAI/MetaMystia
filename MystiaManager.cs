@@ -12,6 +12,7 @@ public class MystiaManager
     
     private DayScene.Input.DayScenePlayerInputGenerator _cachedInputGenerator;
     private static ManualLogSource Log => Plugin.Instance.Log;
+    public static string MapLabel { get; private set; }
 
     public static MystiaManager Instance
     {
@@ -167,13 +168,9 @@ public class MystiaManager
         return true;
     }
 
-    public Vector3? GetInputDirection()
+    public Vector3 GetInputDirection()
     {
         var characterUnit = GetCharacterUnit();
-        if (characterUnit == null)
-        {
-            return null;
-        }
 
         return characterUnit.inputDirection;
     }
@@ -192,20 +189,14 @@ public class MystiaManager
         return true;
     }
 
-    public string GetMapLabel()
+    public void UpdateMapLabel()
     {
         var sceneManager = DayScene.SceneManager.Instance;
         if (sceneManager == null)
         {
-            Log.LogMessage("未找到 DayScene.SceneManager 实例");
-            return null;
+            Log.LogError("Cannot find DayScene.SceneManager instance");
+            return;
         }
-        return sceneManager.CurrentActiveMapLabel;
-    }
-
-    public void UpdateMapLabel()
-    {
-        var currentActiveMapLabel = GetMapLabel();
-        MultiplayerManager.Instance.SendMapLabel(currentActiveMapLabel);
+        MapLabel = sceneManager.CurrentActiveMapLabel;
     }
 }

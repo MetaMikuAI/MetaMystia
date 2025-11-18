@@ -314,74 +314,32 @@ public class NetConsole
 
             case "mystia inputdirection":
                 var mystiaInputDir = MystiaManager.Instance.GetInputDirection();
-                if (mystiaInputDir.HasValue)
-                {
-                    SendToClient(client, $"Mystia Input Direction: ({mystiaInputDir.Value.x}, {mystiaInputDir.Value.y}, {mystiaInputDir.Value.z})\n");
-                }
-                else
-                {
-                    SendToClient(client, "Failed to get Mystia input direction\n");
-                }
+                SendToClient(client, $"Mystia Input Direction: ({mystiaInputDir.x}, {mystiaInputDir.y}, {mystiaInputDir.z})\n");
                 break;
 
             case "kyouko position":
                 var kyoukoPos = KyoukoManager.Instance.GetPosition();
-                if (kyoukoPos.HasValue)
-                {
-                    SendToClient(client, $"Kyouko Position: ({kyoukoPos.Value.x}, {kyoukoPos.Value.y})\n");
-                }
-                else
-                {
-                    SendToClient(client, "Failed to get Kyouko position\n");
-                }
+                SendToClient(client, $"Kyouko Position: ({kyoukoPos.x}, {kyoukoPos.y})\n");
                 break;
 
             case "kyouko moving":
                 var kyoukoMoving = KyoukoManager.Instance.GetMoving();
-                if (kyoukoMoving.HasValue)
-                {
-                    SendToClient(client, $"Kyouko Moving: {kyoukoMoving.Value}\n");
-                }
-                else
-                {
-                    SendToClient(client, "Failed to get Kyouko moving status\n");
-                }
+                SendToClient(client, $"Kyouko Moving: {kyoukoMoving}\n");
                 break;
 
             case "kyouko movespeed":
                 var kyoukoMoveSpeed = KyoukoManager.Instance.GetMoveSpeed();
-                if (kyoukoMoveSpeed.HasValue)
-                {
-                    SendToClient(client, $"Kyouko Move Speed: {kyoukoMoveSpeed.Value}\n");
-                }
-                else
-                {
-                    SendToClient(client, "Failed to get Kyouko move speed\n");
-                }
+                SendToClient(client, $"Kyouko Move Speed: {kyoukoMoveSpeed}\n");
                 break;
 
             case "kyouko inputdirection":
                 var kyoukoInputDir = KyoukoManager.Instance.GetInputDirection();
-                if (kyoukoInputDir.HasValue)
-                {
-                    SendToClient(client, $"Kyouko Input Direction: ({kyoukoInputDir.Value.x}, {kyoukoInputDir.Value.y}, {kyoukoInputDir.Value.z})\n");
-                }
-                else
-                {
-                    SendToClient(client, "Failed to get Kyouko input direction\n");
-                }
+                SendToClient(client, $"Kyouko Input Direction: ({kyoukoInputDir.x}, {kyoukoInputDir.y}, {kyoukoInputDir.z})\n");
                 break;
 
             case "currentactivemaplabel":
                 var mapLabel = Utils.GetCurrentActiveMapLabel();
-                if (mapLabel != null)
-                {
-                    SendToClient(client, $"Current Active Map Label: {mapLabel}\n");
-                }
-                else
-                {
-                    SendToClient(client, "Failed to get current active map label\n");
-                }
+                SendToClient(client, $"Current Active Map Label: {mapLabel}\n");
                 break;
 
             default:

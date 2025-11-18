@@ -63,6 +63,8 @@ public class RunTimeSchedulerPatch
     public static void OnEnterDaySceneMap_Postfix()
     {
         MystiaManager.Instance.UpdateMapLabel();
+        MultiplayerManager.Instance.SendMapLabel();
+        KyoukoManager.Instance.UpdateVisibility();
     }
 }
 
@@ -71,26 +73,34 @@ public class DaySceneMapPatch
 {
     private static ManualLogSource Log => Plugin.Instance.Log;
 
-    // Hook SolveAndUpdateCharacterPositionInternal 来强制某些NPC可见
     [HarmonyPatch(nameof(DaySceneMap.SolveAndUpdateCharacterPositionInternal))]
-    [HarmonyPrefix]
-    public static void SolveAndUpdateCharacterPositionInternal_Prefix(DaySceneMap __instance, Dictionary<string, GameData.RunTime.DaySceneUtility.Collection.TrackedNPC> npcs, GameData.RunTime.DaySceneUtility.Collection.TrackedNPC npc, DayScene.Interactables.Collections.ConditionComponents.CharacterConditionComponent character, out bool isNPCOnMap, bool changeRotation)
+    [HarmonyPostfix]
+    public static void SolveAndUpdateCharacterPositionInternal_Postfix(DaySceneMap __instance, GameData.RunTime.DaySceneUtility.Collection.TrackedNPC npc, DayScene.Interactables.Collections.ConditionComponents.CharacterConditionComponent character, ref bool isNPCOnMap, bool changeRotation)
     {
         try
         {
-            if (npc.key == "Kyouko")
+            if (npc == null || character == null)
             {
-                isNPCOnMap = true;
-                Log.LogMessage($"强制设置 Kyouko 可见: {npc.key}");
                 return;
             }
 
-            isNPCOnMap = npcs.ContainsKey(npc.key);
+            string npcKey = npc.key;
+            if (string.IsNullOrEmpty(npcKey))
+            {
+                return;
+            }
+
+            var persistentNPCKeys = new HashSet<string> { "Kyouko" };
+
+            if (persistentNPCKeys.Contains(npcKey) && MultiplayerManager.Instance.IsConnected())
+            {
+                isNPCOnMap = true;
+                Log.LogMessage($"Force visible: {npcKey}");
+            }
         }
         catch (System.Exception e)
         {
-            Log.LogError($"Error in SolveAndUpdateCharacterPositionInternal_Prefix: {e.Message}");
-            isNPCOnMap = false;
+            Log.LogError($"Error in SolveAndUpdateCharacterPositionInternal_Postfix: {e.Message}");
         }
     }
 }

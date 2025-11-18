@@ -14,7 +14,9 @@ public class KyoukoManager
     private const string KYOUKO_ID = "Kyouko";
     private static ManualLogSource Log => Plugin.Instance.Log;
 
-    private static string CurrentActiveMapLabel;
+    public static string MapLabel { get; private set; }
+    public static bool IsKyoukoVisible { get; private set; } = true;
+    private static Vector2 farOffset = new Vector2(114514, 114514);
     private static Vector2 positionOffset;          // 位置偏移量 (收到同步信息时)= 同步位置 - 本地 Kyouko 位置         (FixedUpdate 时计算) positionOffset -= actualCurrectVelocity * Time.fixedDeltaTime;
     private static Vector2 expectedCurrectVelocity; // 预期修正速度 = 位置偏移量 / 修正系数 / Time.fixedDeltaTime               (同步时计算)
     private static Vector2 actualCurrectVelocity;   // 实际修正速度 = min{预期修正速度, positionOffset / Time.fixedDeltaTime}   (FixedUpdate)
@@ -124,7 +126,7 @@ public class KyoukoManager
         return rb;
     }
 
-    public Vector2? GetPosition()
+    public Vector2 GetPosition()
     {
         var rb = GetRigidbody2D();
         return rb?.position ?? Vector2.zero;
@@ -172,76 +174,68 @@ public class KyoukoManager
 
     public void UpdateInputDirection(Vector2 inputDirection, Vector2 syncPosition)
     {
-        var characterUnit = GetCharacterUnit();
-        if (characterUnit == null)
+        if (IsKyoukoVisible == false)
         {
-            Log.LogWarning("Cannot update input direction: CharacterControllerUnit is null");
+            Log.LogWarning("Cannot set input direction: Kyouko is not visible");
             return;
         }
 
+        var characterUnit = GetCharacterUnit();
         
         characterUnit.UpdateInputVelocity(inputDirection);
         characterUnit.IsMoving = inputDirection.magnitude > 0;
         Log.LogMessage($"Update input direction: ({inputDirection.x}, {inputDirection.y})");
 
-        positionOffset = syncPosition - characterUnit.rb2d.position;
+        positionOffset = farOffset + syncPosition - characterUnit.rb2d.position;
         expectedCurrectVelocity = positionOffset / currectCoefficient / Time.fixedDeltaTime;
     }
 
-    public void UpdateSprintState(bool isSprinting, Vector2 position)
+    public void UpdateSprintState(bool isSprinting, Vector2 syncPosition)
     {
-        var characterUnit = GetCharacterUnit();
-        if (characterUnit == null)
+        if (IsKyoukoVisible == false)
         {
-            Log.LogWarning("Cannot update sprint state: CharacterControllerUnit is null");
+            Log.LogWarning("Cannot set input direction: Kyouko is not visible");
             return;
         }
+
+        var characterUnit = GetCharacterUnit();
 
         characterUnit.sprintMultiplier = isSprinting ? 1.5f : 1.0f;
         Log.LogMessage($"Update sprint state: {isSprinting}");
 
-        positionOffset = position - characterUnit.rb2d.position;
+        positionOffset = farOffset + syncPosition - characterUnit.rb2d.position;
         expectedCurrectVelocity = positionOffset / currectCoefficient / Time.fixedDeltaTime;
     }
 
-    public float? GetMoveSpeed()
+    public float GetMoveSpeed()
     {
         var characterUnit = GetCharacterUnit();
-        if (characterUnit == null)
-        {
-            return null;
-        }
-
         return characterUnit.MoveSpeedMultiplier;
     }
 
     public bool SetMoveSpeed(float speed)
     {
         var characterUnit = GetCharacterUnit();
-        if (characterUnit == null)
-        {
-            Log.LogWarning("Failed to get CharacterControllerUnit for Kyouko");
-            return false;
-        }
 
         characterUnit.MoveSpeedMultiplier = speed;
         Log.LogInfo($"Kyouko move speed set to {speed}");
         return true;
     }
 
-    public Vector3? GetInputDirection()
+    public Vector3 GetInputDirection()
     {
         var characterUnit = GetCharacterUnit();
-        if (characterUnit == null)
-        {
-            return null;
-        }
-
-        return characterUnit.inputDirection;
+        return characterUnit?.inputDirection ?? Vector2.zero;
     }
 
     public bool SetInputDirection(float x, float y, float z = 0)
     {
+        if (IsKyoukoVisible == false)
+        {
+            Log.LogWarning("Cannot set input direction: Kyouko is not visible");
+            return false;
+        }
+
         var characterUnit = GetCharacterUnit();
         if (characterUnit == null)
         {
@@ -256,10 +250,33 @@ public class KyoukoManager
 
     public void UpdateMapLabel(string mapLabel)
     {
-        CurrentActiveMapLabel = mapLabel;
+        MapLabel = mapLabel;
         
         Log.LogMessage($"Updated Kyouko map label to '{mapLabel}'");
 
-        // todo: set visibility based on mapLabel
+        UpdateVisibility();
+    }
+
+    public void UpdateVisibility()
+    {
+        var newVisibility = MapLabel == MystiaManager.MapLabel;
+        if (newVisibility == IsKyoukoVisible)
+        {
+            return;
+        }
+        IsKyoukoVisible = newVisibility;
+        Log.LogMessage($"Kyouko visibility updated to {IsKyoukoVisible} (Kyouko map: '{MapLabel}', Mystia map: '{MystiaManager.MapLabel}')");
+
+        var rb = GetRigidbody2D();
+        if (IsKyoukoVisible)
+        {
+            rb.position -= farOffset;
+            farOffset = new Vector2(0, 0);
+        }
+        else
+        {
+            farOffset = new Vector2(114514, 114514);
+            rb.position += farOffset;
+        }
     }
 }
