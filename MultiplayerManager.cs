@@ -18,6 +18,7 @@ public class MultiplayerManager
 
     private string playerId = System.Environment.MachineName;
     private string peerId = "<Unknown>";
+    private bool _hassentFirstMove = false;
 
     private TcpListener _tcpListener;
     private Thread _tcpListenerThread;
@@ -156,7 +157,6 @@ public class MultiplayerManager
                         TcpClient client = _tcpListener.AcceptTcpClient();
                         Log.LogInfo($"Connection from {client.Client.RemoteEndPoint} accepted");
                         AcceptPeerConnection(client);
-                        SendHello();
                     }
                 }
                 else
@@ -197,6 +197,8 @@ public class MultiplayerManager
             _peerHandlerThread.IsBackground = true;
             _peerHandlerThread.Start();
 
+            SendHello();
+
             return true;
         }
         catch (Exception e)
@@ -224,6 +226,8 @@ public class MultiplayerManager
         _peerHandlerThread = new Thread(() => HandlePeerConnection(client));
         _peerHandlerThread.IsBackground = true;
         _peerHandlerThread.Start();
+
+        SendHello();
     }
 
     private void HandlePeerConnection(TcpClient client)
@@ -338,6 +342,7 @@ public class MultiplayerManager
                     string mapLabel = parts[1];
                     Log.LogInfo($"Peer entered map: {mapLabel}");
                     KyoukoManager.Instance.UpdateMapLabel(mapLabel);
+                    SendMoveData(MystiaManager.Instance.GetInputDirection());
                 }
                 break;
             default:
@@ -382,6 +387,7 @@ public class MultiplayerManager
 
         _isConnected = false;
         _peerAddress = null;
+        _hassentFirstMove = false;
 
         Log.LogInfo("Peer connection disconnected");
     }
@@ -420,10 +426,14 @@ public class MultiplayerManager
         }
         // format: move <vx> <vy> <px> <py>
         var position = MystiaManager.Instance.GetPosition();
-        if (position.HasValue)
+        string message = $"move {inputDirection.x} {inputDirection.y} {position.x} {position.y}\n";
+        SendToPeer(message);
+
+        // 第一次发送move数据包时，发送enter数据包
+        if (!_hassentFirstMove)
         {
-            string message = $"move {inputDirection.x} {inputDirection.y} {position.Value.x} {position.Value.y}\n";
-            SendToPeer(message);
+            _hassentFirstMove = true;
+            SendMapLabel();
         }
     }
 
@@ -435,11 +445,8 @@ public class MultiplayerManager
         }
         // format: sprint <false|true> <px> <py>
         var position = MystiaManager.Instance.GetPosition();
-        if (position.HasValue)
-        {
-            string message = $"sprint {isSprinting} {position.Value.x} {position.Value.y}\n";
-            SendToPeer(message);
-        }
+        string message = $"sprint {isSprinting} {position.x} {position.y}\n";
+        SendToPeer(message);
     }
 
 

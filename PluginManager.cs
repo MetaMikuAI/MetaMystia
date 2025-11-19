@@ -33,6 +33,9 @@ public class PluginManager : MonoBehaviour
         netConsole = new NetConsole();
         netConsole.Start();
         Log.LogInfo("NetConsole initialized");
+
+        MultiplayerManager.Instance.Start();
+        Log.LogInfo("MultiplayerManager auto-started");
     }
 
     private void OnGUI()
