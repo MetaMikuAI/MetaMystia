@@ -39,6 +39,10 @@
       <HintPath>..\..\Steam\steamapps\common\Touhou Mystia Izakaya\BepInEx\interop\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Assembly-CSharp-firstpass">
+      <HintPath>..\..\Steam\steamapps\common\Touhou Mystia Izakaya\BepInEx\interop\Assembly-CSharp-firstpass.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="BepInEx.Core">
       <HintPath>..\..\Steam\steamapps\common\Touhou Mystia Izakaya\BepInEx\core\BepInEx.Core.dll</HintPath>
       <Private>False</Private>
@@ -85,6 +89,14 @@
     </Reference>
     <Reference Include="Omt.GamePlatformAPI">
       <HintPath>..\..\Steam\steamapps\common\Touhou Mystia Izakaya\BepInEx\interop\Omt.GamePlatformAPI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Omt.GamePlatformAPI">
+      <HintPath>..\..\Steam\steamapps\common\Touhou Mystia Izakaya\BepInEx\interop\DEYU.AdaptiveUISystem.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.Addressables">
+      <HintPath>..\..\Steam\steamapps\common\Touhou Mystia Izakaya\BepInEx\interop\Unity.Addressables.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

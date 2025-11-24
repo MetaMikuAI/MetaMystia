@@ -90,6 +90,14 @@ public class PluginManager : MonoBehaviour
     {
         KyoukoManager.Instance.OnFixedUpdate();
         MystiaManager.Instance.OnFixedUpdate();
+        if (Input.GetKeyDown(KeyCode.N))
+        {
+            Utils.test(false);
+        }
+        if (Input.GetKeyDown(KeyCode.Y))
+        {
+            Utils.test(true);
+        }
     }
 
     private void OnDestroy()
