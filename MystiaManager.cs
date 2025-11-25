@@ -62,7 +62,7 @@ public class MystiaManager
         return _cachedInputGenerator;
     }
 
-    public CharacterControllerUnit GetCharacterUnit(bool forceRefresh = false)
+    private CharacterControllerUnit GetCharacterUnit(bool forceRefresh = false)
     {
         var inputGenerator = GetInputGenerator(forceRefresh);
         if (inputGenerator == null)
@@ -74,7 +74,7 @@ public class MystiaManager
         return characterUnit;
     }
 
-    public Rigidbody2D GetRigidbody2D(bool forceRefresh = false)
+    private Rigidbody2D GetRigidbody2D(bool forceRefresh = false)
     {
         var characterUnit = GetCharacterUnit(forceRefresh);
         if (characterUnit == null)
@@ -143,7 +143,7 @@ public class MystiaManager
             Log.LogError($"{LOG_TAG} Cannot find DayScene.SceneManager instance");
             return;
         }
-        MapLabel = sceneManager.CurrentActiveMapLabel;
+        MapLabel = sceneManager.CurrentActiveMapLabel;;
     }
 
     public void OnFixedUpdate()

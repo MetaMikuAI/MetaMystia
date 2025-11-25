@@ -26,10 +26,12 @@ namespace MetaMystia
 
         private string input = "";
         private Vector2 scrollPosition;
-        private List<string> logs = new List<string>();
+        private List<string> logs = [];
+        private List<string> inputs = [];
+        private int inputsCursor = 0;
         private const int MaxLogs = 1024;
         private bool focusTextField = false;
-        private const string TextFieldName = "ConsoleInput";
+        private const string TextFieldControlName = "ConsoleInput";
         private bool justOpened = false;
 
         private void UpdateGameInputState()
@@ -127,6 +129,32 @@ namespace MetaMystia
                 e.Use();
             }
 
+            // Handle UpArrow key
+            if (e.type == EventType.KeyDown && e.keyCode == KeyCode.UpArrow)
+            {
+                if (inputsCursor < inputs.Count)
+                {
+                    inputsCursor++;
+                }
+                input = inputs[^inputsCursor];
+                e.Use();
+            }
+
+            // Handle DownArrow key
+            if (e.type == EventType.KeyDown && e.keyCode == KeyCode.DownArrow)
+            {
+                if (inputsCursor > 1)
+                {
+                    inputsCursor--;
+                    input = inputs[^inputsCursor];
+                } 
+                else
+                {
+                    input = "";
+                }
+                e.Use();
+            }
+
             // Consume Slash key if just opened to prevent typing it in the field
             if (justOpened && e.type == EventType.KeyDown && e.character == '/')
             {
@@ -160,12 +188,13 @@ namespace MetaMystia
             GUILayout.EndArea();
 
             // Draw input field
-            GUI.SetNextControlName(TextFieldName);
+            GUI.SetNextControlName(TextFieldControlName);
             input = GUI.TextField(new Rect(x + padding, y + height - inputHeight - padding, width - 2 * padding, inputHeight), input, inputStyle);
 
             if (focusTextField)
             {
-                GUI.FocusControl(TextFieldName);
+                GUI.FocusControl(TextFieldControlName);
+                PluginManager.Log.LogMessage("forcing focus control");
                 focusTextField = false;
             }
 
@@ -175,7 +204,14 @@ namespace MetaMystia
                 if (!string.IsNullOrEmpty(input))
                 {
                     ExecuteCommand(input);
+                    inputs.Add(input);
+                    inputsCursor = 0;
                     input = "";
+                } 
+                else
+                {
+                    IsOpen = false;
+                    return;
                 }
             }
             
@@ -212,6 +248,7 @@ namespace MetaMystia
                     break;
                 case "clear":
                     logs.Clear();
+                    inputs.Clear();
                     break;
                 case "echo":
                     EchoCommand(args);
@@ -284,6 +321,9 @@ namespace MetaMystia
                 case "enabledebugconsole":
                     Log($"Debug Console Enabled: {SplashScene.SceneManager.EnableDebugCosole}");
                     break;
+                case "pos":
+                    Log($"Mystia position: {MystiaManager.Instance.GetPosition()}");
+                    break;
                 default:
                     Log($"Unknown field: {field}");
                     Log($"Available fields: {availableFields}");
@@ -336,28 +376,28 @@ namespace MetaMystia
             switch (subcommand)
             {
                 case "start":
-                    MultiplayerManager.Instance.Start();
+                    MpManager.Instance.Start();
                     Log("Multiplayer started");
                     break;
                 case "stop":
-                    MultiplayerManager.Instance.Stop();
+                    MpManager.Instance.Stop();
                     Log("Multiplayer stopped");
                     break;
                 case "restart":
-                    MultiplayerManager.Instance.Restart();
+                    MpManager.Instance.Restart();
                     Log("Multiplayer restarted");
                     break;
                 case "status":
-                    Log(MultiplayerManager.Instance.GetStatus());
+                    Log(MpManager.Instance.GetStatus());
                     break;
                 case "ping":
-                    if (!MultiplayerManager.Instance.IsConnected())
+                    if (!MpManager.Instance.IsConnected)
                     {
                         Log("Error: Not connected to peer");
                     }
                     else
                     {
-                        MultiplayerManager.Instance.SendPing();
+                        MpManager.Instance.SendPing();
                         Log("Ping sent");
                     }
                     break;
@@ -367,7 +407,7 @@ namespace MetaMystia
                         Log("Usage: mp id <new_id>");
                         break;
                     }
-                    MultiplayerManager.Instance.SetPlayerId(args[1]);
+                    MpManager.Instance.PlayerId = args[1];
                     Log($"Player ID set to {args[1]}");
                     break;
                 case "connect":
@@ -377,7 +417,7 @@ namespace MetaMystia
                         break;
                     }
                     string targetIp = args[1];
-                    if (MultiplayerManager.Instance.ConnectToPeer(targetIp))
+                    if (MpManager.Instance.ConnectToPeer(targetIp))
                     {
                         Log($"Connected to {targetIp}");
                     }
@@ -387,16 +427,16 @@ namespace MetaMystia
                     }
                     break;
                 case "disconnect":
-                    if (!MultiplayerManager.Instance.IsConnected())
+                    if (!MpManager.Instance.IsConnected)
                     {
                         Log("No active connection");
                     }
                     else
                     {
-                        MultiplayerManager.Instance.DisconnectPeer();
+                        MpManager.Instance.DisconnectPeer();
                         Log("Disconnected");
                     }
-                    break;
+                    break; 
                 default:
                     Log($"Unknown subcommand: {subcommand}");
                     Log("Available subcommands: start, stop, restart, status, ping, id, connect, disconnect");
@@ -454,6 +494,40 @@ namespace MetaMystia
                     catch (System.Exception e)
                     {
                         Log($"Error calling movecharacter: {e.Message}");
+                    }
+                    break;
+                case "scene_move":
+                    if (args.Length < 4)
+                    {
+                        Log("Usage: call scene_move <characterKey> <x> <y>");
+                        break;
+                    }
+                    try
+                    {
+                        string characterKey = args[1];
+                        float x = float.Parse(args[2]);
+                        float y = float.Parse(args[3]);
+                        var arr = new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<Vector2>(1);
+                        arr[0] = new Vector2(x, y);
+                        Common.SceneDirector.Instance.MoveCharacter(characterKey, arr, 1.48f, new System.Action(() => {}));
+                        Log($"Moved character '{characterKey}' to position ({x}, {y})'.");
+                    }
+                    catch (System.Exception e)
+                    {
+                        Log($"Error calling scene_move: {e.Message}");
+                    }
+                    break;
+                case "sc_move_kyouko_here":
+                    try
+                    {
+                        var arr = new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<Vector2>(1);
+                        arr[0] = MystiaManager.Instance.GetPosition();
+                        Common.SceneDirector.Instance.MoveCharacter(KyoukoManager.KYOUKO_ID, arr, 2.0f, new System.Action(() => {}));
+                        Log($"Moved character '{KyoukoManager.KYOUKO_ID}' to position {arr[0]}'.");
+                    }
+                    catch (System.Exception e)
+                    {
+                        Log($"Error calling sc_move_kyouko_here: {e.Message}");
                     }
                     break;
                 default:

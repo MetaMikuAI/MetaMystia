@@ -1,30 +1,34 @@
 using System;
+
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using BepInEx.Logging;
 using Il2CppMono;
 using UnityEngine;
 
+
 namespace MetaMystia;
 
 public class MultiplayerManager
 {
     private static MultiplayerManager _instance;
-    private static readonly object _lock = new object();
+    private static readonly object _lock = new();
     private static ManualLogSource Log => Plugin.Instance.Log;
 
     private const int TCP_PORT = 40815;
-    private string playerId = System.Environment.MachineName;
+    private string _playerId;
+    public string PlayerId {get; set { _playerId = value; Log.LogInfo($"Player ID set to: {value}");}} = System.Environment.MachineName;
     private string peerId = "<Unknown>";
     private TcpListener _tcpListener;
     private Thread _tcpListenerThread;
-    private bool _isRunning = false;
-    private bool _isConnected = false;
     private TcpClient _peerConnection;
     private Thread _peerHandlerThread;
-    private string _peerAddress;
+    public bool IsRunning {get; private set;} = false;
+    public bool IsConnected {get; private set;} = false;
+    public string PeerAddress {get; private set;}
 
     private static readonly string LOG_TAG = "[MultiplayerManager.cs]";
 
@@ -36,10 +40,7 @@ public class MultiplayerManager
             {
                 lock (_lock)
                 {
-                    if (_instance == null)
-                    {
-                        _instance = new MultiplayerManager();
-                    }
+                    _instance ??= new MultiplayerManager();
                 }
             }
             return _instance;
@@ -50,24 +51,9 @@ public class MultiplayerManager
     {
     }
 
-    public bool IsRunning()
-    {
-        return _isRunning;
-    }
-
-    public bool IsConnected()
-    {
-        return _isConnected;
-    }
-
-    public string GetPeerAddress()
-    {
-        return _peerAddress;
-    }
-
     public void Start()
     {
-        if (_isRunning)
+        if (IsRunning)
         {
             Log.LogWarning($"{LOG_TAG} MultiplayerManager is already running");
             return;
@@ -82,7 +68,7 @@ public class MultiplayerManager
 
     public void Stop()
     {
-        if (!_isRunning)
+        if (!IsRunning)
             return;
 
         Log.LogInfo($"{LOG_TAG} Stopping MultiplayerManager");
@@ -111,7 +97,7 @@ public class MultiplayerManager
 
     public void ToggleRunning()
     {
-        if (_isRunning)
+        if (IsRunning)
         {
             Log.LogInfo($"{LOG_TAG} Stopping MultiplayerManager...");
             Stop();
@@ -123,10 +109,6 @@ public class MultiplayerManager
         }
     }
 
-    public string GetPlayerId()
-    {
-        return playerId;
-    }
 
     public void SetPlayerId(string newId)
     {
@@ -154,13 +136,13 @@ public class MultiplayerManager
 
     private void TcpListenerLoop()
     {
-        while (_isRunning)
+        while (IsRunning)
         {
             try
             {
                 if (_tcpListener.Pending())
                 {
-                    if (_isConnected)
+                    if (IsConnected)
                     {
                         TcpClient rejectedClient = _tcpListener.AcceptTcpClient();
                         Log.LogInfo($"{LOG_TAG} Connection from {rejectedClient.Client.RemoteEndPoint} rejected (already connected)");
@@ -180,7 +162,7 @@ public class MultiplayerManager
             }
             catch (Exception e)
             {
-                if (_isRunning)
+                if (IsRunning)
                 {
                     Log.LogError($"{LOG_TAG} Error in TCP listener loop: {e.Message}");
                 }
@@ -190,7 +172,7 @@ public class MultiplayerManager
 
     public bool ConnectToPeer(string peerIp)
     {
-        if (_isConnected)
+        if (IsConnected)
         {
             Log.LogWarning($"{LOG_TAG} Already connected to a peer. Please disconnect first.");
             return false;
@@ -203,8 +185,8 @@ public class MultiplayerManager
             client.Connect(peerIp, TCP_PORT);
             Log.LogInfo($"{LOG_TAG} Successfully connected to peer {peerIp}:{TCP_PORT}");
 
-            _peerAddress = peerIp;
-            _isConnected = true;
+            PeerAddress = peerIp;
+            IsConnected = true;
             _peerConnection = client;
 
             OnConnected(client);
@@ -219,16 +201,16 @@ public class MultiplayerManager
 
     private void AcceptPeerConnection(TcpClient client)
     {
-        if (_isConnected)
+        if (IsConnected)
         {
             Log.LogWarning($"{LOG_TAG} Already connected to a peer. Please disconnect first.");
             client.Close();
             return;
         }
 
-        _isConnected = true;
+        IsConnected = true;
         _peerConnection = client;
-        _peerAddress = ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString();
+        PeerAddress = ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString();
 
         Log.LogInfo($"{LOG_TAG} Connection from {_peerAddress} accepted");
 
@@ -243,7 +225,7 @@ public class MultiplayerManager
 
         try
         {
-            while (_isRunning && _isConnected && client.Connected)
+            while (IsRunning && IsConnected && client.Connected)
             {
                 if (stream.DataAvailable)
                 {
@@ -343,6 +325,19 @@ public class MultiplayerManager
                     KyoukoManager.Instance.SyncFromPeer(mapLabel, isSprinting, new Vector2(vx, vy), new Vector2(px, py));
                 });
                 break;
+            // deprecated
+            case "pos":
+                // format: pos <mapLable> <px> <py>
+                 if (parts.Length >= 4)
+                {
+                    string mapLabel = parts[1];
+                    if (float.TryParse(parts[2], out float px) && float.TryParse(parts[3], out float py))
+                    {
+                        PluginManager.Instance.RunOnMainThread(() => 
+                            KyoukoManager.Instance.MoveTo(mapLabel, px, py));
+                    }
+                }
+                break;
             case "ready":
                 KyoukoManager.isReady = true;
                 if (MystiaManager.isReady) // 10->11: 需要先显示「准备完成」对话框再在其回调中执行 OnDayOver
@@ -366,7 +361,7 @@ public class MultiplayerManager
 
     private void SendToPeer(string message)
     {
-        if (!_isConnected || _peerConnection == null)
+        if (!IsConnected || _peerConnection == null)
         {
             Log.LogWarning($"{LOG_TAG} Cannot send message: not connected to a peer");
             return;
@@ -398,15 +393,15 @@ public class MultiplayerManager
             _peerConnection = null;
         }
 
-        _isConnected = false;
-        _peerAddress = null;
+        IsConnected = false;
+        PeerAddress = null;
 
         Log.LogInfo($"{LOG_TAG} Peer connection disconnected");
     }
 
     public void SendPing()
     {
-        if (_isConnected)
+        if (IsConnected)
         {
             Log.LogInfo($"{LOG_TAG} Sending ping to peer");
             SendToPeer("ping\n");
@@ -419,7 +414,7 @@ public class MultiplayerManager
 
     public void SendHello()
     {
-        if (_isConnected)
+        if (IsConnected)
         {
             Log.LogInfo($"{LOG_TAG} Sending hello to peer");
             SendToPeer($"hello {GetPlayerId()}\n");
@@ -432,7 +427,7 @@ public class MultiplayerManager
 
     public void SendMoveData(UnityEngine.Vector2 inputDirection)
     {
-        if (!_isConnected)
+        if (!IsConnected)
         {
             return;
         }
@@ -442,9 +437,21 @@ public class MultiplayerManager
         SendToPeer(message);
     }
 
+    public void SendPos(string label, float x, float y)
+    {
+        if (!IsConnected)
+        {
+            return;
+        }
+        // format: pos <label> <px> <py>
+        var position = MystiaManager.Instance.GetPosition();
+        string message = $"pos {MystiaManager.MapLabel} {position.x} {position.y}\n";
+        SendToPeer(message);
+    }
+
     public void SendSprintData(bool isSprinting)
     {
-        if (!_isConnected)
+        if (!IsConnected)
         {
             return;
         }
@@ -458,18 +465,18 @@ public class MultiplayerManager
     public string GetStatus()
     {
         StringBuilder status = new StringBuilder();
-        status.AppendLine($"Mystia ID: {GetPlayerId()}");
+        status.AppendLine($"Mystia ID: {PlayerId}");
         status.AppendLine($"Local Port: {TCP_PORT}");
-        status.AppendLine($"Running: {(_isRunning ? "Yes" : "No")}");
-        status.AppendLine($"Connected: {(_isConnected ? "Yes" : "No")}");
-        if (_isConnected)
+        status.AppendLine($"Running: {(IsRunning ? "Yes" : "No")}");
+        status.AppendLine($"Connected: {(IsConnected ? "Yes" : "No")}");
+        if (IsConnected)
         {
             status.AppendLine($"Kyouko ID: {peerId}");
         }
         
-        if (_isConnected)
+        if (IsConnected)
         {
-            status.AppendLine($"Kyouko Address: {_peerAddress ?? "<Unknown>"}");
+            status.AppendLine($"Kyouko Address: {PeerAddress ?? "<Unknown>"}");
         }
 
         return status.ToString();
@@ -477,13 +484,13 @@ public class MultiplayerManager
 
     public string GetBriefStatus()
     {
-        if (!_isRunning)
+        if (!IsRunning)
         {
             return "Multiplayer: Off";
         }
-        if (_isConnected)
+        if (IsConnected)
         {
-            return $"Multiplayer: Connected to {peerId} ({_peerAddress})";
+            return $"Multiplayer: Connected to {peerId} ({PeerAddress})";
         }
         else
         {
@@ -493,7 +500,7 @@ public class MultiplayerManager
 
     public void SendSync()
     {
-        if (!_isConnected)
+        if (!IsConnected)
         {
             return;
         }
@@ -508,7 +515,7 @@ public class MultiplayerManager
 
     public void SendReady()
     {
-        if (!_isConnected)
+        if (!IsConnected)
         {
             return;
         }

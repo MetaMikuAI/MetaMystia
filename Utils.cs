@@ -139,7 +139,7 @@ public static class DiagnosticUtils
         var type = obj.GetType();
         Debug.LogMessage($"[DIAG] =========== Inspecting type: {type.FullName}");
 
-        foreach (var prop in type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+        foreach (var prop in type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic))
         {
             try
             {
@@ -161,6 +161,30 @@ public static class DiagnosticUtils
         }
         Debug.LogMessage($"[DIAG] =========== Inspecting done");
 
+    }
+
+    public static void PrintAllKeyValues<T>(Dictionary<string, T> dict)
+    {
+        if (dict == null)
+        {
+            Debug.LogMessage("[DIAG] Dict is null");
+            return;
+        }
+
+        if (dict.Count == 0)
+        {
+            Debug.LogMessage("[DIAG] Dict is empty");
+            return;
+        }
+
+        Debug.LogMessage($"[DIAG] ================= Listing {dict}");
+        foreach (var key in dict.Keys)
+        {
+            T value = dict[key];
+            string valueStr = value != null ? value.ToString() : "null";
+            Debug.LogMessage($"[DIAG] Key: {key}, Value: {valueStr}");
+        }
+        Debug.LogMessage($"[DIAG] ================= Done listing {dict}");
     }
 
 }

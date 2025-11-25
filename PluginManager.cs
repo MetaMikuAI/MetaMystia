@@ -42,7 +42,7 @@ public class PluginManager : MonoBehaviour
     private void Awake()
     {
         Console = new InGameConsole();
-        // MultiplayerManager.Instance.Start();
+        // MpManager.Instance.Start();
     }
 
     private void OnGUI()
@@ -53,7 +53,7 @@ public class PluginManager : MonoBehaviour
         {
             var info = new System.Text.StringBuilder();
             info.AppendLine(label);
-            info.AppendLine(MultiplayerManager.Instance.GetBriefStatus());
+            info.AppendLine(MpManager.Instance.GetBriefStatus());
             GUI.Label(new Rect(10, Screen.height - 50, 600, 50), info.ToString());
         }
     }

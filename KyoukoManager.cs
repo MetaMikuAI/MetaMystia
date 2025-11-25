@@ -12,7 +12,7 @@ public class KyoukoManager
     private static KyoukoManager _instance;
     private static readonly object _lock = new object();
     
-    private const string KYOUKO_ID = "Kyouko";
+    public const string KYOUKO_ID = "Kyouko";
     private static ManualLogSource Log => Plugin.Instance.Log;
 
     public static string MapLabel { get; private set; }
@@ -49,7 +49,7 @@ public class KyoukoManager
     public void OnFixedUpdate()
     {
 
-        if (!MultiplayerManager.Instance.IsConnected())
+        if (!MpManager.Instance.IsConnected)
         {
             return;
         }
@@ -99,7 +99,7 @@ public class KyoukoManager
 
     public CharacterConditionComponent GetCharacterComponent()
     {
-        return DayScene.DaySceneMap.TryGetCharacter("Kyouko");
+        return DayScene.DaySceneMap.TryGetCharacter(KYOUKO_ID);
     }
 
     public CharacterControllerUnit GetCharacterUnit()
@@ -138,7 +138,41 @@ public class KyoukoManager
         return rb;
     }
 
-    public void SetMoving(bool isMoving)
+    public Vector2 GetPosition()
+    {
+        var rb = GetRigidbody2D();
+        return rb?.position ?? Vector2.zero;
+    }
+
+    public bool SetPosition(float x, float y)
+    {
+        var rb = GetRigidbody2D();
+        if (rb == null)
+        {
+            return false;
+        }
+        rb.position = new Vector2(x, y);
+        Log.LogInfo($"Kyouko position set to ({x}, {y})");
+        return true;
+    }
+
+    public void MoveTo(string label, float x, float y)
+    {
+        if (MapLabel.Equals(label))
+        {
+            var arr = new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<Vector2>(1);
+            arr[0] = new Vector2(x, y);
+            Common.SceneDirector.Instance.MoveCharacter(KYOUKO_ID, arr, 1.48f, new Action(() => {Log.LogMessage("MoveTo Called");}));
+        }
+    }
+
+    public bool GetMoving()
+    {
+        var characterUnit = GetCharacterUnit();
+        return characterUnit.IsMoving;
+    }
+
+    public bool SetMoving(bool isMoving)
     {
         var characterUnit = GetCharacterUnit();
         if (characterUnit == null)
