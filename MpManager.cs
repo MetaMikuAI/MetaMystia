@@ -8,6 +8,7 @@ using System.Threading;
 using BepInEx.Logging;
 using Il2CppMono;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 
 namespace MetaMystia;
@@ -27,7 +28,6 @@ public class MpManager
     public bool IsConnected {get; private set;} = false;
     public string PeerAddress {get; set;}
     public string PeerId {get; set;} = "<Unknown>";
-    private long LastPingTimestamp = 0;
     public long Latency {get; private set;} = 0;
 
     public static MpManager Instance
@@ -76,6 +76,7 @@ public class MpManager
         {
             server.Stop();
             client?.Close();
+            OnDisconnected();
         }
         catch (Exception e)
         {
@@ -107,7 +108,7 @@ public class MpManager
     }
 
 
-    public bool ConnectToPeer(string peerIp)
+    public bool ConnectToPeer(string peerIp, int port = TCP_PORT)
     {
         if (IsConnected)
         {
@@ -115,11 +116,16 @@ public class MpManager
             return false;
         }
 
+        if (!IsRunning)
+        {
+            Start();
+        }
         try
         {
-            Log.LogInfo($"Connecting to {peerIp}:{TCP_PORT}...");
-            client = new(peerIp, TCP_PORT);
-            Log.LogMessage($"Successfully connected to peer {peerIp}:{TCP_PORT}");
+            Log.LogInfo($"Connecting to {peerIp}:{port}...");
+            client = new(peerIp, port);
+            OnConnected(client.client);
+            Log.LogMessage($"Successfully connected to peer {peerIp}:{port}");
 
             return true;
         }
@@ -137,7 +143,11 @@ public class MpManager
         Instance.IsConnected = true;
         Instance.IsHost = IsHost;
         SendHello();
-        SendPing();
+        if (!IsHost)
+        {
+            SendPing();
+        }
+        SendSync();
     }
 
     public void OnDisconnected()
@@ -147,28 +157,29 @@ public class MpManager
         Instance.IsConnected = false;
     }
 
-    public void OnAction(NetAction action)
+    public static void OnAction(NetAction action)
     {
         action.OnReceived();
     }
 
     private void SendToPeer(NetPacket packet)
     {
+        var actionType = packet.GetFirstAction().Type;
         if (!IsConnected)
         {
-            Log.LogWarning("Cannot send message: not connected to a peer");
+            Log.LogWarning($"Cannot send {actionType}: not connected to a peer");
             return;
         }
 
         if (IsHost)
         {
-            Log.LogInfo($"[S] Sending {packet.Actions[0].Type}");
+            Log.LogInfo($"[S] Sending {actionType}");
 
             TcpClientWrapper.Send(server.currentClient, packet);
         } 
         else
         {
-            Log.LogInfo($"[C] Sending {packet.Actions[0].Type}");
+            Log.LogInfo($"[C] Sending {actionType}");
             client.Send(packet);
         }
     }
@@ -185,98 +196,76 @@ public class MpManager
             {
                 client.Close();
             }
+            Log.LogMessage("Peer connection disconnected");
         }
-        Log.LogInfo("Peer connection disconnected");
     }
 
+    // Note: Only Client automatically sends ping to server.
+    // When Server receives a ping, it will respond a pong to peer Client, 
+    // and calculate latency using the timestamp that ping brought.
     public void SendPing()
     {
-        if (IsConnected)
-        {
-            Log.LogInfo("Sending ping to peer");
-            LastPingTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            NetPacket pingPacket = new() {  };
-            pingPacket.Actions.Add(new PingAction { Timestamp = LastPingTimestamp });
-            SendToPeer(pingPacket);
-        }
-        else
-        {
-            Log.LogWarning("Cannot send ping: not connected");
-        }
+        SendToPeer(PingAction.CreatePingPacket());
     }
 
     public void ResponsePong()
     {
-        if (IsConnected)
-        {
-            Log.LogInfo("Sending pong to peer");
-            NetPacket pongPacket = new() {  };
-            pongPacket.Actions.Add(new PongAction { Timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() });
-            SendToPeer(pongPacket);
-        }
-        else
-        {
-            Log.LogWarning("Cannot send ping: not connected");
-        }
+        SendToPeer(PongAction.CreatePongPacket());
     }
 
-    public void UpdateLatency(long PongTimestamp)
+    // Client: using Pong from the Server to calculate latency
+    // Server: using Ping from the Client to calculate latency
+    public void UpdateLatency(long Timestamp)
     {
-        Latency = PongTimestamp - LastPingTimestamp;
+        Latency = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - Timestamp;
     }
 
     public void SendHello()
     {
-        if (IsConnected)
-        {
-            Log.LogInfo("Sending hello to peer");
-            NetPacket packet = new() {  };
-            packet.Actions.Add(new HelloAction { PeerId = PlayerId });
-            SendToPeer(packet);
-        }
-        else
-        {
-            Log.LogWarning("Cannot send hello: not connected");
-        }
+        NetPacket packet = new() {  };
+        packet.Actions.Add(new HelloAction { PeerId = PlayerId });
+        SendToPeer(packet);
     }
 
     public void SendSync()
     {
-        if (IsConnected)
+        // Maybe called before connected (because of patch), just ignore
+        if (!IsConnected)
         {
-            var mapLabel = MystiaManager.MapLabel;
-            var position = MystiaManager.Instance.GetPosition();
-            var isSprinting = MystiaManager.IsSprinting;
-            var inputDirection = MystiaManager.InputDirection;
-
-            NetPacket packet = new() { };
-            packet.Actions.Add(new SyncAction
-            {
-                IsSprinting = isSprinting,
-                Vx = inputDirection.x,
-                Vy = inputDirection.y,
-                MapLabel = mapLabel,
-                Px = position.x,
-                Py = position.y
-            });
-            SendToPeer(packet);
+            return;
         }
+        var mapLabel = MystiaManager.MapLabel;
+        var position = MystiaManager.Instance.GetPosition();
+        var isSprinting = MystiaManager.IsSprinting;
+        var inputDirection = MystiaManager.InputDirection;
+
+        NetPacket packet = new() { };
+        packet.Actions.Add(new SyncAction
+        {
+            IsSprinting = isSprinting,
+            Vx = inputDirection.x,
+            Vy = inputDirection.y,
+            MapLabel = mapLabel,
+            Px = position.x,
+            Py = position.y
+        });
+        SendToPeer(packet);
     }
 
     public void SendReady()
     {
-        if (IsConnected)
+        NetPacket packet = new() { };
+        packet.Actions.Add(new ReadyAction
         {
-            NetPacket packet = new() { };
-            packet.Actions.Add(new ReadyAction
-            {
-                IsReady = true
-            });
-            SendToPeer(packet);
-            Log.LogInfo("Sending ready status to peer");
-        }
+            IsReady = true
+        });
+        SendToPeer(packet);
     }
 
+    public void SendMessage(string message)
+    {
+        SendToPeer(MessageAction.CreateMsgPacket(message));
+    }
 
     public string GetStatus()
     {
@@ -288,10 +277,6 @@ public class MpManager
         if (IsConnected)
         {
             status.AppendLine($"Kyouko ID: {PeerId}");
-        }
-        
-        if (IsConnected)
-        {
             status.AppendLine($"Kyouko Address: {PeerAddress ?? "<Unknown>"}");
         }
 

@@ -2,6 +2,7 @@ using MemoryPack;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Threading;
 using UnityEngine.EventSystems;
@@ -26,6 +27,15 @@ public partial class NetPacket
     public static NetPacket FromBytes(byte[] data)
     {
         return MemoryPackSerializer.Deserialize<NetPacket>(data)!;
+    }
+
+    public NetAction GetFirstAction()
+    {
+        if (Actions.Count > 0)
+        {
+            return Actions[0];
+        }
+        throw new Exception("No action in this packet!");
     }
 }
 
@@ -140,8 +150,19 @@ public class TcpServer
                     {
                         foreach (var action in p.Actions)
                         {
-                            Log.LogInfo($"[S] Received Action: {action.Type}");
-                            MpManager.Instance.OnAction(action);
+                            if (action is PingAction ping)
+                            {
+                                Log.LogInfo($"[S] Received {action.Type}: { ping.Timestamp}");
+                            } 
+                            else if (action is SyncAction sync)
+                            {
+                                Log.LogInfo($"[S] Received {action.Type}: {sync.ToString()}");
+                            }
+                            else
+                            {
+                                Log.LogInfo($"[S] Received {action.Type}");
+                            }
+                            MpManager.OnAction(action);
                         }
                     }
                 }
@@ -197,12 +218,13 @@ public class TcpClientWrapper
     private static BepInEx.Logging.ManualLogSource Log => Plugin.Instance.Log;
     private string host;
     private int port;
-    private TcpClient client;
+    public TcpClient client {get; private set;}
     private NetworkStream stream;
     private PacketBuffer buffer = new PacketBuffer();
     private Thread recvThread;
     private Thread heartbeatThread;
     private bool running = false;
+    private const int MaxRetryTimes = 1;
 
     public TcpClientWrapper(string host, int port)
     {
@@ -213,7 +235,8 @@ public class TcpClientWrapper
 
     private void Connect()
     {
-        while (true)
+        var retryTimes = 0;
+        while (retryTimes < MaxRetryTimes)
         {
             try
             {
@@ -221,9 +244,6 @@ public class TcpClientWrapper
                 client.Connect(host, port);
                 stream = client.GetStream();
                 running = true;
-                MpManager.Instance.OnConnected(client);
-
-                Log.LogMessage("[C] Connected to server.");
 
                 recvThread = new Thread(ReceiveLoop) { IsBackground = true };
                 recvThread.Start();
@@ -231,14 +251,17 @@ public class TcpClientWrapper
                 heartbeatThread = new Thread(HeartbeatLoop) { IsBackground = true };
                 heartbeatThread.Start();
 
-                break;
+                Log.LogMessage("[C] Connected to server.");
+
+                return;
             }
-            catch
+            catch (Exception ex)
             {
-                Log.LogMessage("[C] Connection failed, retrying in 3s...");
-                Thread.Sleep(3000);
+                Log.LogWarning($"[C] Connection failed, reason: {ex.Message},  {ex.StackTrace}");
+                retryTimes++;
             }
         }
+        throw new Exception($"Failed to connect to server after {retryTimes} attempt(s)");
     }
 
     private void ReceiveLoop()
@@ -257,7 +280,18 @@ public class TcpClientWrapper
                     foreach (var action in p.Actions)
                     {
                         if (action is PongAction pong)
-                            Log.LogInfo($"[C] Received Pong {pong.Timestamp}");
+                        {
+                            Log.LogInfo($"[C] Received {action.Type}: {pong.Timestamp}");
+                        }
+                        else if (action is SyncAction sync)
+                        {
+                            Log.LogInfo($"[C] Received {action.Type}: {sync.ToString()}");
+                        }
+                        else
+                        {
+                            Log.LogInfo($"[C] Received {action.Type}");
+                        }
+                        MpManager.OnAction(action);
                     }
                 }
             }
@@ -278,11 +312,9 @@ public class TcpClientWrapper
         {
             if (running)
             {
-                NetPacket ping = new NetPacket { };
-                ping.Actions.Add(new PingAction { Timestamp = Environment.TickCount });
-                Send(ping);
+                MpManager.Instance.SendPing();
             }
-            Thread.Sleep(1000);
+            Thread.Sleep(2000);
         }
     }
 
@@ -322,7 +354,8 @@ public enum ActionType : ushort
     PONG,
     HELLO,
     SYNC,
-    READY
+    READY,
+    MESSAGE
 }
 
 [MemoryPackable]
@@ -331,10 +364,21 @@ public enum ActionType : ushort
 [MemoryPackUnion((ushort)ActionType.HELLO, typeof(HelloAction))]
 [MemoryPackUnion((ushort)ActionType.SYNC, typeof(SyncAction))]
 [MemoryPackUnion((ushort)ActionType.READY, typeof(ReadyAction))]
+[MemoryPackUnion((ushort)ActionType.MESSAGE, typeof(MessageAction))]
 public abstract partial class NetAction
 {
     public abstract ActionType Type { get; }
     public abstract void OnReceived();
+
+    public override string ToString()
+    {
+        return System.Text.Json.JsonSerializer.Serialize((object)this,
+            new System.Text.Json.JsonSerializerOptions
+            {
+                WriteIndented = false,
+                IncludeFields = true
+            });
+    }
 }
 
 
@@ -345,7 +389,18 @@ public partial class PingAction : NetAction
     public long Timestamp { get; set; }
     public override void OnReceived()
     {
+        MpManager.Instance.UpdateLatency(Timestamp);
         MpManager.Instance.ResponsePong();
+    }
+    public static NetPacket CreatePingPacket(long timestamp)
+    {
+        NetPacket packet = new NetPacket { };
+        packet.Actions.Add(new PingAction { Timestamp = timestamp });
+        return packet;
+    }
+    public static NetPacket CreatePingPacket()
+    {
+        return CreatePingPacket(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
     }
 }
 
@@ -357,6 +412,12 @@ public partial class PongAction : NetAction
     public override void OnReceived()
     {
         MpManager.Instance.UpdateLatency(Timestamp);
+    }
+    public static NetPacket CreatePongPacket()
+    {
+        NetPacket packet = new NetPacket { };
+        packet.Actions.Add(new PongAction { Timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() });
+        return packet;
     }
 }
 
@@ -411,5 +472,34 @@ public partial class ReadyAction : NetAction
         }
         // else: 00->01: Nope
         Plugin.Instance.Log.LogInfo("Kyouko is ready");
+    }
+}
+
+[MemoryPackable]
+public partial class MessageAction : NetAction
+{
+    public override ActionType Type => ActionType.MESSAGE;
+    private const int maxMessageLen = 1024;
+    public string Message {get; private set; }
+    public override void OnReceived()
+    {
+        PluginManager.Console.AddPeerMessage(Message);
+    }
+    private static MessageAction CreateMsgAction(string msg)
+    {
+        if (msg.Length <= maxMessageLen)
+        {
+            return new MessageAction{Message = msg};
+        } 
+        else
+        {
+            return new MessageAction{Message = msg[..maxMessageLen] };
+        }
+    }
+    public static NetPacket CreateMsgPacket(string msg)
+    {
+        NetPacket packet = new NetPacket { };
+        packet.Actions.Add(CreateMsgAction(msg));
+        return packet;
     }
 }
