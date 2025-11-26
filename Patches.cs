@@ -87,44 +87,8 @@ public class RunTimeSchedulerPatch
     }
 }
 
-[HarmonyPatch(typeof(DaySceneMap))]
-public class DaySceneMapPatch
-{
-    private static ManualLogSource Log => Plugin.Instance.Log;
-    private static readonly string LOG_TAG = "[DaySceneMapPatch]";
 
-    [HarmonyPatch(nameof(DaySceneMap.SolveAndUpdateCharacterPositionInternal))]
-    [HarmonyPostfix]
-    public static void SolveAndUpdateCharacterPositionInternal_Postfix(DaySceneMap __instance, GameData.RunTime.DaySceneUtility.Collection.TrackedNPC npc, DayScene.Interactables.Collections.ConditionComponents.CharacterConditionComponent character, ref bool isNPCOnMap, bool changeRotation)
-    {
-        try
-        {
-            if (npc == null || character == null)
-            {
-                return;
-            }
-
-            string npcKey = npc.key;
-            if (string.IsNullOrEmpty(npcKey))
-            {
-                return;
-            }
-
-            var persistentNPCKeys = new HashSet<string> { "Kyouko" };
-
-            if (persistentNPCKeys.Contains(npcKey) && MpManager.Instance.IsConnected)
-            {
-                isNPCOnMap = true;
-                Log.LogMessage($"{LOG_TAG} Force visible: {npcKey}");
-            }
-        }
-        catch (System.Exception e)
-        {
-            Log.LogError($"Error in SolveAndUpdateCharacterPositionInternal_Postfix: {e.Message}");
-        }
-    }
-}
-
+// For debug
 [HarmonyPatch(typeof(Common.CharacterUtility.CharacterControllerUnit))]
 public class CharacterControllerUnitPatch
 {
@@ -161,6 +125,7 @@ public class CharacterControllerUnitPatch
     }
 }
 
+// NOTE IMPORTANT: Don't patch this! Patching this will lead to game crash
 [HarmonyPatch(typeof(SplashScene.SceneManager))]
 public class SceneManagerPatch
 {

@@ -48,7 +48,6 @@ public class Plugin : BasePlugin
                 typeof(CharacterInputPatch),
                 typeof(DayScenePlayerInputPatch),
                 typeof(RunTimeSchedulerPatch),
-                typeof(DaySceneMapPatch),
                 typeof(CharacterControllerUnitInitializePatch),
                 typeof(DaySceneSceneManagerPatch)
             };

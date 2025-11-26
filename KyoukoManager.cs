@@ -251,7 +251,7 @@ public class KyoukoManager
             UpdateInputDirection(inputDirection);
             UpdateSprintState(isSprinting);
         }
-        else
+        else if(mapLabel == MystiaManager.MapLabel)
         {
             Log.LogDebug($"{LOG_TAG} Kyouko is still in the same map {MapLabel}, updating position");
             UpdateInputDirection(inputDirection);
