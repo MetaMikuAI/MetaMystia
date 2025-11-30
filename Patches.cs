@@ -69,6 +69,7 @@ public class DayScenePlayerInputPatch
     public static bool TryInteract_Prefix()
     {
         if (PluginManager.Console != null && PluginManager.Console.IsOpen) return false;
+        if (MystiaManager.isReady) return false;
         return true;
     }
 }
@@ -180,6 +181,11 @@ public class DaySceneSceneManagerPatch
     [HarmonyPrefix]
     public static bool OnDayOver_Prefix()
     {
+        if (!MpManager.Instance.IsConnected)
+        {
+            Log.LogDebug($"{LOG_TAG} Not in multiplayer session, skipping prefix");
+            return true; // Not in multiplayer session, proceed as normal
+        }
         /*
             [MetaMiku 注]
             状态机: 
@@ -198,8 +204,6 @@ public class DaySceneSceneManagerPatch
                     00->01: 正常更新状态，不触发 OnDayOver_Prefix 也不执行 OnDayOver
                     10->11: 需要先显示「准备完成」对话框再在其回调中执行 OnDayOver
         */
-
-
 
         Log.LogDebug($"{LOG_TAG} Day over detected");
 
@@ -234,15 +238,149 @@ public class DaySceneSceneManagerPatch
     }
 }
 
-[HarmonyPatch]
-public class TestPatch
+
+// 分析中，临时用
+[HarmonyPatch(typeof(Common.UI.IzakayaSelectorPanel_New))]
+public class IzakayaSelectorPanelPatch
 {
     private static ManualLogSource Log => Plugin.Instance.Log;
+    private static readonly string LOG_TAG = "[IzakayaSelectorPanel]";
 
-    [HarmonyPatch(typeof(GameData.RunTime.DaySceneUtility.RunTimeDayScene), nameof(GameData.RunTime.DaySceneUtility.RunTimeDayScene.MoveCharacter))]
-    [HarmonyPostfix]
-    public static void TestMVC()
+    [HarmonyPatch(nameof(Common.UI.IzakayaSelectorPanel_New.OnGuideMapInitialize))]
+    [HarmonyPrefix]
+    public static void OnGuideMapInitialize_Prefix()
     {
-        Log.LogMessage("MoveCharacter called!");
+        Log.LogMessage($"{LOG_TAG} OnGuideMapInitialize called");
+    }
+
+    [HarmonyPatch(nameof(Common.UI.IzakayaSelectorPanel_New.OnSecondarySwitchUpdate))]
+    [HarmonyPrefix]
+    public static void OnSecondarySwitchUpdate_Prefix()
+    {
+        Log.LogMessage($"{LOG_TAG} OnSecondarySwitchUpdate called");
+    }
+
+    [HarmonyPatch(nameof(Common.UI.IzakayaSelectorPanel_New.OpenDescriptionMenu))]
+    [HarmonyPrefix]
+    public static void OpenDescriptionMenu_Prefix()
+    {
+        Log.LogMessage($"{LOG_TAG} OpenDescriptionMenu called");
+    }
+
+    [HarmonyPatch(nameof(Common.UI.IzakayaSelectorPanel_New.OnGuideMapPanelPreOpen))]
+    [HarmonyPrefix]
+    public static void OnGuideMapPanelPreOpen_Prefix()
+    {
+        Log.LogMessage($"{LOG_TAG} OnGuideMapPanelPreOpen called");
+    }
+
+    [HarmonyPatch(nameof(Common.UI.IzakayaSelectorPanel_New.OnGuideMapPanelPostOpen))]
+    [HarmonyPrefix]
+    public static void OnGuideMapPanelPostOpen_Prefix()
+    {
+        Log.LogMessage($"{LOG_TAG} OnGuideMapPanelPostOpen called");
+    }
+
+    [HarmonyPatch(nameof(Common.UI.IzakayaSelectorPanel_New.OnGuideMapPanelEndOpen))]
+    [HarmonyPrefix]
+    public static void OnGuideMapPanelEndOpen_Prefix()
+    {
+        Log.LogMessage($"{LOG_TAG} OnGuideMapPanelEndOpen called");
+    }
+
+    [HarmonyPatch(nameof(Common.UI.IzakayaSelectorPanel_New.OnGuideMapClose))]
+    [HarmonyPrefix]
+    public static void OnGuideMapClose_Prefix()
+    {
+        Log.LogMessage($"{LOG_TAG} OnGuideMapClose called");
+    }
+
+    [HarmonyPatch(nameof(Common.UI.IzakayaSelectorPanel_New.GetSpotOpenStatus))]
+    [HarmonyPrefix]
+    public static void GetSpotOpenStatus_Prefix()
+    {
+        Log.LogMessage($"{LOG_TAG} GetSpotOpenStatus called");
+    }
+
+    [HarmonyPatch(nameof(Common.UI.IzakayaSelectorPanel_New.IsGuideMapSpotCanBeSelected))]
+    [HarmonyPrefix]
+    public static void IsGuideMapSpotCanBeSelected_Prefix()
+    {
+        Log.LogMessage($"{LOG_TAG} IsGuideMapSpotCanBeSelected called");
+    }
+
+    [HarmonyPatch(nameof(Common.UI.IzakayaSelectorPanel_New.OnGuideMapSpotSelected))]
+    [HarmonyPrefix]
+    public static void OnGuideMapSpotSelected_Prefix(ref Common.UI.GlobalMap.IGuideMapSpot guideMapSpot)
+    {
+        Log.LogMessage($"{LOG_TAG} OnGuideMapSpotSelected called, guideMapSpot.PrimaryName: {guideMapSpot.PrimaryName}");
+        if (guideMapSpot.PrimaryName == "DLC2_FormerHell") {
+            Utils.ShowReadyDialog(false, null);
+        }
+    }
+
+    [HarmonyPatch(nameof(Common.UI.IzakayaSelectorPanel_New.UpdateCurrentIzakaya))]
+    [HarmonyPrefix]
+    public static void UpdateCurrentIzakaya_Prefix()
+    {
+        Log.LogMessage($"{LOG_TAG} UpdateCurrentIzakaya called");
+    }
+
+    [HarmonyPatch(nameof(Common.UI.IzakayaSelectorPanel_New.CalculateIzakayaId))]
+    [HarmonyPrefix]
+    public static void CalculateIzakayaId_Prefix()
+    {
+        Log.LogMessage($"{LOG_TAG} CalculateIzakayaId called");
+    }
+
+    // // CANNOT BE PATCHED
+    // [HarmonyPatch(nameof(Common.UI.IzakayaSelectorPanel_New.TryChangeIzakayaLevel))]
+    // [HarmonyPrefix]
+    // public static void TryChangeIzakayaLevel_Bool_Prefix(ref bool isIncrease)
+    // {
+    //     Log.LogMessage($"{LOG_TAG} TryChangeIzakayaLevel(bool) called");
+    // }
+
+    // // CANNOT BE PATCHED
+    // [HarmonyPatch(nameof(Common.UI.IzakayaSelectorPanel_New.TryChangeIzakayaLevel))]
+    // [HarmonyPrefix]
+    // public static void TryChangeIzakayaLevel_Level_Prefix()
+    // {
+    //     Log.LogMessage($"{LOG_TAG} TryChangeIzakayaLevel(IzakayaLevel) called");
+    // }
+
+    [HarmonyPatch(nameof(Common.UI.IzakayaSelectorPanel_New.UpdateToggleStatus))]
+    [HarmonyPrefix]
+    public static void UpdateToggleStatus_Prefix()
+    {
+        Log.LogMessage($"{LOG_TAG} UpdateToggleStatus called");
+    }
+
+    [HarmonyPatch(nameof(Common.UI.IzakayaSelectorPanel_New.PostInitializeGuideMapSpot))]
+    [HarmonyPrefix]
+    public static void PostInitializeGuideMapSpot_Prefix()
+    {
+        Log.LogMessage($"{LOG_TAG} PostInitializeGuideMapSpot called");
+    }
+
+    [HarmonyPatch(nameof(Common.UI.IzakayaSelectorPanel_New.PrintPartnerData))]
+    [HarmonyPrefix]
+    public static void PrintPartnerData_Prefix()
+    {
+        Log.LogMessage($"{LOG_TAG} PrintPartnerData called");
+    }
+
+    [HarmonyPatch(nameof(Common.UI.IzakayaSelectorPanel_New.LoadSelectionToIzakayaConfig))]
+    [HarmonyPrefix]
+    public static void LoadSelectionToIzakayaConfig_Prefix()
+    {
+        Log.LogMessage($"{LOG_TAG} LoadSelectionToIzakayaConfig called");
+    }
+
+    [HarmonyPatch(nameof(Common.UI.IzakayaSelectorPanel_New.Cleanup_Generated))]
+    [HarmonyPrefix]
+    public static void Cleanup_Generated_Prefix()
+    {
+        Log.LogMessage($"{LOG_TAG} Cleanup_Generated called");
     }
 }

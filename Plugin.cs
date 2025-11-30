@@ -50,7 +50,7 @@ public class Plugin : BasePlugin
                 typeof(RunTimeSchedulerPatch),
                 typeof(CharacterControllerUnitInitializePatch),
                 typeof(DaySceneSceneManagerPatch),
-                typeof(TestPatch)
+                typeof(IzakayaSelectorPanelPatch),
             };
             foreach (var patch in patchList)
             {
