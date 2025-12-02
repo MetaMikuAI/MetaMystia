@@ -5,6 +5,7 @@ using Il2CppInterop.Runtime;
 using System.Collections.Concurrent;
 using Common.UI;
 using Common.DialogUtility;
+using Unity.Collections;
 
 namespace MetaMystia;
 public class PluginManager : MonoBehaviour
@@ -17,9 +18,16 @@ public class PluginManager : MonoBehaviour
     private string label = "MetaMystia loaded";
     private readonly ConcurrentQueue<Action> _mainThreadQueue = new ConcurrentQueue<Action>();
     private static readonly string LOG_TAG = "[PluginManager.cs]";
-    public static Common.UI.IzakayaSelectorPanel_New temp_instance = null;
-    public static bool temp_bool = false;
-    private static int count = 0;
+
+    public enum GameStage
+    {
+        MainScene,
+        DayScene,
+        PrepScene,
+        NightScene,
+        StaffScene
+    }
+    public GameStage CurrentGameStage { get; set; } = GameStage.MainScene; // TODO: 需要完善
 
     public PluginManager(IntPtr ptr) : base(ptr)
     {
@@ -82,9 +90,20 @@ public class PluginManager : MonoBehaviour
         {
             Log.LogInfo($"\n");
         }
-        if (Input.GetKeyDown(KeyCode.Backslash)) {
+        if (Input.GetKeyDown(KeyCode.Backslash)) 
+        {
             isTextVisible = !isTextVisible;
             Log.LogMessage($"{LOG_TAG} Toggled text visibility: " + isTextVisible);
+        }
+        if (Input.GetKeyDown(KeyCode.F1))
+        {
+            // GameData.Profile.DaySceneMapProfile.
+            // var allMapNodes = DaySceneMapProfilePatch.instanceRef.allMapNodes;
+            var daySceneMap = new GameData.Profile.DaySceneMapProfile();
+            foreach (var node in daySceneMap.allMapNodes)
+            {
+                Log.LogWarning($"[F1] MapNode: {node.mapName}");
+            }
         }
     }
 
@@ -96,8 +115,14 @@ public class PluginManager : MonoBehaviour
 
     private void FixedUpdate()
     {
-        KyoukoManager.Instance.OnFixedUpdate();
-        MystiaManager.Instance.OnFixedUpdate();
+        switch (CurrentGameStage)
+        {
+            case GameStage.DayScene:
+                KyoukoManager.Instance.OnFixedUpdate();
+                break;
+            default:
+                break;
+        }
     }
 
     private void OnDestroy()

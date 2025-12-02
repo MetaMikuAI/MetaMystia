@@ -10,6 +10,7 @@ namespace MetaMystia;
 
 public class KyoukoManager
 {
+    public static bool enable = false; // 该开关应随游戏白天场景加载和卸载而变化，避免在非 DayScene 场景中持续执行 OnFixedUpdate
     private static KyoukoManager _instance;
     private static readonly object _lock = new object();
     
@@ -53,6 +54,10 @@ public class KyoukoManager
 
     public void OnFixedUpdate()
     {
+        if (!enable)
+        {
+            return;
+        }
 
         if (!MpManager.Instance.IsConnected)
         {

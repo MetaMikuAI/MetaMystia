@@ -3,9 +3,7 @@ using BepInEx.Logging;
 using UnityEngine;
 using Common.UI;
 using GameData.Profile;
-using Il2CppSystem.Collections.Generic;
 using Il2CppInterop.Runtime;
-using Il2CppSystem.Runtime.Remoting;
 
 namespace MetaMystia;
 
@@ -94,36 +92,83 @@ public static class DialogManager
         } // 文案: 余烬特调
     }
 
-    public static void ShowSelectedDialog(bool isSelected, System.Action onFinishCallback = null) 
+    public static void ShowSelectedDialog(string mapLabelM, System.Action onFinishCallback = null) 
     {
+        var mapNameM = Utils.GetMapNameCN(mapLabelM);
+        var textsM = new[] 
+        {
+            $"那么，今天就决定是「{mapNameM}」了！",
+            $"今天的目的地就设定在「{mapNameM}」吧！",
+        };
+        var textM = textsM[UnityEngine.Random.Range(0, textsM.Length)];
+        
         var dialogList = new CustomDialogList();
-        dialogList.AddDialog(-1, Common.DialogUtility.SpeakerIdentity.Identity.Special, 16, Common.DialogUtility.Position.Right, "我想去 xxx 开店");
-        dialogList.AddDialog(14, Common.DialogUtility.SpeakerIdentity.Identity.Self, 0, Common.DialogUtility.Position.Left, "好的，我再考虑一下");
+        dialogList.AddDialog(-1, Common.DialogUtility.SpeakerIdentity.Identity.Self, 16, Common.DialogUtility.Position.Right, textM);
         BuildAndShow(dialogList, onFinishCallback);
     }
 
-    public static void ShowInformDialog(System.Action onFinishCallback = null) 
+    public static void ShowInformDialog(string mapLabelK, System.Action onFinishCallback = null) 
     {
+        var mapNameK = Utils.GetMapNameCN(mapLabelK);
+        var textsK = new[] 
+        {
+            $"让我想想……{mapNameK}好像是个好主意！",
+            $"就决定是这里啦！{mapNameK}！",
+        };
+        var textK = textsK[UnityEngine.Random.Range(0, textsK.Length)];
+
         var dialogList = new CustomDialogList();
-        dialogList.AddDialog(14, Common.DialogUtility.SpeakerIdentity.Identity.Special, 0, Common.DialogUtility.Position.Left, "我想去 xxx 开店");
-        dialogList.AddDialog(-1, Common.DialogUtility.SpeakerIdentity.Identity.Self, 16, Common.DialogUtility.Position.Right, "好的，我再考虑一下");
+        dialogList.AddDialog(14, Common.DialogUtility.SpeakerIdentity.Identity.Special, 0, Common.DialogUtility.Position.Left, textK);
+        BuildAndShow(dialogList, onFinishCallback);
+
+    }
+
+    public static void ShowRejectDialog(string mapLabelM, string mapLabelK, System.Action onFinishCallback = null) 
+    {
+        var mapNameM = Utils.GetMapNameCN(mapLabelM);
+        var textsM = new[] 
+        {
+            $"所以，今天的计划如何？关于去「{mapNameM}」这件事。",
+            $"就这么决定了！目标，「{mapNameM}」，出发！",
+        };
+        var textM = textsM[UnityEngine.Random.Range(0, textsM.Length)];
+
+        var mapNameK = Utils.GetMapNameCN(mapLabelK);
+        var textsK = new[] 
+        {
+            $"不过米斯琪，「{mapNameK}」会不会好些呢？",
+            $"不如还是「{mapNameK}」吧，听着就有趣！",
+        };
+        var textK = textsK[UnityEngine.Random.Range(0, textsK.Length)];
+
+        var dialogList = new CustomDialogList();
+        dialogList.AddDialog(-1, Common.DialogUtility.SpeakerIdentity.Identity.Self, 16, Common.DialogUtility.Position.Right, textM);
+        dialogList.AddDialog(14, Common.DialogUtility.SpeakerIdentity.Identity.Special, 0, Common.DialogUtility.Position.Left, textK);
         BuildAndShow(dialogList, onFinishCallback);
     }
 
-    public static void ShowRejectDialog(System.Action onFinishCallback = null) 
+    public static void ShowConfirmDialog(string mapLabel, System.Action onFinishCallback = null) 
     {
-        var dialogList = new CustomDialogList();
-        dialogList.AddDialog(14, Common.DialogUtility.SpeakerIdentity.Identity.Special, 0, Common.DialogUtility.Position.Left, "我想去xxx开店");
-        dialogList.AddDialog(-1, Common.DialogUtility.SpeakerIdentity.Identity.Self, 16, Common.DialogUtility.Position.Right, "可是我有点想去xxx呢");
-        BuildAndShow(dialogList, onFinishCallback);
-    }
+        var mapName = Utils.GetMapNameCN(mapLabel); // Confirm 中不分 M/K
+        var textsM = new[] 
+        {
+            $"所以，今天的计划如何？关于去「{mapName}」这件事。",
+            $"就这么决定了！目标，「{mapName}」，出发！",
+        };
+        var textM = textsM[UnityEngine.Random.Range(0, textsM.Length)];
 
-    public static void ShowConfirmDialog(System.Action onFinishCallback = null) 
-    {
+        var textsK = new[] 
+        {
+            $"好呀好呀，我们现在就出发吧！",
+            $"好——我们现在就走吧——",
+        };
+        var textK = textsK[UnityEngine.Random.Range(0, textsK.Length)];
+
         var dialogList = new CustomDialogList();
-        dialogList.AddDialog(14, Common.DialogUtility.SpeakerIdentity.Identity.Special, 0, Common.DialogUtility.Position.Left, "那我们就去xxx吧");
-        dialogList.AddDialog(-1, Common.DialogUtility.SpeakerIdentity.Identity.Self, 16, Common.DialogUtility.Position.Right, "好呀，我也很想去那里呢");
+        dialogList.AddDialog(-1, Common.DialogUtility.SpeakerIdentity.Identity.Self, 16, Common.DialogUtility.Position.Right, textM);
+        dialogList.AddDialog(14, Common.DialogUtility.SpeakerIdentity.Identity.Special, 0, Common.DialogUtility.Position.Left, textK);
         BuildAndShow(dialogList, onFinishCallback);
+
     }
     public static void ShowTestDialog(System.Action onFinishCallback = null) 
     {

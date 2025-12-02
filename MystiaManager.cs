@@ -145,8 +145,4 @@ public class MystiaManager
         }
         MapLabel = sceneManager.CurrentActiveMapLabel;;
     }
-
-    public void OnFixedUpdate()
-    {
-    }
 }

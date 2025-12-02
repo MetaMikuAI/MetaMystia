@@ -543,7 +543,7 @@ public partial class SelectAction : NetAction
             KyoukoManager.IzakayaMapLabel = MapLabel;
             KyoukoManager.IzakayaLevel = Level;
 
-            DialogManager.ShowInformDialog();
+            DialogManager.ShowInformDialog(KyoukoManager.IzakayaMapLabel, null);
         });
     }
 }
@@ -578,7 +578,7 @@ public partial class ConfirmAction : NetAction
                 IzakayaSelectorPanelPatch.instanceRef._OnGuideMapInitialize_b__21_0();
                 IzakayaSelectorPanelPatch.skipPatchIzakayaSelectionConfirmation = false;
             };
-            DialogManager.ShowConfirmDialog(closePanelCallback);
+            DialogManager.ShowConfirmDialog(KyoukoManager.IzakayaMapLabel, closePanelCallback);
         });
     }
 }

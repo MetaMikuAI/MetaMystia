@@ -7,6 +7,9 @@ using GameData.RunTime.Common;
 using DayScene;
 using System.Collections.Generic;
 using System.Linq;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using GameData.Profile;
+using NightScene.Tiles;
 
 namespace MetaMystia;
 
@@ -177,6 +180,13 @@ public class DaySceneSceneManagerPatch
     private static ManualLogSource Log => Plugin.Instance.Log;
     private static readonly string LOG_TAG = "[DaySceneSceneManagerPatch]";
 
+    [HarmonyPatch(nameof(DayScene.SceneManager.Awake))]
+    [HarmonyPostfix]
+    public static void Awake_Postfix()
+    {
+        PluginManager.Instance.CurrentGameStage = PluginManager.GameStage.DayScene;
+    }
+
     [HarmonyPatch(nameof(DayScene.SceneManager.OnDayOver))]
     [HarmonyPrefix]
     public static bool OnDayOver_Prefix()
@@ -234,6 +244,7 @@ public class DaySceneSceneManagerPatch
         // 10 -> 11: Not here -> MultiplayerManager handles it
 
         // 11: 回调中直接执行 OnDayOver
+        KyoukoManager.enable = false; // 白天场景(马上)结束，关闭 KyoukoManager 的 OnFixedUpdate
         return true;
     }
 }
@@ -270,7 +281,7 @@ public class IzakayaSelectorPanelPatch
         //     
         //     Peer A -> 「前往营业」 
         //            -> 检查对端是否已经选择地图 
-        //                 -> 否 -> 发送 SELECT 包并跳过 _OnGuideMapInitialize_b__21_0
+        //                 -> 否 -> 发送 SELECT 包并跳过 _OnGuideMapInitialize_b__21_0，展示对话
         //                 -> 是 -> 对称，略
         //     
         //     Peer A -> 接收 CONFIRM 包 
@@ -319,13 +330,14 @@ public class IzakayaSelectorPanelPatch
         {
             Log.LogWarning($"{LOG_TAG} Kyouko has not selected an Izakaya yet -> send SELECT and skip");
             MpManager.Instance.SendSelectedIzakaya(izakayaMapLabel, izakayaLevel);
+            DialogManager.ShowSelectedDialog(izakayaMapLabel, null);
             return false;
         }
 
         if (izakayaMapLabel != KyoukoManager.IzakayaMapLabel || izakayaLevel != KyoukoManager.IzakayaLevel)
         {
             Log.LogWarning($"{LOG_TAG} Selected Izakaya does not match Kyouko's selection -> show rejection dialog");
-            DialogManager.ShowRejectDialog();
+            DialogManager.ShowRejectDialog(izakayaMapLabel, KyoukoManager.IzakayaMapLabel, null);
             return false;
         }
 
@@ -338,7 +350,7 @@ public class IzakayaSelectorPanelPatch
             skipPatchIzakayaSelectionConfirmation = false;
         };
 
-        DialogManager.ShowConfirmDialog(closePanelCallback);
+        DialogManager.ShowConfirmDialog(izakayaMapLabel, closePanelCallback);
         return false;
     }
 
@@ -385,4 +397,49 @@ public class UniversalGameManagerPatch
         }
         return true;
     }
+}
+
+
+// // PrepNightScene.SceneManager
+// [HarmonyPatch(typeof(PrepNightScene.SceneManager))]
+// public class PrepNightSceneManagerPatch
+// {
+//     private static ManualLogSource Log => Plugin.Instance.Log;
+//     private static readonly string LOG_TAG = "[PrepNightSceneManagerPatch]";
+
+//     [HarmonyPatch(nameof(PrepNightScene.SceneManager.Awake))]
+//     [HarmonyPostfix]
+//     public static void Awake_Postfix()
+//     {
+//         PluginManager.Instance.CurrentGameStage = PluginManager.GameStage.PrepScene;
+//     }
+// }
+
+
+
+[HarmonyPatch(typeof(GameData.Profile.DaySceneMapProfile))]
+public class DaySceneMapProfilePatch
+{
+    private static ManualLogSource Log => Plugin.Instance.Log;
+    public static GameData.Profile.DaySceneMapProfile instanceRef = null;
+    private static readonly string LOG_TAG = "[DaySceneMapProfilePatch]";
+
+    // DaySceneMapProfile()
+    [HarmonyPatch(MethodType.Constructor)]
+    public static void DaySceneMapProfile_Constructor_Postfix(GameData.Profile.DaySceneMapProfile __instance)
+    {
+        Log.LogWarning($"DaySceneMapProfile created: {__instance.name}");
+        instanceRef = __instance;
+    }
+
+    // [HarmonyPatch("allMapNodes", MethodType.Getter)]
+    // [HarmonyPostfix]
+    // public static void EnableDebugCosole_Postfix(ref Il2CppReferenceArray<GameData.Profile.DaySceneMapProfile.MapNode> __result)
+    // {
+        
+    //     foreach (var node in __result)
+    //     {
+    //         Log.LogWarning($"MapNode: {node.mapName}");
+    //     }
+    // }
 }
