@@ -86,19 +86,6 @@ public class PluginManager : MonoBehaviour
             isTextVisible = !isTextVisible;
             Log.LogMessage($"{LOG_TAG} Toggled text visibility: " + isTextVisible);
         }
-        if (Input.GetKeyDown(KeyCode.F1))
-        {
-            // for test
-            var MapLabel = "DLC2_EarthSpiritsPalace";
-            if (IzakayaSelectorPanelPatch.cachedSpots.TryGetValue(MapLabel, out var spot))
-            {
-                IzakayaSelectorPanelPatch.instanceRef.OnGuideMapSpotSelected(spot);
-            }
-            var levelEnum = (Common.UI.IzakayaLevel)1;
-            var currentLevel = IzakayaSelectorPanelPatch.instanceRef.m_CurrentSelectedIzakayaLevel;
-            IzakayaSelectorPanelPatch.instanceRef.TryChangeIzakayaLevel(ref currentLevel, levelEnum);
-            IzakayaSelectorPanelPatch.instanceRef.m_CurrentSelectedIzakayaLevel = currentLevel;
-        }
     }
 
     public void RunOnMainThread(Action action)
