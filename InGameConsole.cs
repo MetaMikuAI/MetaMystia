@@ -292,6 +292,12 @@ namespace MetaMystia
                 case "call":
                     CallCommand(args);
                     break;
+                case "m":
+                    if (args.Length >= 1)
+                    {
+                        MessageCommand(args[0]);
+                    }
+                    break;
                 default:
                     Log("Unknown command: " + command);
                     break;
@@ -484,19 +490,10 @@ namespace MetaMystia
                 case "msg":
                     if (args.Length < 2)
                     {
-                        Log("Usage: mp msg <text>");
+                        Log("Usage: mp msg <text> (for short: m <text>)");
                         break;
                     }
-                    string text = args[1];
-                    if (!MpManager.Instance.IsConnected)
-                    {
-                        Log("No active connection");
-                    }
-                    else
-                    {
-                        MpManager.Instance.SendMessage(text);
-                        Log($"Sent {text}");
-                    }
+                    MessageCommand(args[1]);
                     break; 
                 default:
                     Log($"Unknown subcommand: {subcommand}");
@@ -505,6 +502,19 @@ namespace MetaMystia
             }
         }
 
+        private void MessageCommand(string msg)
+        {
+            if (!MpManager.Instance.IsConnected)
+            {
+                Log("No active connection");
+            }
+            else
+            {
+                MpManager.Instance.SendMessage(msg);
+                Log($"Sent {msg}");
+            }
+        }
+        
         private void CallCommand(string[] args)
         {
             var availableFields = "getmapsnpcs, movecharacter";
