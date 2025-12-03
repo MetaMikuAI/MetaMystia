@@ -1,8 +1,5 @@
 ﻿using BepInEx;
-using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
-using BepInEx.Configuration;
-using UnityEngine;
 using UnityEngine.UI;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
@@ -52,11 +49,8 @@ public class Plugin : BasePlugin
                 typeof(DaySceneSceneManagerPatch),
                 typeof(IzakayaSelectorPanelPatch),
                 // typeof(UniversalGameManagerPatch),
-                typeof(MainSceneSceneManagerPatch),
+                typeof(SceneManagerPatch),
                 typeof(DaySceneMapProfilePatch),
-                typeof(PrepNightSceneManagerPatch),
-                typeof(NightSceneSceneManagerPatch),
-                typeof(StaffSceneSceneManagerPatch),
             };
             foreach (var patch in patchList)
             {

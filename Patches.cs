@@ -4,25 +4,36 @@ using Common.CharacterUtility;
 using BepInEx.Logging;
 using DayScene.Input;
 using GameData.RunTime.Common;
-using DayScene;
 using System.Collections.Generic;
 using System.Linq;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using GameData.Profile;
-using NightScene.Tiles;
 
 namespace MetaMystia;
 
-[HarmonyPatch(typeof(CharacterControllerInputGeneratorComponent))]
-public class CharacterInputPatch
+public class PatchBase<TChild>
 {
-    private static ManualLogSource Log => Plugin.Instance.Log;
-    private static readonly string LOG_TAG = "[CharacterInputPatch]";
+    protected static ManualLogSource Log => Plugin.Instance.Log;
+    protected static readonly string LOG_TAG = $"[{typeof(TChild).Name}]";
+}
 
+
+[HarmonyPatch(typeof(CharacterControllerInputGeneratorComponent))]
+public class CharacterInputPatch : PatchBase<CharacterInputPatch>
+{
     [HarmonyPatch(nameof(CharacterControllerInputGeneratorComponent.UpdateInputDirection))]
     [HarmonyPrefix]
     public static void UpdateInputDirection_Prefix(CharacterControllerInputGeneratorComponent __instance, ref Vector2 inputDirection)
     {
+        if (!MpManager.Instance.IsConnected || PluginManager.Instance.CurrentGameStage == PluginManager.GameStage.PrepScene)
+        {
+            return;
+        }
+
+        // TODO: sync for night scene
+        if (PluginManager.Instance.CurrentGameStage == PluginManager.GameStage.NightScene)
+        {
+            return;
+        }
+
         if (PluginManager.Console != null && PluginManager.Console.IsOpen)
         {
             inputDirection = Vector2.zero;
@@ -45,10 +56,8 @@ public class CharacterInputPatch
 }
 
 [HarmonyPatch(typeof(DayScenePlayerInputGenerator))]
-public class DayScenePlayerInputPatch
+public class DayScenePlayerInputPatch : PatchBase<DayScenePlayerInputPatch>
 {
-    private static ManualLogSource Log => Plugin.Instance.Log;
-
     [HarmonyPatch(nameof(DayScenePlayerInputGenerator.OnSprintPerformed))]
     [HarmonyPrefix]
     public static bool OnSprintPerformed_Prefix()
@@ -78,10 +87,8 @@ public class DayScenePlayerInputPatch
 }
 
 [HarmonyPatch(typeof(RunTimeScheduler))]
-public class RunTimeSchedulerPatch
+public class RunTimeSchedulerPatch : PatchBase<RunTimeSchedulerPatch>
 {
-    private static ManualLogSource Log => Plugin.Instance.Log;
-
     [HarmonyPatch(nameof(RunTimeScheduler.OnEnterDaySceneMap))]
     [HarmonyPostfix]
     public static void OnEnterDaySceneMap_Postfix(string mapLabel)
@@ -92,69 +99,9 @@ public class RunTimeSchedulerPatch
 }
 
 
-// For debug
-[HarmonyPatch(typeof(Common.CharacterUtility.CharacterControllerUnit))]
-public class CharacterControllerUnitPatch
-{
-    private static ManualLogSource Log => Plugin.Instance.Log;
-    private static readonly string LOG_TAG = "[CharacterControllerUnitPatch]";
-    
-    // 供后续调试用
-    [HarmonyPatch("GetTargetMovePosition")]
-    [HarmonyPrefix]
-    public static void GetTargetMovePosition_Prefix(Vector3 inputDirection)
-    {
-        try
-        {
-            Log.LogDebug($"{LOG_TAG} GetTargetMovePosition called with inputDirection: {inputDirection}");
-        }
-        catch (System.Exception e)
-        {
-            Log.LogError($"{LOG_TAG} Error in GetTargetMovePosition_Prefix: {e.Message}");
-        }
-    }
-
-    [HarmonyPatch("GetTargetMovePosition")]
-    [HarmonyPostfix]
-    public static void GetTargetMovePosition_Postfix(Vector3 inputDirection, ref Vector2 __result)
-    {
-        try
-        {
-            Log.LogDebug($"{LOG_TAG} GetTargetMovePosition returned: {__result}");
-        }
-        catch (System.Exception e)
-        {
-            Log.LogError($"{LOG_TAG} Error in GetTargetMovePosition_Postfix: {e.Message}");
-        }
-    }
-}
-
-// NOTE IMPORTANT: Don't patch this! Patching this will lead to game crash
-[HarmonyPatch(typeof(SplashScene.SceneManager))]
-public class SceneManagerPatch
-{
-    [HarmonyPatch("EnableDebugCosole", MethodType.Getter)]
-    [HarmonyPostfix]
-    public static void EnableDebugCosole_Postfix(ref bool __result)
-    {
-        __result = true;
-    }
-
-    [HarmonyPatch("CurrentConsoleMode", MethodType.Getter)]
-    [HarmonyPostfix]
-    public static void CurrentConsoleMode_Postfix(ref GamePlatform.Systems.ConsoleMode __result)
-    {
-        __result = GamePlatform.Systems.ConsoleMode.Full;
-    }
-}
-
-
 [HarmonyPatch(typeof(CharacterControllerUnit))]
-public class CharacterControllerUnitInitializePatch
+public class CharacterControllerUnitInitializePatch : PatchBase<CharacterControllerUnitInitializePatch>
 {
-    private static ManualLogSource Log => Plugin.Instance.Log;
-    private static readonly string LOG_TAG = "[CharacterControllerUnitInitializePatch]";
-
     [HarmonyPatch("Initialize")]
     [HarmonyPrefix]
     public static void Initialize_Prefix(CharacterControllerUnit __instance, ref bool shouldTurnOnCollider)
@@ -175,11 +122,8 @@ public class CharacterControllerUnitInitializePatch
 }
 
 [HarmonyPatch(typeof(DayScene.SceneManager))]
-public class DaySceneSceneManagerPatch
+public class DaySceneSceneManagerPatch : PatchBase<DaySceneSceneManagerPatch>
 {
-    private static ManualLogSource Log => Plugin.Instance.Log;
-    private static readonly string LOG_TAG = "[DaySceneSceneManagerPatch]";
-
     [HarmonyPatch(nameof(DayScene.SceneManager.Awake))]
     [HarmonyPostfix]
     public static void Awake_Postfix()
@@ -253,11 +197,8 @@ public class DaySceneSceneManagerPatch
 
 // 分析中,临时用
 [HarmonyPatch(typeof(Common.UI.IzakayaSelectorPanel_New))]
-public class IzakayaSelectorPanelPatch
+public class IzakayaSelectorPanelPatch : PatchBase<IzakayaSelectorPanelPatch>
 {
-    private static ManualLogSource Log => Plugin.Instance.Log;
-    private static readonly string LOG_TAG = "[IzakayaSelectorPanelPatch]";
-    
     public static bool skipPatchIzakayaSelectionConfirmation = false;
     public static Common.UI.IzakayaSelectorPanel_New instanceRef = null;
     public static Dictionary<string, Common.UI.GlobalMap.IGuideMapSpot> cachedSpots = new Dictionary<string, Common.UI.GlobalMap.IGuideMapSpot>();
@@ -379,11 +320,8 @@ public class IzakayaSelectorPanelPatch
 }
 
 [HarmonyPatch(typeof(Common.UI.UniversalGameManager))]
-public class UniversalGameManagerPatch
+public class UniversalGameManagerPatch : PatchBase<UniversalGameManagerPatch>
 {
-    private static ManualLogSource Log => Plugin.Instance.Log;
-    private static readonly string LOG_TAG = "[UniversalGameManagerPatch]";
-
     [HarmonyPatch(nameof(Common.UI.UniversalGameManager.OpenDialogMenu))]
     [HarmonyPrefix]
     public static bool OnGuideMapInitialize_Prefix(ref GameData.Profile.DialogPackage dialogPackage, ref System.Action onFinishCallback)
@@ -401,30 +339,11 @@ public class UniversalGameManagerPatch
 }
 
 
-// PrepNightScene.SceneManager
-[HarmonyPatch(typeof(PrepNightScene.SceneManager))]
-public class PrepNightSceneManagerPatch
-{
-    private static ManualLogSource Log => Plugin.Instance.Log;
-    private static readonly string LOG_TAG = "[PrepNightSceneManagerPatch]";
-
-    [HarmonyPatch(nameof(PrepNightScene.SceneManager.Start))]
-    [HarmonyPostfix]
-    public static void Start_Postfix()
-    {
-        PluginManager.Instance.CurrentGameStage = PluginManager.GameStage.PrepScene;
-        Log.LogInfo($"{LOG_TAG} CurrentGameStage switched to PrepScene");
-    }
-}
-
-
 
 [HarmonyPatch(typeof(GameData.Profile.DaySceneMapProfile))]
-public class DaySceneMapProfilePatch
+public class DaySceneMapProfilePatch : PatchBase<DaySceneMapProfilePatch>
 {
-    private static ManualLogSource Log => Plugin.Instance.Log;
     public static GameData.Profile.DaySceneMapProfile instanceRef = null;
-    private static readonly string LOG_TAG = "[DaySceneMapProfilePatch]";
 
     // DaySceneMapProfile()
     [HarmonyPatch(MethodType.Constructor)]
@@ -446,47 +365,38 @@ public class DaySceneMapProfilePatch
     // }
 }
 
-[HarmonyPatch(typeof(NightScene.SceneManager))]
-public class NightSceneSceneManagerPatch
+[HarmonyPatch]
+public class SceneManagerPatch : PatchBase<SceneManagerPatch>
 {
-    private static ManualLogSource Log => Plugin.Instance.Log;
-    private static readonly string LOG_TAG = "[NightSceneSceneManagerPatch]";
-
-    [HarmonyPatch(nameof(NightScene.SceneManager.Start))]
+    [HarmonyPatch(typeof(NightScene.SceneManager), nameof(NightScene.SceneManager.Start))]
     [HarmonyPostfix]
-    public static void Start_Postfix()
+    public static void NightScene_Start_Postfix()
     {
         PluginManager.Instance.CurrentGameStage = PluginManager.GameStage.NightScene;
         Log.LogInfo($"{LOG_TAG} CurrentGameStage switched to NightScene");
     }
-}
 
-[HarmonyPatch(typeof(MainScene.SceneManager))]
-public class MainSceneSceneManagerPatch
-{
-    private static ManualLogSource Log => Plugin.Instance.Log;
-    private static readonly string LOG_TAG = "[MainSceneSceneManagerPatch]";
-
-    [HarmonyPatch(nameof(MainScene.SceneManager.Awake))]
+    [HarmonyPatch(typeof(MainScene.SceneManager), nameof(MainScene.SceneManager.Awake))]
     [HarmonyPostfix]
-    public static void Awake_Postfix()
+    public static void MainScene_Awake_Postfix()
     {
         PluginManager.Instance.CurrentGameStage = PluginManager.GameStage.MainScene;
         Log.LogInfo($"{LOG_TAG} CurrentGameStage switched to MainScene");
     }
-}
 
-[HarmonyPatch(typeof(StaffScene.SceneManager))]
-public class StaffSceneSceneManagerPatch
-{
-    private static ManualLogSource Log => Plugin.Instance.Log;
-    private static readonly string LOG_TAG = "[StaffSceneSceneManagerPatch]";
-
-    [HarmonyPatch(nameof(StaffScene.SceneManager.Start))]
+    [HarmonyPatch(typeof(StaffScene.SceneManager), nameof(StaffScene.SceneManager.Start))]
     [HarmonyPostfix]
-    public static void Start_Postfix()
+    public static void StaffScene_Start_Postfix()
     {
         PluginManager.Instance.CurrentGameStage = PluginManager.GameStage.StaffScene;
         Log.LogInfo($"{LOG_TAG} CurrentGameStage switched to StaffScene");
+    }
+
+    [HarmonyPatch(typeof(PrepNightScene.SceneManager), nameof(PrepNightScene.SceneManager.Start))]
+    [HarmonyPostfix]
+    public static void PrepNightScene_Start_Postfix()
+    {
+        PluginManager.Instance.CurrentGameStage = PluginManager.GameStage.PrepScene;
+        Log.LogInfo($"{LOG_TAG} CurrentGameStage switched to PrepScene");
     }
 }
