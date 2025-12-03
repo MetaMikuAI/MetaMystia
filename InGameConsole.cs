@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Common.CharacterUtility;
 using Common.UI;
 using Il2CppInterop.Runtime;
+using DEYU.Utils;
 
 namespace MetaMystia
 {
@@ -381,7 +382,7 @@ namespace MetaMystia
                         return;
                     }
                     bool enableCollider = args[1].ToLower() == "on";
-                    KyoukoManager.Instance.GetCharacterUnit().UpdateColliderStatus(enableCollider);
+                    KyoukoManager.GetCharacterUnit().UpdateColliderStatus(enableCollider);
                     Log($"Kyouko collider forced {(enableCollider ? "ON" : "OFF")}");
                     break;
 

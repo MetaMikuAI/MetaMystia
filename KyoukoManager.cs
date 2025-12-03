@@ -1,10 +1,7 @@
-using System;
 using BepInEx.Logging;
 using UnityEngine;
 using Common.CharacterUtility;
 using DayScene.Interactables.Collections.ConditionComponents;
-using Il2CppSystem;
-using AsmResolver;
 
 namespace MetaMystia;
 
@@ -106,12 +103,12 @@ public class KyoukoManager
         characterUnit.UpdateInputVelocity(velocity);
     }
 
-    public CharacterConditionComponent GetCharacterComponent()
+    public static CharacterConditionComponent GetCharacterComponent()
     {
         return DayScene.DaySceneMap.TryGetCharacter(KYOUKO_ID);
     }
 
-    public CharacterControllerUnit GetCharacterUnit()
+    public static CharacterControllerUnit GetCharacterUnit()
     {
         var component = GetCharacterComponent();
         if (component == null)
@@ -129,7 +126,7 @@ public class KyoukoManager
         return characterUnit;
     }
 
-    public Rigidbody2D GetRigidbody2D()
+    public static Rigidbody2D GetRigidbody2D()
     {
         var characterUnit = GetCharacterUnit();
         if (characterUnit == null)
