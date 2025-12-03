@@ -1,12 +1,9 @@
 using MemoryPack;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Threading;
-using UnityEngine.EventSystems;
 
 namespace MetaMystia;
 
@@ -508,6 +505,7 @@ public partial class MessageAction : NetAction
     {
         Plugin.Instance.Log.LogInfo($"Received MESSAGE: {Message}");
         PluginManager.Console.AddPeerMessage(Message);
+        FloatingTextHelper.ShowFloatingTextOnMainThread(KyoukoManager.GetCharacterComponent(), Message);
     }
     private static MessageAction CreateMsgAction(string msg)
     {

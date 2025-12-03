@@ -265,6 +265,7 @@ public class MpManager
 
     public void SendMessage(string message)
     {
+        FloatingTextHelper.ShowFloatingTextSelfOnMainThread(message);
         SendToPeer(MessageAction.CreateMsgPacket(message));
     }
 
