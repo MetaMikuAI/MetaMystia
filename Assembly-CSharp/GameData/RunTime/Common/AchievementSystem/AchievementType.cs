@@ -1,81 +1,119 @@
 ﻿using System;
+using Il2CppDummyDll;
 
 namespace GameData.RunTime.Common.AchievementSystem
 {
-	// Token: 0x02000233 RID: 563
+	// Token: 0x020008A7 RID: 2215
+	[Token(Token = "0x20008A7")]
 	public enum AchievementType : byte
 	{
-		// Token: 0x04003029 RID: 12329
+		// Token: 0x04002F0B RID: 12043
+		[Token(Token = "0x4002F0B")]
 		OnEnterGame,
-		// Token: 0x0400302A RID: 12330
+		// Token: 0x04002F0C RID: 12044
+		[Token(Token = "0x4002F0C")]
 		AllCollectionPointsAreCollected,
-		// Token: 0x0400302B RID: 12331
+		// Token: 0x04002F0D RID: 12045
+		[Token(Token = "0x4002F0D")]
 		OnGetItem,
-		// Token: 0x0400302C RID: 12332
+		// Token: 0x04002F0E RID: 12046
+		[Token(Token = "0x4002F0E")]
 		OnCollectionPointInteraction,
-		// Token: 0x0400302D RID: 12333
+		// Token: 0x04002F0F RID: 12047
+		[Token(Token = "0x4002F0F")]
 		OnFinishEvent,
-		// Token: 0x0400302E RID: 12334
+		// Token: 0x04002F10 RID: 12048
+		[Token(Token = "0x4002F10")]
 		OnGottenAllRelatedRecipesByRawMaterials,
-		// Token: 0x0400302F RID: 12335
+		// Token: 0x04002F11 RID: 12049
+		[Token(Token = "0x4002F11")]
 		OnGottenAllRelatedRecipesByCookerType,
-		// Token: 0x04003030 RID: 12336
+		// Token: 0x04002F12 RID: 12050
+		[Token(Token = "0x4002F12")]
 		Sell10GreenTeas,
-		// Token: 0x04003031 RID: 12337
+		// Token: 0x04002F13 RID: 12051
+		[Token(Token = "0x4002F13")]
 		OnlySell30RiceballsAndAllSatisfied,
-		// Token: 0x04003032 RID: 12338
+		// Token: 0x04002F14 RID: 12052
+		[Token(Token = "0x4002F14")]
 		OnUnsatisfiedTagFood,
-		// Token: 0x04003033 RID: 12339
+		// Token: 0x04002F15 RID: 12053
+		[Token(Token = "0x4002F15")]
 		OnEvictGuests,
-		// Token: 0x04003034 RID: 12340
+		// Token: 0x04002F16 RID: 12054
+		[Token(Token = "0x4002F16")]
 		PreMadeFoodCompletelySold,
-		// Token: 0x04003035 RID: 12341
+		// Token: 0x04002F17 RID: 12055
+		[Token(Token = "0x4002F17")]
 		OnCooking,
-		// Token: 0x04003036 RID: 12342
+		// Token: 0x04002F18 RID: 12056
+		[Token(Token = "0x4002F18")]
 		WithIngredientsAndHighestRating,
-		// Token: 0x04003037 RID: 12343
+		// Token: 0x04002F19 RID: 12057
+		[Token(Token = "0x4002F19")]
 		WithIngredientsAndHighestRatingAndTriggerRewardSpell,
-		// Token: 0x04003038 RID: 12344
+		// Token: 0x04002F1A RID: 12058
+		[Token(Token = "0x4002F1A")]
 		OnTriggerRewardSpell,
-		// Token: 0x04003039 RID: 12345
+		// Token: 0x04002F1B RID: 12059
+		[Token(Token = "0x4002F1B")]
 		OnTriggerPunishmentSpell,
-		// Token: 0x0400303A RID: 12346
+		// Token: 0x04002F1C RID: 12060
+		[Token(Token = "0x4002F1C")]
 		OnNightQueuing,
-		// Token: 0x0400303B RID: 12347
+		// Token: 0x04002F1D RID: 12061
+		[Token(Token = "0x4002F1D")]
 		OnReceiveTip,
-		// Token: 0x0400303C RID: 12348
+		// Token: 0x04002F1E RID: 12062
+		[Token(Token = "0x4002F1E")]
 		OnTipSettlement,
-		// Token: 0x0400303D RID: 12349
+		// Token: 0x04002F1F RID: 12063
+		[Token(Token = "0x4002F1F")]
 		OnProfitSettlement,
-		// Token: 0x0400303E RID: 12350
+		// Token: 0x04002F20 RID: 12064
+		[Token(Token = "0x4002F20")]
 		OnAnyKizunaLevelUpgrade,
-		// Token: 0x0400303F RID: 12351
+		// Token: 0x04002F21 RID: 12065
+		[Token(Token = "0x4002F21")]
 		OnGetIngredientsFromResourcePt,
-		// Token: 0x04003040 RID: 12352
+		// Token: 0x04002F22 RID: 12066
+		[Token(Token = "0x4002F22")]
 		OnFinishSideMission,
-		// Token: 0x04003041 RID: 12353
+		// Token: 0x04002F23 RID: 12067
+		[Token(Token = "0x4002F23")]
 		OnKaguyaWin,
-		// Token: 0x04003042 RID: 12354
+		// Token: 0x04002F24 RID: 12068
+		[Token(Token = "0x4002F24")]
 		OnMokouWin,
-		// Token: 0x04003043 RID: 12355
+		// Token: 0x04002F25 RID: 12069
+		[Token(Token = "0x4002F25")]
 		OnTriggerKaguyaAndMokouStoryLine,
-		// Token: 0x04003044 RID: 12356
+		// Token: 0x04002F26 RID: 12070
+		[Token(Token = "0x4002F26")]
 		OnConcertEnd,
-		// Token: 0x04003045 RID: 12357
+		// Token: 0x04002F27 RID: 12071
+		[Token(Token = "0x4002F27")]
 		OnConcertGetAllKizuna,
-		// Token: 0x04003046 RID: 12358
+		// Token: 0x04002F28 RID: 12072
+		[Token(Token = "0x4002F28")]
 		OnStrongBuyAndSell,
-		// Token: 0x04003047 RID: 12359
+		// Token: 0x04002F29 RID: 12073
+		[Token(Token = "0x4002F29")]
 		OnSellCharacter,
-		// Token: 0x04003048 RID: 12360
+		// Token: 0x04002F2A RID: 12074
+		[Token(Token = "0x4002F2A")]
 		OnFinishEvents,
-		// Token: 0x04003049 RID: 12361
+		// Token: 0x04002F2B RID: 12075
+		[Token(Token = "0x4002F2B")]
 		OnFinishEventStart,
-		// Token: 0x0400304A RID: 12362
+		// Token: 0x04002F2C RID: 12076
+		[Token(Token = "0x4002F2C")]
 		SetRewardSpell,
-		// Token: 0x0400304B RID: 12363
+		// Token: 0x04002F2D RID: 12077
+		[Token(Token = "0x4002F2D")]
 		SetPunishmentSpell,
-		// Token: 0x0400304C RID: 12364
+		// Token: 0x04002F2E RID: 12078
+		[Token(Token = "0x4002F2E")]
 		SetFinishEvents
 	}
 }

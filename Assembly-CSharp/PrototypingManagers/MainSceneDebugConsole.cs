@@ -1,1266 +1,469 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using GameData;
-using Il2CppInterop.Common.Attributes;
-using Il2CppInterop.Runtime;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using Il2CppInterop.Runtime.Runtime;
-using Il2CppSystem;
-using Il2CppSystem.Collections.Generic;
+using Il2CppDummyDll;
 using UnityEngine;
 
 namespace PrototypingManagers
 {
-	// Token: 0x0200004C RID: 76
+	// Token: 0x020000FF RID: 255
+	[Token(Token = "0x20000FF")]
 	public class MainSceneDebugConsole : DebugConsoleBase
 	{
-		// Token: 0x06000935 RID: 2357 RVA: 0x000BAF6C File Offset: 0x000B916C
-		// Note: this type is marked as 'beforefieldinit'.
-		static MainSceneDebugConsole()
-		{
-			Il2CppClassPointerStore<MainSceneDebugConsole>.NativeClassPtr = IL2CPP.GetIl2CppClass("Assembly-CSharp.dll", "PrototypingManagers", "MainSceneDebugConsole");
-			IL2CPP.il2cpp_runtime_class_init(Il2CppClassPointerStore<MainSceneDebugConsole>.NativeClassPtr);
-			MainSceneDebugConsole.NativeFieldInfoPtr_isIzakayaSkinSelectionExpanded = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<MainSceneDebugConsole>.NativeClassPtr, "isIzakayaSkinSelectionExpanded");
-			MainSceneDebugConsole.NativeFieldInfoPtr_isExpandedCharacter = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<MainSceneDebugConsole>.NativeClassPtr, "isExpandedCharacter");
-			MainSceneDebugConsole.NativeFieldInfoPtr_isExpandedJob = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<MainSceneDebugConsole>.NativeClassPtr, "isExpandedJob");
-			MainSceneDebugConsole.NativeFieldInfoPtr_selections = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<MainSceneDebugConsole>.NativeClassPtr, "selections");
-			MainSceneDebugConsole.NativeFieldInfoPtr_availableIzakayaSelections = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<MainSceneDebugConsole>.NativeClassPtr, "availableIzakayaSelections");
-			MainSceneDebugConsole.NativeFieldInfoPtr_availablePartnerSelections = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<MainSceneDebugConsole>.NativeClassPtr, "availablePartnerSelections");
-			MainSceneDebugConsole.NativeFieldInfoPtr_availableskinSelections = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<MainSceneDebugConsole>.NativeClassPtr, "availableskinSelections");
-			MainSceneDebugConsole.NativeFieldInfoPtr_currentLanguage = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<MainSceneDebugConsole>.NativeClassPtr, "currentLanguage");
-			MainSceneDebugConsole.NativeFieldInfoPtr_currentPannelScroll = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<MainSceneDebugConsole>.NativeClassPtr, "currentPannelScroll");
-			MainSceneDebugConsole.NativeFieldInfoPtr_isIzakayaSelectionExpanded = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<MainSceneDebugConsole>.NativeClassPtr, "isIzakayaSelectionExpanded");
-			MainSceneDebugConsole.NativeFieldInfoPtr_isLanguageSetExpanded = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<MainSceneDebugConsole>.NativeClassPtr, "isLanguageSetExpanded");
-			MainSceneDebugConsole.NativeFieldInfoPtr_isNewGameModeExpanded = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<MainSceneDebugConsole>.NativeClassPtr, "isNewGameModeExpanded");
-			MainSceneDebugConsole.NativeFieldInfoPtr_isSkinExpanded = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<MainSceneDebugConsole>.NativeClassPtr, "isSkinExpanded");
-			MainSceneDebugConsole.NativeFieldInfoPtr_izakayaSkinSelection = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<MainSceneDebugConsole>.NativeClassPtr, "izakayaSkinSelection");
-			MainSceneDebugConsole.NativeFieldInfoPtr_skinSelection = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<MainSceneDebugConsole>.NativeClassPtr, "skinSelection");
-			MainSceneDebugConsole.NativeFieldInfoPtr_tempIzakayaSelection = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<MainSceneDebugConsole>.NativeClassPtr, "tempIzakayaSelection");
-			MainSceneDebugConsole.NativeFieldInfoPtr_useAllDecorations = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<MainSceneDebugConsole>.NativeClassPtr, "useAllDecorations");
-			MainSceneDebugConsole.NativeMethodInfoPtr_OnDestroy_Private_Void_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<MainSceneDebugConsole>.NativeClassPtr, 100664772);
-			MainSceneDebugConsole.NativeMethodInfoPtr_GetIzakayaOptions_Public_Static_Il2CppStructArray_1_TempIzakayaSelection_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<MainSceneDebugConsole>.NativeClassPtr, 100664773);
-			MainSceneDebugConsole.NativeMethodInfoPtr_GetSkinOptions_Public_Static_Il2CppStructArray_1_SkinSelection_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<MainSceneDebugConsole>.NativeClassPtr, 100664774);
-			MainSceneDebugConsole.NativeMethodInfoPtr_GetPartnerSelections_Public_Static_Il2CppStructArray_1_PartnerCharacterSelections_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<MainSceneDebugConsole>.NativeClassPtr, 100664775);
-			MainSceneDebugConsole.NativeMethodInfoPtr_OnStart_Protected_Virtual_Void_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<MainSceneDebugConsole>.NativeClassPtr, 100664776);
-			MainSceneDebugConsole.NativeMethodInfoPtr_OnDrawDebugConsole_Protected_Virtual_Void_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<MainSceneDebugConsole>.NativeClassPtr, 100664777);
-			MainSceneDebugConsole.NativeMethodInfoPtr_GotoTestWorkScene_Private_Void_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<MainSceneDebugConsole>.NativeClassPtr, 100664778);
-			MainSceneDebugConsole.NativeMethodInfoPtr__ctor_Public_Void_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<MainSceneDebugConsole>.NativeClassPtr, 100664779);
-			MainSceneDebugConsole.NativeMethodInfoPtr_Method_Private_Void_PDM_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<MainSceneDebugConsole>.NativeClassPtr, 100664780);
-		}
-
-		// Token: 0x06000936 RID: 2358 RVA: 0x000BB1A4 File Offset: 0x000B93A4
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 37160, XrefRangeEnd = 37173, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe void OnDestroy()
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(MainSceneDebugConsole.NativeMethodInfoPtr_OnDestroy_Private_Void_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x06000937 RID: 2359 RVA: 0x000BB1D8 File Offset: 0x000B93D8
-		[CallerCount(2)]
-		[CachedScanResults(RefRangeStart = 37280, RefRangeEnd = 37282, XrefRangeStart = 37173, XrefRangeEnd = 37280, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe static Il2CppStructArray<MainSceneDebugConsole.TempIzakayaSelection> GetIzakayaOptions()
-		{
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(MainSceneDebugConsole.NativeMethodInfoPtr_GetIzakayaOptions_Public_Static_Il2CppStructArray_1_TempIzakayaSelection_0, 0, (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-			IntPtr intPtr3 = intPtr;
-			return (intPtr3 != 0) ? Il2CppObjectPool.Get<Il2CppStructArray<MainSceneDebugConsole.TempIzakayaSelection>>(intPtr3) : null;
-		}
-
-		// Token: 0x06000938 RID: 2360 RVA: 0x000BB20C File Offset: 0x000B940C
-		[CallerCount(2)]
-		[CachedScanResults(RefRangeStart = 37373, RefRangeEnd = 37375, XrefRangeStart = 37282, XrefRangeEnd = 37373, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe static Il2CppStructArray<MainSceneDebugConsole.SkinSelection> GetSkinOptions()
-		{
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(MainSceneDebugConsole.NativeMethodInfoPtr_GetSkinOptions_Public_Static_Il2CppStructArray_1_SkinSelection_0, 0, (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-			IntPtr intPtr3 = intPtr;
-			return (intPtr3 != 0) ? Il2CppObjectPool.Get<Il2CppStructArray<MainSceneDebugConsole.SkinSelection>>(intPtr3) : null;
-		}
-
-		// Token: 0x06000939 RID: 2361 RVA: 0x000BB240 File Offset: 0x000B9440
-		[CallerCount(2)]
-		[CachedScanResults(RefRangeStart = 37452, RefRangeEnd = 37454, XrefRangeStart = 37375, XrefRangeEnd = 37452, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe static Il2CppStructArray<MainSceneDebugConsole.PartnerCharacterSelections> GetPartnerSelections()
-		{
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(MainSceneDebugConsole.NativeMethodInfoPtr_GetPartnerSelections_Public_Static_Il2CppStructArray_1_PartnerCharacterSelections_0, 0, (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-			IntPtr intPtr3 = intPtr;
-			return (intPtr3 != 0) ? Il2CppObjectPool.Get<Il2CppStructArray<MainSceneDebugConsole.PartnerCharacterSelections>>(intPtr3) : null;
-		}
-
-		// Token: 0x0600093A RID: 2362 RVA: 0x000BB274 File Offset: 0x000B9474
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 37454, XrefRangeEnd = 37581, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe override void OnStart()
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IL2CPP.il2cpp_object_get_virtual_method(IL2CPP.Il2CppObjectBaseToPtr(this), MainSceneDebugConsole.NativeMethodInfoPtr_OnStart_Protected_Virtual_Void_0), IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x0600093B RID: 2363 RVA: 0x000BB2B0 File Offset: 0x000B94B0
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 37581, XrefRangeEnd = 37805, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe override void OnDrawDebugConsole()
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IL2CPP.il2cpp_object_get_virtual_method(IL2CPP.Il2CppObjectBaseToPtr(this), MainSceneDebugConsole.NativeMethodInfoPtr_OnDrawDebugConsole_Protected_Virtual_Void_0), IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x0600093C RID: 2364 RVA: 0x000BB2EC File Offset: 0x000B94EC
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 37805, XrefRangeEnd = 37885, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe void GotoTestWorkScene()
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(MainSceneDebugConsole.NativeMethodInfoPtr_GotoTestWorkScene_Private_Void_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x0600093D RID: 2365 RVA: 0x000BB320 File Offset: 0x000B9520
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 37885, XrefRangeEnd = 37904, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe MainSceneDebugConsole() : this(IL2CPP.il2cpp_object_new(Il2CppClassPointerStore<MainSceneDebugConsole>.NativeClassPtr))
-		{
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(MainSceneDebugConsole.NativeMethodInfoPtr__ctor_Public_Void_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x0600093E RID: 2366 RVA: 0x000BB35C File Offset: 0x000B955C
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 37904, XrefRangeEnd = 38003, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe void Method_Private_Void_PDM_0()
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(MainSceneDebugConsole.NativeMethodInfoPtr_Method_Private_Void_PDM_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x0600093F RID: 2367 RVA: 0x0000750D File Offset: 0x0000570D
-		public MainSceneDebugConsole(IntPtr pointer) : base(pointer)
+		// Token: 0x060005C4 RID: 1476 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x60005C4")]
+		[Address(RVA = "0x6EE6D0", Offset = "0x6ED0D0", VA = "0x1806EE6D0")]
+		private void OnDestroy()
 		{
 		}
 
-		// Token: 0x1700030E RID: 782
-		// (get) Token: 0x06000940 RID: 2368 RVA: 0x000BB390 File Offset: 0x000B9590
-		// (set) Token: 0x06000941 RID: 2369 RVA: 0x00007516 File Offset: 0x00005716
-		public unsafe bool isIzakayaSkinSelectionExpanded
+		// Token: 0x060005C5 RID: 1477 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x60005C5")]
+		[Address(RVA = "0x6ECAD0", Offset = "0x6EB4D0", VA = "0x1806ECAD0")]
+		public static MainSceneDebugConsole.TempIzakayaSelection[] GetIzakayaOptions()
 		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(MainSceneDebugConsole.NativeFieldInfoPtr_isIzakayaSkinSelectionExpanded);
-				return *intPtr;
-			}
-			set
-			{
-				*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(MainSceneDebugConsole.NativeFieldInfoPtr_isIzakayaSkinSelectionExpanded)) = value;
-			}
+			return null;
 		}
 
-		// Token: 0x1700030F RID: 783
-		// (get) Token: 0x06000942 RID: 2370 RVA: 0x000BB3B8 File Offset: 0x000B95B8
-		// (set) Token: 0x06000943 RID: 2371 RVA: 0x00007531 File Offset: 0x00005731
-		public unsafe Il2CppStructArray<bool> isExpandedCharacter
+		// Token: 0x060005C6 RID: 1478 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x60005C6")]
+		[Address(RVA = "0x6EDA80", Offset = "0x6EC480", VA = "0x1806EDA80")]
+		public static MainSceneDebugConsole.SkinSelection[] GetSkinOptions()
 		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(MainSceneDebugConsole.NativeFieldInfoPtr_isExpandedCharacter);
-				IntPtr intPtr2 = *intPtr;
-				return (intPtr2 != 0) ? Il2CppObjectPool.Get<Il2CppStructArray<bool>>(intPtr2) : null;
-			}
-			set
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(MainSceneDebugConsole.NativeFieldInfoPtr_isExpandedCharacter), IL2CPP.Il2CppObjectBaseToPtr(value));
-			}
+			return null;
 		}
 
-		// Token: 0x17000310 RID: 784
-		// (get) Token: 0x06000944 RID: 2372 RVA: 0x000BB3E8 File Offset: 0x000B95E8
-		// (set) Token: 0x06000945 RID: 2373 RVA: 0x00007550 File Offset: 0x00005750
-		public unsafe Il2CppStructArray<bool> isExpandedJob
+		// Token: 0x060005C7 RID: 1479 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x60005C7")]
+		[Address(RVA = "0x6ED4A0", Offset = "0x6EBEA0", VA = "0x1806ED4A0")]
+		public static MainSceneDebugConsole.PartnerCharacterSelections[] GetPartnerSelections()
 		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(MainSceneDebugConsole.NativeFieldInfoPtr_isExpandedJob);
-				IntPtr intPtr2 = *intPtr;
-				return (intPtr2 != 0) ? Il2CppObjectPool.Get<Il2CppStructArray<bool>>(intPtr2) : null;
-			}
-			set
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(MainSceneDebugConsole.NativeFieldInfoPtr_isExpandedJob), IL2CPP.Il2CppObjectBaseToPtr(value));
-			}
+			return null;
 		}
 
-		// Token: 0x17000311 RID: 785
-		// (get) Token: 0x06000946 RID: 2374 RVA: 0x000BB418 File Offset: 0x000B9618
-		// (set) Token: 0x06000947 RID: 2375 RVA: 0x0000756F File Offset: 0x0000576F
-		public unsafe Il2CppReferenceArray<ValueTuple<MainSceneDebugConsole.PartnerCharacterSelections, MainSceneDebugConsole.PartnerSelections>> selections
+		// Token: 0x060005C8 RID: 1480 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x60005C8")]
+		[Address(RVA = "0x6EF350", Offset = "0x6EDD50", VA = "0x1806EF350", Slot = "4")]
+		protected override void OnStart()
 		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(MainSceneDebugConsole.NativeFieldInfoPtr_selections);
-				IntPtr intPtr2 = *intPtr;
-				return (intPtr2 != 0) ? Il2CppObjectPool.Get<Il2CppReferenceArray<ValueTuple<MainSceneDebugConsole.PartnerCharacterSelections, MainSceneDebugConsole.PartnerSelections>>>(intPtr2) : null;
-			}
-			set
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(MainSceneDebugConsole.NativeFieldInfoPtr_selections), IL2CPP.Il2CppObjectBaseToPtr(value));
-			}
 		}
 
-		// Token: 0x17000312 RID: 786
-		// (get) Token: 0x06000948 RID: 2376 RVA: 0x000BB448 File Offset: 0x000B9648
-		// (set) Token: 0x06000949 RID: 2377 RVA: 0x0000758E File Offset: 0x0000578E
-		public unsafe Dictionary<MainSceneDebugConsole.TempIzakayaSelection, string> availableIzakayaSelections
+		// Token: 0x060005C9 RID: 1481 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x60005C9")]
+		[Address(RVA = "0x6EE790", Offset = "0x6ED190", VA = "0x1806EE790", Slot = "5")]
+		protected override void OnDrawDebugConsole()
 		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(MainSceneDebugConsole.NativeFieldInfoPtr_availableIzakayaSelections);
-				IntPtr intPtr2 = *intPtr;
-				return (intPtr2 != 0) ? Il2CppObjectPool.Get<Dictionary<MainSceneDebugConsole.TempIzakayaSelection, string>>(intPtr2) : null;
-			}
-			set
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(MainSceneDebugConsole.NativeFieldInfoPtr_availableIzakayaSelections), IL2CPP.Il2CppObjectBaseToPtr(value));
-			}
 		}
 
-		// Token: 0x17000313 RID: 787
-		// (get) Token: 0x0600094A RID: 2378 RVA: 0x000BB478 File Offset: 0x000B9678
-		// (set) Token: 0x0600094B RID: 2379 RVA: 0x000075AD File Offset: 0x000057AD
-		public unsafe Dictionary<MainSceneDebugConsole.PartnerCharacterSelections, string> availablePartnerSelections
+		// Token: 0x060005CA RID: 1482 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x60005CA")]
+		[Address(RVA = "0x6EE270", Offset = "0x6ECC70", VA = "0x1806EE270")]
+		private void GotoTestWorkScene()
 		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(MainSceneDebugConsole.NativeFieldInfoPtr_availablePartnerSelections);
-				IntPtr intPtr2 = *intPtr;
-				return (intPtr2 != 0) ? Il2CppObjectPool.Get<Dictionary<MainSceneDebugConsole.PartnerCharacterSelections, string>>(intPtr2) : null;
-			}
-			set
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(MainSceneDebugConsole.NativeFieldInfoPtr_availablePartnerSelections), IL2CPP.Il2CppObjectBaseToPtr(value));
-			}
 		}
 
-		// Token: 0x17000314 RID: 788
-		// (get) Token: 0x0600094C RID: 2380 RVA: 0x000BB4A8 File Offset: 0x000B96A8
-		// (set) Token: 0x0600094D RID: 2381 RVA: 0x000075CC File Offset: 0x000057CC
-		public unsafe Dictionary<MainSceneDebugConsole.SkinSelection, string> availableskinSelections
+		// Token: 0x060005CB RID: 1483 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x60005CB")]
+		[Address(RVA = "0x6EFF90", Offset = "0x6EE990", VA = "0x1806EFF90")]
+		public MainSceneDebugConsole()
 		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(MainSceneDebugConsole.NativeFieldInfoPtr_availableskinSelections);
-				IntPtr intPtr2 = *intPtr;
-				return (intPtr2 != 0) ? Il2CppObjectPool.Get<Dictionary<MainSceneDebugConsole.SkinSelection, string>>(intPtr2) : null;
-			}
-			set
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(MainSceneDebugConsole.NativeFieldInfoPtr_availableskinSelections), IL2CPP.Il2CppObjectBaseToPtr(value));
-			}
 		}
 
-		// Token: 0x17000315 RID: 789
-		// (get) Token: 0x0600094E RID: 2382 RVA: 0x000BB4D8 File Offset: 0x000B96D8
-		// (set) Token: 0x0600094F RID: 2383 RVA: 0x000075EB File Offset: 0x000057EB
-		public unsafe MultiLanguageTextMesh.LoadLanguageType currentLanguage
+		// Token: 0x060005CC RID: 1484 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x60005CC")]
+		[Address(RVA = "0x6EFA30", Offset = "0x6EE430", VA = "0x1806EFA30")]
+		[CompilerGenerated]
+		private void <GotoTestWorkScene>g__OnLoadFinish|28_1()
 		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(MainSceneDebugConsole.NativeFieldInfoPtr_currentLanguage);
-				return *intPtr;
-			}
-			set
-			{
-				*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(MainSceneDebugConsole.NativeFieldInfoPtr_currentLanguage)) = value;
-			}
 		}
 
-		// Token: 0x17000316 RID: 790
-		// (get) Token: 0x06000950 RID: 2384 RVA: 0x000BB500 File Offset: 0x000B9700
-		// (set) Token: 0x06000951 RID: 2385 RVA: 0x00007606 File Offset: 0x00005806
-		public unsafe Vector2 currentPannelScroll
-		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(MainSceneDebugConsole.NativeFieldInfoPtr_currentPannelScroll);
-				return *intPtr;
-			}
-			set
-			{
-				*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(MainSceneDebugConsole.NativeFieldInfoPtr_currentPannelScroll)) = value;
-			}
-		}
+		// Token: 0x040005AD RID: 1453
+		[Token(Token = "0x40005AD")]
+		[FieldOffset(Offset = "0x18")]
+		public bool isIzakayaSkinSelectionExpanded;
 
-		// Token: 0x17000317 RID: 791
-		// (get) Token: 0x06000952 RID: 2386 RVA: 0x000BB528 File Offset: 0x000B9728
-		// (set) Token: 0x06000953 RID: 2387 RVA: 0x00007621 File Offset: 0x00005821
-		public unsafe bool isIzakayaSelectionExpanded
-		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(MainSceneDebugConsole.NativeFieldInfoPtr_isIzakayaSelectionExpanded);
-				return *intPtr;
-			}
-			set
-			{
-				*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(MainSceneDebugConsole.NativeFieldInfoPtr_isIzakayaSelectionExpanded)) = value;
-			}
-		}
+		// Token: 0x040005AE RID: 1454
+		[Token(Token = "0x40005AE")]
+		[FieldOffset(Offset = "0x20")]
+		private readonly bool[] isExpandedCharacter;
 
-		// Token: 0x17000318 RID: 792
-		// (get) Token: 0x06000954 RID: 2388 RVA: 0x000BB550 File Offset: 0x000B9750
-		// (set) Token: 0x06000955 RID: 2389 RVA: 0x0000763C File Offset: 0x0000583C
-		public unsafe bool isLanguageSetExpanded
-		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(MainSceneDebugConsole.NativeFieldInfoPtr_isLanguageSetExpanded);
-				return *intPtr;
-			}
-			set
-			{
-				*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(MainSceneDebugConsole.NativeFieldInfoPtr_isLanguageSetExpanded)) = value;
-			}
-		}
+		// Token: 0x040005AF RID: 1455
+		[Token(Token = "0x40005AF")]
+		[FieldOffset(Offset = "0x28")]
+		private readonly bool[] isExpandedJob;
 
-		// Token: 0x17000319 RID: 793
-		// (get) Token: 0x06000956 RID: 2390 RVA: 0x000BB578 File Offset: 0x000B9778
-		// (set) Token: 0x06000957 RID: 2391 RVA: 0x00007657 File Offset: 0x00005857
-		public unsafe bool isNewGameModeExpanded
-		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(MainSceneDebugConsole.NativeFieldInfoPtr_isNewGameModeExpanded);
-				return *intPtr;
-			}
-			set
-			{
-				*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(MainSceneDebugConsole.NativeFieldInfoPtr_isNewGameModeExpanded)) = value;
-			}
-		}
+		// Token: 0x040005B0 RID: 1456
+		[Token(Token = "0x40005B0")]
+		[FieldOffset(Offset = "0x30")]
+		private readonly ValueTuple<MainSceneDebugConsole.PartnerCharacterSelections, MainSceneDebugConsole.PartnerSelections>[] selections;
 
-		// Token: 0x1700031A RID: 794
-		// (get) Token: 0x06000958 RID: 2392 RVA: 0x000BB5A0 File Offset: 0x000B97A0
-		// (set) Token: 0x06000959 RID: 2393 RVA: 0x00007672 File Offset: 0x00005872
-		public unsafe bool isSkinExpanded
-		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(MainSceneDebugConsole.NativeFieldInfoPtr_isSkinExpanded);
-				return *intPtr;
-			}
-			set
-			{
-				*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(MainSceneDebugConsole.NativeFieldInfoPtr_isSkinExpanded)) = value;
-			}
-		}
+		// Token: 0x040005B1 RID: 1457
+		[Token(Token = "0x40005B1")]
+		[FieldOffset(Offset = "0x38")]
+		private Dictionary<MainSceneDebugConsole.TempIzakayaSelection, string> availableIzakayaSelections;
 
-		// Token: 0x1700031B RID: 795
-		// (get) Token: 0x0600095A RID: 2394 RVA: 0x000BB5C8 File Offset: 0x000B97C8
-		// (set) Token: 0x0600095B RID: 2395 RVA: 0x0000768D File Offset: 0x0000588D
-		public unsafe MainSceneDebugConsole.IzakayaSkinSelections izakayaSkinSelection
-		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(MainSceneDebugConsole.NativeFieldInfoPtr_izakayaSkinSelection);
-				return *intPtr;
-			}
-			set
-			{
-				*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(MainSceneDebugConsole.NativeFieldInfoPtr_izakayaSkinSelection)) = value;
-			}
-		}
+		// Token: 0x040005B2 RID: 1458
+		[Token(Token = "0x40005B2")]
+		[FieldOffset(Offset = "0x40")]
+		private Dictionary<MainSceneDebugConsole.PartnerCharacterSelections, string> availablePartnerSelections;
 
-		// Token: 0x1700031C RID: 796
-		// (get) Token: 0x0600095C RID: 2396 RVA: 0x000BB5F0 File Offset: 0x000B97F0
-		// (set) Token: 0x0600095D RID: 2397 RVA: 0x000076A8 File Offset: 0x000058A8
-		public unsafe MainSceneDebugConsole.SkinSelection skinSelection
-		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(MainSceneDebugConsole.NativeFieldInfoPtr_skinSelection);
-				return *intPtr;
-			}
-			set
-			{
-				*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(MainSceneDebugConsole.NativeFieldInfoPtr_skinSelection)) = value;
-			}
-		}
+		// Token: 0x040005B3 RID: 1459
+		[Token(Token = "0x40005B3")]
+		[FieldOffset(Offset = "0x48")]
+		private Dictionary<MainSceneDebugConsole.SkinSelection, string> availableskinSelections;
 
-		// Token: 0x1700031D RID: 797
-		// (get) Token: 0x0600095E RID: 2398 RVA: 0x000BB618 File Offset: 0x000B9818
-		// (set) Token: 0x0600095F RID: 2399 RVA: 0x000076C3 File Offset: 0x000058C3
-		public unsafe MainSceneDebugConsole.TempIzakayaSelection tempIzakayaSelection
-		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(MainSceneDebugConsole.NativeFieldInfoPtr_tempIzakayaSelection);
-				return *intPtr;
-			}
-			set
-			{
-				*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(MainSceneDebugConsole.NativeFieldInfoPtr_tempIzakayaSelection)) = value;
-			}
-		}
+		// Token: 0x040005B4 RID: 1460
+		[Token(Token = "0x40005B4")]
+		[FieldOffset(Offset = "0x50")]
+		private MultiLanguageTextMesh.LoadLanguageType currentLanguage;
 
-		// Token: 0x1700031E RID: 798
-		// (get) Token: 0x06000960 RID: 2400 RVA: 0x000BB640 File Offset: 0x000B9840
-		// (set) Token: 0x06000961 RID: 2401 RVA: 0x000076DE File Offset: 0x000058DE
-		public unsafe bool useAllDecorations
-		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(MainSceneDebugConsole.NativeFieldInfoPtr_useAllDecorations);
-				return *intPtr;
-			}
-			set
-			{
-				*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(MainSceneDebugConsole.NativeFieldInfoPtr_useAllDecorations)) = value;
-			}
-		}
+		// Token: 0x040005B5 RID: 1461
+		[Token(Token = "0x40005B5")]
+		[FieldOffset(Offset = "0x54")]
+		private Vector2 currentPannelScroll;
 
-		// Token: 0x040005EA RID: 1514
-		private static readonly IntPtr NativeFieldInfoPtr_isIzakayaSkinSelectionExpanded;
+		// Token: 0x040005B6 RID: 1462
+		[Token(Token = "0x40005B6")]
+		[FieldOffset(Offset = "0x5C")]
+		private bool isIzakayaSelectionExpanded;
 
-		// Token: 0x040005EB RID: 1515
-		private static readonly IntPtr NativeFieldInfoPtr_isExpandedCharacter;
+		// Token: 0x040005B7 RID: 1463
+		[Token(Token = "0x40005B7")]
+		[FieldOffset(Offset = "0x5D")]
+		private bool isLanguageSetExpanded;
 
-		// Token: 0x040005EC RID: 1516
-		private static readonly IntPtr NativeFieldInfoPtr_isExpandedJob;
+		// Token: 0x040005B8 RID: 1464
+		[Token(Token = "0x40005B8")]
+		[FieldOffset(Offset = "0x5E")]
+		private bool isNewGameModeExpanded;
 
-		// Token: 0x040005ED RID: 1517
-		private static readonly IntPtr NativeFieldInfoPtr_selections;
+		// Token: 0x040005B9 RID: 1465
+		[Token(Token = "0x40005B9")]
+		[FieldOffset(Offset = "0x5F")]
+		private bool isSkinExpanded;
 
-		// Token: 0x040005EE RID: 1518
-		private static readonly IntPtr NativeFieldInfoPtr_availableIzakayaSelections;
+		// Token: 0x040005BA RID: 1466
+		[Token(Token = "0x40005BA")]
+		[FieldOffset(Offset = "0x60")]
+		private MainSceneDebugConsole.IzakayaSkinSelections izakayaSkinSelection;
 
-		// Token: 0x040005EF RID: 1519
-		private static readonly IntPtr NativeFieldInfoPtr_availablePartnerSelections;
+		// Token: 0x040005BB RID: 1467
+		[Token(Token = "0x40005BB")]
+		[FieldOffset(Offset = "0x64")]
+		private MainSceneDebugConsole.SkinSelection skinSelection;
 
-		// Token: 0x040005F0 RID: 1520
-		private static readonly IntPtr NativeFieldInfoPtr_availableskinSelections;
+		// Token: 0x040005BC RID: 1468
+		[Token(Token = "0x40005BC")]
+		[FieldOffset(Offset = "0x68")]
+		private MainSceneDebugConsole.TempIzakayaSelection tempIzakayaSelection;
 
-		// Token: 0x040005F1 RID: 1521
-		private static readonly IntPtr NativeFieldInfoPtr_currentLanguage;
+		// Token: 0x040005BD RID: 1469
+		[Token(Token = "0x40005BD")]
+		[FieldOffset(Offset = "0x6C")]
+		private bool useAllDecorations;
 
-		// Token: 0x040005F2 RID: 1522
-		private static readonly IntPtr NativeFieldInfoPtr_currentPannelScroll;
-
-		// Token: 0x040005F3 RID: 1523
-		private static readonly IntPtr NativeFieldInfoPtr_isIzakayaSelectionExpanded;
-
-		// Token: 0x040005F4 RID: 1524
-		private static readonly IntPtr NativeFieldInfoPtr_isLanguageSetExpanded;
-
-		// Token: 0x040005F5 RID: 1525
-		private static readonly IntPtr NativeFieldInfoPtr_isNewGameModeExpanded;
-
-		// Token: 0x040005F6 RID: 1526
-		private static readonly IntPtr NativeFieldInfoPtr_isSkinExpanded;
-
-		// Token: 0x040005F7 RID: 1527
-		private static readonly IntPtr NativeFieldInfoPtr_izakayaSkinSelection;
-
-		// Token: 0x040005F8 RID: 1528
-		private static readonly IntPtr NativeFieldInfoPtr_skinSelection;
-
-		// Token: 0x040005F9 RID: 1529
-		private static readonly IntPtr NativeFieldInfoPtr_tempIzakayaSelection;
-
-		// Token: 0x040005FA RID: 1530
-		private static readonly IntPtr NativeFieldInfoPtr_useAllDecorations;
-
-		// Token: 0x040005FB RID: 1531
-		private static readonly IntPtr NativeMethodInfoPtr_OnDestroy_Private_Void_0;
-
-		// Token: 0x040005FC RID: 1532
-		private static readonly IntPtr NativeMethodInfoPtr_GetIzakayaOptions_Public_Static_Il2CppStructArray_1_TempIzakayaSelection_0;
-
-		// Token: 0x040005FD RID: 1533
-		private static readonly IntPtr NativeMethodInfoPtr_GetSkinOptions_Public_Static_Il2CppStructArray_1_SkinSelection_0;
-
-		// Token: 0x040005FE RID: 1534
-		private static readonly IntPtr NativeMethodInfoPtr_GetPartnerSelections_Public_Static_Il2CppStructArray_1_PartnerCharacterSelections_0;
-
-		// Token: 0x040005FF RID: 1535
-		private static readonly IntPtr NativeMethodInfoPtr_OnStart_Protected_Virtual_Void_0;
-
-		// Token: 0x04000600 RID: 1536
-		private static readonly IntPtr NativeMethodInfoPtr_OnDrawDebugConsole_Protected_Virtual_Void_0;
-
-		// Token: 0x04000601 RID: 1537
-		private static readonly IntPtr NativeMethodInfoPtr_GotoTestWorkScene_Private_Void_0;
-
-		// Token: 0x04000602 RID: 1538
-		private static readonly IntPtr NativeMethodInfoPtr__ctor_Public_Void_0;
-
-		// Token: 0x04000603 RID: 1539
-		private static readonly IntPtr NativeMethodInfoPtr_Method_Private_Void_PDM_0;
-
-		// Token: 0x0200050A RID: 1290
+		// Token: 0x02000100 RID: 256
+		[Token(Token = "0x2000100")]
 		public enum IzakayaSkinSelections
 		{
-			// Token: 0x0400567C RID: 22140
-			Constant = -1,
-			// Token: 0x0400567D RID: 22141
-			Constant = 54,
-			// Token: 0x0400567E RID: 22142
-			Constant = 59,
-			// Token: 0x0400567F RID: 22143
-			Constant = 57
+			// Token: 0x040005BF RID: 1471
+			[Token(Token = "0x40005BF")]
+			无 = -1,
+			// Token: 0x040005C0 RID: 1472
+			[Token(Token = "0x40005C0")]
+			万圣节 = 54,
+			// Token: 0x040005C1 RID: 1473
+			[Token(Token = "0x40005C1")]
+			圣诞节 = 59,
+			// Token: 0x040005C2 RID: 1474
+			[Token(Token = "0x40005C2")]
+			春节 = 57
 		}
 
-		// Token: 0x0200050B RID: 1291
+		// Token: 0x02000101 RID: 257
+		[Token(Token = "0x2000101")]
 		public enum PartnerCharacterSelections
 		{
-			// Token: 0x04005681 RID: 22145
+			// Token: 0x040005C4 RID: 1476
+			[Token(Token = "0x40005C4")]
 			None,
-			// Token: 0x04005682 RID: 22146
-			Constant = 14,
-			// Token: 0x04005683 RID: 22147
-			Constant = 18,
-			// Token: 0x04005684 RID: 22148
-			Constant,
-			// Token: 0x04005685 RID: 22149
-			Constant,
-			// Token: 0x04005686 RID: 22150
-			Constant,
-			// Token: 0x04005687 RID: 22151
-			Constant = 39,
-			// Token: 0x04005688 RID: 22152
-			Constant = 1006,
-			// Token: 0x04005689 RID: 22153
-			Constant,
-			// Token: 0x0400568A RID: 22154
-			Constant = 2008,
-			// Token: 0x0400568B RID: 22155
-			Constant = 2007,
-			// Token: 0x0400568C RID: 22156
-			Constant = 3006,
-			// Token: 0x0400568D RID: 22157
-			Constant = 3008,
-			// Token: 0x0400568E RID: 22158
-			Constant = 4009,
-			// Token: 0x0400568F RID: 22159
-			Constant,
-			// Token: 0x04005690 RID: 22160
-			Constant = 5006,
-			// Token: 0x04005691 RID: 22161
-			Constant
+			// Token: 0x040005C5 RID: 1477
+			[Token(Token = "0x40005C5")]
+			幽谷响子 = 14,
+			// Token: 0x040005C6 RID: 1478
+			[Token(Token = "0x40005C6")]
+			本居小铃 = 18,
+			// Token: 0x040005C7 RID: 1479
+			[Token(Token = "0x40005C7")]
+			高丽野阿吽,
+			// Token: 0x040005C8 RID: 1480
+			[Token(Token = "0x40005C8")]
+			十六夜咲夜,
+			// Token: 0x040005C9 RID: 1481
+			[Token(Token = "0x40005C9")]
+			铃仙,
+			// Token: 0x040005CA RID: 1482
+			[Token(Token = "0x40005CA")]
+			妖梦 = 39,
+			// Token: 0x040005CB RID: 1483
+			[Token(Token = "0x40005CB")]
+			转转 = 1006,
+			// Token: 0x040005CC RID: 1484
+			[Token(Token = "0x40005CC")]
+			梦子,
+			// Token: 0x040005CD RID: 1485
+			[Token(Token = "0x40005CD")]
+			小町 = 2008,
+			// Token: 0x040005CE RID: 1486
+			[Token(Token = "0x40005CE")]
+			琪斯美 = 2007,
+			// Token: 0x040005CF RID: 1487
+			[Token(Token = "0x40005CF")]
+			云居一轮 = 3006,
+			// Token: 0x040005D0 RID: 1488
+			[Token(Token = "0x40005D0")]
+			芳香 = 3008,
+			// Token: 0x040005D1 RID: 1489
+			[Token(Token = "0x40005D1")]
+			巴大蝶 = 4009,
+			// Token: 0x040005D2 RID: 1490
+			[Token(Token = "0x40005D2")]
+			赤蛮奇,
+			// Token: 0x040005D3 RID: 1491
+			[Token(Token = "0x40005D3")]
+			哆来咪 = 5006,
+			// Token: 0x040005D4 RID: 1492
+			[Token(Token = "0x40005D4")]
+			萨拉
 		}
 
-		// Token: 0x0200050C RID: 1292
+		// Token: 0x02000102 RID: 258
+		[Token(Token = "0x2000102")]
 		public enum PartnerSelections
 		{
-			// Token: 0x04005693 RID: 22163
+			// Token: 0x040005D6 RID: 1494
+			[Token(Token = "0x40005D6")]
 			None,
-			// Token: 0x04005694 RID: 22164
-			Constant,
-			// Token: 0x04005695 RID: 22165
-			Constant,
-			// Token: 0x04005696 RID: 22166
-			Constant,
-			// Token: 0x04005697 RID: 22167
+			// Token: 0x040005D7 RID: 1495
+			[Token(Token = "0x40005D7")]
+			厨师,
+			// Token: 0x040005D8 RID: 1496
+			[Token(Token = "0x40005D8")]
+			传菜,
+			// Token: 0x040005D9 RID: 1497
+			[Token(Token = "0x40005D9")]
+			传酒,
+			// Token: 0x040005DA RID: 1498
+			[Token(Token = "0x40005DA")]
 			BOSS
 		}
 
-		// Token: 0x0200050D RID: 1293
+		// Token: 0x02000103 RID: 259
+		[Token(Token = "0x2000103")]
 		public enum SkinSelection
 		{
-			// Token: 0x04005699 RID: 22169
-			Constant = -1,
-			// Token: 0x0400569A RID: 22170
-			Constant = -2,
-			// Token: 0x0400569B RID: 22171
-			Constant = 23,
-			// Token: 0x0400569C RID: 22172
-			Constant,
-			// Token: 0x0400569D RID: 22173
-			Constant,
-			// Token: 0x0400569E RID: 22174
-			Constant,
-			// Token: 0x0400569F RID: 22175
-			Constant,
-			// Token: 0x040056A0 RID: 22176
-			Constant = 31,
-			// Token: 0x040056A1 RID: 22177
-			Constant = 54,
-			// Token: 0x040056A2 RID: 22178
-			Constant = 56,
-			// Token: 0x040056A3 RID: 22179
-			Constant,
-			// Token: 0x040056A4 RID: 22180
-			Constant,
-			// Token: 0x040056A5 RID: 22181
-			Constant,
-			// Token: 0x040056A6 RID: 22182
-			Constant = 1001,
-			// Token: 0x040056A7 RID: 22183
-			Constant,
-			// Token: 0x040056A8 RID: 22184
-			Constant = 2001,
-			// Token: 0x040056A9 RID: 22185
-			Constant,
-			// Token: 0x040056AA RID: 22186
-			Constant = 2500
+			// Token: 0x040005DC RID: 1500
+			[Token(Token = "0x40005DC")]
+			原皮 = -1,
+			// Token: 0x040005DD RID: 1501
+			[Token(Token = "0x40005DD")]
+			老板娘 = -2,
+			// Token: 0x040005DE RID: 1502
+			[Token(Token = "0x40005DE")]
+			黑色 = 23,
+			// Token: 0x040005DF RID: 1503
+			[Token(Token = "0x40005DF")]
+			中国,
+			// Token: 0x040005E0 RID: 1504
+			[Token(Token = "0x40005E0")]
+			巫女,
+			// Token: 0x040005E1 RID: 1505
+			[Token(Token = "0x40005E1")]
+			睡衣,
+			// Token: 0x040005E2 RID: 1506
+			[Token(Token = "0x40005E2")]
+			和服,
+			// Token: 0x040005E3 RID: 1507
+			[Token(Token = "0x40005E3")]
+			水手夏 = 31,
+			// Token: 0x040005E4 RID: 1508
+			[Token(Token = "0x40005E4")]
+			万圣节 = 54,
+			// Token: 0x040005E5 RID: 1509
+			[Token(Token = "0x40005E5")]
+			偶像 = 56,
+			// Token: 0x040005E6 RID: 1510
+			[Token(Token = "0x40005E6")]
+			春节,
+			// Token: 0x040005E7 RID: 1511
+			[Token(Token = "0x40005E7")]
+			执事,
+			// Token: 0x040005E8 RID: 1512
+			[Token(Token = "0x40005E8")]
+			圣诞,
+			// Token: 0x040005E9 RID: 1513
+			[Token(Token = "0x40005E9")]
+			水手冬 = 1001,
+			// Token: 0x040005EA RID: 1514
+			[Token(Token = "0x40005EA")]
+			魔女,
+			// Token: 0x040005EB RID: 1515
+			[Token(Token = "0x40005EB")]
+			浴衣 = 2001,
+			// Token: 0x040005EC RID: 1516
+			[Token(Token = "0x40005EC")]
+			星空披风,
+			// Token: 0x040005ED RID: 1517
+			[Token(Token = "0x40005ED")]
+			朋克乐队 = 2500
 		}
 
-		// Token: 0x0200050E RID: 1294
+		// Token: 0x02000104 RID: 260
+		[Token(Token = "0x2000104")]
 		public enum TempIzakayaSelection
 		{
-			// Token: 0x040056AC RID: 22188
-			Constant,
-			// Token: 0x040056AD RID: 22189
-			Constant,
-			// Token: 0x040056AE RID: 22190
-			Constant,
-			// Token: 0x040056AF RID: 22191
-			Constant,
-			// Token: 0x040056B0 RID: 22192
-			Constant,
-			// Token: 0x040056B1 RID: 22193
-			Constant,
-			// Token: 0x040056B2 RID: 22194
-			Constant,
-			// Token: 0x040056B3 RID: 22195
-			Constant,
-			// Token: 0x040056B4 RID: 22196
-			Constant,
-			// Token: 0x040056B5 RID: 22197
-			Constant,
-			// Token: 0x040056B6 RID: 22198
-			Constant,
-			// Token: 0x040056B7 RID: 22199
-			Constant,
-			// Token: 0x040056B8 RID: 22200
-			Constant,
-			// Token: 0x040056B9 RID: 22201
-			Constant = 14,
-			// Token: 0x040056BA RID: 22202
-			Constant,
-			// Token: 0x040056BB RID: 22203
-			Constant,
-			// Token: 0x040056BC RID: 22204
-			Constant = 18,
-			// Token: 0x040056BD RID: 22205
-			Constant,
-			// Token: 0x040056BE RID: 22206
-			Constant = 13,
-			// Token: 0x040056BF RID: 22207
-			Constant = 17,
-			// Token: 0x040056C0 RID: 22208
-			Constant = 1000,
-			// Token: 0x040056C1 RID: 22209
-			Constant,
-			// Token: 0x040056C2 RID: 22210
-			Constant,
-			// Token: 0x040056C3 RID: 22211
-			Constant,
-			// Token: 0x040056C4 RID: 22212
-			Constant,
-			// Token: 0x040056C5 RID: 22213
-			Constant,
-			// Token: 0x040056C6 RID: 22214
-			Constant,
-			// Token: 0x040056C7 RID: 22215
-			Constant = 2000,
-			// Token: 0x040056C8 RID: 22216
-			Constant,
-			// Token: 0x040056C9 RID: 22217
-			Constant,
-			// Token: 0x040056CA RID: 22218
-			Constant,
-			// Token: 0x040056CB RID: 22219
-			Constant,
-			// Token: 0x040056CC RID: 22220
-			Constant,
-			// Token: 0x040056CD RID: 22221
-			Constant,
-			// Token: 0x040056CE RID: 22222
-			Constant = 3000,
-			// Token: 0x040056CF RID: 22223
-			Constant,
-			// Token: 0x040056D0 RID: 22224
-			Constant,
-			// Token: 0x040056D1 RID: 22225
-			Constant,
-			// Token: 0x040056D2 RID: 22226
-			Constant,
-			// Token: 0x040056D3 RID: 22227
-			Constant,
-			// Token: 0x040056D4 RID: 22228
-			Constant,
-			// Token: 0x040056D5 RID: 22229
-			Constant = 4000,
-			// Token: 0x040056D6 RID: 22230
-			Constant,
-			// Token: 0x040056D7 RID: 22231
-			Constant,
-			// Token: 0x040056D8 RID: 22232
-			Constant,
-			// Token: 0x040056D9 RID: 22233
-			Constant,
-			// Token: 0x040056DA RID: 22234
-			Constant
-		}
-
-		// Token: 0x0200050F RID: 1295
-		[ObfuscatedName("PrototypingManagers.MainSceneDebugConsole+<>c")]
-		[Serializable]
-		public sealed class __c : Il2CppSystem.Object
-		{
-			// Token: 0x06008409 RID: 33801 RVA: 0x00250FF0 File Offset: 0x0024F1F0
-			// Note: this type is marked as 'beforefieldinit'.
-			static __c()
-			{
-				Il2CppClassPointerStore<MainSceneDebugConsole.__c>.NativeClassPtr = IL2CPP.GetIl2CppNestedType(Il2CppClassPointerStore<MainSceneDebugConsole>.NativeClassPtr, "<>c");
-				IL2CPP.il2cpp_runtime_class_init(Il2CppClassPointerStore<MainSceneDebugConsole.__c>.NativeClassPtr);
-				MainSceneDebugConsole.__c.NativeFieldInfoPtr___9 = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<MainSceneDebugConsole.__c>.NativeClassPtr, "<>9");
-				MainSceneDebugConsole.__c.NativeFieldInfoPtr___9__24_0 = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<MainSceneDebugConsole.__c>.NativeClassPtr, "<>9__24_0");
-				MainSceneDebugConsole.__c.NativeFieldInfoPtr___9__26_0 = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<MainSceneDebugConsole.__c>.NativeClassPtr, "<>9__26_0");
-				MainSceneDebugConsole.__c.NativeFieldInfoPtr___9__26_1 = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<MainSceneDebugConsole.__c>.NativeClassPtr, "<>9__26_1");
-				MainSceneDebugConsole.__c.NativeFieldInfoPtr___9__26_2 = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<MainSceneDebugConsole.__c>.NativeClassPtr, "<>9__26_2");
-				MainSceneDebugConsole.__c.NativeFieldInfoPtr___9__26_3 = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<MainSceneDebugConsole.__c>.NativeClassPtr, "<>9__26_3");
-				MainSceneDebugConsole.__c.NativeFieldInfoPtr___9__26_4 = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<MainSceneDebugConsole.__c>.NativeClassPtr, "<>9__26_4");
-				MainSceneDebugConsole.__c.NativeFieldInfoPtr___9__26_5 = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<MainSceneDebugConsole.__c>.NativeClassPtr, "<>9__26_5");
-				MainSceneDebugConsole.__c.NativeFieldInfoPtr___9__28_0 = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<MainSceneDebugConsole.__c>.NativeClassPtr, "<>9__28_0");
-				MainSceneDebugConsole.__c.NativeFieldInfoPtr___9__28_5 = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<MainSceneDebugConsole.__c>.NativeClassPtr, "<>9__28_5");
-				MainSceneDebugConsole.__c.NativeFieldInfoPtr___9__28_2 = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<MainSceneDebugConsole.__c>.NativeClassPtr, "<>9__28_2");
-				MainSceneDebugConsole.__c.NativeFieldInfoPtr___9__28_3 = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<MainSceneDebugConsole.__c>.NativeClassPtr, "<>9__28_3");
-				MainSceneDebugConsole.__c.NativeFieldInfoPtr___9__28_4 = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<MainSceneDebugConsole.__c>.NativeClassPtr, "<>9__28_4");
-				MainSceneDebugConsole.__c.NativeMethodInfoPtr__ctor_Public_Void_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<MainSceneDebugConsole.__c>.NativeClassPtr, 100664782);
-				MainSceneDebugConsole.__c.NativeMethodInfoPtr__GetSkinOptions_b__24_0_Internal_SkinSelection_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<MainSceneDebugConsole.__c>.NativeClassPtr, 100664783);
-				MainSceneDebugConsole.__c.NativeMethodInfoPtr__OnStart_b__26_0_Internal_TempIzakayaSelection_TempIzakayaSelection_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<MainSceneDebugConsole.__c>.NativeClassPtr, 100664784);
-				MainSceneDebugConsole.__c.NativeMethodInfoPtr__OnStart_b__26_1_Internal_String_TempIzakayaSelection_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<MainSceneDebugConsole.__c>.NativeClassPtr, 100664785);
-				MainSceneDebugConsole.__c.NativeMethodInfoPtr__OnStart_b__26_2_Internal_PartnerCharacterSelections_PartnerCharacterSelections_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<MainSceneDebugConsole.__c>.NativeClassPtr, 100664786);
-				MainSceneDebugConsole.__c.NativeMethodInfoPtr__OnStart_b__26_3_Internal_String_PartnerCharacterSelections_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<MainSceneDebugConsole.__c>.NativeClassPtr, 100664787);
-				MainSceneDebugConsole.__c.NativeMethodInfoPtr__OnStart_b__26_4_Internal_SkinSelection_SkinSelection_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<MainSceneDebugConsole.__c>.NativeClassPtr, 100664788);
-				MainSceneDebugConsole.__c.NativeMethodInfoPtr__OnStart_b__26_5_Internal_String_SkinSelection_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<MainSceneDebugConsole.__c>.NativeClassPtr, 100664789);
-				MainSceneDebugConsole.__c.NativeMethodInfoPtr__GotoTestWorkScene_b__28_0_Internal_Boolean_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<MainSceneDebugConsole.__c>.NativeClassPtr, 100664790);
-				MainSceneDebugConsole.__c.NativeMethodInfoPtr__GotoTestWorkScene_b__28_2_Internal_IEnumerable_1_Int32_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<MainSceneDebugConsole.__c>.NativeClassPtr, 100664791);
-				MainSceneDebugConsole.__c.NativeMethodInfoPtr__GotoTestWorkScene_b__28_5_Internal_IEnumerable_1_Int32_Il2CppStructArray_1_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<MainSceneDebugConsole.__c>.NativeClassPtr, 100664792);
-				MainSceneDebugConsole.__c.NativeMethodInfoPtr__GotoTestWorkScene_b__28_3_Internal_IEnumerable_1_Int32_IEnumerable_1_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<MainSceneDebugConsole.__c>.NativeClassPtr, 100664793);
-				MainSceneDebugConsole.__c.NativeMethodInfoPtr__GotoTestWorkScene_b__28_4_Internal_IEnumerable_1_Int32_IEnumerable_1_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<MainSceneDebugConsole.__c>.NativeClassPtr, 100664794);
-			}
-
-			// Token: 0x0600840A RID: 33802 RVA: 0x00251224 File Offset: 0x0024F424
-			[CallerCount(2138)]
-			[CachedScanResults(RefRangeStart = 500, RefRangeEnd = 2638, XrefRangeStart = 500, XrefRangeEnd = 2638, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-			public unsafe __c() : this(IL2CPP.il2cpp_object_new(Il2CppClassPointerStore<MainSceneDebugConsole.__c>.NativeClassPtr))
-			{
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(MainSceneDebugConsole.__c.NativeMethodInfoPtr__ctor_Public_Void_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-			}
-
-			// Token: 0x0600840B RID: 33803 RVA: 0x00251260 File Offset: 0x0024F460
-			[CallerCount(0)]
-			public unsafe MainSceneDebugConsole.SkinSelection _GetSkinOptions_b__24_0(int x)
-			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr))];
-				*ptr = ref x;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(MainSceneDebugConsole.__c.NativeMethodInfoPtr__GetSkinOptions_b__24_0_Internal_SkinSelection_Int32_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
-			}
-
-			// Token: 0x0600840C RID: 33804 RVA: 0x002512AC File Offset: 0x0024F4AC
-			[CallerCount(0)]
-			public unsafe MainSceneDebugConsole.TempIzakayaSelection _OnStart_b__26_0(MainSceneDebugConsole.TempIzakayaSelection x)
-			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr))];
-				*ptr = ref x;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(MainSceneDebugConsole.__c.NativeMethodInfoPtr__OnStart_b__26_0_Internal_TempIzakayaSelection_TempIzakayaSelection_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
-			}
-
-			// Token: 0x0600840D RID: 33805 RVA: 0x002512F8 File Offset: 0x0024F4F8
-			[CallerCount(0)]
-			[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 37098, XrefRangeEnd = 37111, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-			public unsafe string _OnStart_b__26_1(MainSceneDebugConsole.TempIzakayaSelection x)
-			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr))];
-				*ptr = ref x;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(MainSceneDebugConsole.__c.NativeMethodInfoPtr__OnStart_b__26_1_Internal_String_TempIzakayaSelection_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return IL2CPP.Il2CppStringToManaged(intPtr);
-			}
-
-			// Token: 0x0600840E RID: 33806 RVA: 0x0025133C File Offset: 0x0024F53C
-			[CallerCount(0)]
-			public unsafe MainSceneDebugConsole.PartnerCharacterSelections _OnStart_b__26_2(MainSceneDebugConsole.PartnerCharacterSelections x)
-			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr))];
-				*ptr = ref x;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(MainSceneDebugConsole.__c.NativeMethodInfoPtr__OnStart_b__26_2_Internal_PartnerCharacterSelections_PartnerCharacterSelections_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
-			}
-
-			// Token: 0x0600840F RID: 33807 RVA: 0x00251388 File Offset: 0x0024F588
-			[CallerCount(0)]
-			[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 37111, XrefRangeEnd = 37124, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-			public unsafe string _OnStart_b__26_3(MainSceneDebugConsole.PartnerCharacterSelections x)
-			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr))];
-				*ptr = ref x;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(MainSceneDebugConsole.__c.NativeMethodInfoPtr__OnStart_b__26_3_Internal_String_PartnerCharacterSelections_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return IL2CPP.Il2CppStringToManaged(intPtr);
-			}
-
-			// Token: 0x06008410 RID: 33808 RVA: 0x002513CC File Offset: 0x0024F5CC
-			[CallerCount(0)]
-			public unsafe MainSceneDebugConsole.SkinSelection _OnStart_b__26_4(MainSceneDebugConsole.SkinSelection x)
-			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr))];
-				*ptr = ref x;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(MainSceneDebugConsole.__c.NativeMethodInfoPtr__OnStart_b__26_4_Internal_SkinSelection_SkinSelection_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
-			}
-
-			// Token: 0x06008411 RID: 33809 RVA: 0x00251418 File Offset: 0x0024F618
-			[CallerCount(0)]
-			[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 37124, XrefRangeEnd = 37137, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-			public unsafe string _OnStart_b__26_5(MainSceneDebugConsole.SkinSelection x)
-			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr))];
-				*ptr = ref x;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(MainSceneDebugConsole.__c.NativeMethodInfoPtr__OnStart_b__26_5_Internal_String_SkinSelection_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return IL2CPP.Il2CppStringToManaged(intPtr);
-			}
-
-			// Token: 0x06008412 RID: 33810 RVA: 0x0025145C File Offset: 0x0024F65C
-			[CallerCount(0)]
-			public unsafe bool _GotoTestWorkScene_b__28_0(int x)
-			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr))];
-				*ptr = ref x;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(MainSceneDebugConsole.__c.NativeMethodInfoPtr__GotoTestWorkScene_b__28_0_Internal_Boolean_Int32_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
-			}
-
-			// Token: 0x06008413 RID: 33811 RVA: 0x002514A8 File Offset: 0x0024F6A8
-			[CallerCount(0)]
-			[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 37137, XrefRangeEnd = 37160, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-			public unsafe IEnumerable<int> _GotoTestWorkScene_b__28_2(int x)
-			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr))];
-				*ptr = ref x;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(MainSceneDebugConsole.__c.NativeMethodInfoPtr__GotoTestWorkScene_b__28_2_Internal_IEnumerable_1_Int32_Int32_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				IntPtr intPtr3 = intPtr;
-				return (intPtr3 != 0) ? Il2CppObjectPool.Get<IEnumerable<int>>(intPtr3) : null;
-			}
-
-			// Token: 0x06008414 RID: 33812 RVA: 0x002514F4 File Offset: 0x0024F6F4
-			[CallerCount(0)]
-			public unsafe IEnumerable<int> _GotoTestWorkScene_b__28_5(Il2CppStructArray<int> y)
-			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr))];
-				*ptr = IL2CPP.Il2CppObjectBaseToPtr(y);
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(MainSceneDebugConsole.__c.NativeMethodInfoPtr__GotoTestWorkScene_b__28_5_Internal_IEnumerable_1_Int32_Il2CppStructArray_1_Int32_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				IntPtr intPtr3 = intPtr;
-				return (intPtr3 != 0) ? Il2CppObjectPool.Get<IEnumerable<int>>(intPtr3) : null;
-			}
-
-			// Token: 0x06008415 RID: 33813 RVA: 0x00251544 File Offset: 0x0024F744
-			[CallerCount(0)]
-			public unsafe IEnumerable<int> _GotoTestWorkScene_b__28_3(IEnumerable<int> x)
-			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr))];
-				*ptr = IL2CPP.Il2CppObjectBaseToPtr(x);
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(MainSceneDebugConsole.__c.NativeMethodInfoPtr__GotoTestWorkScene_b__28_3_Internal_IEnumerable_1_Int32_IEnumerable_1_Int32_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				IntPtr intPtr3 = intPtr;
-				return (intPtr3 != 0) ? Il2CppObjectPool.Get<IEnumerable<int>>(intPtr3) : null;
-			}
-
-			// Token: 0x06008416 RID: 33814 RVA: 0x00251594 File Offset: 0x0024F794
-			[CallerCount(0)]
-			public unsafe IEnumerable<int> _GotoTestWorkScene_b__28_4(IEnumerable<int> x)
-			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr))];
-				*ptr = IL2CPP.Il2CppObjectBaseToPtr(x);
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(MainSceneDebugConsole.__c.NativeMethodInfoPtr__GotoTestWorkScene_b__28_4_Internal_IEnumerable_1_Int32_IEnumerable_1_Int32_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				IntPtr intPtr3 = intPtr;
-				return (intPtr3 != 0) ? Il2CppObjectPool.Get<IEnumerable<int>>(intPtr3) : null;
-			}
-
-			// Token: 0x06008417 RID: 33815 RVA: 0x0004728C File Offset: 0x0004548C
-			public __c(IntPtr pointer) : base(pointer)
-			{
-			}
-
-			// Token: 0x17002C5F RID: 11359
-			// (get) Token: 0x06008418 RID: 33816 RVA: 0x002515E4 File Offset: 0x0024F7E4
-			// (set) Token: 0x06008419 RID: 33817 RVA: 0x00047295 File Offset: 0x00045495
-			public unsafe static MainSceneDebugConsole.__c __9
-			{
-				get
-				{
-					IntPtr intPtr;
-					IL2CPP.il2cpp_field_static_get_value(MainSceneDebugConsole.__c.NativeFieldInfoPtr___9, (void*)(&intPtr));
-					IntPtr intPtr2 = intPtr;
-					return (intPtr2 != 0) ? Il2CppObjectPool.Get<MainSceneDebugConsole.__c>(intPtr2) : null;
-				}
-				set
-				{
-					IL2CPP.il2cpp_field_static_set_value(MainSceneDebugConsole.__c.NativeFieldInfoPtr___9, IL2CPP.Il2CppObjectBaseToPtr(value));
-				}
-			}
-
-			// Token: 0x17002C60 RID: 11360
-			// (get) Token: 0x0600841A RID: 33818 RVA: 0x0025160C File Offset: 0x0024F80C
-			// (set) Token: 0x0600841B RID: 33819 RVA: 0x000472A7 File Offset: 0x000454A7
-			public unsafe static Func<int, MainSceneDebugConsole.SkinSelection> __9__24_0
-			{
-				get
-				{
-					IntPtr intPtr;
-					IL2CPP.il2cpp_field_static_get_value(MainSceneDebugConsole.__c.NativeFieldInfoPtr___9__24_0, (void*)(&intPtr));
-					IntPtr intPtr2 = intPtr;
-					return (intPtr2 != 0) ? Il2CppObjectPool.Get<Func<int, MainSceneDebugConsole.SkinSelection>>(intPtr2) : null;
-				}
-				set
-				{
-					IL2CPP.il2cpp_field_static_set_value(MainSceneDebugConsole.__c.NativeFieldInfoPtr___9__24_0, IL2CPP.Il2CppObjectBaseToPtr(value));
-				}
-			}
-
-			// Token: 0x17002C61 RID: 11361
-			// (get) Token: 0x0600841C RID: 33820 RVA: 0x00251634 File Offset: 0x0024F834
-			// (set) Token: 0x0600841D RID: 33821 RVA: 0x000472B9 File Offset: 0x000454B9
-			public unsafe static Func<MainSceneDebugConsole.TempIzakayaSelection, MainSceneDebugConsole.TempIzakayaSelection> __9__26_0
-			{
-				get
-				{
-					IntPtr intPtr;
-					IL2CPP.il2cpp_field_static_get_value(MainSceneDebugConsole.__c.NativeFieldInfoPtr___9__26_0, (void*)(&intPtr));
-					IntPtr intPtr2 = intPtr;
-					return (intPtr2 != 0) ? Il2CppObjectPool.Get<Func<MainSceneDebugConsole.TempIzakayaSelection, MainSceneDebugConsole.TempIzakayaSelection>>(intPtr2) : null;
-				}
-				set
-				{
-					IL2CPP.il2cpp_field_static_set_value(MainSceneDebugConsole.__c.NativeFieldInfoPtr___9__26_0, IL2CPP.Il2CppObjectBaseToPtr(value));
-				}
-			}
-
-			// Token: 0x17002C62 RID: 11362
-			// (get) Token: 0x0600841E RID: 33822 RVA: 0x0025165C File Offset: 0x0024F85C
-			// (set) Token: 0x0600841F RID: 33823 RVA: 0x000472CB File Offset: 0x000454CB
-			public unsafe static Func<MainSceneDebugConsole.TempIzakayaSelection, string> __9__26_1
-			{
-				get
-				{
-					IntPtr intPtr;
-					IL2CPP.il2cpp_field_static_get_value(MainSceneDebugConsole.__c.NativeFieldInfoPtr___9__26_1, (void*)(&intPtr));
-					IntPtr intPtr2 = intPtr;
-					return (intPtr2 != 0) ? Il2CppObjectPool.Get<Func<MainSceneDebugConsole.TempIzakayaSelection, string>>(intPtr2) : null;
-				}
-				set
-				{
-					IL2CPP.il2cpp_field_static_set_value(MainSceneDebugConsole.__c.NativeFieldInfoPtr___9__26_1, IL2CPP.Il2CppObjectBaseToPtr(value));
-				}
-			}
-
-			// Token: 0x17002C63 RID: 11363
-			// (get) Token: 0x06008420 RID: 33824 RVA: 0x00251684 File Offset: 0x0024F884
-			// (set) Token: 0x06008421 RID: 33825 RVA: 0x000472DD File Offset: 0x000454DD
-			public unsafe static Func<MainSceneDebugConsole.PartnerCharacterSelections, MainSceneDebugConsole.PartnerCharacterSelections> __9__26_2
-			{
-				get
-				{
-					IntPtr intPtr;
-					IL2CPP.il2cpp_field_static_get_value(MainSceneDebugConsole.__c.NativeFieldInfoPtr___9__26_2, (void*)(&intPtr));
-					IntPtr intPtr2 = intPtr;
-					return (intPtr2 != 0) ? Il2CppObjectPool.Get<Func<MainSceneDebugConsole.PartnerCharacterSelections, MainSceneDebugConsole.PartnerCharacterSelections>>(intPtr2) : null;
-				}
-				set
-				{
-					IL2CPP.il2cpp_field_static_set_value(MainSceneDebugConsole.__c.NativeFieldInfoPtr___9__26_2, IL2CPP.Il2CppObjectBaseToPtr(value));
-				}
-			}
-
-			// Token: 0x17002C64 RID: 11364
-			// (get) Token: 0x06008422 RID: 33826 RVA: 0x002516AC File Offset: 0x0024F8AC
-			// (set) Token: 0x06008423 RID: 33827 RVA: 0x000472EF File Offset: 0x000454EF
-			public unsafe static Func<MainSceneDebugConsole.PartnerCharacterSelections, string> __9__26_3
-			{
-				get
-				{
-					IntPtr intPtr;
-					IL2CPP.il2cpp_field_static_get_value(MainSceneDebugConsole.__c.NativeFieldInfoPtr___9__26_3, (void*)(&intPtr));
-					IntPtr intPtr2 = intPtr;
-					return (intPtr2 != 0) ? Il2CppObjectPool.Get<Func<MainSceneDebugConsole.PartnerCharacterSelections, string>>(intPtr2) : null;
-				}
-				set
-				{
-					IL2CPP.il2cpp_field_static_set_value(MainSceneDebugConsole.__c.NativeFieldInfoPtr___9__26_3, IL2CPP.Il2CppObjectBaseToPtr(value));
-				}
-			}
-
-			// Token: 0x17002C65 RID: 11365
-			// (get) Token: 0x06008424 RID: 33828 RVA: 0x002516D4 File Offset: 0x0024F8D4
-			// (set) Token: 0x06008425 RID: 33829 RVA: 0x00047301 File Offset: 0x00045501
-			public unsafe static Func<MainSceneDebugConsole.SkinSelection, MainSceneDebugConsole.SkinSelection> __9__26_4
-			{
-				get
-				{
-					IntPtr intPtr;
-					IL2CPP.il2cpp_field_static_get_value(MainSceneDebugConsole.__c.NativeFieldInfoPtr___9__26_4, (void*)(&intPtr));
-					IntPtr intPtr2 = intPtr;
-					return (intPtr2 != 0) ? Il2CppObjectPool.Get<Func<MainSceneDebugConsole.SkinSelection, MainSceneDebugConsole.SkinSelection>>(intPtr2) : null;
-				}
-				set
-				{
-					IL2CPP.il2cpp_field_static_set_value(MainSceneDebugConsole.__c.NativeFieldInfoPtr___9__26_4, IL2CPP.Il2CppObjectBaseToPtr(value));
-				}
-			}
-
-			// Token: 0x17002C66 RID: 11366
-			// (get) Token: 0x06008426 RID: 33830 RVA: 0x002516FC File Offset: 0x0024F8FC
-			// (set) Token: 0x06008427 RID: 33831 RVA: 0x00047313 File Offset: 0x00045513
-			public unsafe static Func<MainSceneDebugConsole.SkinSelection, string> __9__26_5
-			{
-				get
-				{
-					IntPtr intPtr;
-					IL2CPP.il2cpp_field_static_get_value(MainSceneDebugConsole.__c.NativeFieldInfoPtr___9__26_5, (void*)(&intPtr));
-					IntPtr intPtr2 = intPtr;
-					return (intPtr2 != 0) ? Il2CppObjectPool.Get<Func<MainSceneDebugConsole.SkinSelection, string>>(intPtr2) : null;
-				}
-				set
-				{
-					IL2CPP.il2cpp_field_static_set_value(MainSceneDebugConsole.__c.NativeFieldInfoPtr___9__26_5, IL2CPP.Il2CppObjectBaseToPtr(value));
-				}
-			}
-
-			// Token: 0x17002C67 RID: 11367
-			// (get) Token: 0x06008428 RID: 33832 RVA: 0x00251724 File Offset: 0x0024F924
-			// (set) Token: 0x06008429 RID: 33833 RVA: 0x00047325 File Offset: 0x00045525
-			public unsafe static Func<int, bool> __9__28_0
-			{
-				get
-				{
-					IntPtr intPtr;
-					IL2CPP.il2cpp_field_static_get_value(MainSceneDebugConsole.__c.NativeFieldInfoPtr___9__28_0, (void*)(&intPtr));
-					IntPtr intPtr2 = intPtr;
-					return (intPtr2 != 0) ? Il2CppObjectPool.Get<Func<int, bool>>(intPtr2) : null;
-				}
-				set
-				{
-					IL2CPP.il2cpp_field_static_set_value(MainSceneDebugConsole.__c.NativeFieldInfoPtr___9__28_0, IL2CPP.Il2CppObjectBaseToPtr(value));
-				}
-			}
-
-			// Token: 0x17002C68 RID: 11368
-			// (get) Token: 0x0600842A RID: 33834 RVA: 0x0025174C File Offset: 0x0024F94C
-			// (set) Token: 0x0600842B RID: 33835 RVA: 0x00047337 File Offset: 0x00045537
-			public unsafe static Func<Il2CppStructArray<int>, IEnumerable<int>> __9__28_5
-			{
-				get
-				{
-					IntPtr intPtr;
-					IL2CPP.il2cpp_field_static_get_value(MainSceneDebugConsole.__c.NativeFieldInfoPtr___9__28_5, (void*)(&intPtr));
-					IntPtr intPtr2 = intPtr;
-					return (intPtr2 != 0) ? Il2CppObjectPool.Get<Func<Il2CppStructArray<int>, IEnumerable<int>>>(intPtr2) : null;
-				}
-				set
-				{
-					IL2CPP.il2cpp_field_static_set_value(MainSceneDebugConsole.__c.NativeFieldInfoPtr___9__28_5, IL2CPP.Il2CppObjectBaseToPtr(value));
-				}
-			}
-
-			// Token: 0x17002C69 RID: 11369
-			// (get) Token: 0x0600842C RID: 33836 RVA: 0x00251774 File Offset: 0x0024F974
-			// (set) Token: 0x0600842D RID: 33837 RVA: 0x00047349 File Offset: 0x00045549
-			public unsafe static Func<int, IEnumerable<int>> __9__28_2
-			{
-				get
-				{
-					IntPtr intPtr;
-					IL2CPP.il2cpp_field_static_get_value(MainSceneDebugConsole.__c.NativeFieldInfoPtr___9__28_2, (void*)(&intPtr));
-					IntPtr intPtr2 = intPtr;
-					return (intPtr2 != 0) ? Il2CppObjectPool.Get<Func<int, IEnumerable<int>>>(intPtr2) : null;
-				}
-				set
-				{
-					IL2CPP.il2cpp_field_static_set_value(MainSceneDebugConsole.__c.NativeFieldInfoPtr___9__28_2, IL2CPP.Il2CppObjectBaseToPtr(value));
-				}
-			}
-
-			// Token: 0x17002C6A RID: 11370
-			// (get) Token: 0x0600842E RID: 33838 RVA: 0x0025179C File Offset: 0x0024F99C
-			// (set) Token: 0x0600842F RID: 33839 RVA: 0x0004735B File Offset: 0x0004555B
-			public unsafe static Func<IEnumerable<int>, IEnumerable<int>> __9__28_3
-			{
-				get
-				{
-					IntPtr intPtr;
-					IL2CPP.il2cpp_field_static_get_value(MainSceneDebugConsole.__c.NativeFieldInfoPtr___9__28_3, (void*)(&intPtr));
-					IntPtr intPtr2 = intPtr;
-					return (intPtr2 != 0) ? Il2CppObjectPool.Get<Func<IEnumerable<int>, IEnumerable<int>>>(intPtr2) : null;
-				}
-				set
-				{
-					IL2CPP.il2cpp_field_static_set_value(MainSceneDebugConsole.__c.NativeFieldInfoPtr___9__28_3, IL2CPP.Il2CppObjectBaseToPtr(value));
-				}
-			}
-
-			// Token: 0x17002C6B RID: 11371
-			// (get) Token: 0x06008430 RID: 33840 RVA: 0x002517C4 File Offset: 0x0024F9C4
-			// (set) Token: 0x06008431 RID: 33841 RVA: 0x0004736D File Offset: 0x0004556D
-			public unsafe static Func<IEnumerable<int>, IEnumerable<int>> __9__28_4
-			{
-				get
-				{
-					IntPtr intPtr;
-					IL2CPP.il2cpp_field_static_get_value(MainSceneDebugConsole.__c.NativeFieldInfoPtr___9__28_4, (void*)(&intPtr));
-					IntPtr intPtr2 = intPtr;
-					return (intPtr2 != 0) ? Il2CppObjectPool.Get<Func<IEnumerable<int>, IEnumerable<int>>>(intPtr2) : null;
-				}
-				set
-				{
-					IL2CPP.il2cpp_field_static_set_value(MainSceneDebugConsole.__c.NativeFieldInfoPtr___9__28_4, IL2CPP.Il2CppObjectBaseToPtr(value));
-				}
-			}
-
-			// Token: 0x040056DB RID: 22235
-			private static readonly IntPtr NativeFieldInfoPtr___9;
-
-			// Token: 0x040056DC RID: 22236
-			private static readonly IntPtr NativeFieldInfoPtr___9__24_0;
-
-			// Token: 0x040056DD RID: 22237
-			private static readonly IntPtr NativeFieldInfoPtr___9__26_0;
-
-			// Token: 0x040056DE RID: 22238
-			private static readonly IntPtr NativeFieldInfoPtr___9__26_1;
-
-			// Token: 0x040056DF RID: 22239
-			private static readonly IntPtr NativeFieldInfoPtr___9__26_2;
-
-			// Token: 0x040056E0 RID: 22240
-			private static readonly IntPtr NativeFieldInfoPtr___9__26_3;
-
-			// Token: 0x040056E1 RID: 22241
-			private static readonly IntPtr NativeFieldInfoPtr___9__26_4;
-
-			// Token: 0x040056E2 RID: 22242
-			private static readonly IntPtr NativeFieldInfoPtr___9__26_5;
-
-			// Token: 0x040056E3 RID: 22243
-			private static readonly IntPtr NativeFieldInfoPtr___9__28_0;
-
-			// Token: 0x040056E4 RID: 22244
-			private static readonly IntPtr NativeFieldInfoPtr___9__28_5;
-
-			// Token: 0x040056E5 RID: 22245
-			private static readonly IntPtr NativeFieldInfoPtr___9__28_2;
-
-			// Token: 0x040056E6 RID: 22246
-			private static readonly IntPtr NativeFieldInfoPtr___9__28_3;
-
-			// Token: 0x040056E7 RID: 22247
-			private static readonly IntPtr NativeFieldInfoPtr___9__28_4;
-
-			// Token: 0x040056E8 RID: 22248
-			private static readonly IntPtr NativeMethodInfoPtr__ctor_Public_Void_0;
-
-			// Token: 0x040056E9 RID: 22249
-			private static readonly IntPtr NativeMethodInfoPtr__GetSkinOptions_b__24_0_Internal_SkinSelection_Int32_0;
-
-			// Token: 0x040056EA RID: 22250
-			private static readonly IntPtr NativeMethodInfoPtr__OnStart_b__26_0_Internal_TempIzakayaSelection_TempIzakayaSelection_0;
-
-			// Token: 0x040056EB RID: 22251
-			private static readonly IntPtr NativeMethodInfoPtr__OnStart_b__26_1_Internal_String_TempIzakayaSelection_0;
-
-			// Token: 0x040056EC RID: 22252
-			private static readonly IntPtr NativeMethodInfoPtr__OnStart_b__26_2_Internal_PartnerCharacterSelections_PartnerCharacterSelections_0;
-
-			// Token: 0x040056ED RID: 22253
-			private static readonly IntPtr NativeMethodInfoPtr__OnStart_b__26_3_Internal_String_PartnerCharacterSelections_0;
-
-			// Token: 0x040056EE RID: 22254
-			private static readonly IntPtr NativeMethodInfoPtr__OnStart_b__26_4_Internal_SkinSelection_SkinSelection_0;
-
-			// Token: 0x040056EF RID: 22255
-			private static readonly IntPtr NativeMethodInfoPtr__OnStart_b__26_5_Internal_String_SkinSelection_0;
-
-			// Token: 0x040056F0 RID: 22256
-			private static readonly IntPtr NativeMethodInfoPtr__GotoTestWorkScene_b__28_0_Internal_Boolean_Int32_0;
-
-			// Token: 0x040056F1 RID: 22257
-			private static readonly IntPtr NativeMethodInfoPtr__GotoTestWorkScene_b__28_2_Internal_IEnumerable_1_Int32_Int32_0;
-
-			// Token: 0x040056F2 RID: 22258
-			private static readonly IntPtr NativeMethodInfoPtr__GotoTestWorkScene_b__28_5_Internal_IEnumerable_1_Int32_Il2CppStructArray_1_Int32_0;
-
-			// Token: 0x040056F3 RID: 22259
-			private static readonly IntPtr NativeMethodInfoPtr__GotoTestWorkScene_b__28_3_Internal_IEnumerable_1_Int32_IEnumerable_1_Int32_0;
-
-			// Token: 0x040056F4 RID: 22260
-			private static readonly IntPtr NativeMethodInfoPtr__GotoTestWorkScene_b__28_4_Internal_IEnumerable_1_Int32_IEnumerable_1_Int32_0;
+			// Token: 0x040005EF RID: 1519
+			[Token(Token = "0x40005EF")]
+			兽道推车,
+			// Token: 0x040005F0 RID: 1520
+			[Token(Token = "0x40005F0")]
+			兽道小屋,
+			// Token: 0x040005F1 RID: 1521
+			[Token(Token = "0x40005F1")]
+			兽道雀食堂,
+			// Token: 0x040005F2 RID: 1522
+			[Token(Token = "0x40005F2")]
+			人里推车,
+			// Token: 0x040005F3 RID: 1523
+			[Token(Token = "0x40005F3")]
+			人里小屋,
+			// Token: 0x040005F4 RID: 1524
+			[Token(Token = "0x40005F4")]
+			人里雀食堂,
+			// Token: 0x040005F5 RID: 1525
+			[Token(Token = "0x40005F5")]
+			神社推车,
+			// Token: 0x040005F6 RID: 1526
+			[Token(Token = "0x40005F6")]
+			神社小屋,
+			// Token: 0x040005F7 RID: 1527
+			[Token(Token = "0x40005F7")]
+			神社雀食堂,
+			// Token: 0x040005F8 RID: 1528
+			[Token(Token = "0x40005F8")]
+			神社推车EX,
+			// Token: 0x040005F9 RID: 1529
+			[Token(Token = "0x40005F9")]
+			红魔馆推车,
+			// Token: 0x040005FA RID: 1530
+			[Token(Token = "0x40005FA")]
+			红魔馆小屋,
+			// Token: 0x040005FB RID: 1531
+			[Token(Token = "0x40005FB")]
+			红魔馆雀食堂,
+			// Token: 0x040005FC RID: 1532
+			[Token(Token = "0x40005FC")]
+			竹林推车 = 14,
+			// Token: 0x040005FD RID: 1533
+			[Token(Token = "0x40005FD")]
+			竹林小屋,
+			// Token: 0x040005FE RID: 1534
+			[Token(Token = "0x40005FE")]
+			竹林雀食堂,
+			// Token: 0x040005FF RID: 1535
+			[Token(Token = "0x40005FF")]
+			竹林推车但是无辉夜和妹红 = 18,
+			// Token: 0x04000600 RID: 1536
+			[Token(Token = "0x4000600")]
+			竹林推车但是没有稀客,
+			// Token: 0x04000601 RID: 1537
+			[Token(Token = "0x4000601")]
+			白玉楼 = 13,
+			// Token: 0x04000602 RID: 1538
+			[Token(Token = "0x4000602")]
+			白玉楼EX = 17,
+			// Token: 0x04000603 RID: 1539
+			[Token(Token = "0x4000603")]
+			妖怪之山推车 = 1000,
+			// Token: 0x04000604 RID: 1540
+			[Token(Token = "0x4000604")]
+			妖怪之山小屋,
+			// Token: 0x04000605 RID: 1541
+			[Token(Token = "0x4000605")]
+			妖怪之山雀食堂,
+			// Token: 0x04000606 RID: 1542
+			[Token(Token = "0x4000606")]
+			魔法森林推车,
+			// Token: 0x04000607 RID: 1543
+			[Token(Token = "0x4000607")]
+			魔法森林小屋,
+			// Token: 0x04000608 RID: 1544
+			[Token(Token = "0x4000608")]
+			魔法森林雀食堂,
+			// Token: 0x04000609 RID: 1545
+			[Token(Token = "0x4000609")]
+			血池地狱,
+			// Token: 0x0400060A RID: 1546
+			[Token(Token = "0x400060A")]
+			旧地狱推车 = 2000,
+			// Token: 0x0400060B RID: 1547
+			[Token(Token = "0x400060B")]
+			旧地狱小屋,
+			// Token: 0x0400060C RID: 1548
+			[Token(Token = "0x400060C")]
+			旧地狱雀食堂,
+			// Token: 0x0400060D RID: 1549
+			[Token(Token = "0x400060D")]
+			地灵殿推车,
+			// Token: 0x0400060E RID: 1550
+			[Token(Token = "0x400060E")]
+			地灵殿小屋,
+			// Token: 0x0400060F RID: 1551
+			[Token(Token = "0x400060F")]
+			地灵殿雀食堂,
+			// Token: 0x04000610 RID: 1552
+			[Token(Token = "0x4000610")]
+			旧地狱雀食堂赛场,
+			// Token: 0x04000611 RID: 1553
+			[Token(Token = "0x4000611")]
+			命莲寺推车 = 3000,
+			// Token: 0x04000612 RID: 1554
+			[Token(Token = "0x4000612")]
+			命莲寺小屋,
+			// Token: 0x04000613 RID: 1555
+			[Token(Token = "0x4000613")]
+			命莲寺雀食堂,
+			// Token: 0x04000614 RID: 1556
+			[Token(Token = "0x4000614")]
+			神灵庙推车,
+			// Token: 0x04000615 RID: 1557
+			[Token(Token = "0x4000615")]
+			神灵庙小屋,
+			// Token: 0x04000616 RID: 1558
+			[Token(Token = "0x4000616")]
+			神灵庙雀食堂,
+			// Token: 0x04000617 RID: 1559
+			[Token(Token = "0x4000617")]
+			神灵庙比赛现场,
+			// Token: 0x04000618 RID: 1560
+			[Token(Token = "0x4000618")]
+			太阳花田推车 = 4000,
+			// Token: 0x04000619 RID: 1561
+			[Token(Token = "0x4000619")]
+			太阳花田小屋,
+			// Token: 0x0400061A RID: 1562
+			[Token(Token = "0x400061A")]
+			太阳花田雀食堂,
+			// Token: 0x0400061B RID: 1563
+			[Token(Token = "0x400061B")]
+			辉针城推车,
+			// Token: 0x0400061C RID: 1564
+			[Token(Token = "0x400061C")]
+			辉针城小屋,
+			// Token: 0x0400061D RID: 1565
+			[Token(Token = "0x400061D")]
+			辉针城雀食堂
 		}
 	}
 }

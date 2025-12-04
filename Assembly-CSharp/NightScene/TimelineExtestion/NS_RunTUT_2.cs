@@ -1,59 +1,27 @@
 ﻿using System;
-using Il2CppInterop.Common.Attributes;
-using Il2CppInterop.Runtime;
+using Il2CppDummyDll;
 using UnityEngine;
 using UnityEngine.Playables;
 
 namespace NightScene.TimelineExtestion
 {
-	// Token: 0x0200020F RID: 527
+	// Token: 0x02000767 RID: 1895
+	[Token(Token = "0x2000767")]
 	public class NS_RunTUT_2 : PlayableAsset
 	{
-		// Token: 0x06003DA1 RID: 15777 RVA: 0x0016F54C File Offset: 0x0016D74C
-		// Note: this type is marked as 'beforefieldinit'.
-		static NS_RunTUT_2()
+		// Token: 0x06002C18 RID: 11288 RVA: 0x0000FA80 File Offset: 0x0000DC80
+		[Token(Token = "0x6002C18")]
+		[Address(RVA = "0x5E2B80", Offset = "0x5E1580", VA = "0x1805E2B80", Slot = "6")]
+		public override Playable CreatePlayable(PlayableGraph graph, GameObject owner)
 		{
-			Il2CppClassPointerStore<NS_RunTUT_2>.NativeClassPtr = IL2CPP.GetIl2CppClass("Assembly-CSharp.dll", "NightScene.TimelineExtestion", "NS_RunTUT_2");
-			IL2CPP.il2cpp_runtime_class_init(Il2CppClassPointerStore<NS_RunTUT_2>.NativeClassPtr);
-			NS_RunTUT_2.NativeMethodInfoPtr_CreatePlayable_Public_Virtual_Playable_PlayableGraph_GameObject_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<NS_RunTUT_2>.NativeClassPtr, 100674584);
-			NS_RunTUT_2.NativeMethodInfoPtr__ctor_Public_Void_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<NS_RunTUT_2>.NativeClassPtr, 100674585);
+			return default(Playable);
 		}
 
-		// Token: 0x06003DA2 RID: 15778 RVA: 0x0016F5A4 File Offset: 0x0016D7A4
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 137329, XrefRangeEnd = 137338, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe override Playable CreatePlayable(PlayableGraph graph, GameObject owner)
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)2) * (UIntPtr)sizeof(IntPtr))];
-			*ptr = ref graph;
-			ptr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr)) / (UIntPtr)sizeof(IntPtr)] = IL2CPP.Il2CppObjectBaseToPtr(owner);
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IL2CPP.il2cpp_object_get_virtual_method(IL2CPP.Il2CppObjectBaseToPtr(this), NS_RunTUT_2.NativeMethodInfoPtr_CreatePlayable_Public_Virtual_Playable_PlayableGraph_GameObject_0), IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-			return *IL2CPP.il2cpp_object_unbox(intPtr);
-		}
-
-		// Token: 0x06003DA3 RID: 15779 RVA: 0x0016F60C File Offset: 0x0016D80C
-		[CallerCount(2)]
-		[CachedScanResults(RefRangeStart = 40720, RefRangeEnd = 40722, XrefRangeStart = 40720, XrefRangeEnd = 40722, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe NS_RunTUT_2() : this(IL2CPP.il2cpp_object_new(Il2CppClassPointerStore<NS_RunTUT_2>.NativeClassPtr))
-		{
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(NS_RunTUT_2.NativeMethodInfoPtr__ctor_Public_Void_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x06003DA4 RID: 15780 RVA: 0x00022782 File Offset: 0x00020982
-		public NS_RunTUT_2(IntPtr pointer) : base(pointer)
+		// Token: 0x06002C19 RID: 11289 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x6002C19")]
+		[Address(RVA = "0x495780", Offset = "0x494180", VA = "0x180495780")]
+		public NS_RunTUT_2()
 		{
 		}
-
-		// Token: 0x04002925 RID: 10533
-		private static readonly IntPtr NativeMethodInfoPtr_CreatePlayable_Public_Virtual_Playable_PlayableGraph_GameObject_0;
-
-		// Token: 0x04002926 RID: 10534
-		private static readonly IntPtr NativeMethodInfoPtr__ctor_Public_Void_0;
 	}
 }

@@ -1,15 +1,20 @@
 ﻿using System;
+using Il2CppDummyDll;
 
 namespace Common.UI.Filter
 {
-	// Token: 0x020003A6 RID: 934
+	// Token: 0x02000EE2 RID: 3810
+	[Token(Token = "0x2000EE2")]
 	public enum Rule
 	{
-		// Token: 0x04004AD1 RID: 19153
+		// Token: 0x0400546D RID: 21613
+		[Token(Token = "0x400546D")]
 		ContainsAnd,
-		// Token: 0x04004AD2 RID: 19154
+		// Token: 0x0400546E RID: 21614
+		[Token(Token = "0x400546E")]
 		ContainsOr,
-		// Token: 0x04004AD3 RID: 19155
+		// Token: 0x0400546F RID: 21615
+		[Token(Token = "0x400546F")]
 		ContainsNot
 	}
 }

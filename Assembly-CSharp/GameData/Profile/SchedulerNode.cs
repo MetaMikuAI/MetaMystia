@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using Common;
 using GameData.Core.Collections.CharacterUtility;
 using GameData.Core.Collections.DaySceneUtility.Collections;
 using GameData.CoreLanguage;
 using GameData.RunTime.Common;
-using Il2CppInterop.Common.Attributes;
-using Il2CppInterop.Runtime;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using Il2CppInterop.Runtime.Runtime;
-using Il2CppSystem;
+using Il2CppDummyDll;
 using NightScene;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -17,1752 +12,947 @@ using UnityEngine.Playables;
 
 namespace GameData.Profile
 {
-	// Token: 0x020002EA RID: 746
-	public class SchedulerNode : ScriptableObject
+	// Token: 0x02000BBA RID: 3002
+	[Token(Token = "0x2000BBA")]
+	public abstract class SchedulerNode : ScriptableObject
 	{
-		// Token: 0x06005A19 RID: 23065 RVA: 0x001CC7E0 File Offset: 0x001CA9E0
-		// Note: this type is marked as 'beforefieldinit'.
-		static SchedulerNode()
+		// Token: 0x060046BD RID: 18109
+		[Token(Token = "0x60046BD")]
+		public abstract SchedulerNode.NodeType GetNodeType();
+
+		// Token: 0x060046BE RID: 18110
+		[Token(Token = "0x60046BE")]
+		protected abstract void PostIntializeClone(SchedulerNode instance);
+
+		// Token: 0x060046BF RID: 18111
+		[Token(Token = "0x60046BF")]
+		protected abstract Type InternalGetNodeType();
+
+		// Token: 0x060046C0 RID: 18112 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x60046C0")]
+		[Address(RVA = "0x740A70", Offset = "0x73F470", VA = "0x180740A70")]
+		public SchedulerNode Clone()
 		{
-			Il2CppClassPointerStore<SchedulerNode>.NativeClassPtr = IL2CPP.GetIl2CppClass("Assembly-CSharp.dll", "GameData.Profile", "SchedulerNode");
-			IL2CPP.il2cpp_runtime_class_init(Il2CppClassPointerStore<SchedulerNode>.NativeClassPtr);
-			SchedulerNode.NativeFieldInfoPtr_label = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode>.NativeClassPtr, "label");
-			SchedulerNode.NativeFieldInfoPtr_debugLabel = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode>.NativeClassPtr, "debugLabel");
-			SchedulerNode.NativeFieldInfoPtr_rewards = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode>.NativeClassPtr, "rewards");
-			SchedulerNode.NativeFieldInfoPtr_postRewards = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode>.NativeClassPtr, "postRewards");
-			SchedulerNode.NativeFieldInfoPtr_postEvents = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode>.NativeClassPtr, "postEvents");
-			SchedulerNode.NativeFieldInfoPtr_postMissions = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode>.NativeClassPtr, "postMissions");
-			SchedulerNode.NativeFieldInfoPtr_postMissionsAfterPerformance = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode>.NativeClassPtr, "postMissionsAfterPerformance");
-			SchedulerNode.NativeFieldInfoPtr_preNodes = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode>.NativeClassPtr, "preNodes");
-			SchedulerNode.NativeFieldInfoPtr_missionType = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode>.NativeClassPtr, "missionType");
-			SchedulerNode.NativeMethodInfoPtr_GetNodeType_Public_Abstract_Virtual_New_NodeType_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<SchedulerNode>.NativeClassPtr, 100681405);
-			SchedulerNode.NativeMethodInfoPtr_PostIntializeClone_Protected_Abstract_Virtual_New_Void_SchedulerNode_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<SchedulerNode>.NativeClassPtr, 100681406);
-			SchedulerNode.NativeMethodInfoPtr_InternalGetNodeType_Protected_Abstract_Virtual_New_Type_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<SchedulerNode>.NativeClassPtr, 100681407);
-			SchedulerNode.NativeMethodInfoPtr_Clone_Public_SchedulerNode_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<SchedulerNode>.NativeClassPtr, 100681408);
-			SchedulerNode.NativeMethodInfoPtr_ToString_Public_Virtual_String_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<SchedulerNode>.NativeClassPtr, 100681409);
-			SchedulerNode.NativeMethodInfoPtr__ctor_Protected_Void_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<SchedulerNode>.NativeClassPtr, 100681410);
+			return null;
 		}
 
-		// Token: 0x06005A1A RID: 23066 RVA: 0x001CC93C File Offset: 0x001CAB3C
-		[CallerCount(0)]
-		public unsafe virtual SchedulerNode.NodeType GetNodeType()
+		// Token: 0x060046C1 RID: 18113 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x60046C1")]
+		[Address(RVA = "0x3F20F0", Offset = "0x3F0AF0", VA = "0x1803F20F0", Slot = "3")]
+		public override string ToString()
 		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IL2CPP.il2cpp_object_get_virtual_method(IL2CPP.Il2CppObjectBaseToPtr(this), SchedulerNode.NativeMethodInfoPtr_GetNodeType_Public_Abstract_Virtual_New_NodeType_0), IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-			return *IL2CPP.il2cpp_object_unbox(intPtr);
+			return null;
 		}
 
-		// Token: 0x06005A1B RID: 23067 RVA: 0x001CC984 File Offset: 0x001CAB84
-		[CallerCount(0)]
-		public unsafe virtual void PostIntializeClone(SchedulerNode instance)
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr))];
-			*ptr = IL2CPP.Il2CppObjectBaseToPtr(instance);
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IL2CPP.il2cpp_object_get_virtual_method(IL2CPP.Il2CppObjectBaseToPtr(this), SchedulerNode.NativeMethodInfoPtr_PostIntializeClone_Protected_Abstract_Virtual_New_Void_SchedulerNode_0), IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x06005A1C RID: 23068 RVA: 0x001CC9D4 File Offset: 0x001CABD4
-		[CallerCount(0)]
-		public unsafe virtual Type InternalGetNodeType()
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IL2CPP.il2cpp_object_get_virtual_method(IL2CPP.Il2CppObjectBaseToPtr(this), SchedulerNode.NativeMethodInfoPtr_InternalGetNodeType_Protected_Abstract_Virtual_New_Type_0), IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-			IntPtr intPtr3 = intPtr;
-			return (intPtr3 != 0) ? Il2CppObjectPool.Get<Type>(intPtr3) : null;
-		}
-
-		// Token: 0x06005A1D RID: 23069 RVA: 0x001CCA20 File Offset: 0x001CAC20
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 219809, XrefRangeEnd = 219859, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe SchedulerNode Clone()
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(SchedulerNode.NativeMethodInfoPtr_Clone_Public_SchedulerNode_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-			IntPtr intPtr3 = intPtr;
-			return (intPtr3 != 0) ? Il2CppObjectPool.Get<SchedulerNode>(intPtr3) : null;
-		}
-
-		// Token: 0x06005A1E RID: 23070 RVA: 0x001CCA60 File Offset: 0x001CAC60
-		[CallerCount(2)]
-		[CachedScanResults(RefRangeStart = 67576, RefRangeEnd = 67578, XrefRangeStart = 67576, XrefRangeEnd = 67578, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe override string ToString()
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IL2CPP.il2cpp_object_get_virtual_method(IL2CPP.Il2CppObjectBaseToPtr(this), SchedulerNode.NativeMethodInfoPtr_ToString_Public_Virtual_String_0), IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-			return IL2CPP.Il2CppStringToManaged(intPtr);
-		}
-
-		// Token: 0x06005A1F RID: 23071 RVA: 0x001CCAA4 File Offset: 0x001CACA4
-		[CallerCount(3)]
-		[CachedScanResults(RefRangeStart = 219880, RefRangeEnd = 219883, XrefRangeStart = 219859, XrefRangeEnd = 219880, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe SchedulerNode() : this(IL2CPP.il2cpp_object_new(Il2CppClassPointerStore<SchedulerNode>.NativeClassPtr))
-		{
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(SchedulerNode.NativeMethodInfoPtr__ctor_Protected_Void_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x06005A20 RID: 23072 RVA: 0x00030A85 File Offset: 0x0002EC85
-		public SchedulerNode(IntPtr pointer) : base(pointer)
+		// Token: 0x060046C2 RID: 18114 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x60046C2")]
+		[Address(RVA = "0x740EA0", Offset = "0x73F8A0", VA = "0x180740EA0")]
+		protected SchedulerNode()
 		{
 		}
 
-		// Token: 0x17001F0C RID: 7948
-		// (get) Token: 0x06005A21 RID: 23073 RVA: 0x001CCAE0 File Offset: 0x001CACE0
-		// (set) Token: 0x06005A22 RID: 23074 RVA: 0x00030A8E File Offset: 0x0002EC8E
-		public unsafe string label
-		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.NativeFieldInfoPtr_label);
-				return IL2CPP.Il2CppStringToManaged(*intPtr);
-			}
-			set
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.NativeFieldInfoPtr_label), IL2CPP.ManagedStringToIl2Cpp(value));
-			}
-		}
+		// Token: 0x04003F48 RID: 16200
+		[Token(Token = "0x4003F48")]
+		[FieldOffset(Offset = "0x18")]
+		public string label;
 
-		// Token: 0x17001F0D RID: 7949
-		// (get) Token: 0x06005A23 RID: 23075 RVA: 0x001CCB08 File Offset: 0x001CAD08
-		// (set) Token: 0x06005A24 RID: 23076 RVA: 0x00030AAD File Offset: 0x0002ECAD
-		public unsafe string debugLabel
-		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.NativeFieldInfoPtr_debugLabel);
-				return IL2CPP.Il2CppStringToManaged(*intPtr);
-			}
-			set
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.NativeFieldInfoPtr_debugLabel), IL2CPP.ManagedStringToIl2Cpp(value));
-			}
-		}
+		// Token: 0x04003F49 RID: 16201
+		[Token(Token = "0x4003F49")]
+		[FieldOffset(Offset = "0x20")]
+		public string debugLabel;
 
-		// Token: 0x17001F0E RID: 7950
-		// (get) Token: 0x06005A25 RID: 23077 RVA: 0x001CCB30 File Offset: 0x001CAD30
-		// (set) Token: 0x06005A26 RID: 23078 RVA: 0x00030ACC File Offset: 0x0002ECCC
-		public unsafe Il2CppReferenceArray<SchedulerNode.Reward> rewards
-		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.NativeFieldInfoPtr_rewards);
-				IntPtr intPtr2 = *intPtr;
-				return (intPtr2 != 0) ? Il2CppObjectPool.Get<Il2CppReferenceArray<SchedulerNode.Reward>>(intPtr2) : null;
-			}
-			set
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.NativeFieldInfoPtr_rewards), IL2CPP.Il2CppObjectBaseToPtr(value));
-			}
-		}
+		// Token: 0x04003F4A RID: 16202
+		[Token(Token = "0x4003F4A")]
+		[FieldOffset(Offset = "0x28")]
+		public SchedulerNode.Reward[] rewards;
 
-		// Token: 0x17001F0F RID: 7951
-		// (get) Token: 0x06005A27 RID: 23079 RVA: 0x001CCB60 File Offset: 0x001CAD60
-		// (set) Token: 0x06005A28 RID: 23080 RVA: 0x00030AEB File Offset: 0x0002ECEB
-		public unsafe Il2CppReferenceArray<SchedulerNode.Reward> postRewards
-		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.NativeFieldInfoPtr_postRewards);
-				IntPtr intPtr2 = *intPtr;
-				return (intPtr2 != 0) ? Il2CppObjectPool.Get<Il2CppReferenceArray<SchedulerNode.Reward>>(intPtr2) : null;
-			}
-			set
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.NativeFieldInfoPtr_postRewards), IL2CPP.Il2CppObjectBaseToPtr(value));
-			}
-		}
+		// Token: 0x04003F4B RID: 16203
+		[Token(Token = "0x4003F4B")]
+		[FieldOffset(Offset = "0x30")]
+		public SchedulerNode.Reward[] postRewards;
 
-		// Token: 0x17001F10 RID: 7952
-		// (get) Token: 0x06005A29 RID: 23081 RVA: 0x001CCB90 File Offset: 0x001CAD90
-		// (set) Token: 0x06005A2A RID: 23082 RVA: 0x00030B0A File Offset: 0x0002ED0A
-		public unsafe Il2CppStringArray postEvents
-		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.NativeFieldInfoPtr_postEvents);
-				IntPtr intPtr2 = *intPtr;
-				return (intPtr2 != 0) ? Il2CppObjectPool.Get<Il2CppStringArray>(intPtr2) : null;
-			}
-			set
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.NativeFieldInfoPtr_postEvents), IL2CPP.Il2CppObjectBaseToPtr(value));
-			}
-		}
+		// Token: 0x04003F4C RID: 16204
+		[Token(Token = "0x4003F4C")]
+		[FieldOffset(Offset = "0x38")]
+		public string[] postEvents;
 
-		// Token: 0x17001F11 RID: 7953
-		// (get) Token: 0x06005A2B RID: 23083 RVA: 0x001CCBC0 File Offset: 0x001CADC0
-		// (set) Token: 0x06005A2C RID: 23084 RVA: 0x00030B29 File Offset: 0x0002ED29
-		public unsafe Il2CppStringArray postMissions
-		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.NativeFieldInfoPtr_postMissions);
-				IntPtr intPtr2 = *intPtr;
-				return (intPtr2 != 0) ? Il2CppObjectPool.Get<Il2CppStringArray>(intPtr2) : null;
-			}
-			set
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.NativeFieldInfoPtr_postMissions), IL2CPP.Il2CppObjectBaseToPtr(value));
-			}
-		}
+		// Token: 0x04003F4D RID: 16205
+		[Token(Token = "0x4003F4D")]
+		[FieldOffset(Offset = "0x40")]
+		public string[] postMissions;
 
-		// Token: 0x17001F12 RID: 7954
-		// (get) Token: 0x06005A2D RID: 23085 RVA: 0x001CCBF0 File Offset: 0x001CADF0
-		// (set) Token: 0x06005A2E RID: 23086 RVA: 0x00030B48 File Offset: 0x0002ED48
-		public unsafe Il2CppStringArray postMissionsAfterPerformance
-		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.NativeFieldInfoPtr_postMissionsAfterPerformance);
-				IntPtr intPtr2 = *intPtr;
-				return (intPtr2 != 0) ? Il2CppObjectPool.Get<Il2CppStringArray>(intPtr2) : null;
-			}
-			set
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.NativeFieldInfoPtr_postMissionsAfterPerformance), IL2CPP.Il2CppObjectBaseToPtr(value));
-			}
-		}
+		// Token: 0x04003F4E RID: 16206
+		[Token(Token = "0x4003F4E")]
+		[FieldOffset(Offset = "0x48")]
+		public string[] postMissionsAfterPerformance;
 
-		// Token: 0x17001F13 RID: 7955
-		// (get) Token: 0x06005A2F RID: 23087 RVA: 0x001CCC20 File Offset: 0x001CAE20
-		// (set) Token: 0x06005A30 RID: 23088 RVA: 0x00030B67 File Offset: 0x0002ED67
-		public unsafe Il2CppStringArray preNodes
-		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.NativeFieldInfoPtr_preNodes);
-				IntPtr intPtr2 = *intPtr;
-				return (intPtr2 != 0) ? Il2CppObjectPool.Get<Il2CppStringArray>(intPtr2) : null;
-			}
-			set
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.NativeFieldInfoPtr_preNodes), IL2CPP.Il2CppObjectBaseToPtr(value));
-			}
-		}
+		// Token: 0x04003F4F RID: 16207
+		[Token(Token = "0x4003F4F")]
+		[FieldOffset(Offset = "0x50")]
+		public string[] preNodes;
 
-		// Token: 0x17001F14 RID: 7956
-		// (get) Token: 0x06005A31 RID: 23089 RVA: 0x001CCC50 File Offset: 0x001CAE50
-		// (set) Token: 0x06005A32 RID: 23090 RVA: 0x00030B86 File Offset: 0x0002ED86
-		public unsafe SchedulerNode.SchedulerType missionType
-		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.NativeFieldInfoPtr_missionType);
-				return *intPtr;
-			}
-			set
-			{
-				*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.NativeFieldInfoPtr_missionType)) = value;
-			}
-		}
+		// Token: 0x04003F50 RID: 16208
+		[Token(Token = "0x4003F50")]
+		[FieldOffset(Offset = "0x58")]
+		public SchedulerNode.SchedulerType missionType;
 
-		// Token: 0x04003C06 RID: 15366
-		private static readonly IntPtr NativeFieldInfoPtr_label;
-
-		// Token: 0x04003C07 RID: 15367
-		private static readonly IntPtr NativeFieldInfoPtr_debugLabel;
-
-		// Token: 0x04003C08 RID: 15368
-		private static readonly IntPtr NativeFieldInfoPtr_rewards;
-
-		// Token: 0x04003C09 RID: 15369
-		private static readonly IntPtr NativeFieldInfoPtr_postRewards;
-
-		// Token: 0x04003C0A RID: 15370
-		private static readonly IntPtr NativeFieldInfoPtr_postEvents;
-
-		// Token: 0x04003C0B RID: 15371
-		private static readonly IntPtr NativeFieldInfoPtr_postMissions;
-
-		// Token: 0x04003C0C RID: 15372
-		private static readonly IntPtr NativeFieldInfoPtr_postMissionsAfterPerformance;
-
-		// Token: 0x04003C0D RID: 15373
-		private static readonly IntPtr NativeFieldInfoPtr_preNodes;
-
-		// Token: 0x04003C0E RID: 15374
-		private static readonly IntPtr NativeFieldInfoPtr_missionType;
-
-		// Token: 0x04003C0F RID: 15375
-		private static readonly IntPtr NativeMethodInfoPtr_GetNodeType_Public_Abstract_Virtual_New_NodeType_0;
-
-		// Token: 0x04003C10 RID: 15376
-		private static readonly IntPtr NativeMethodInfoPtr_PostIntializeClone_Protected_Abstract_Virtual_New_Void_SchedulerNode_0;
-
-		// Token: 0x04003C11 RID: 15377
-		private static readonly IntPtr NativeMethodInfoPtr_InternalGetNodeType_Protected_Abstract_Virtual_New_Type_0;
-
-		// Token: 0x04003C12 RID: 15378
-		private static readonly IntPtr NativeMethodInfoPtr_Clone_Public_SchedulerNode_0;
-
-		// Token: 0x04003C13 RID: 15379
-		private static readonly IntPtr NativeMethodInfoPtr_ToString_Public_Virtual_String_0;
-
-		// Token: 0x04003C14 RID: 15380
-		private static readonly IntPtr NativeMethodInfoPtr__ctor_Protected_Void_0;
-
-		// Token: 0x02000CB0 RID: 3248
+		// Token: 0x02000BBB RID: 3003
+		[Token(Token = "0x2000BBB")]
 		public enum NodeType
 		{
-			// Token: 0x04009475 RID: 38005
+			// Token: 0x04003F52 RID: 16210
+			[Token(Token = "0x4003F52")]
 			Event,
-			// Token: 0x04009476 RID: 38006
+			// Token: 0x04003F53 RID: 16211
+			[Token(Token = "0x4003F53")]
 			Mission,
-			// Token: 0x04009477 RID: 38007
+			// Token: 0x04003F54 RID: 16212
+			[Token(Token = "0x4003F54")]
 			Aya
 		}
 
-		// Token: 0x02000CB1 RID: 3249
+		// Token: 0x02000BBC RID: 3004
+		[Token(Token = "0x2000BBC")]
 		public enum SchedulerType
 		{
-			// Token: 0x04009479 RID: 38009
+			// Token: 0x04003F56 RID: 16214
+			[Token(Token = "0x4003F56")]
 			Main,
-			// Token: 0x0400947A RID: 38010
+			// Token: 0x04003F57 RID: 16215
+			[Token(Token = "0x4003F57")]
 			Side,
-			// Token: 0x0400947B RID: 38011
+			// Token: 0x04003F58 RID: 16216
+			[Token(Token = "0x4003F58")]
 			Kitsuna
 		}
 
-		// Token: 0x02000CB2 RID: 3250
+		// Token: 0x02000BBD RID: 3005
+		[Token(Token = "0x2000BBD")]
 		[Serializable]
-		public sealed class Trigger : ValueType
+		public struct Trigger
 		{
-			// Token: 0x0600E8C4 RID: 59588 RVA: 0x0037B2AC File Offset: 0x003794AC
-			// Note: this type is marked as 'beforefieldinit'.
-			static Trigger()
-			{
-				Il2CppClassPointerStore<SchedulerNode.Trigger>.NativeClassPtr = IL2CPP.GetIl2CppNestedType(Il2CppClassPointerStore<SchedulerNode>.NativeClassPtr, "Trigger");
-				IL2CPP.il2cpp_runtime_class_init(Il2CppClassPointerStore<SchedulerNode.Trigger>.NativeClassPtr);
-				SchedulerNode.Trigger.NativeFieldInfoPtr_triggerType = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Trigger>.NativeClassPtr, "triggerType");
-				SchedulerNode.Trigger.NativeFieldInfoPtr_triggerId = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Trigger>.NativeClassPtr, "triggerId");
-				SchedulerNode.Trigger.NativeFieldInfoPtr_time = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Trigger>.NativeClassPtr, "time");
-				SchedulerNode.Trigger.NativeFieldInfoPtr_izakayaLockType = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Trigger>.NativeClassPtr, "izakayaLockType");
-				SchedulerNode.Trigger.NativeFieldInfoPtr_izakayaMappings = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Trigger>.NativeClassPtr, "izakayaMappings");
-				SchedulerNode.Trigger.NativeFieldInfoPtr_challengeEndContext = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Trigger>.NativeClassPtr, "challengeEndContext");
-				SchedulerNode.Trigger.NativeFieldInfoPtr_overrideIzakayaIndex = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Trigger>.NativeClassPtr, "overrideIzakayaIndex");
-				SchedulerNode.Trigger.NativeFieldInfoPtr_product = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Trigger>.NativeClassPtr, "product");
-				SchedulerNode.Trigger.NativeFieldInfoPtr_anyTime = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Trigger>.NativeClassPtr, "anyTime");
-				SchedulerNode.Trigger.NativeFieldInfoPtr_scheduleAtFirst = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Trigger>.NativeClassPtr, "scheduleAtFirst");
-				SchedulerNode.Trigger.NativeFieldInfoPtr_executeOrder = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Trigger>.NativeClassPtr, "executeOrder");
-				SchedulerNode.Trigger.NativeFieldInfoPtr_amount = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Trigger>.NativeClassPtr, "amount");
-				SchedulerNode.Trigger.NativeFieldInfoPtr_labels = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Trigger>.NativeClassPtr, "labels");
-			}
+			// Token: 0x04003F59 RID: 16217
+			[Token(Token = "0x4003F59")]
+			[FieldOffset(Offset = "0x0")]
+			[SerializeField]
+			public SchedulerNode.Trigger.TriggerType triggerType;
 
-			// Token: 0x0600E8C5 RID: 59589 RVA: 0x0007C717 File Offset: 0x0007A917
-			public Trigger(IntPtr pointer) : base(pointer)
-			{
-			}
+			// Token: 0x04003F5A RID: 16218
+			[Token(Token = "0x4003F5A")]
+			[FieldOffset(Offset = "0x8")]
+			[SerializeField]
+			public string triggerId;
 
-			// Token: 0x0600E8C6 RID: 59590 RVA: 0x0007C720 File Offset: 0x0007A920
-			public Trigger() : base(IL2CPP.il2cpp_object_new(Il2CppClassPointerStore<SchedulerNode.Trigger>.NativeClassPtr))
-			{
-			}
+			// Token: 0x04003F5B RID: 16219
+			[Token(Token = "0x4003F5B")]
+			[FieldOffset(Offset = "0x10")]
+			[SerializeField]
+			public SchedulerNode.Day time;
 
-			// Token: 0x17004BAA RID: 19370
-			// (get) Token: 0x0600E8C7 RID: 59591 RVA: 0x0037B3DC File Offset: 0x003795DC
-			// (set) Token: 0x0600E8C8 RID: 59592 RVA: 0x0007C732 File Offset: 0x0007A932
-			public unsafe SchedulerNode.Trigger.TriggerType triggerType
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Trigger.NativeFieldInfoPtr_triggerType);
-					return *intPtr;
-				}
-				set
-				{
-					*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Trigger.NativeFieldInfoPtr_triggerType)) = value;
-				}
-			}
+			// Token: 0x04003F5C RID: 16220
+			[Token(Token = "0x4003F5C")]
+			[FieldOffset(Offset = "0x24")]
+			[SerializeField]
+			public SchedulerNode.Trigger.IzakayaLockType izakayaLockType;
 
-			// Token: 0x17004BAB RID: 19371
-			// (get) Token: 0x0600E8C9 RID: 59593 RVA: 0x0037B404 File Offset: 0x00379604
-			// (set) Token: 0x0600E8CA RID: 59594 RVA: 0x0007C74D File Offset: 0x0007A94D
-			public unsafe string triggerId
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Trigger.NativeFieldInfoPtr_triggerId);
-					return IL2CPP.Il2CppStringToManaged(*intPtr);
-				}
-				set
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-					IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Trigger.NativeFieldInfoPtr_triggerId), IL2CPP.ManagedStringToIl2Cpp(value));
-				}
-			}
+			// Token: 0x04003F5D RID: 16221
+			[Token(Token = "0x4003F5D")]
+			[FieldOffset(Offset = "0x28")]
+			[SerializeField]
+			public SchedulerNode.Trigger.IzakayaMapping[] izakayaMappings;
 
-			// Token: 0x17004BAC RID: 19372
-			// (get) Token: 0x0600E8CB RID: 59595 RVA: 0x0037B42C File Offset: 0x0037962C
-			// (set) Token: 0x0600E8CC RID: 59596 RVA: 0x0007C76C File Offset: 0x0007A96C
-			public unsafe SchedulerNode.Day time
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Trigger.NativeFieldInfoPtr_time);
-					return *intPtr;
-				}
-				set
-				{
-					*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Trigger.NativeFieldInfoPtr_time)) = value;
-				}
-			}
+			// Token: 0x04003F5E RID: 16222
+			[Token(Token = "0x4003F5E")]
+			[FieldOffset(Offset = "0x30")]
+			[SerializeField]
+			public NightSceneDirector.ChallengeType challengeEndContext;
 
-			// Token: 0x17004BAD RID: 19373
-			// (get) Token: 0x0600E8CD RID: 59597 RVA: 0x0037B454 File Offset: 0x00379654
-			// (set) Token: 0x0600E8CE RID: 59598 RVA: 0x0007C787 File Offset: 0x0007A987
-			public unsafe SchedulerNode.Trigger.IzakayaLockType izakayaLockType
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Trigger.NativeFieldInfoPtr_izakayaLockType);
-					return *intPtr;
-				}
-				set
-				{
-					*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Trigger.NativeFieldInfoPtr_izakayaLockType)) = value;
-				}
-			}
+			// Token: 0x04003F5F RID: 16223
+			[Token(Token = "0x4003F5F")]
+			[FieldOffset(Offset = "0x34")]
+			[SerializeField]
+			public int overrideIzakayaIndex;
 
-			// Token: 0x17004BAE RID: 19374
-			// (get) Token: 0x0600E8CF RID: 59599 RVA: 0x0037B47C File Offset: 0x0037967C
-			// (set) Token: 0x0600E8D0 RID: 59600 RVA: 0x0007C7A2 File Offset: 0x0007A9A2
-			public unsafe Il2CppStructArray<SchedulerNode.Trigger.IzakayaMapping> izakayaMappings
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Trigger.NativeFieldInfoPtr_izakayaMappings);
-					IntPtr intPtr2 = *intPtr;
-					return (intPtr2 != 0) ? Il2CppObjectPool.Get<Il2CppStructArray<SchedulerNode.Trigger.IzakayaMapping>>(intPtr2) : null;
-				}
-				set
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-					IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Trigger.NativeFieldInfoPtr_izakayaMappings), IL2CPP.Il2CppObjectBaseToPtr(value));
-				}
-			}
+			// Token: 0x04003F60 RID: 16224
+			[Token(Token = "0x4003F60")]
+			[FieldOffset(Offset = "0x38")]
+			[SerializeField]
+			public Product product;
 
-			// Token: 0x17004BAF RID: 19375
-			// (get) Token: 0x0600E8D1 RID: 59601 RVA: 0x0037B4AC File Offset: 0x003796AC
-			// (set) Token: 0x0600E8D2 RID: 59602 RVA: 0x0007C7C1 File Offset: 0x0007A9C1
-			public unsafe NightSceneDirector.ChallengeType challengeEndContext
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Trigger.NativeFieldInfoPtr_challengeEndContext);
-					return *intPtr;
-				}
-				set
-				{
-					*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Trigger.NativeFieldInfoPtr_challengeEndContext)) = value;
-				}
-			}
+			// Token: 0x04003F61 RID: 16225
+			[Token(Token = "0x4003F61")]
+			[FieldOffset(Offset = "0x50")]
+			[SerializeField]
+			public bool anyTime;
 
-			// Token: 0x17004BB0 RID: 19376
-			// (get) Token: 0x0600E8D3 RID: 59603 RVA: 0x0037B4D4 File Offset: 0x003796D4
-			// (set) Token: 0x0600E8D4 RID: 59604 RVA: 0x0007C7DC File Offset: 0x0007A9DC
-			public unsafe int overrideIzakayaIndex
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Trigger.NativeFieldInfoPtr_overrideIzakayaIndex);
-					return *intPtr;
-				}
-				set
-				{
-					*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Trigger.NativeFieldInfoPtr_overrideIzakayaIndex)) = value;
-				}
-			}
+			// Token: 0x04003F62 RID: 16226
+			[Token(Token = "0x4003F62")]
+			[FieldOffset(Offset = "0x51")]
+			[SerializeField]
+			public bool scheduleAtFirst;
 
-			// Token: 0x17004BB1 RID: 19377
-			// (get) Token: 0x0600E8D5 RID: 59605 RVA: 0x0037B4FC File Offset: 0x003796FC
-			// (set) Token: 0x0600E8D6 RID: 59606 RVA: 0x0007C7F7 File Offset: 0x0007A9F7
-			public Product product
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Trigger.NativeFieldInfoPtr_product);
-					return new Product(IL2CPP.il2cpp_value_box(Il2CppClassPointerStore<Product>.NativeClassPtr, intPtr));
-				}
-				set
-				{
-					cpblk(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Trigger.NativeFieldInfoPtr_product), IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtr(value)), IL2CPP.il2cpp_class_value_size(Il2CppClassPointerStore<Product>.NativeClassPtr, (UIntPtr)0));
-				}
-			}
+			// Token: 0x04003F63 RID: 16227
+			[Token(Token = "0x4003F63")]
+			[FieldOffset(Offset = "0x54")]
+			[SerializeField]
+			public int executeOrder;
 
-			// Token: 0x17004BB2 RID: 19378
-			// (get) Token: 0x0600E8D7 RID: 59607 RVA: 0x0037B52C File Offset: 0x0037972C
-			// (set) Token: 0x0600E8D8 RID: 59608 RVA: 0x0007C825 File Offset: 0x0007AA25
-			public unsafe bool anyTime
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Trigger.NativeFieldInfoPtr_anyTime);
-					return *intPtr;
-				}
-				set
-				{
-					*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Trigger.NativeFieldInfoPtr_anyTime)) = value;
-				}
-			}
+			// Token: 0x04003F64 RID: 16228
+			[Token(Token = "0x4003F64")]
+			[FieldOffset(Offset = "0x58")]
+			[SerializeField]
+			public int amount;
 
-			// Token: 0x17004BB3 RID: 19379
-			// (get) Token: 0x0600E8D9 RID: 59609 RVA: 0x0037B554 File Offset: 0x00379754
-			// (set) Token: 0x0600E8DA RID: 59610 RVA: 0x0007C840 File Offset: 0x0007AA40
-			public unsafe bool scheduleAtFirst
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Trigger.NativeFieldInfoPtr_scheduleAtFirst);
-					return *intPtr;
-				}
-				set
-				{
-					*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Trigger.NativeFieldInfoPtr_scheduleAtFirst)) = value;
-				}
-			}
+			// Token: 0x04003F65 RID: 16229
+			[Token(Token = "0x4003F65")]
+			[FieldOffset(Offset = "0x60")]
+			[SerializeField]
+			public string[] labels;
 
-			// Token: 0x17004BB4 RID: 19380
-			// (get) Token: 0x0600E8DB RID: 59611 RVA: 0x0037B57C File Offset: 0x0037977C
-			// (set) Token: 0x0600E8DC RID: 59612 RVA: 0x0007C85B File Offset: 0x0007AA5B
-			public unsafe int executeOrder
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Trigger.NativeFieldInfoPtr_executeOrder);
-					return *intPtr;
-				}
-				set
-				{
-					*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Trigger.NativeFieldInfoPtr_executeOrder)) = value;
-				}
-			}
-
-			// Token: 0x17004BB5 RID: 19381
-			// (get) Token: 0x0600E8DD RID: 59613 RVA: 0x0037B5A4 File Offset: 0x003797A4
-			// (set) Token: 0x0600E8DE RID: 59614 RVA: 0x0007C876 File Offset: 0x0007AA76
-			public unsafe int amount
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Trigger.NativeFieldInfoPtr_amount);
-					return *intPtr;
-				}
-				set
-				{
-					*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Trigger.NativeFieldInfoPtr_amount)) = value;
-				}
-			}
-
-			// Token: 0x17004BB6 RID: 19382
-			// (get) Token: 0x0600E8DF RID: 59615 RVA: 0x0037B5CC File Offset: 0x003797CC
-			// (set) Token: 0x0600E8E0 RID: 59616 RVA: 0x0007C891 File Offset: 0x0007AA91
-			public unsafe Il2CppStringArray labels
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Trigger.NativeFieldInfoPtr_labels);
-					IntPtr intPtr2 = *intPtr;
-					return (intPtr2 != 0) ? Il2CppObjectPool.Get<Il2CppStringArray>(intPtr2) : null;
-				}
-				set
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-					IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Trigger.NativeFieldInfoPtr_labels), IL2CPP.Il2CppObjectBaseToPtr(value));
-				}
-			}
-
-			// Token: 0x0400947C RID: 38012
-			private static readonly IntPtr NativeFieldInfoPtr_triggerType;
-
-			// Token: 0x0400947D RID: 38013
-			private static readonly IntPtr NativeFieldInfoPtr_triggerId;
-
-			// Token: 0x0400947E RID: 38014
-			private static readonly IntPtr NativeFieldInfoPtr_time;
-
-			// Token: 0x0400947F RID: 38015
-			private static readonly IntPtr NativeFieldInfoPtr_izakayaLockType;
-
-			// Token: 0x04009480 RID: 38016
-			private static readonly IntPtr NativeFieldInfoPtr_izakayaMappings;
-
-			// Token: 0x04009481 RID: 38017
-			private static readonly IntPtr NativeFieldInfoPtr_challengeEndContext;
-
-			// Token: 0x04009482 RID: 38018
-			private static readonly IntPtr NativeFieldInfoPtr_overrideIzakayaIndex;
-
-			// Token: 0x04009483 RID: 38019
-			private static readonly IntPtr NativeFieldInfoPtr_product;
-
-			// Token: 0x04009484 RID: 38020
-			private static readonly IntPtr NativeFieldInfoPtr_anyTime;
-
-			// Token: 0x04009485 RID: 38021
-			private static readonly IntPtr NativeFieldInfoPtr_scheduleAtFirst;
-
-			// Token: 0x04009486 RID: 38022
-			private static readonly IntPtr NativeFieldInfoPtr_executeOrder;
-
-			// Token: 0x04009487 RID: 38023
-			private static readonly IntPtr NativeFieldInfoPtr_amount;
-
-			// Token: 0x04009488 RID: 38024
-			private static readonly IntPtr NativeFieldInfoPtr_labels;
-
-			// Token: 0x02001060 RID: 4192
+			// Token: 0x02000BBE RID: 3006
+			[Token(Token = "0x2000BBE")]
 			public enum IzakayaLockType
 			{
-				// Token: 0x0400B500 RID: 46336
+				// Token: 0x04003F67 RID: 16231
+				[Token(Token = "0x4003F67")]
 				Unlocked,
-				// Token: 0x0400B501 RID: 46337
+				// Token: 0x04003F68 RID: 16232
+				[Token(Token = "0x4003F68")]
 				Locked,
-				// Token: 0x0400B502 RID: 46338
+				// Token: 0x04003F69 RID: 16233
+				[Token(Token = "0x4003F69")]
 				Masked
 			}
 
-			// Token: 0x02001061 RID: 4193
+			// Token: 0x02000BBF RID: 3007
+			[Token(Token = "0x2000BBF")]
 			public enum TriggerType
 			{
-				// Token: 0x0400B504 RID: 46340
+				// Token: 0x04003F6B RID: 16235
+				[Token(Token = "0x4003F6B")]
+				[InspectorName("进入白天地图前(OnEnterDaySceneMap)")]
 				OnEnterDaySceneMap,
-				// Token: 0x0400B505 RID: 46341
+				// Token: 0x04003F6C RID: 16236
+				[Token(Token = "0x4003F6C")]
+				[InspectorName("进入白天前(OnEnterDayScene)")]
 				OnEnterDayScene,
-				// Token: 0x0400B506 RID: 46342
+				// Token: 0x04003F6D RID: 16237
+				[Token(Token = "0x4003F6D")]
+				[InspectorName("工作结束前(OnWorkEnd)")]
 				OnWorkEnd,
-				// Token: 0x0400B507 RID: 46343
+				// Token: 0x04003F6E RID: 16238
+				[Token(Token = "0x4003F6E")]
+				[InspectorName("和角色对话时(OnTalkWithCharacter)")]
 				OnTalkWithCharacter,
-				// Token: 0x0400B508 RID: 46344
+				// Token: 0x04003F6F RID: 16239
+				[Token(Token = "0x4003F6F")]
+				[InspectorName("工作开始之前(OnBeforeWorkStart)")]
 				OnBeforeWorkStart,
-				// Token: 0x0400B509 RID: 46345
+				// Token: 0x04003F70 RID: 16240
+				[Token(Token = "0x4003F70")]
+				[InspectorName("羁绊等级升级时(KizunaCheckPoint)")]
 				KizunaCheckPoint,
-				// Token: 0x0400B50A RID: 46346
+				// Token: 0x04003F71 RID: 16241
+				[Token(Token = "0x4003F71")]
+				[InspectorName("白天结束时，在夜雀的进入店面对话前(OnDayEnd)")]
 				OnDayEnd,
-				// Token: 0x0400B50B RID: 46347
+				// Token: 0x04003F72 RID: 16242
+				[Token(Token = "0x4003F72")]
+				[InspectorName("等级升级时(LevelCheckPoint)")]
 				LevelCheckPoint,
-				// Token: 0x0400B50C RID: 46348
+				// Token: 0x04003F73 RID: 16243
+				[Token(Token = "0x4003F73")]
+				[InspectorName("【未实现】购买了目标物品X个数量时(BuyCount)")]
 				BuyCount,
-				// Token: 0x0400B50D RID: 46349
+				// Token: 0x04003F74 RID: 16244
+				[Token(Token = "0x4003F74")]
+				[InspectorName("挑战开始前(OnBeforeChallengeStart)")]
 				OnBeforeChallengeStart,
-				// Token: 0x0400B50E RID: 46350
+				// Token: 0x04003F75 RID: 16245
+				[Token(Token = "0x4003F75")]
+				[InspectorName("挑战结束前(OnChallengeEnd)")]
 				OnChallengeEnd,
-				// Token: 0x0400B50F RID: 46351
+				// Token: 0x04003F76 RID: 16246
+				[Token(Token = "0x4003F76")]
+				[InspectorName("【已弃用】挑战阶段切换时(Obsolete_OnChallengePhaseChange)")]
 				Obsolete_OnChallengePhaseChange,
-				// Token: 0x0400B510 RID: 46352
+				// Token: 0x04003F77 RID: 16247
+				[Token(Token = "0x4003F77")]
+				[InspectorName("挑战失败时(OnChallengeFailed)")]
 				OnChallengeFailed,
-				// Token: 0x0400B511 RID: 46353
+				// Token: 0x04003F78 RID: 16248
+				[Token(Token = "0x4003F78")]
+				[InspectorName("挑战成功时(OnChallengeSucceed)")]
 				OnChallengeSucceed,
-				// Token: 0x0400B512 RID: 46354
+				// Token: 0x04003F79 RID: 16249
+				[Token(Token = "0x4003F79")]
+				[InspectorName("白天结束时，在夜雀的进入店面对话后(OnAfterDayEnd)")]
 				OnAfterDayEnd,
-				// Token: 0x0400B513 RID: 46355
+				// Token: 0x04003F7A RID: 16250
+				[Token(Token = "0x4003F7A")]
+				[InspectorName("进入雀食堂配置前(OnBeforeIzakayaConfigure)")]
 				OnBeforeIzakayaConfigure,
-				// Token: 0x0400B514 RID: 46356
+				// Token: 0x04003F7B RID: 16251
+				[Token(Token = "0x4003F7B")]
+				[InspectorName("进入白天触发区域(OnEnterDaySceneTriggerArea)")]
 				OnEnterDaySceneTriggerArea,
-				// Token: 0x0400B515 RID: 46357
+				// Token: 0x04003F7C RID: 16252
+				[Token(Token = "0x4003F7C")]
+				[InspectorName("立刻获得该事件内包含的奖励以及后置信息(TriggerFinishImmediate)")]
 				TriggerFinishImmediate,
-				// Token: 0x0400B516 RID: 46358
+				// Token: 0x04003F7D RID: 16253
+				[Token(Token = "0x4003F7D")]
+				[InspectorName("在白天结束，雀食堂配置面板打开后(OnAfterDayEndIzakayaSelectionOpen)")]
 				OnAfterDayEndIzakayaSelectionOpen,
-				// Token: 0x0400B517 RID: 46359
+				// Token: 0x04003F7E RID: 16254
+				[Token(Token = "0x4003F7E")]
+				[InspectorName("完成以下事件中的X(指定数量)个(CompleteSpecifiedFollowingEvents)")]
 				CompleteSpecifiedFollowingEvents,
-				// Token: 0x0400B518 RID: 46360
+				// Token: 0x04003F7F RID: 16255
+				[Token(Token = "0x4003F7F")]
+				[InspectorName("表示某种事情发生(不会自动完成，需要手动完成或者取消计划)(ImpossibleFinish)")]
 				ImpossibleFinish,
-				// Token: 0x0400B519 RID: 46361
+				// Token: 0x04003F80 RID: 16256
+				[Token(Token = "0x4003F80")]
+				[InspectorName("在羁绊经验到达当前等级最大值时(OnAnyKizunaExpFull)")]
 				OnAnyKizunaExpFull
 			}
 
-			// Token: 0x02001062 RID: 4194
+			// Token: 0x02000BC0 RID: 3008
+			[Token(Token = "0x2000BC0")]
 			[Serializable]
-			[StructLayout(2)]
 			public struct IzakayaMapping
 			{
-				// Token: 0x06011E6E RID: 73326 RVA: 0x00418034 File Offset: 0x00416234
-				// Note: this type is marked as 'beforefieldinit'.
-				static IzakayaMapping()
-				{
-					Il2CppClassPointerStore<SchedulerNode.Trigger.IzakayaMapping>.NativeClassPtr = IL2CPP.GetIl2CppNestedType(Il2CppClassPointerStore<SchedulerNode.Trigger>.NativeClassPtr, "IzakayaMapping");
-					IL2CPP.il2cpp_runtime_class_init(Il2CppClassPointerStore<SchedulerNode.Trigger.IzakayaMapping>.NativeClassPtr);
-					SchedulerNode.Trigger.IzakayaMapping.NativeFieldInfoPtr_sourceId = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Trigger.IzakayaMapping>.NativeClassPtr, "sourceId");
-					SchedulerNode.Trigger.IzakayaMapping.NativeFieldInfoPtr_targetId = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Trigger.IzakayaMapping>.NativeClassPtr, "targetId");
-				}
-
-				// Token: 0x06011E6F RID: 73327 RVA: 0x0009B8BC File Offset: 0x00099ABC
-				public Il2CppSystem.Object BoxIl2CppObject()
-				{
-					return new Il2CppSystem.Object(IL2CPP.il2cpp_value_box(Il2CppClassPointerStore<SchedulerNode.Trigger.IzakayaMapping>.NativeClassPtr, ref this));
-				}
-
-				// Token: 0x0400B51A RID: 46362
-				private static readonly IntPtr NativeFieldInfoPtr_sourceId;
-
-				// Token: 0x0400B51B RID: 46363
-				private static readonly IntPtr NativeFieldInfoPtr_targetId;
-
-				// Token: 0x0400B51C RID: 46364
-				[FieldOffset(0)]
+				// Token: 0x04003F81 RID: 16257
+				[Token(Token = "0x4003F81")]
+				[FieldOffset(Offset = "0x0")]
+				[SerializeField]
 				public int sourceId;
 
-				// Token: 0x0400B51D RID: 46365
-				[FieldOffset(4)]
+				// Token: 0x04003F82 RID: 16258
+				[Token(Token = "0x4003F82")]
+				[FieldOffset(Offset = "0x4")]
+				[SerializeField]
 				public int targetId;
 			}
 		}
 
-		// Token: 0x02000CB3 RID: 3251
+		// Token: 0x02000BC1 RID: 3009
+		[Token(Token = "0x2000BC1")]
 		[Serializable]
-		[StructLayout(2)]
 		public struct Day
 		{
-			// Token: 0x0600E8E1 RID: 59617 RVA: 0x0037B5FC File Offset: 0x003797FC
-			// Note: this type is marked as 'beforefieldinit'.
-			static Day()
+			// Token: 0x060046C3 RID: 18115 RVA: 0x00002050 File Offset: 0x00000250
+			[Token(Token = "0x60046C3")]
+			[Address(RVA = "0x73DC40", Offset = "0x73C640", VA = "0x18073DC40", Slot = "3")]
+			public override string ToString()
 			{
-				Il2CppClassPointerStore<SchedulerNode.Day>.NativeClassPtr = IL2CPP.GetIl2CppNestedType(Il2CppClassPointerStore<SchedulerNode>.NativeClassPtr, "Day");
-				IL2CPP.il2cpp_runtime_class_init(Il2CppClassPointerStore<SchedulerNode.Day>.NativeClassPtr);
-				SchedulerNode.Day.NativeFieldInfoPtr_dayType = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Day>.NativeClassPtr, "dayType");
-				SchedulerNode.Day.NativeFieldInfoPtr_dayCalcType = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Day>.NativeClassPtr, "dayCalcType");
-				SchedulerNode.Day.NativeFieldInfoPtr_day = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Day>.NativeClassPtr, "day");
-				SchedulerNode.Day.NativeFieldInfoPtr_dayRange = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Day>.NativeClassPtr, "dayRange");
-				SchedulerNode.Day.NativeMethodInfoPtr_ToString_Public_Virtual_String_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<SchedulerNode.Day>.NativeClassPtr, 100681411);
-				SchedulerNode.Day.NativeMethodInfoPtr_GetDayCount_Private_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<SchedulerNode.Day>.NativeClassPtr, 100681412);
-				SchedulerNode.Day.NativeMethodInfoPtr_GetAbsoluteDay_Public_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<SchedulerNode.Day>.NativeClassPtr, 100681413);
+				return null;
 			}
 
-			// Token: 0x0600E8E2 RID: 59618 RVA: 0x0037B6B4 File Offset: 0x003798B4
-			[CallerCount(0)]
-			[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 219694, XrefRangeEnd = 219706, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-			public unsafe override string ToString()
+			// Token: 0x060046C4 RID: 18116 RVA: 0x00019710 File Offset: 0x00017910
+			[Token(Token = "0x60046C4")]
+			[Address(RVA = "0x73DC20", Offset = "0x73C620", VA = "0x18073DC20")]
+			private int GetDayCount()
 			{
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(SchedulerNode.Day.NativeMethodInfoPtr_ToString_Public_Virtual_String_0, ref this, (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return IL2CPP.Il2CppStringToManaged(intPtr);
+				return 0;
 			}
 
-			// Token: 0x0600E8E3 RID: 59619 RVA: 0x0037B6E0 File Offset: 0x003798E0
-			[CallerCount(0)]
-			public unsafe int GetDayCount()
+			// Token: 0x060046C5 RID: 18117 RVA: 0x00019728 File Offset: 0x00017928
+			[Token(Token = "0x60046C5")]
+			[Address(RVA = "0x73DB80", Offset = "0x73C580", VA = "0x18073DB80")]
+			public int GetAbsoluteDay()
 			{
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(SchedulerNode.Day.NativeMethodInfoPtr_GetDayCount_Private_Int32_0, ref this, (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0;
 			}
 
-			// Token: 0x0600E8E4 RID: 59620 RVA: 0x0037B710 File Offset: 0x00379910
-			[CallerCount(5)]
-			[CachedScanResults(RefRangeStart = 219707, RefRangeEnd = 219712, XrefRangeStart = 219706, XrefRangeEnd = 219707, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-			public unsafe int GetAbsoluteDay()
-			{
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(SchedulerNode.Day.NativeMethodInfoPtr_GetAbsoluteDay_Public_Int32_0, ref this, (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
-			}
-
-			// Token: 0x0600E8E5 RID: 59621 RVA: 0x0007C8B0 File Offset: 0x0007AAB0
-			public Il2CppSystem.Object BoxIl2CppObject()
-			{
-				return new Il2CppSystem.Object(IL2CPP.il2cpp_value_box(Il2CppClassPointerStore<SchedulerNode.Day>.NativeClassPtr, ref this));
-			}
-
-			// Token: 0x04009489 RID: 38025
-			private static readonly IntPtr NativeFieldInfoPtr_dayType;
-
-			// Token: 0x0400948A RID: 38026
-			private static readonly IntPtr NativeFieldInfoPtr_dayCalcType;
-
-			// Token: 0x0400948B RID: 38027
-			private static readonly IntPtr NativeFieldInfoPtr_day;
-
-			// Token: 0x0400948C RID: 38028
-			private static readonly IntPtr NativeFieldInfoPtr_dayRange;
-
-			// Token: 0x0400948D RID: 38029
-			private static readonly IntPtr NativeMethodInfoPtr_ToString_Public_Virtual_String_0;
-
-			// Token: 0x0400948E RID: 38030
-			private static readonly IntPtr NativeMethodInfoPtr_GetDayCount_Private_Int32_0;
-
-			// Token: 0x0400948F RID: 38031
-			private static readonly IntPtr NativeMethodInfoPtr_GetAbsoluteDay_Public_Int32_0;
-
-			// Token: 0x04009490 RID: 38032
-			[FieldOffset(0)]
+			// Token: 0x04003F83 RID: 16259
+			[Token(Token = "0x4003F83")]
+			[FieldOffset(Offset = "0x0")]
+			[SerializeField]
 			public SchedulerNode.Day.DayType dayType;
 
-			// Token: 0x04009491 RID: 38033
-			[FieldOffset(4)]
+			// Token: 0x04003F84 RID: 16260
+			[Token(Token = "0x4003F84")]
+			[FieldOffset(Offset = "0x4")]
+			[SerializeField]
 			public SchedulerNode.Day.CalculateType dayCalcType;
 
-			// Token: 0x04009492 RID: 38034
-			[FieldOffset(8)]
+			// Token: 0x04003F85 RID: 16261
+			[Token(Token = "0x4003F85")]
+			[FieldOffset(Offset = "0x8")]
+			[SerializeField]
 			public int day;
 
-			// Token: 0x04009493 RID: 38035
-			[FieldOffset(12)]
+			// Token: 0x04003F86 RID: 16262
+			[Token(Token = "0x4003F86")]
+			[FieldOffset(Offset = "0xC")]
+			[SerializeField]
 			public Vector2Int dayRange;
 
-			// Token: 0x02001063 RID: 4195
+			// Token: 0x02000BC2 RID: 3010
+			[Token(Token = "0x2000BC2")]
 			public enum CalculateType
 			{
-				// Token: 0x0400B51F RID: 46367
+				// Token: 0x04003F88 RID: 16264
+				[Token(Token = "0x4003F88")]
 				Constant,
-				// Token: 0x0400B520 RID: 46368
+				// Token: 0x04003F89 RID: 16265
+				[Token(Token = "0x4003F89")]
 				Random
 			}
 
-			// Token: 0x02001064 RID: 4196
+			// Token: 0x02000BC3 RID: 3011
+			[Token(Token = "0x2000BC3")]
 			public enum DayType
 			{
-				// Token: 0x0400B522 RID: 46370
+				// Token: 0x04003F8B RID: 16267
+				[Token(Token = "0x4003F8B")]
 				Relative,
-				// Token: 0x0400B523 RID: 46371
+				// Token: 0x04003F8C RID: 16268
+				[Token(Token = "0x4003F8C")]
 				Absolute
 			}
 		}
 
-		// Token: 0x02000CB4 RID: 3252
+		// Token: 0x02000BC4 RID: 3012
+		[Token(Token = "0x2000BC4")]
 		[Serializable]
-		public sealed class Event : ValueType
+		public struct Event
 		{
-			// Token: 0x0600E8E6 RID: 59622 RVA: 0x0037B740 File Offset: 0x00379940
-			// Note: this type is marked as 'beforefieldinit'.
-			static Event()
+			// Token: 0x060046C6 RID: 18118 RVA: 0x00019740 File Offset: 0x00017940
+			[Token(Token = "0x60046C6")]
+			[Address(RVA = "0x73DD60", Offset = "0x73C760", VA = "0x18073DD60")]
+			public static SchedulerNode.Event DialogEvent(DialogPackage dialogPackage)
 			{
-				Il2CppClassPointerStore<SchedulerNode.Event>.NativeClassPtr = IL2CPP.GetIl2CppNestedType(Il2CppClassPointerStore<SchedulerNode>.NativeClassPtr, "Event");
-				IL2CPP.il2cpp_runtime_class_init(Il2CppClassPointerStore<SchedulerNode.Event>.NativeClassPtr);
-				SchedulerNode.Event.NativeFieldInfoPtr_eventType = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Event>.NativeClassPtr, "eventType");
-				SchedulerNode.Event.NativeFieldInfoPtr_eventTimeline = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Event>.NativeClassPtr, "eventTimeline");
-				SchedulerNode.Event.NativeFieldInfoPtr_eventDialogPackage = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Event>.NativeClassPtr, "eventDialogPackage");
-				SchedulerNode.Event.NativeFieldInfoPtr_runtimeTimeline = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Event>.NativeClassPtr, "runtimeTimeline");
-				SchedulerNode.Event.NativeFieldInfoPtr_runtimeDialogPackage = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Event>.NativeClassPtr, "runtimeDialogPackage");
-				SchedulerNode.Event.NativeFieldInfoPtr_doNotHideBackgroundUIInDialog = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Event>.NativeClassPtr, "doNotHideBackgroundUIInDialog");
-				SchedulerNode.Event.NativeMethodInfoPtr_DialogEvent_Public_Static_Event_DialogPackage_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<SchedulerNode.Event>.NativeClassPtr, 100681414);
-				SchedulerNode.Event.NativeMethodInfoPtr_TimelineEvent_Public_Static_Event_PlayableAsset_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<SchedulerNode.Event>.NativeClassPtr, 100681415);
-				SchedulerNode.Event.NativeMethodInfoPtr_ToString_Public_Virtual_String_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<SchedulerNode.Event>.NativeClassPtr, 100681416);
+				return default(SchedulerNode.Event);
 			}
 
-			// Token: 0x0600E8E7 RID: 59623 RVA: 0x0037B820 File Offset: 0x00379A20
-			[CallerCount(0)]
-			[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 219712, XrefRangeEnd = 219713, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-			public unsafe static SchedulerNode.Event DialogEvent(DialogPackage dialogPackage)
+			// Token: 0x060046C7 RID: 18119 RVA: 0x00019758 File Offset: 0x00017958
+			[Token(Token = "0x60046C7")]
+			[Address(RVA = "0x73DDA0", Offset = "0x73C7A0", VA = "0x18073DDA0")]
+			public static SchedulerNode.Event TimelineEvent(PlayableAsset timeline)
 			{
-				IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr))];
-				*ptr = IL2CPP.Il2CppObjectBaseToPtr(dialogPackage);
-				IntPtr intPtr;
-				IntPtr pointer = IL2CPP.il2cpp_runtime_invoke(SchedulerNode.Event.NativeMethodInfoPtr_DialogEvent_Public_Static_Event_DialogPackage_0, 0, (void**)ptr, ref intPtr);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr);
-				return new SchedulerNode.Event(pointer);
+				return default(SchedulerNode.Event);
 			}
 
-			// Token: 0x0600E8E8 RID: 59624 RVA: 0x0037B85C File Offset: 0x00379A5C
-			[CallerCount(11)]
-			[CachedScanResults(RefRangeStart = 219714, RefRangeEnd = 219725, XrefRangeStart = 219713, XrefRangeEnd = 219714, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-			public unsafe static SchedulerNode.Event TimelineEvent(PlayableAsset timeline)
+			// Token: 0x060046C8 RID: 18120 RVA: 0x00002050 File Offset: 0x00000250
+			[Token(Token = "0x60046C8")]
+			[Address(RVA = "0x73DDE0", Offset = "0x73C7E0", VA = "0x18073DDE0", Slot = "3")]
+			public override string ToString()
 			{
-				IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr))];
-				*ptr = IL2CPP.Il2CppObjectBaseToPtr(timeline);
-				IntPtr intPtr;
-				IntPtr pointer = IL2CPP.il2cpp_runtime_invoke(SchedulerNode.Event.NativeMethodInfoPtr_TimelineEvent_Public_Static_Event_PlayableAsset_0, 0, (void**)ptr, ref intPtr);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr);
-				return new SchedulerNode.Event(pointer);
+				return null;
 			}
 
-			// Token: 0x0600E8E9 RID: 59625 RVA: 0x0037B898 File Offset: 0x00379A98
-			[CallerCount(0)]
-			[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 219725, XrefRangeEnd = 219731, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-			public unsafe override string ToString()
-			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(SchedulerNode.Event.NativeMethodInfoPtr_ToString_Public_Virtual_String_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return IL2CPP.Il2CppStringToManaged(intPtr);
-			}
+			// Token: 0x04003F8D RID: 16269
+			[Token(Token = "0x4003F8D")]
+			[FieldOffset(Offset = "0x0")]
+			[SerializeField]
+			public SchedulerNode.Event.EventType eventType;
 
-			// Token: 0x0600E8EA RID: 59626 RVA: 0x0007C8C2 File Offset: 0x0007AAC2
-			public Event(IntPtr pointer) : base(pointer)
-			{
-			}
+			// Token: 0x04003F8E RID: 16270
+			[Token(Token = "0x4003F8E")]
+			[FieldOffset(Offset = "0x8")]
+			[SerializeField]
+			public AssetReference eventTimeline;
 
-			// Token: 0x0600E8EB RID: 59627 RVA: 0x0007C8CB File Offset: 0x0007AACB
-			public Event() : base(IL2CPP.il2cpp_object_new(Il2CppClassPointerStore<SchedulerNode.Event>.NativeClassPtr))
-			{
-			}
+			// Token: 0x04003F8F RID: 16271
+			[Token(Token = "0x4003F8F")]
+			[FieldOffset(Offset = "0x10")]
+			[SerializeField]
+			public AssetReference eventDialogPackage;
 
-			// Token: 0x17004BB7 RID: 19383
-			// (get) Token: 0x0600E8EC RID: 59628 RVA: 0x0037B8D4 File Offset: 0x00379AD4
-			// (set) Token: 0x0600E8ED RID: 59629 RVA: 0x0007C8DD File Offset: 0x0007AADD
-			public unsafe SchedulerNode.Event.EventType eventType
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Event.NativeFieldInfoPtr_eventType);
-					return *intPtr;
-				}
-				set
-				{
-					*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Event.NativeFieldInfoPtr_eventType)) = value;
-				}
-			}
+			// Token: 0x04003F90 RID: 16272
+			[Token(Token = "0x4003F90")]
+			[FieldOffset(Offset = "0x18")]
+			[SerializeField]
+			public PlayableAsset runtimeTimeline;
 
-			// Token: 0x17004BB8 RID: 19384
-			// (get) Token: 0x0600E8EE RID: 59630 RVA: 0x0037B8FC File Offset: 0x00379AFC
-			// (set) Token: 0x0600E8EF RID: 59631 RVA: 0x0007C8F8 File Offset: 0x0007AAF8
-			public unsafe AssetReference eventTimeline
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Event.NativeFieldInfoPtr_eventTimeline);
-					IntPtr intPtr2 = *intPtr;
-					return (intPtr2 != 0) ? Il2CppObjectPool.Get<AssetReference>(intPtr2) : null;
-				}
-				set
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-					IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Event.NativeFieldInfoPtr_eventTimeline), IL2CPP.Il2CppObjectBaseToPtr(value));
-				}
-			}
+			// Token: 0x04003F91 RID: 16273
+			[Token(Token = "0x4003F91")]
+			[FieldOffset(Offset = "0x20")]
+			[SerializeField]
+			public DialogPackage runtimeDialogPackage;
 
-			// Token: 0x17004BB9 RID: 19385
-			// (get) Token: 0x0600E8F0 RID: 59632 RVA: 0x0037B92C File Offset: 0x00379B2C
-			// (set) Token: 0x0600E8F1 RID: 59633 RVA: 0x0007C917 File Offset: 0x0007AB17
-			public unsafe AssetReference eventDialogPackage
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Event.NativeFieldInfoPtr_eventDialogPackage);
-					IntPtr intPtr2 = *intPtr;
-					return (intPtr2 != 0) ? Il2CppObjectPool.Get<AssetReference>(intPtr2) : null;
-				}
-				set
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-					IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Event.NativeFieldInfoPtr_eventDialogPackage), IL2CPP.Il2CppObjectBaseToPtr(value));
-				}
-			}
+			// Token: 0x04003F92 RID: 16274
+			[Token(Token = "0x4003F92")]
+			[FieldOffset(Offset = "0x28")]
+			[SerializeField]
+			public bool doNotHideBackgroundUIInDialog;
 
-			// Token: 0x17004BBA RID: 19386
-			// (get) Token: 0x0600E8F2 RID: 59634 RVA: 0x0037B95C File Offset: 0x00379B5C
-			// (set) Token: 0x0600E8F3 RID: 59635 RVA: 0x0007C936 File Offset: 0x0007AB36
-			public unsafe PlayableAsset runtimeTimeline
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Event.NativeFieldInfoPtr_runtimeTimeline);
-					IntPtr intPtr2 = *intPtr;
-					return (intPtr2 != 0) ? Il2CppObjectPool.Get<PlayableAsset>(intPtr2) : null;
-				}
-				set
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-					IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Event.NativeFieldInfoPtr_runtimeTimeline), IL2CPP.Il2CppObjectBaseToPtr(value));
-				}
-			}
-
-			// Token: 0x17004BBB RID: 19387
-			// (get) Token: 0x0600E8F4 RID: 59636 RVA: 0x0037B98C File Offset: 0x00379B8C
-			// (set) Token: 0x0600E8F5 RID: 59637 RVA: 0x0007C955 File Offset: 0x0007AB55
-			public unsafe DialogPackage runtimeDialogPackage
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Event.NativeFieldInfoPtr_runtimeDialogPackage);
-					IntPtr intPtr2 = *intPtr;
-					return (intPtr2 != 0) ? Il2CppObjectPool.Get<DialogPackage>(intPtr2) : null;
-				}
-				set
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-					IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Event.NativeFieldInfoPtr_runtimeDialogPackage), IL2CPP.Il2CppObjectBaseToPtr(value));
-				}
-			}
-
-			// Token: 0x17004BBC RID: 19388
-			// (get) Token: 0x0600E8F6 RID: 59638 RVA: 0x0037B9BC File Offset: 0x00379BBC
-			// (set) Token: 0x0600E8F7 RID: 59639 RVA: 0x0007C974 File Offset: 0x0007AB74
-			public unsafe bool doNotHideBackgroundUIInDialog
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Event.NativeFieldInfoPtr_doNotHideBackgroundUIInDialog);
-					return *intPtr;
-				}
-				set
-				{
-					*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Event.NativeFieldInfoPtr_doNotHideBackgroundUIInDialog)) = value;
-				}
-			}
-
-			// Token: 0x04009494 RID: 38036
-			private static readonly IntPtr NativeFieldInfoPtr_eventType;
-
-			// Token: 0x04009495 RID: 38037
-			private static readonly IntPtr NativeFieldInfoPtr_eventTimeline;
-
-			// Token: 0x04009496 RID: 38038
-			private static readonly IntPtr NativeFieldInfoPtr_eventDialogPackage;
-
-			// Token: 0x04009497 RID: 38039
-			private static readonly IntPtr NativeFieldInfoPtr_runtimeTimeline;
-
-			// Token: 0x04009498 RID: 38040
-			private static readonly IntPtr NativeFieldInfoPtr_runtimeDialogPackage;
-
-			// Token: 0x04009499 RID: 38041
-			private static readonly IntPtr NativeFieldInfoPtr_doNotHideBackgroundUIInDialog;
-
-			// Token: 0x0400949A RID: 38042
-			private static readonly IntPtr NativeMethodInfoPtr_DialogEvent_Public_Static_Event_DialogPackage_0;
-
-			// Token: 0x0400949B RID: 38043
-			private static readonly IntPtr NativeMethodInfoPtr_TimelineEvent_Public_Static_Event_PlayableAsset_0;
-
-			// Token: 0x0400949C RID: 38044
-			private static readonly IntPtr NativeMethodInfoPtr_ToString_Public_Virtual_String_0;
-
-			// Token: 0x02001065 RID: 4197
+			// Token: 0x02000BC5 RID: 3013
+			[Token(Token = "0x2000BC5")]
 			public enum EventType
 			{
-				// Token: 0x0400B525 RID: 46373
+				// Token: 0x04003F94 RID: 16276
+				[Token(Token = "0x4003F94")]
 				Null,
-				// Token: 0x0400B526 RID: 46374
+				// Token: 0x04003F95 RID: 16277
+				[Token(Token = "0x4003F95")]
 				Timeline,
-				// Token: 0x0400B527 RID: 46375
+				// Token: 0x04003F96 RID: 16278
+				[Token(Token = "0x4003F96")]
 				Dialog
 			}
 		}
 
-		// Token: 0x02000CB5 RID: 3253
+		// Token: 0x02000BC6 RID: 3014
+		[Token(Token = "0x2000BC6")]
 		[Serializable]
-		[StructLayout(2)]
-		public struct Character
+		public struct Character : IEquatable<SchedulerNode.Character>
 		{
-			// Token: 0x0600E8F8 RID: 59640 RVA: 0x0037B9E4 File Offset: 0x00379BE4
-			// Note: this type is marked as 'beforefieldinit'.
-			static Character()
+			// Token: 0x060046C9 RID: 18121 RVA: 0x00002053 File Offset: 0x00000253
+			[Token(Token = "0x60046C9")]
+			[Address(RVA = "0x41AF60", Offset = "0x419960", VA = "0x18041AF60")]
+			public Character(SceneDirector.Identity characterIdentity, int characterId)
 			{
-				Il2CppClassPointerStore<SchedulerNode.Character>.NativeClassPtr = IL2CPP.GetIl2CppNestedType(Il2CppClassPointerStore<SchedulerNode>.NativeClassPtr, "Character");
-				IL2CPP.il2cpp_runtime_class_init(Il2CppClassPointerStore<SchedulerNode.Character>.NativeClassPtr);
-				SchedulerNode.Character.NativeFieldInfoPtr_characterIdentity = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Character>.NativeClassPtr, "characterIdentity");
-				SchedulerNode.Character.NativeFieldInfoPtr_characterId = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Character>.NativeClassPtr, "characterId");
-				SchedulerNode.Character.NativeMethodInfoPtr__ctor_Public_Void_Identity_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<SchedulerNode.Character>.NativeClassPtr, 100681417);
-				SchedulerNode.Character.NativeMethodInfoPtr_Equals_Public_Virtual_Final_New_Boolean_Character_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<SchedulerNode.Character>.NativeClassPtr, 100681418);
-				SchedulerNode.Character.NativeMethodInfoPtr_GetLanguageData_Public_LanguageBase_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<SchedulerNode.Character>.NativeClassPtr, 100681419);
-				SchedulerNode.Character.NativeMethodInfoPtr_GetVisual_Public_CharacterSpriteSetCompact_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<SchedulerNode.Character>.NativeClassPtr, 100681420);
-				SchedulerNode.Character.NativeMethodInfoPtr_ToString_Public_Virtual_String_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<SchedulerNode.Character>.NativeClassPtr, 100681421);
 			}
 
-			// Token: 0x0600E8F9 RID: 59641 RVA: 0x0037BA9C File Offset: 0x00379C9C
-			[CallerCount(104)]
-			[CachedScanResults(RefRangeStart = 395, RefRangeEnd = 499, XrefRangeStart = 395, XrefRangeEnd = 499, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-			public unsafe Character(SceneDirector.Identity characterIdentity, int characterId)
+			// Token: 0x060046CA RID: 18122 RVA: 0x00019770 File Offset: 0x00017970
+			[Token(Token = "0x60046CA")]
+			[Address(RVA = "0x734DC0", Offset = "0x7337C0", VA = "0x180734DC0", Slot = "4")]
+			public bool Equals(SchedulerNode.Character other)
 			{
-				IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)2) * (UIntPtr)sizeof(IntPtr))];
-				*ptr = ref characterIdentity;
-				ptr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr)) / (UIntPtr)sizeof(IntPtr)] = ref characterId;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(SchedulerNode.Character.NativeMethodInfoPtr__ctor_Public_Void_Identity_Int32_0, ref this, (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
+				return default(bool);
 			}
 
-			// Token: 0x0600E8FA RID: 59642 RVA: 0x0037BADC File Offset: 0x00379CDC
-			[CallerCount(0)]
-			public unsafe bool Equals(SchedulerNode.Character other)
+			// Token: 0x060046CB RID: 18123 RVA: 0x00002050 File Offset: 0x00000250
+			[Token(Token = "0x60046CB")]
+			[Address(RVA = "0x734DE0", Offset = "0x7337E0", VA = "0x180734DE0")]
+			public LanguageBase GetLanguageData()
 			{
-				IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr))];
-				*ptr = ref other;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(SchedulerNode.Character.NativeMethodInfoPtr_Equals_Public_Virtual_Final_New_Boolean_Character_0, ref this, (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return null;
 			}
 
-			// Token: 0x0600E8FB RID: 59643 RVA: 0x0037BB1C File Offset: 0x00379D1C
-			[CallerCount(0)]
-			[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 219731, XrefRangeEnd = 219733, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-			public unsafe LanguageBase GetLanguageData()
+			// Token: 0x060046CC RID: 18124 RVA: 0x00002050 File Offset: 0x00000250
+			[Token(Token = "0x60046CC")]
+			[Address(RVA = "0x734E10", Offset = "0x733810", VA = "0x180734E10")]
+			public CharacterSpriteSetCompact GetVisual()
 			{
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(SchedulerNode.Character.NativeMethodInfoPtr_GetLanguageData_Public_LanguageBase_0, ref this, (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				IntPtr intPtr3 = intPtr;
-				return (intPtr3 != 0) ? Il2CppObjectPool.Get<LanguageBase>(intPtr3) : null;
+				return null;
 			}
 
-			// Token: 0x0600E8FC RID: 59644 RVA: 0x0037BB50 File Offset: 0x00379D50
-			[CallerCount(1)]
-			[CachedScanResults(RefRangeStart = 219741, RefRangeEnd = 219742, XrefRangeStart = 219733, XrefRangeEnd = 219741, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-			public unsafe CharacterSpriteSetCompact GetVisual()
+			// Token: 0x060046CD RID: 18125 RVA: 0x00002050 File Offset: 0x00000250
+			[Token(Token = "0x60046CD")]
+			[Address(RVA = "0x734EB0", Offset = "0x7338B0", VA = "0x180734EB0", Slot = "3")]
+			public override string ToString()
 			{
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(SchedulerNode.Character.NativeMethodInfoPtr_GetVisual_Public_CharacterSpriteSetCompact_0, ref this, (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				IntPtr intPtr3 = intPtr;
-				return (intPtr3 != 0) ? Il2CppObjectPool.Get<CharacterSpriteSetCompact>(intPtr3) : null;
+				return null;
 			}
 
-			// Token: 0x0600E8FD RID: 59645 RVA: 0x0037BB84 File Offset: 0x00379D84
-			[CallerCount(0)]
-			[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 219742, XrefRangeEnd = 219751, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-			public unsafe override string ToString()
-			{
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(SchedulerNode.Character.NativeMethodInfoPtr_ToString_Public_Virtual_String_0, ref this, (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return IL2CPP.Il2CppStringToManaged(intPtr);
-			}
-
-			// Token: 0x0600E8FE RID: 59646 RVA: 0x0007C98F File Offset: 0x0007AB8F
-			public Il2CppSystem.Object BoxIl2CppObject()
-			{
-				return new Il2CppSystem.Object(IL2CPP.il2cpp_value_box(Il2CppClassPointerStore<SchedulerNode.Character>.NativeClassPtr, ref this));
-			}
-
-			// Token: 0x0400949D RID: 38045
-			private static readonly IntPtr NativeFieldInfoPtr_characterIdentity;
-
-			// Token: 0x0400949E RID: 38046
-			private static readonly IntPtr NativeFieldInfoPtr_characterId;
-
-			// Token: 0x0400949F RID: 38047
-			private static readonly IntPtr NativeMethodInfoPtr__ctor_Public_Void_Identity_Int32_0;
-
-			// Token: 0x040094A0 RID: 38048
-			private static readonly IntPtr NativeMethodInfoPtr_Equals_Public_Virtual_Final_New_Boolean_Character_0;
-
-			// Token: 0x040094A1 RID: 38049
-			private static readonly IntPtr NativeMethodInfoPtr_GetLanguageData_Public_LanguageBase_0;
-
-			// Token: 0x040094A2 RID: 38050
-			private static readonly IntPtr NativeMethodInfoPtr_GetVisual_Public_CharacterSpriteSetCompact_0;
-
-			// Token: 0x040094A3 RID: 38051
-			private static readonly IntPtr NativeMethodInfoPtr_ToString_Public_Virtual_String_0;
-
-			// Token: 0x040094A4 RID: 38052
-			[FieldOffset(0)]
+			// Token: 0x04003F97 RID: 16279
+			[Token(Token = "0x4003F97")]
+			[FieldOffset(Offset = "0x0")]
+			[SerializeField]
 			public SceneDirector.Identity characterIdentity;
 
-			// Token: 0x040094A5 RID: 38053
-			[FieldOffset(4)]
+			// Token: 0x04003F98 RID: 16280
+			[Token(Token = "0x4003F98")]
+			[FieldOffset(Offset = "0x4")]
+			[SerializeField]
 			public int characterId;
 		}
 
-		// Token: 0x02000CB6 RID: 3254
+		// Token: 0x02000BC7 RID: 3015
+		[Token(Token = "0x2000BC7")]
 		[Serializable]
-		public sealed class ScheduledEvent : ValueType
+		public struct ScheduledEvent
 		{
-			// Token: 0x0600E8FF RID: 59647 RVA: 0x0037BBB0 File Offset: 0x00379DB0
-			// Note: this type is marked as 'beforefieldinit'.
-			static ScheduledEvent()
-			{
-				Il2CppClassPointerStore<SchedulerNode.ScheduledEvent>.NativeClassPtr = IL2CPP.GetIl2CppNestedType(Il2CppClassPointerStore<SchedulerNode>.NativeClassPtr, "ScheduledEvent");
-				IL2CPP.il2cpp_runtime_class_init(Il2CppClassPointerStore<SchedulerNode.ScheduledEvent>.NativeClassPtr);
-				SchedulerNode.ScheduledEvent.NativeFieldInfoPtr_trigger = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.ScheduledEvent>.NativeClassPtr, "trigger");
-				SchedulerNode.ScheduledEvent.NativeFieldInfoPtr_eventData = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.ScheduledEvent>.NativeClassPtr, "eventData");
-				SchedulerNode.ScheduledEvent.NativeMethodInfoPtr__ctor_Public_Void_Trigger_Event_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<SchedulerNode.ScheduledEvent>.NativeClassPtr, 100681422);
-				SchedulerNode.ScheduledEvent.NativeMethodInfoPtr_ToString_Public_Virtual_String_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<SchedulerNode.ScheduledEvent>.NativeClassPtr, 100681423);
-			}
-
-			// Token: 0x0600E900 RID: 59648 RVA: 0x0037BC2C File Offset: 0x00379E2C
-			[CallerCount(0)]
-			[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 219751, XrefRangeEnd = 219753, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-			public unsafe ScheduledEvent(SchedulerNode.Trigger trigger, SchedulerNode.Event eventData) : this(IL2CPP.il2cpp_object_new(Il2CppClassPointerStore<SchedulerNode.ScheduledEvent>.NativeClassPtr))
-			{
-				IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)2) * (UIntPtr)sizeof(IntPtr))];
-				*ptr = IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(trigger));
-				ptr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr)) / (UIntPtr)sizeof(IntPtr)] = IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(eventData));
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(SchedulerNode.ScheduledEvent.NativeMethodInfoPtr__ctor_Public_Void_Trigger_Event_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-			}
-
-			// Token: 0x0600E901 RID: 59649 RVA: 0x0037BC98 File Offset: 0x00379E98
-			[CallerCount(0)]
-			[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 219753, XrefRangeEnd = 219762, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-			public unsafe override string ToString()
-			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(SchedulerNode.ScheduledEvent.NativeMethodInfoPtr_ToString_Public_Virtual_String_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return IL2CPP.Il2CppStringToManaged(intPtr);
-			}
-
-			// Token: 0x0600E902 RID: 59650 RVA: 0x0007C9A1 File Offset: 0x0007ABA1
-			public ScheduledEvent(IntPtr pointer) : base(pointer)
+			// Token: 0x060046CE RID: 18126 RVA: 0x00002053 File Offset: 0x00000253
+			[Token(Token = "0x60046CE")]
+			[Address(RVA = "0x7409E0", Offset = "0x73F3E0", VA = "0x1807409E0")]
+			public ScheduledEvent(SchedulerNode.Trigger trigger, SchedulerNode.Event eventData)
 			{
 			}
 
-			// Token: 0x0600E903 RID: 59651 RVA: 0x0007C9AA File Offset: 0x0007ABAA
-			public ScheduledEvent() : base(IL2CPP.il2cpp_object_new(Il2CppClassPointerStore<SchedulerNode.ScheduledEvent>.NativeClassPtr))
+			// Token: 0x060046CF RID: 18127 RVA: 0x00002050 File Offset: 0x00000250
+			[Token(Token = "0x60046CF")]
+			[Address(RVA = "0x7408E0", Offset = "0x73F2E0", VA = "0x1807408E0", Slot = "3")]
+			public override string ToString()
 			{
+				return null;
 			}
 
-			// Token: 0x17004BBD RID: 19389
-			// (get) Token: 0x0600E904 RID: 59652 RVA: 0x0037BCD4 File Offset: 0x00379ED4
-			// (set) Token: 0x0600E905 RID: 59653 RVA: 0x0007C9BC File Offset: 0x0007ABBC
-			public SchedulerNode.Trigger trigger
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.ScheduledEvent.NativeFieldInfoPtr_trigger);
-					return new SchedulerNode.Trigger(IL2CPP.il2cpp_value_box(Il2CppClassPointerStore<SchedulerNode.Trigger>.NativeClassPtr, intPtr));
-				}
-				set
-				{
-					cpblk(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.ScheduledEvent.NativeFieldInfoPtr_trigger), IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtr(value)), IL2CPP.il2cpp_class_value_size(Il2CppClassPointerStore<SchedulerNode.Trigger>.NativeClassPtr, (UIntPtr)0));
-				}
-			}
+			// Token: 0x04003F99 RID: 16281
+			[Token(Token = "0x4003F99")]
+			[FieldOffset(Offset = "0x0")]
+			[SerializeField]
+			public SchedulerNode.Trigger trigger;
 
-			// Token: 0x17004BBE RID: 19390
-			// (get) Token: 0x0600E906 RID: 59654 RVA: 0x0037BD04 File Offset: 0x00379F04
-			// (set) Token: 0x0600E907 RID: 59655 RVA: 0x0007C9EA File Offset: 0x0007ABEA
-			public SchedulerNode.Event eventData
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.ScheduledEvent.NativeFieldInfoPtr_eventData);
-					return new SchedulerNode.Event(IL2CPP.il2cpp_value_box(Il2CppClassPointerStore<SchedulerNode.Event>.NativeClassPtr, intPtr));
-				}
-				set
-				{
-					cpblk(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.ScheduledEvent.NativeFieldInfoPtr_eventData), IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtr(value)), IL2CPP.il2cpp_class_value_size(Il2CppClassPointerStore<SchedulerNode.Event>.NativeClassPtr, (UIntPtr)0));
-				}
-			}
-
-			// Token: 0x040094A6 RID: 38054
-			private static readonly IntPtr NativeFieldInfoPtr_trigger;
-
-			// Token: 0x040094A7 RID: 38055
-			private static readonly IntPtr NativeFieldInfoPtr_eventData;
-
-			// Token: 0x040094A8 RID: 38056
-			private static readonly IntPtr NativeMethodInfoPtr__ctor_Public_Void_Trigger_Event_0;
-
-			// Token: 0x040094A9 RID: 38057
-			private static readonly IntPtr NativeMethodInfoPtr_ToString_Public_Virtual_String_0;
+			// Token: 0x04003F9A RID: 16282
+			[Token(Token = "0x4003F9A")]
+			[FieldOffset(Offset = "0x68")]
+			[SerializeField]
+			public SchedulerNode.Event eventData;
 		}
 
-		// Token: 0x02000CB7 RID: 3255
+		// Token: 0x02000BC8 RID: 3016
+		[Token(Token = "0x2000BC8")]
 		[Serializable]
-		public sealed class Reward : ValueType
+		public struct Reward
 		{
-			// Token: 0x0600E908 RID: 59656 RVA: 0x0037BD34 File Offset: 0x00379F34
-			// Note: this type is marked as 'beforefieldinit'.
-			static Reward()
+			// Token: 0x060046D0 RID: 18128 RVA: 0x00002050 File Offset: 0x00000250
+			[Token(Token = "0x60046D0")]
+			[Address(RVA = "0x73F7A0", Offset = "0x73E1A0", VA = "0x18073F7A0", Slot = "3")]
+			public override string ToString()
 			{
-				Il2CppClassPointerStore<SchedulerNode.Reward>.NativeClassPtr = IL2CPP.GetIl2CppNestedType(Il2CppClassPointerStore<SchedulerNode>.NativeClassPtr, "Reward");
-				IL2CPP.il2cpp_runtime_class_init(Il2CppClassPointerStore<SchedulerNode.Reward>.NativeClassPtr);
-				SchedulerNode.Reward.NativeFieldInfoPtr_rewardType = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Reward>.NativeClassPtr, "rewardType");
-				SchedulerNode.Reward.NativeFieldInfoPtr_rewardId = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Reward>.NativeClassPtr, "rewardId");
-				SchedulerNode.Reward.NativeFieldInfoPtr_rewardAltId = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Reward>.NativeClassPtr, "rewardAltId");
-				SchedulerNode.Reward.NativeFieldInfoPtr_rewardAltAltId = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Reward>.NativeClassPtr, "rewardAltAltId");
-				SchedulerNode.Reward.NativeFieldInfoPtr_rewardIdArray = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Reward>.NativeClassPtr, "rewardIdArray");
-				SchedulerNode.Reward.NativeFieldInfoPtr_rewardIntArray = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Reward>.NativeClassPtr, "rewardIntArray");
-				SchedulerNode.Reward.NativeFieldInfoPtr_time = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Reward>.NativeClassPtr, "time");
-				SchedulerNode.Reward.NativeFieldInfoPtr_id = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Reward>.NativeClassPtr, "id");
-				SchedulerNode.Reward.NativeFieldInfoPtr_popType = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Reward>.NativeClassPtr, "popType");
-				SchedulerNode.Reward.NativeFieldInfoPtr_tagType = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Reward>.NativeClassPtr, "tagType");
-				SchedulerNode.Reward.NativeFieldInfoPtr_objectType = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Reward>.NativeClassPtr, "objectType");
-				SchedulerNode.Reward.NativeFieldInfoPtr_should = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Reward>.NativeClassPtr, "should");
-				SchedulerNode.Reward.NativeFieldInfoPtr_value = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Reward>.NativeClassPtr, "value");
-				SchedulerNode.Reward.NativeFieldInfoPtr_position = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Reward>.NativeClassPtr, "position");
-				SchedulerNode.Reward.NativeFieldInfoPtr_challengeType = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SchedulerNode.Reward>.NativeClassPtr, "challengeType");
-				SchedulerNode.Reward.NativeMethodInfoPtr_ToString_Public_Virtual_String_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<SchedulerNode.Reward>.NativeClassPtr, 100681424);
+				return null;
 			}
 
-			// Token: 0x0600E909 RID: 59657 RVA: 0x0037BEA0 File Offset: 0x0037A0A0
-			[CallerCount(0)]
-			[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 219762, XrefRangeEnd = 219809, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-			public unsafe override string ToString()
-			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(SchedulerNode.Reward.NativeMethodInfoPtr_ToString_Public_Virtual_String_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return IL2CPP.Il2CppStringToManaged(intPtr);
-			}
+			// Token: 0x04003F9B RID: 16283
+			[Token(Token = "0x4003F9B")]
+			[FieldOffset(Offset = "0x0")]
+			[SerializeField]
+			public SchedulerNode.Reward.RewardType rewardType;
 
-			// Token: 0x0600E90A RID: 59658 RVA: 0x0007CA18 File Offset: 0x0007AC18
-			public Reward(IntPtr pointer) : base(pointer)
-			{
-			}
+			// Token: 0x04003F9C RID: 16284
+			[Token(Token = "0x4003F9C")]
+			[FieldOffset(Offset = "0x8")]
+			[SerializeField]
+			public string rewardId;
 
-			// Token: 0x0600E90B RID: 59659 RVA: 0x0007CA21 File Offset: 0x0007AC21
-			public Reward() : base(IL2CPP.il2cpp_object_new(Il2CppClassPointerStore<SchedulerNode.Reward>.NativeClassPtr))
-			{
-			}
+			// Token: 0x04003F9D RID: 16285
+			[Token(Token = "0x4003F9D")]
+			[FieldOffset(Offset = "0x10")]
+			[SerializeField]
+			public string rewardAltId;
 
-			// Token: 0x17004BBF RID: 19391
-			// (get) Token: 0x0600E90C RID: 59660 RVA: 0x0037BEDC File Offset: 0x0037A0DC
-			// (set) Token: 0x0600E90D RID: 59661 RVA: 0x0007CA33 File Offset: 0x0007AC33
-			public unsafe SchedulerNode.Reward.RewardType rewardType
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Reward.NativeFieldInfoPtr_rewardType);
-					return *intPtr;
-				}
-				set
-				{
-					*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Reward.NativeFieldInfoPtr_rewardType)) = value;
-				}
-			}
+			// Token: 0x04003F9E RID: 16286
+			[Token(Token = "0x4003F9E")]
+			[FieldOffset(Offset = "0x18")]
+			[SerializeField]
+			public string rewardAltAltId;
 
-			// Token: 0x17004BC0 RID: 19392
-			// (get) Token: 0x0600E90E RID: 59662 RVA: 0x0037BF04 File Offset: 0x0037A104
-			// (set) Token: 0x0600E90F RID: 59663 RVA: 0x0007CA4E File Offset: 0x0007AC4E
-			public unsafe string rewardId
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Reward.NativeFieldInfoPtr_rewardId);
-					return IL2CPP.Il2CppStringToManaged(*intPtr);
-				}
-				set
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-					IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Reward.NativeFieldInfoPtr_rewardId), IL2CPP.ManagedStringToIl2Cpp(value));
-				}
-			}
+			// Token: 0x04003F9F RID: 16287
+			[Token(Token = "0x4003F9F")]
+			[FieldOffset(Offset = "0x20")]
+			[SerializeField]
+			public string[] rewardIdArray;
 
-			// Token: 0x17004BC1 RID: 19393
-			// (get) Token: 0x0600E910 RID: 59664 RVA: 0x0037BF2C File Offset: 0x0037A12C
-			// (set) Token: 0x0600E911 RID: 59665 RVA: 0x0007CA6D File Offset: 0x0007AC6D
-			public unsafe string rewardAltId
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Reward.NativeFieldInfoPtr_rewardAltId);
-					return IL2CPP.Il2CppStringToManaged(*intPtr);
-				}
-				set
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-					IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Reward.NativeFieldInfoPtr_rewardAltId), IL2CPP.ManagedStringToIl2Cpp(value));
-				}
-			}
+			// Token: 0x04003FA0 RID: 16288
+			[Token(Token = "0x4003FA0")]
+			[FieldOffset(Offset = "0x28")]
+			[SerializeField]
+			public int[] rewardIntArray;
 
-			// Token: 0x17004BC2 RID: 19394
-			// (get) Token: 0x0600E912 RID: 59666 RVA: 0x0037BF54 File Offset: 0x0037A154
-			// (set) Token: 0x0600E913 RID: 59667 RVA: 0x0007CA8C File Offset: 0x0007AC8C
-			public unsafe string rewardAltAltId
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Reward.NativeFieldInfoPtr_rewardAltAltId);
-					return IL2CPP.Il2CppStringToManaged(*intPtr);
-				}
-				set
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-					IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Reward.NativeFieldInfoPtr_rewardAltAltId), IL2CPP.ManagedStringToIl2Cpp(value));
-				}
-			}
+			// Token: 0x04003FA1 RID: 16289
+			[Token(Token = "0x4003FA1")]
+			[FieldOffset(Offset = "0x30")]
+			[SerializeField]
+			public SchedulerNode.Day time;
 
-			// Token: 0x17004BC3 RID: 19395
-			// (get) Token: 0x0600E914 RID: 59668 RVA: 0x0037BF7C File Offset: 0x0037A17C
-			// (set) Token: 0x0600E915 RID: 59669 RVA: 0x0007CAAB File Offset: 0x0007ACAB
-			public unsafe Il2CppStringArray rewardIdArray
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Reward.NativeFieldInfoPtr_rewardIdArray);
-					IntPtr intPtr2 = *intPtr;
-					return (intPtr2 != 0) ? Il2CppObjectPool.Get<Il2CppStringArray>(intPtr2) : null;
-				}
-				set
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-					IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Reward.NativeFieldInfoPtr_rewardIdArray), IL2CPP.Il2CppObjectBaseToPtr(value));
-				}
-			}
+			// Token: 0x04003FA2 RID: 16290
+			[Token(Token = "0x4003FA2")]
+			[FieldOffset(Offset = "0x44")]
+			[SerializeField]
+			public int id;
 
-			// Token: 0x17004BC4 RID: 19396
-			// (get) Token: 0x0600E916 RID: 59670 RVA: 0x0037BFAC File Offset: 0x0037A1AC
-			// (set) Token: 0x0600E917 RID: 59671 RVA: 0x0007CACA File Offset: 0x0007ACCA
-			public unsafe Il2CppStructArray<int> rewardIntArray
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Reward.NativeFieldInfoPtr_rewardIntArray);
-					IntPtr intPtr2 = *intPtr;
-					return (intPtr2 != 0) ? Il2CppObjectPool.Get<Il2CppStructArray<int>>(intPtr2) : null;
-				}
-				set
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-					IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Reward.NativeFieldInfoPtr_rewardIntArray), IL2CPP.Il2CppObjectBaseToPtr(value));
-				}
-			}
+			// Token: 0x04003FA3 RID: 16291
+			[Token(Token = "0x4003FA3")]
+			[FieldOffset(Offset = "0x48")]
+			[SerializeField]
+			public RunTimePlayerData.PopType popType;
 
-			// Token: 0x17004BC5 RID: 19397
-			// (get) Token: 0x0600E918 RID: 59672 RVA: 0x0037BFDC File Offset: 0x0037A1DC
-			// (set) Token: 0x0600E919 RID: 59673 RVA: 0x0007CAE9 File Offset: 0x0007ACE9
-			public unsafe SchedulerNode.Day time
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Reward.NativeFieldInfoPtr_time);
-					return *intPtr;
-				}
-				set
-				{
-					*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Reward.NativeFieldInfoPtr_time)) = value;
-				}
-			}
+			// Token: 0x04003FA4 RID: 16292
+			[Token(Token = "0x4003FA4")]
+			[FieldOffset(Offset = "0x4C")]
+			[SerializeField]
+			public RunTimePlayerData.TagType tagType;
 
-			// Token: 0x17004BC6 RID: 19398
-			// (get) Token: 0x0600E91A RID: 59674 RVA: 0x0037C004 File Offset: 0x0037A204
-			// (set) Token: 0x0600E91B RID: 59675 RVA: 0x0007CB04 File Offset: 0x0007AD04
-			public unsafe int id
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Reward.NativeFieldInfoPtr_id);
-					return *intPtr;
-				}
-				set
-				{
-					*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Reward.NativeFieldInfoPtr_id)) = value;
-				}
-			}
+			// Token: 0x04003FA5 RID: 16293
+			[Token(Token = "0x4003FA5")]
+			[FieldOffset(Offset = "0x50")]
+			[SerializeField]
+			public SchedulerNode.Reward.ObjectType objectType;
 
-			// Token: 0x17004BC7 RID: 19399
-			// (get) Token: 0x0600E91C RID: 59676 RVA: 0x0037C02C File Offset: 0x0037A22C
-			// (set) Token: 0x0600E91D RID: 59677 RVA: 0x0007CB1F File Offset: 0x0007AD1F
-			public unsafe RunTimePlayerData.PopType popType
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Reward.NativeFieldInfoPtr_popType);
-					return *intPtr;
-				}
-				set
-				{
-					*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Reward.NativeFieldInfoPtr_popType)) = value;
-				}
-			}
+			// Token: 0x04003FA6 RID: 16294
+			[Token(Token = "0x4003FA6")]
+			[FieldOffset(Offset = "0x54")]
+			[SerializeField]
+			public bool should;
 
-			// Token: 0x17004BC8 RID: 19400
-			// (get) Token: 0x0600E91E RID: 59678 RVA: 0x0037C054 File Offset: 0x0037A254
-			// (set) Token: 0x0600E91F RID: 59679 RVA: 0x0007CB3A File Offset: 0x0007AD3A
-			public unsafe RunTimePlayerData.TagType tagType
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Reward.NativeFieldInfoPtr_tagType);
-					return *intPtr;
-				}
-				set
-				{
-					*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Reward.NativeFieldInfoPtr_tagType)) = value;
-				}
-			}
+			// Token: 0x04003FA7 RID: 16295
+			[Token(Token = "0x4003FA7")]
+			[FieldOffset(Offset = "0x58")]
+			[SerializeField]
+			public float value;
 
-			// Token: 0x17004BC9 RID: 19401
-			// (get) Token: 0x0600E920 RID: 59680 RVA: 0x0037C07C File Offset: 0x0037A27C
-			// (set) Token: 0x0600E921 RID: 59681 RVA: 0x0007CB55 File Offset: 0x0007AD55
-			public unsafe SchedulerNode.Reward.ObjectType objectType
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Reward.NativeFieldInfoPtr_objectType);
-					return *intPtr;
-				}
-				set
-				{
-					*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Reward.NativeFieldInfoPtr_objectType)) = value;
-				}
-			}
+			// Token: 0x04003FA8 RID: 16296
+			[Token(Token = "0x4003FA8")]
+			[FieldOffset(Offset = "0x5C")]
+			[SerializeField]
+			public Vector2 position;
 
-			// Token: 0x17004BCA RID: 19402
-			// (get) Token: 0x0600E922 RID: 59682 RVA: 0x0037C0A4 File Offset: 0x0037A2A4
-			// (set) Token: 0x0600E923 RID: 59683 RVA: 0x0007CB70 File Offset: 0x0007AD70
-			public unsafe bool should
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Reward.NativeFieldInfoPtr_should);
-					return *intPtr;
-				}
-				set
-				{
-					*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Reward.NativeFieldInfoPtr_should)) = value;
-				}
-			}
+			// Token: 0x04003FA9 RID: 16297
+			[Token(Token = "0x4003FA9")]
+			[FieldOffset(Offset = "0x64")]
+			[SerializeField]
+			public NightSceneDirector.ChallengeType challengeType;
 
-			// Token: 0x17004BCB RID: 19403
-			// (get) Token: 0x0600E924 RID: 59684 RVA: 0x0037C0CC File Offset: 0x0037A2CC
-			// (set) Token: 0x0600E925 RID: 59685 RVA: 0x0007CB8B File Offset: 0x0007AD8B
-			public unsafe float value
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Reward.NativeFieldInfoPtr_value);
-					return *intPtr;
-				}
-				set
-				{
-					*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Reward.NativeFieldInfoPtr_value)) = value;
-				}
-			}
-
-			// Token: 0x17004BCC RID: 19404
-			// (get) Token: 0x0600E926 RID: 59686 RVA: 0x0037C0F4 File Offset: 0x0037A2F4
-			// (set) Token: 0x0600E927 RID: 59687 RVA: 0x0007CBA6 File Offset: 0x0007ADA6
-			public unsafe Vector2 position
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Reward.NativeFieldInfoPtr_position);
-					return *intPtr;
-				}
-				set
-				{
-					*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Reward.NativeFieldInfoPtr_position)) = value;
-				}
-			}
-
-			// Token: 0x17004BCD RID: 19405
-			// (get) Token: 0x0600E928 RID: 59688 RVA: 0x0037C11C File Offset: 0x0037A31C
-			// (set) Token: 0x0600E929 RID: 59689 RVA: 0x0007CBC1 File Offset: 0x0007ADC1
-			public unsafe NightSceneDirector.ChallengeType challengeType
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Reward.NativeFieldInfoPtr_challengeType);
-					return *intPtr;
-				}
-				set
-				{
-					*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(SchedulerNode.Reward.NativeFieldInfoPtr_challengeType)) = value;
-				}
-			}
-
-			// Token: 0x040094AA RID: 38058
-			private static readonly IntPtr NativeFieldInfoPtr_rewardType;
-
-			// Token: 0x040094AB RID: 38059
-			private static readonly IntPtr NativeFieldInfoPtr_rewardId;
-
-			// Token: 0x040094AC RID: 38060
-			private static readonly IntPtr NativeFieldInfoPtr_rewardAltId;
-
-			// Token: 0x040094AD RID: 38061
-			private static readonly IntPtr NativeFieldInfoPtr_rewardAltAltId;
-
-			// Token: 0x040094AE RID: 38062
-			private static readonly IntPtr NativeFieldInfoPtr_rewardIdArray;
-
-			// Token: 0x040094AF RID: 38063
-			private static readonly IntPtr NativeFieldInfoPtr_rewardIntArray;
-
-			// Token: 0x040094B0 RID: 38064
-			private static readonly IntPtr NativeFieldInfoPtr_time;
-
-			// Token: 0x040094B1 RID: 38065
-			private static readonly IntPtr NativeFieldInfoPtr_id;
-
-			// Token: 0x040094B2 RID: 38066
-			private static readonly IntPtr NativeFieldInfoPtr_popType;
-
-			// Token: 0x040094B3 RID: 38067
-			private static readonly IntPtr NativeFieldInfoPtr_tagType;
-
-			// Token: 0x040094B4 RID: 38068
-			private static readonly IntPtr NativeFieldInfoPtr_objectType;
-
-			// Token: 0x040094B5 RID: 38069
-			private static readonly IntPtr NativeFieldInfoPtr_should;
-
-			// Token: 0x040094B6 RID: 38070
-			private static readonly IntPtr NativeFieldInfoPtr_value;
-
-			// Token: 0x040094B7 RID: 38071
-			private static readonly IntPtr NativeFieldInfoPtr_position;
-
-			// Token: 0x040094B8 RID: 38072
-			private static readonly IntPtr NativeFieldInfoPtr_challengeType;
-
-			// Token: 0x040094B9 RID: 38073
-			private static readonly IntPtr NativeMethodInfoPtr_ToString_Public_Virtual_String_0;
-
-			// Token: 0x02001066 RID: 4198
+			// Token: 0x02000BC9 RID: 3017
+			[Token(Token = "0x2000BC9")]
 			public enum ObjectType
 			{
-				// Token: 0x0400B529 RID: 46377
+				// Token: 0x04003FAB RID: 16299
+				[Token(Token = "0x4003FAB")]
 				Food,
-				// Token: 0x0400B52A RID: 46378
+				// Token: 0x04003FAC RID: 16300
+				[Token(Token = "0x4003FAC")]
 				Ingredient,
-				// Token: 0x0400B52B RID: 46379
+				// Token: 0x04003FAD RID: 16301
+				[Token(Token = "0x4003FAD")]
 				Beverage,
-				// Token: 0x0400B52C RID: 46380
+				// Token: 0x04003FAE RID: 16302
+				[Token(Token = "0x4003FAE")]
 				Item,
-				// Token: 0x0400B52D RID: 46381
+				// Token: 0x04003FAF RID: 16303
+				[Token(Token = "0x4003FAF")]
 				Recipe,
-				// Token: 0x0400B52E RID: 46382
+				// Token: 0x04003FB0 RID: 16304
+				[Token(Token = "0x4003FB0")]
 				Izakaya,
-				// Token: 0x0400B52F RID: 46383
+				// Token: 0x04003FB1 RID: 16305
+				[Token(Token = "0x4003FB1")]
 				Partner,
-				// Token: 0x0400B530 RID: 46384
+				// Token: 0x04003FB2 RID: 16306
+				[Token(Token = "0x4003FB2")]
 				Badge,
-				// Token: 0x0400B531 RID: 46385
+				// Token: 0x04003FB3 RID: 16307
+				[Token(Token = "0x4003FB3")]
 				Cooker
 			}
 
-			// Token: 0x02001067 RID: 4199
+			// Token: 0x02000BCA RID: 3018
+			[Token(Token = "0x2000BCA")]
 			public enum RewardType
 			{
-				// Token: 0x0400B533 RID: 46387
+				// Token: 0x04003FB5 RID: 16309
+				[Token(Token = "0x4003FB5")]
+				[InspectorName("解锁NPC")]
 				UnlockNPC,
-				// Token: 0x0400B534 RID: 46388
+				// Token: 0x04003FB6 RID: 16310
+				[Token(Token = "0x4003FB6")]
+				[InspectorName("计划新闻")]
 				ScheduleNews,
-				// Token: 0x0400B535 RID: 46389
+				// Token: 0x04003FB7 RID: 16311
+				[Token(Token = "0x4003FB7")]
+				[InspectorName("取消被计划的新闻")]
 				DismissNews,
-				// Token: 0x0400B536 RID: 46390
+				// Token: 0x04003FB8 RID: 16312
+				[Token(Token = "0x4003FB8")]
+				[InspectorName("修改流行系统")]
 				ModifyPopSystem,
-				// Token: 0x0400B537 RID: 46391
+				// Token: 0x04003FB9 RID: 16313
+				[Token(Token = "0x4003FB9")]
+				[InspectorName("开关采集点")]
 				ToggleResourcePoint,
-				// Token: 0x0400B538 RID: 46392
+				// Token: 0x04003FBA RID: 16314
+				[Token(Token = "0x4003FBA")]
+				[InspectorName("设置全局客人携带金额因子")]
 				SetGlobalGuestFundModifier,
-				// Token: 0x0400B539 RID: 46393
+				// Token: 0x04003FBB RID: 16315
+				[Token(Token = "0x4003FBB")]
+				[InspectorName("设置具体物品价格因子")]
 				SetObjectPriceModifier,
-				// Token: 0x0400B53A RID: 46394
+				// Token: 0x04003FBC RID: 16316
+				[Token(Token = "0x4003FBC")]
+				[InspectorName("【已弃用】取消被计划的事件")]
 				DismissEvents,
-				// Token: 0x0400B53B RID: 46395
+				// Token: 0x04003FBD RID: 16317
+				[Token(Token = "0x4003FBD")]
+				[InspectorName("移动NPC到给定位置")]
 				RequestNPC,
-				// Token: 0x0400B53C RID: 46396
+				// Token: 0x04003FBE RID: 16318
+				[Token(Token = "0x4003FBE")]
+				[InspectorName("将NPC移动回原位置")]
 				DismissNPC,
-				// Token: 0x0400B53D RID: 46397
+				// Token: 0x04003FBF RID: 16319
+				[Token(Token = "0x4003FBF")]
+				[InspectorName("将目标对话加入给定NPC的对话池")]
 				AddNPCDialog,
-				// Token: 0x0400B53E RID: 46398
+				// Token: 0x04003FC0 RID: 16320
+				[Token(Token = "0x4003FC0")]
+				[InspectorName("将目标对话从给定NPC的对话池移除")]
 				RemoveNPCDialog,
-				// Token: 0x0400B53F RID: 46399
+				// Token: 0x04003FC1 RID: 16321
+				[Token(Token = "0x4003FC1")]
+				[InspectorName("设置可互动物品的可用性")]
 				ToggleInteractableEntity,
-				// Token: 0x0400B540 RID: 46400
+				// Token: 0x04003FC2 RID: 16322
+				[Token(Token = "0x4003FC2")]
+				[InspectorName("解锁地图")]
 				UnlockMap,
-				// Token: 0x0400B541 RID: 46401
+				// Token: 0x04003FC3 RID: 16323
+				[Token(Token = "0x4003FC3")]
+				[InspectorName("设置按钮是否可以互动")]
 				SetEnableInteractablesUI,
-				// Token: 0x0400B542 RID: 46402
+				// Token: 0x04003FC4 RID: 16324
+				[Token(Token = "0x4003FC4")]
+				[InspectorName("【已弃用】设置覆写雀食堂的ID")]
 				SetIzakayaIndex,
-				// Token: 0x0400B543 RID: 46403
+				// Token: 0x04003FC5 RID: 16325
+				[Token(Token = "0x4003FC5")]
+				[InspectorName("获得给定物品")]
 				GiveItem,
-				// Token: 0x0400B544 RID: 46404
+				// Token: 0x04003FC6 RID: 16326
+				[Token(Token = "0x4003FC6")]
+				[InspectorName("设置白天稀有NPC的")]
 				SetDaySpecialNPCVisibility,
-				// Token: 0x0400B545 RID: 46405
+				// Token: 0x04003FC7 RID: 16327
+				[Token(Token = "0x4003FC7")]
+				[InspectorName("设置NPC的对话池")]
 				SetNPCDialog,
-				// Token: 0x0400B546 RID: 46406
+				// Token: 0x04003FC8 RID: 16328
+				[Token(Token = "0x4003FC8")]
+				[InspectorName("将稀客的羁绊等级提升一级")]
 				UpgradeKizunaLevel,
-				// Token: 0x0400B547 RID: 46407
+				// Token: 0x04003FC9 RID: 16329
+				[Token(Token = "0x4003FC9")]
+				[InspectorName("设置玩家是否能让稀客达到5级羁绊")]
 				SetCanHaveLevel5Kizuna,
-				// Token: 0x0400B548 RID: 46408
+				// Token: 0x04003FCA RID: 16330
+				[Token(Token = "0x4003FCA")]
+				[InspectorName("获得目标数量的金钱")]
 				GetFund,
-				// Token: 0x0400B549 RID: 46409
+				// Token: 0x04003FCB RID: 16331
+				[Token(Token = "0x4003FCB")]
+				[InspectorName("设置任务切换物品的开启状态")]
 				ToggleSwitchEntity,
-				// Token: 0x0400B54A RID: 46410
+				// Token: 0x04003FCC RID: 16332
+				[Token(Token = "0x4003FCC")]
+				[InspectorName("设置等级限制")]
 				SetLevelCap,
-				// Token: 0x0400B54B RID: 46411
+				// Token: 0x04003FCD RID: 16333
+				[Token(Token = "0x4003FCD")]
+				[InspectorName("设置是否会生成因幡帝")]
 				CouldSpawnTewi,
-				// Token: 0x0400B54C RID: 46412
+				// Token: 0x04003FCE RID: 16334
+				[Token(Token = "0x4003FCE")]
+				[InspectorName("设置当天晚上因幡帝是否会被生成")]
 				TewiSpawnTonight,
-				// Token: 0x0400B54D RID: 46413
+				// Token: 0x04003FCF RID: 16335
+				[Token(Token = "0x4003FCF")]
+				[InspectorName("获得灵梦的保护")]
 				AskReimuProtectYou,
-				// Token: 0x0400B54E RID: 46414
+				// Token: 0x04003FD0 RID: 16336
+				[Token(Token = "0x4003FD0")]
+				[InspectorName("将目标物品加入香霖堂")]
 				AddToKourindoStaticMerchandise,
-				// Token: 0x0400B54F RID: 46415
+				// Token: 0x04003FD1 RID: 16337
+				[Token(Token = "0x4003FD1")]
+				[InspectorName("开启多伙伴模式")]
 				EnableMultiPartnerMode,
-				// Token: 0x0400B550 RID: 46416
+				// Token: 0x04003FD2 RID: 16338
+				[Token(Token = "0x4003FD2")]
+				[InspectorName("设置可用的最大伙伴数量")]
 				SetPartnerCount,
-				// Token: 0x0400B551 RID: 46417
+				// Token: 0x04003FD3 RID: 16339
+				[Token(Token = "0x4003FD3")]
+				[InspectorName("前往给定的挑战模式")]
 				MoveToChallenge,
-				// Token: 0x0400B552 RID: 46418
+				// Token: 0x04003FD4 RID: 16340
+				[Token(Token = "0x4003FD4")]
+				[InspectorName("取消被计划的目标事件")]
 				CancelEvent,
-				// Token: 0x0400B553 RID: 46419
+				// Token: 0x04003FD5 RID: 16341
+				[Token(Token = "0x4003FD5")]
+				[InspectorName("前往制作人员名单场景")]
 				MoveToStaff,
-				// Token: 0x0400B554 RID: 46420
+				// Token: 0x04003FD6 RID: 16342
+				[Token(Token = "0x4003FD6")]
+				[InspectorName("设置稀客是否生成")]
 				EnableSpecialGuestSpawnInNight,
-				// Token: 0x0400B555 RID: 46421
+				// Token: 0x04003FD7 RID: 16343
+				[Token(Token = "0x4003FD7")]
+				[InspectorName("设置稀客在指定雀食堂生成（通过雀食堂Id）")]
 				EnableSGuestSpawnInTargetIzakayaById,
-				// Token: 0x0400B556 RID: 46422
+				// Token: 0x04003FD8 RID: 16344
+				[Token(Token = "0x4003FD8")]
+				[InspectorName("设置稀客在指定地图对应的雀食堂生成（通过地图Label）")]
 				EnableSGuestSpawnInTargetIzakayaByMap,
-				// Token: 0x0400B557 RID: 46423
+				// Token: 0x04003FD9 RID: 16345
+				[Token(Token = "0x4003FD9")]
+				[InspectorName("解锁对应稀客的笔记本图鉴")]
 				UnlockSGuestInNotebook,
-				// Token: 0x0400B558 RID: 46424
+				// Token: 0x04003FDA RID: 16346
+				[Token(Token = "0x4003FDA")]
+				[InspectorName("使对应任务的全部条件完成")]
 				SetTargetMissionFulfilled,
-				// Token: 0x0400B559 RID: 46425
+				// Token: 0x04003FDB RID: 16347
+				[Token(Token = "0x4003FDB")]
+				[InspectorName("解锁音游章节")]
 				UnlockMusicGameChapter,
-				// Token: 0x0400B55A RID: 46426
+				// Token: 0x04003FDC RID: 16348
+				[Token(Token = "0x4003FDC")]
+				[InspectorName("尝试移除香霖堂的货物")]
 				RemoveKourindouMerchandise,
-				// Token: 0x0400B55B RID: 46427
+				// Token: 0x04003FDD RID: 16349
+				[Token(Token = "0x4003FDD")]
+				[InspectorName("完成伪造任务")]
 				FinishFakeMission,
-				// Token: 0x0400B55C RID: 46428
+				// Token: 0x04003FDE RID: 16350
+				[Token(Token = "0x4003FDE")]
+				[InspectorName("强制完成计划中的任务")]
 				ForceCompleteMission,
-				// Token: 0x0400B55D RID: 46429
+				// Token: 0x04003FDF RID: 16351
+				[Token(Token = "0x4003FDF")]
+				[InspectorName("刷新随机生成的NPC")]
 				RefreshRandomSpawnNpc,
-				// Token: 0x0400B55E RID: 46430
+				// Token: 0x04003FE0 RID: 16352
+				[Token(Token = "0x4003FE0")]
+				[InspectorName("添加固定菜谱")]
 				AddLockedRecipe,
-				// Token: 0x0400B55F RID: 46431
+				// Token: 0x04003FE1 RID: 16353
+				[Token(Token = "0x4003FE1")]
+				[InspectorName("移除固定菜谱")]
 				ClearLockedRecipe,
-				// Token: 0x0400B560 RID: 46432
+				// Token: 0x04003FE2 RID: 16354
+				[Token(Token = "0x4003FE2")]
+				[InspectorName("添加稀客映射")]
 				AddEffectiveSGuestMapping,
-				// Token: 0x0400B561 RID: 46433
+				// Token: 0x04003FE3 RID: 16355
+				[Token(Token = "0x4003FE3")]
+				[InspectorName("移除稀客映射")]
 				RemoveEffectiveSGuestMapping,
-				// Token: 0x0400B562 RID: 46434
+				// Token: 0x04003FE4 RID: 16356
+				[Token(Token = "0x4003FE4")]
+				[InspectorName("完成目标事件")]
 				FinishEvent,
-				// Token: 0x0400B563 RID: 46435
+				// Token: 0x04003FE5 RID: 16357
+				[Token(Token = "0x4003FE5")]
+				[InspectorName("仅白天：开始或继续RogueLike")]
 				StartOrContinueRogueLike,
-				// Token: 0x0400B564 RID: 46436
+				// Token: 0x04003FE6 RID: 16358
+				[Token(Token = "0x4003FE6")]
+				[InspectorName("随机选取一位稀客加入控制计划")]
 				ControlSpecialGuestScheduled,
-				// Token: 0x0400B565 RID: 46437
+				// Token: 0x04003FE7 RID: 16359
+				[Token(Token = "0x4003FE7")]
+				[InspectorName("移除控制计划中尚未被控制的稀客")]
 				CancelControlSpecialGuestScheduled,
-				// Token: 0x0400B566 RID: 46438
+				// Token: 0x04003FE8 RID: 16360
+				[Token(Token = "0x4003FE8")]
+				[InspectorName("指定一位稀客今晚不会到店")]
 				IgnoreSpecialGuest,
-				// Token: 0x0400B567 RID: 46439
+				// Token: 0x04003FE9 RID: 16361
+				[Token(Token = "0x4003FE9")]
+				[InspectorName("添加DLC锁")]
 				AddDLCLock,
-				// Token: 0x0400B568 RID: 46440
+				// Token: 0x04003FEA RID: 16362
+				[Token(Token = "0x4003FEA")]
+				[InspectorName("移除DLC锁")]
 				RemoveDLCLock,
-				// Token: 0x0400B569 RID: 46441
+				// Token: 0x04003FEB RID: 16363
+				[Token(Token = "0x4003FEB")]
+				[InspectorName("停止SceneDirector中所有非托管的协程")]
 				StopAllUnmanagedMovingProcess,
-				// Token: 0x0400B56A RID: 46442
+				// Token: 0x04003FEC RID: 16364
+				[Token(Token = "0x4003FEC")]
+				[InspectorName("提示稀客开始全图刷新")]
 				NotifySpecialGuestSpawnInNight,
-				// Token: 0x0400B56B RID: 46443
+				// Token: 0x04003FED RID: 16365
+				[Token(Token = "0x4003FED")]
+				[InspectorName("设置PlayerPref")]
 				SetAndSavePlayerPref
 			}
 		}

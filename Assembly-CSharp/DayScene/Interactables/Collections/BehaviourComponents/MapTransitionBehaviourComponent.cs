@@ -1,214 +1,80 @@
 ﻿using System;
 using DayScene.Interactables.Collections.ConditionComponents;
-using Il2CppInterop.Common.Attributes;
-using Il2CppInterop.Runtime;
-using Il2CppInterop.Runtime.Runtime;
+using Il2CppDummyDll;
+using UnityCSharpCleanupGenerator.Attribute;
+using UnityEngine;
 
 namespace DayScene.Interactables.Collections.BehaviourComponents
 {
-	// Token: 0x02000179 RID: 377
+	// Token: 0x020004E0 RID: 1248
+	[Token(Token = "0x20004E0")]
+	[RequireComponent(typeof(MapTransitionConditionComponent))]
+	[GenerateCleanupMethod]
 	public class MapTransitionBehaviourComponent : EntityBehaviourComponent
 	{
-		// Token: 0x06002968 RID: 10600 RVA: 0x00128230 File Offset: 0x00126430
-		// Note: this type is marked as 'beforefieldinit'.
-		static MapTransitionBehaviourComponent()
-		{
-			Il2CppClassPointerStore<MapTransitionBehaviourComponent>.NativeClassPtr = IL2CPP.GetIl2CppClass("Assembly-CSharp.dll", "DayScene.Interactables.Collections.BehaviourComponents", "MapTransitionBehaviourComponent");
-			IL2CPP.il2cpp_runtime_class_init(Il2CppClassPointerStore<MapTransitionBehaviourComponent>.NativeClassPtr);
-			MapTransitionBehaviourComponent.NativeFieldInfoPtr_isInteractTransition = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<MapTransitionBehaviourComponent>.NativeClassPtr, "isInteractTransition");
-			MapTransitionBehaviourComponent.NativeFieldInfoPtr_canBeInteract = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<MapTransitionBehaviourComponent>.NativeClassPtr, "canBeInteract");
-			MapTransitionBehaviourComponent.NativeFieldInfoPtr_conditionComponent = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<MapTransitionBehaviourComponent>.NativeClassPtr, "conditionComponent");
-			MapTransitionBehaviourComponent.NativeMethodInfoPtr_Start_Private_Void_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<MapTransitionBehaviourComponent>.NativeClassPtr, 100670525);
-			MapTransitionBehaviourComponent.NativeMethodInfoPtr_IsTriggerMode_Protected_Virtual_Boolean_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<MapTransitionBehaviourComponent>.NativeClassPtr, 100670526);
-			MapTransitionBehaviourComponent.NativeMethodInfoPtr_ExecuteMapTransition_Private_Void_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<MapTransitionBehaviourComponent>.NativeClassPtr, 100670527);
-			MapTransitionBehaviourComponent.NativeMethodInfoPtr_OnPlayerEnter_Public_Virtual_Void_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<MapTransitionBehaviourComponent>.NativeClassPtr, 100670528);
-			MapTransitionBehaviourComponent.NativeMethodInfoPtr_OnInteract_Public_Virtual_Void_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<MapTransitionBehaviourComponent>.NativeClassPtr, 100670529);
-			MapTransitionBehaviourComponent.NativeMethodInfoPtr_Cleanup_Generated_Protected_Virtual_Void_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<MapTransitionBehaviourComponent>.NativeClassPtr, 100670530);
-			MapTransitionBehaviourComponent.NativeMethodInfoPtr__ctor_Public_Void_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<MapTransitionBehaviourComponent>.NativeClassPtr, 100670531);
-			MapTransitionBehaviourComponent.NativeMethodInfoPtr__ExecuteMapTransition_b__5_0_Private_Void_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<MapTransitionBehaviourComponent>.NativeClassPtr, 100670532);
-		}
-
-		// Token: 0x06002969 RID: 10601 RVA: 0x0012833C File Offset: 0x0012653C
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 93363, XrefRangeEnd = 93367, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe void Start()
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(MapTransitionBehaviourComponent.NativeMethodInfoPtr_Start_Private_Void_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x0600296A RID: 10602 RVA: 0x00128370 File Offset: 0x00126570
-		[CallerCount(8)]
-		[CachedScanResults(RefRangeStart = 93367, RefRangeEnd = 93375, XrefRangeStart = 93367, XrefRangeEnd = 93367, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe override bool IsTriggerMode()
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IL2CPP.il2cpp_object_get_virtual_method(IL2CPP.Il2CppObjectBaseToPtr(this), MapTransitionBehaviourComponent.NativeMethodInfoPtr_IsTriggerMode_Protected_Virtual_Boolean_0), IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-			return *IL2CPP.il2cpp_object_unbox(intPtr);
-		}
-
-		// Token: 0x0600296B RID: 10603 RVA: 0x001283B8 File Offset: 0x001265B8
-		[CallerCount(2)]
-		[CachedScanResults(RefRangeStart = 93390, RefRangeEnd = 93392, XrefRangeStart = 93375, XrefRangeEnd = 93390, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe void ExecuteMapTransition()
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(MapTransitionBehaviourComponent.NativeMethodInfoPtr_ExecuteMapTransition_Private_Void_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x0600296C RID: 10604 RVA: 0x001283EC File Offset: 0x001265EC
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 93392, XrefRangeEnd = 93393, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe override void OnPlayerEnter()
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IL2CPP.il2cpp_object_get_virtual_method(IL2CPP.Il2CppObjectBaseToPtr(this), MapTransitionBehaviourComponent.NativeMethodInfoPtr_OnPlayerEnter_Public_Virtual_Void_0), IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x0600296D RID: 10605 RVA: 0x00128428 File Offset: 0x00126628
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 93393, XrefRangeEnd = 93394, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe override void OnInteract()
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IL2CPP.il2cpp_object_get_virtual_method(IL2CPP.Il2CppObjectBaseToPtr(this), MapTransitionBehaviourComponent.NativeMethodInfoPtr_OnInteract_Public_Virtual_Void_0), IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x0600296E RID: 10606 RVA: 0x00128464 File Offset: 0x00126664
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 93394, XrefRangeEnd = 93396, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe override void Cleanup_Generated()
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IL2CPP.il2cpp_object_get_virtual_method(IL2CPP.Il2CppObjectBaseToPtr(this), MapTransitionBehaviourComponent.NativeMethodInfoPtr_Cleanup_Generated_Protected_Virtual_Void_0), IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x0600296F RID: 10607 RVA: 0x001284A0 File Offset: 0x001266A0
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 93396, XrefRangeEnd = 93397, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe MapTransitionBehaviourComponent() : this(IL2CPP.il2cpp_object_new(Il2CppClassPointerStore<MapTransitionBehaviourComponent>.NativeClassPtr))
-		{
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(MapTransitionBehaviourComponent.NativeMethodInfoPtr__ctor_Public_Void_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x06002970 RID: 10608 RVA: 0x001284DC File Offset: 0x001266DC
-		[CallerCount(0)]
-		public unsafe void _ExecuteMapTransition_b__5_0()
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(MapTransitionBehaviourComponent.NativeMethodInfoPtr__ExecuteMapTransition_b__5_0_Private_Void_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x06002971 RID: 10609 RVA: 0x000183A7 File Offset: 0x000165A7
-		public MapTransitionBehaviourComponent(IntPtr pointer) : base(pointer)
+		// Token: 0x06001C3D RID: 7229 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x6001C3D")]
+		[Address(RVA = "0x4A12A0", Offset = "0x49FCA0", VA = "0x1804A12A0")]
+		private void Start()
 		{
 		}
 
-		// Token: 0x17000E42 RID: 3650
-		// (get) Token: 0x06002972 RID: 10610 RVA: 0x00128510 File Offset: 0x00126710
-		// (set) Token: 0x06002973 RID: 10611 RVA: 0x000183B0 File Offset: 0x000165B0
-		public unsafe bool isInteractTransition
+		// Token: 0x06001C3E RID: 7230 RVA: 0x0000ACC8 File Offset: 0x00008EC8
+		[Token(Token = "0x6001C3E")]
+		[Address(RVA = "0x4A1260", Offset = "0x49FC60", VA = "0x1804A1260", Slot = "11")]
+		protected override bool IsTriggerMode()
 		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(MapTransitionBehaviourComponent.NativeFieldInfoPtr_isInteractTransition);
-				return *intPtr;
-			}
-			set
-			{
-				*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(MapTransitionBehaviourComponent.NativeFieldInfoPtr_isInteractTransition)) = value;
-			}
+			return default(bool);
 		}
 
-		// Token: 0x17000E43 RID: 3651
-		// (get) Token: 0x06002974 RID: 10612 RVA: 0x00128538 File Offset: 0x00126738
-		// (set) Token: 0x06002975 RID: 10613 RVA: 0x000183CB File Offset: 0x000165CB
-		public unsafe bool canBeInteract
+		// Token: 0x06001C3F RID: 7231 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x6001C3F")]
+		[Address(RVA = "0x4A1100", Offset = "0x49FB00", VA = "0x1804A1100")]
+		private void ExecuteMapTransition()
 		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(MapTransitionBehaviourComponent.NativeFieldInfoPtr_canBeInteract);
-				return *intPtr;
-			}
-			set
-			{
-				*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(MapTransitionBehaviourComponent.NativeFieldInfoPtr_canBeInteract)) = value;
-			}
 		}
 
-		// Token: 0x17000E44 RID: 3652
-		// (get) Token: 0x06002976 RID: 10614 RVA: 0x00128560 File Offset: 0x00126760
-		// (set) Token: 0x06002977 RID: 10615 RVA: 0x000183E6 File Offset: 0x000165E6
-		public unsafe MapTransitionConditionComponent conditionComponent
+		// Token: 0x06001C40 RID: 7232 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x6001C40")]
+		[Address(RVA = "0x4A1290", Offset = "0x49FC90", VA = "0x1804A1290", Slot = "7")]
+		public override void OnPlayerEnter()
 		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(MapTransitionBehaviourComponent.NativeFieldInfoPtr_conditionComponent);
-				IntPtr intPtr2 = *intPtr;
-				return (intPtr2 != 0) ? Il2CppObjectPool.Get<MapTransitionConditionComponent>(intPtr2) : null;
-			}
-			set
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(MapTransitionBehaviourComponent.NativeFieldInfoPtr_conditionComponent), IL2CPP.Il2CppObjectBaseToPtr(value));
-			}
 		}
 
-		// Token: 0x04001B62 RID: 7010
-		private static readonly IntPtr NativeFieldInfoPtr_isInteractTransition;
+		// Token: 0x06001C41 RID: 7233 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x6001C41")]
+		[Address(RVA = "0x4A1270", Offset = "0x49FC70", VA = "0x1804A1270", Slot = "6")]
+		public override void OnInteract()
+		{
+		}
 
-		// Token: 0x04001B63 RID: 7011
-		private static readonly IntPtr NativeFieldInfoPtr_canBeInteract;
+		// Token: 0x06001C42 RID: 7234 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x6001C42")]
+		[Address(RVA = "0x4A10D0", Offset = "0x49FAD0", VA = "0x1804A10D0", Slot = "13")]
+		protected override void Cleanup_Generated()
+		{
+		}
 
-		// Token: 0x04001B64 RID: 7012
-		private static readonly IntPtr NativeFieldInfoPtr_conditionComponent;
+		// Token: 0x06001C43 RID: 7235 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x6001C43")]
+		[Address(RVA = "0x4A1300", Offset = "0x49FD00", VA = "0x1804A1300")]
+		public MapTransitionBehaviourComponent()
+		{
+		}
 
-		// Token: 0x04001B65 RID: 7013
-		private static readonly IntPtr NativeMethodInfoPtr_Start_Private_Void_0;
+		// Token: 0x040019D0 RID: 6608
+		[Token(Token = "0x40019D0")]
+		[FieldOffset(Offset = "0x18")]
+		public bool isInteractTransition;
 
-		// Token: 0x04001B66 RID: 7014
-		private static readonly IntPtr NativeMethodInfoPtr_IsTriggerMode_Protected_Virtual_Boolean_0;
+		// Token: 0x040019D1 RID: 6609
+		[Token(Token = "0x40019D1")]
+		[FieldOffset(Offset = "0x19")]
+		private bool canBeInteract;
 
-		// Token: 0x04001B67 RID: 7015
-		private static readonly IntPtr NativeMethodInfoPtr_ExecuteMapTransition_Private_Void_0;
-
-		// Token: 0x04001B68 RID: 7016
-		private static readonly IntPtr NativeMethodInfoPtr_OnPlayerEnter_Public_Virtual_Void_0;
-
-		// Token: 0x04001B69 RID: 7017
-		private static readonly IntPtr NativeMethodInfoPtr_OnInteract_Public_Virtual_Void_0;
-
-		// Token: 0x04001B6A RID: 7018
-		private static readonly IntPtr NativeMethodInfoPtr_Cleanup_Generated_Protected_Virtual_Void_0;
-
-		// Token: 0x04001B6B RID: 7019
-		private static readonly IntPtr NativeMethodInfoPtr__ctor_Public_Void_0;
-
-		// Token: 0x04001B6C RID: 7020
-		private static readonly IntPtr NativeMethodInfoPtr__ExecuteMapTransition_b__5_0_Private_Void_0;
+		// Token: 0x040019D2 RID: 6610
+		[Token(Token = "0x40019D2")]
+		[FieldOffset(Offset = "0x20")]
+		private MapTransitionConditionComponent conditionComponent;
 	}
 }

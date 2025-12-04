@@ -1,353 +1,110 @@
 ﻿using System;
-using Il2CppInterop.Common.Attributes;
-using Il2CppInterop.Runtime;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using Il2CppInterop.Runtime.Runtime;
-using Il2CppSystem;
-using Il2CppSystem.Text;
+using System.Text;
+using Il2CppDummyDll;
 using NightScene.EventUtility;
 using NightScene.PartnerUtility;
 using UnityEngine;
 
 namespace GameData.Profile
 {
-	// Token: 0x02000323 RID: 803
+	// Token: 0x02000CD1 RID: 3281
+	[Token(Token = "0x2000CD1")]
+	[CreateAssetMenu(fileName = "DLC2_PartnerInfo_Kisume(Test)", menuName = "GameData Profile/PartnerInfoCollection/DLC2_PartnerInfoKisume(Test)", order = 9)]
 	public sealed class PartnerInfoKisume : PartnerInfo
 	{
-		// Token: 0x06005F1F RID: 24351 RVA: 0x001DB064 File Offset: 0x001D9264
-		// Note: this type is marked as 'beforefieldinit'.
-		static PartnerInfoKisume()
+		// Token: 0x17000B0B RID: 2827
+		// (get) Token: 0x06004C50 RID: 19536 RVA: 0x0001BA38 File Offset: 0x00019C38
+		[Token(Token = "0x17000B0B")]
+		public override bool IfNeverWork
 		{
-			Il2CppClassPointerStore<PartnerInfoKisume>.NativeClassPtr = IL2CPP.GetIl2CppClass("Assembly-CSharp.dll", "GameData.Profile", "PartnerInfoKisume");
-			IL2CPP.il2cpp_runtime_class_init(Il2CppClassPointerStore<PartnerInfoKisume>.NativeClassPtr);
-			PartnerInfoKisume.NativeFieldInfoPtr_neverWork = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<PartnerInfoKisume>.NativeClassPtr, "neverWork");
-			PartnerInfoKisume.NativeFieldInfoPtr_kisumeEffect = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<PartnerInfoKisume>.NativeClassPtr, "kisumeEffect");
-			PartnerInfoKisume.NativeMethodInfoPtr_get_IfNeverWork_Public_Virtual_get_Boolean_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<PartnerInfoKisume>.NativeClassPtr, 100682832);
-			PartnerInfoKisume.NativeMethodInfoPtr_OnPartnerLoad_Protected_Virtual_Void_PartnerBase_EventManager_PartnerManager_Il2CppReferenceArray_1_Object_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<PartnerInfoKisume>.NativeClassPtr, 100682833);
-			PartnerInfoKisume.NativeMethodInfoPtr_PostProcessInfo_Protected_Virtual_Void_StringBuilder_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<PartnerInfoKisume>.NativeClassPtr, 100682834);
-			PartnerInfoKisume.NativeMethodInfoPtr__ctor_Public_Void_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<PartnerInfoKisume>.NativeClassPtr, 100682835);
-		}
-
-		// Token: 0x170020E8 RID: 8424
-		// (get) Token: 0x06005F20 RID: 24352 RVA: 0x001DB10C File Offset: 0x001D930C
-		public unsafe override bool IfNeverWork
-		{
-			[CallerCount(0)]
+			[Token(Token = "0x6004C50")]
+			[Address(RVA = "0x79E590", Offset = "0x79CF90", VA = "0x18079E590", Slot = "5")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(PartnerInfoKisume.NativeMethodInfoPtr_get_IfNeverWork_Public_Virtual_get_Boolean_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return default(bool);
 			}
 		}
 
-		// Token: 0x06005F21 RID: 24353 RVA: 0x001DB148 File Offset: 0x001D9348
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 235165, XrefRangeEnd = 235166, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe override void OnPartnerLoad(PartnerBase partnerBase, EventManager eventManager, PartnerManager partnerManager, Il2CppReferenceArray<Il2CppSystem.Object> additionalData)
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)4) * (UIntPtr)sizeof(IntPtr))];
-			*ptr = IL2CPP.Il2CppObjectBaseToPtr(partnerBase);
-			ptr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr)) / (UIntPtr)sizeof(IntPtr)] = IL2CPP.Il2CppObjectBaseToPtr(eventManager);
-			ptr[checked(unchecked((UIntPtr)2) * (UIntPtr)sizeof(IntPtr)) / (UIntPtr)sizeof(IntPtr)] = IL2CPP.Il2CppObjectBaseToPtr(partnerManager);
-			ptr[checked(unchecked((UIntPtr)3) * (UIntPtr)sizeof(IntPtr)) / (UIntPtr)sizeof(IntPtr)] = IL2CPP.Il2CppObjectBaseToPtr(additionalData);
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(PartnerInfoKisume.NativeMethodInfoPtr_OnPartnerLoad_Protected_Virtual_Void_PartnerBase_EventManager_PartnerManager_Il2CppReferenceArray_1_Object_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x06005F22 RID: 24354 RVA: 0x001DB1C4 File Offset: 0x001D93C4
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 235166, XrefRangeEnd = 235169, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe override void PostProcessInfo(StringBuilder builder)
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr))];
-			*ptr = IL2CPP.Il2CppObjectBaseToPtr(builder);
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(PartnerInfoKisume.NativeMethodInfoPtr_PostProcessInfo_Protected_Virtual_Void_StringBuilder_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x06005F23 RID: 24355 RVA: 0x001DB208 File Offset: 0x001D9408
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 235169, XrefRangeEnd = 235170, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe PartnerInfoKisume() : this(IL2CPP.il2cpp_object_new(Il2CppClassPointerStore<PartnerInfoKisume>.NativeClassPtr))
-		{
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(PartnerInfoKisume.NativeMethodInfoPtr__ctor_Public_Void_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x06005F24 RID: 24356 RVA: 0x00033D12 File Offset: 0x00031F12
-		public PartnerInfoKisume(IntPtr pointer) : base(pointer)
+		// Token: 0x06004C51 RID: 19537 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x6004C51")]
+		[Address(RVA = "0x79E4D0", Offset = "0x79CED0", VA = "0x18079E4D0", Slot = "16")]
+		protected override void OnPartnerLoad(PartnerBase partnerBase, EventManager eventManager, PartnerManager partnerManager, object[] additionalData)
 		{
 		}
 
-		// Token: 0x170020E6 RID: 8422
-		// (get) Token: 0x06005F25 RID: 24357 RVA: 0x001DB244 File Offset: 0x001D9444
-		// (set) Token: 0x06005F26 RID: 24358 RVA: 0x00033D1B File Offset: 0x00031F1B
-		public unsafe bool neverWork
+		// Token: 0x06004C52 RID: 19538 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x6004C52")]
+		[Address(RVA = "0x79E540", Offset = "0x79CF40", VA = "0x18079E540", Slot = "22")]
+		protected override void PostProcessInfo(StringBuilder builder)
 		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(PartnerInfoKisume.NativeFieldInfoPtr_neverWork);
-				return *intPtr;
-			}
-			set
-			{
-				*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(PartnerInfoKisume.NativeFieldInfoPtr_neverWork)) = value;
-			}
 		}
 
-		// Token: 0x170020E7 RID: 8423
-		// (get) Token: 0x06005F27 RID: 24359 RVA: 0x001DB26C File Offset: 0x001D946C
-		// (set) Token: 0x06005F28 RID: 24360 RVA: 0x00033D36 File Offset: 0x00031F36
-		public PartnerInfoKisume.KisumeEffect kisumeEffect
+		// Token: 0x06004C53 RID: 19539 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x6004C53")]
+		[Address(RVA = "0x79E580", Offset = "0x79CF80", VA = "0x18079E580")]
+		public PartnerInfoKisume()
 		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(PartnerInfoKisume.NativeFieldInfoPtr_kisumeEffect);
-				return new PartnerInfoKisume.KisumeEffect(IL2CPP.il2cpp_value_box(Il2CppClassPointerStore<PartnerInfoKisume.KisumeEffect>.NativeClassPtr, intPtr));
-			}
-			set
-			{
-				cpblk(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(PartnerInfoKisume.NativeFieldInfoPtr_kisumeEffect), IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtr(value)), IL2CPP.il2cpp_class_value_size(Il2CppClassPointerStore<PartnerInfoKisume.KisumeEffect>.NativeClassPtr, (UIntPtr)0));
-			}
 		}
 
-		// Token: 0x04003EED RID: 16109
-		private static readonly IntPtr NativeFieldInfoPtr_neverWork;
+		// Token: 0x0400463F RID: 17983
+		[Token(Token = "0x400463F")]
+		[FieldOffset(Offset = "0x58")]
+		public bool neverWork;
 
-		// Token: 0x04003EEE RID: 16110
-		private static readonly IntPtr NativeFieldInfoPtr_kisumeEffect;
+		// Token: 0x04004640 RID: 17984
+		[Token(Token = "0x4004640")]
+		[FieldOffset(Offset = "0x60")]
+		public PartnerInfoKisume.KisumeEffect kisumeEffect;
 
-		// Token: 0x04003EEF RID: 16111
-		private static readonly IntPtr NativeMethodInfoPtr_get_IfNeverWork_Public_Virtual_get_Boolean_0;
-
-		// Token: 0x04003EF0 RID: 16112
-		private static readonly IntPtr NativeMethodInfoPtr_OnPartnerLoad_Protected_Virtual_Void_PartnerBase_EventManager_PartnerManager_Il2CppReferenceArray_1_Object_0;
-
-		// Token: 0x04003EF1 RID: 16113
-		private static readonly IntPtr NativeMethodInfoPtr_PostProcessInfo_Protected_Virtual_Void_StringBuilder_0;
-
-		// Token: 0x04003EF2 RID: 16114
-		private static readonly IntPtr NativeMethodInfoPtr__ctor_Public_Void_0;
-
-		// Token: 0x02000D55 RID: 3413
+		// Token: 0x02000CD2 RID: 3282
+		[Token(Token = "0x2000CD2")]
 		[Serializable]
-		public sealed class KisumeEffect : ValueType
+		public struct KisumeEffect
 		{
-			// Token: 0x0600F47D RID: 62589 RVA: 0x0039D08C File Offset: 0x0039B28C
-			// Note: this type is marked as 'beforefieldinit'.
-			static KisumeEffect()
-			{
-				Il2CppClassPointerStore<PartnerInfoKisume.KisumeEffect>.NativeClassPtr = IL2CPP.GetIl2CppNestedType(Il2CppClassPointerStore<PartnerInfoKisume>.NativeClassPtr, "KisumeEffect");
-				IL2CPP.il2cpp_runtime_class_init(Il2CppClassPointerStore<PartnerInfoKisume.KisumeEffect>.NativeClassPtr);
-				PartnerInfoKisume.KisumeEffect.NativeFieldInfoPtr_jumpEffectShakeAmplitude = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<PartnerInfoKisume.KisumeEffect>.NativeClassPtr, "jumpEffectShakeAmplitude");
-				PartnerInfoKisume.KisumeEffect.NativeFieldInfoPtr_jumpEffectShakeFadeDuration = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<PartnerInfoKisume.KisumeEffect>.NativeClassPtr, "jumpEffectShakeFadeDuration");
-				PartnerInfoKisume.KisumeEffect.NativeFieldInfoPtr_mudamudamudaShakeAmplitude = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<PartnerInfoKisume.KisumeEffect>.NativeClassPtr, "mudamudamudaShakeAmplitude");
-				PartnerInfoKisume.KisumeEffect.NativeFieldInfoPtr_mudamudamudaDuration = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<PartnerInfoKisume.KisumeEffect>.NativeClassPtr, "mudamudamudaDuration");
-				PartnerInfoKisume.KisumeEffect.NativeFieldInfoPtr_jumpEffect = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<PartnerInfoKisume.KisumeEffect>.NativeClassPtr, "jumpEffect");
-				PartnerInfoKisume.KisumeEffect.NativeFieldInfoPtr_jumpEffectDuration = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<PartnerInfoKisume.KisumeEffect>.NativeClassPtr, "jumpEffectDuration");
-				PartnerInfoKisume.KisumeEffect.NativeFieldInfoPtr_dropEffect = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<PartnerInfoKisume.KisumeEffect>.NativeClassPtr, "dropEffect");
-				PartnerInfoKisume.KisumeEffect.NativeFieldInfoPtr_mudamudamudaEffect = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<PartnerInfoKisume.KisumeEffect>.NativeClassPtr, "mudamudamudaEffect");
-				PartnerInfoKisume.KisumeEffect.NativeFieldInfoPtr_exclamationMarkEffect = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<PartnerInfoKisume.KisumeEffect>.NativeClassPtr, "exclamationMarkEffect");
-			}
+			// Token: 0x04004641 RID: 17985
+			[Token(Token = "0x4004641")]
+			[FieldOffset(Offset = "0x0")]
+			public float jumpEffectShakeAmplitude;
 
-			// Token: 0x0600F47E RID: 62590 RVA: 0x00083446 File Offset: 0x00081646
-			public KisumeEffect(IntPtr pointer) : base(pointer)
-			{
-			}
+			// Token: 0x04004642 RID: 17986
+			[Token(Token = "0x4004642")]
+			[FieldOffset(Offset = "0x4")]
+			public float jumpEffectShakeFadeDuration;
 
-			// Token: 0x0600F47F RID: 62591 RVA: 0x0008344F File Offset: 0x0008164F
-			public KisumeEffect() : base(IL2CPP.il2cpp_object_new(Il2CppClassPointerStore<PartnerInfoKisume.KisumeEffect>.NativeClassPtr))
-			{
-			}
+			// Token: 0x04004643 RID: 17987
+			[Token(Token = "0x4004643")]
+			[FieldOffset(Offset = "0x8")]
+			public float mudamudamudaShakeAmplitude;
 
-			// Token: 0x17004F78 RID: 20344
-			// (get) Token: 0x0600F480 RID: 62592 RVA: 0x0039D16C File Offset: 0x0039B36C
-			// (set) Token: 0x0600F481 RID: 62593 RVA: 0x00083461 File Offset: 0x00081661
-			public unsafe float jumpEffectShakeAmplitude
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(PartnerInfoKisume.KisumeEffect.NativeFieldInfoPtr_jumpEffectShakeAmplitude);
-					return *intPtr;
-				}
-				set
-				{
-					*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(PartnerInfoKisume.KisumeEffect.NativeFieldInfoPtr_jumpEffectShakeAmplitude)) = value;
-				}
-			}
+			// Token: 0x04004644 RID: 17988
+			[Token(Token = "0x4004644")]
+			[FieldOffset(Offset = "0xC")]
+			public float mudamudamudaDuration;
 
-			// Token: 0x17004F79 RID: 20345
-			// (get) Token: 0x0600F482 RID: 62594 RVA: 0x0039D194 File Offset: 0x0039B394
-			// (set) Token: 0x0600F483 RID: 62595 RVA: 0x0008347C File Offset: 0x0008167C
-			public unsafe float jumpEffectShakeFadeDuration
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(PartnerInfoKisume.KisumeEffect.NativeFieldInfoPtr_jumpEffectShakeFadeDuration);
-					return *intPtr;
-				}
-				set
-				{
-					*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(PartnerInfoKisume.KisumeEffect.NativeFieldInfoPtr_jumpEffectShakeFadeDuration)) = value;
-				}
-			}
+			// Token: 0x04004645 RID: 17989
+			[Token(Token = "0x4004645")]
+			[FieldOffset(Offset = "0x10")]
+			public GameObject jumpEffect;
 
-			// Token: 0x17004F7A RID: 20346
-			// (get) Token: 0x0600F484 RID: 62596 RVA: 0x0039D1BC File Offset: 0x0039B3BC
-			// (set) Token: 0x0600F485 RID: 62597 RVA: 0x00083497 File Offset: 0x00081697
-			public unsafe float mudamudamudaShakeAmplitude
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(PartnerInfoKisume.KisumeEffect.NativeFieldInfoPtr_mudamudamudaShakeAmplitude);
-					return *intPtr;
-				}
-				set
-				{
-					*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(PartnerInfoKisume.KisumeEffect.NativeFieldInfoPtr_mudamudamudaShakeAmplitude)) = value;
-				}
-			}
+			// Token: 0x04004646 RID: 17990
+			[Token(Token = "0x4004646")]
+			[FieldOffset(Offset = "0x18")]
+			public float jumpEffectDuration;
 
-			// Token: 0x17004F7B RID: 20347
-			// (get) Token: 0x0600F486 RID: 62598 RVA: 0x0039D1E4 File Offset: 0x0039B3E4
-			// (set) Token: 0x0600F487 RID: 62599 RVA: 0x000834B2 File Offset: 0x000816B2
-			public unsafe float mudamudamudaDuration
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(PartnerInfoKisume.KisumeEffect.NativeFieldInfoPtr_mudamudamudaDuration);
-					return *intPtr;
-				}
-				set
-				{
-					*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(PartnerInfoKisume.KisumeEffect.NativeFieldInfoPtr_mudamudamudaDuration)) = value;
-				}
-			}
+			// Token: 0x04004647 RID: 17991
+			[Token(Token = "0x4004647")]
+			[FieldOffset(Offset = "0x20")]
+			public GameObject dropEffect;
 
-			// Token: 0x17004F7C RID: 20348
-			// (get) Token: 0x0600F488 RID: 62600 RVA: 0x0039D20C File Offset: 0x0039B40C
-			// (set) Token: 0x0600F489 RID: 62601 RVA: 0x000834CD File Offset: 0x000816CD
-			public unsafe GameObject jumpEffect
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(PartnerInfoKisume.KisumeEffect.NativeFieldInfoPtr_jumpEffect);
-					IntPtr intPtr2 = *intPtr;
-					return (intPtr2 != 0) ? Il2CppObjectPool.Get<GameObject>(intPtr2) : null;
-				}
-				set
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-					IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(PartnerInfoKisume.KisumeEffect.NativeFieldInfoPtr_jumpEffect), IL2CPP.Il2CppObjectBaseToPtr(value));
-				}
-			}
+			// Token: 0x04004648 RID: 17992
+			[Token(Token = "0x4004648")]
+			[FieldOffset(Offset = "0x28")]
+			public GameObject mudamudamudaEffect;
 
-			// Token: 0x17004F7D RID: 20349
-			// (get) Token: 0x0600F48A RID: 62602 RVA: 0x0039D23C File Offset: 0x0039B43C
-			// (set) Token: 0x0600F48B RID: 62603 RVA: 0x000834EC File Offset: 0x000816EC
-			public unsafe float jumpEffectDuration
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(PartnerInfoKisume.KisumeEffect.NativeFieldInfoPtr_jumpEffectDuration);
-					return *intPtr;
-				}
-				set
-				{
-					*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(PartnerInfoKisume.KisumeEffect.NativeFieldInfoPtr_jumpEffectDuration)) = value;
-				}
-			}
-
-			// Token: 0x17004F7E RID: 20350
-			// (get) Token: 0x0600F48C RID: 62604 RVA: 0x0039D264 File Offset: 0x0039B464
-			// (set) Token: 0x0600F48D RID: 62605 RVA: 0x00083507 File Offset: 0x00081707
-			public unsafe GameObject dropEffect
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(PartnerInfoKisume.KisumeEffect.NativeFieldInfoPtr_dropEffect);
-					IntPtr intPtr2 = *intPtr;
-					return (intPtr2 != 0) ? Il2CppObjectPool.Get<GameObject>(intPtr2) : null;
-				}
-				set
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-					IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(PartnerInfoKisume.KisumeEffect.NativeFieldInfoPtr_dropEffect), IL2CPP.Il2CppObjectBaseToPtr(value));
-				}
-			}
-
-			// Token: 0x17004F7F RID: 20351
-			// (get) Token: 0x0600F48E RID: 62606 RVA: 0x0039D294 File Offset: 0x0039B494
-			// (set) Token: 0x0600F48F RID: 62607 RVA: 0x00083526 File Offset: 0x00081726
-			public unsafe GameObject mudamudamudaEffect
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(PartnerInfoKisume.KisumeEffect.NativeFieldInfoPtr_mudamudamudaEffect);
-					IntPtr intPtr2 = *intPtr;
-					return (intPtr2 != 0) ? Il2CppObjectPool.Get<GameObject>(intPtr2) : null;
-				}
-				set
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-					IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(PartnerInfoKisume.KisumeEffect.NativeFieldInfoPtr_mudamudamudaEffect), IL2CPP.Il2CppObjectBaseToPtr(value));
-				}
-			}
-
-			// Token: 0x17004F80 RID: 20352
-			// (get) Token: 0x0600F490 RID: 62608 RVA: 0x0039D2C4 File Offset: 0x0039B4C4
-			// (set) Token: 0x0600F491 RID: 62609 RVA: 0x00083545 File Offset: 0x00081745
-			public unsafe GameObject exclamationMarkEffect
-			{
-				get
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(PartnerInfoKisume.KisumeEffect.NativeFieldInfoPtr_exclamationMarkEffect);
-					IntPtr intPtr2 = *intPtr;
-					return (intPtr2 != 0) ? Il2CppObjectPool.Get<GameObject>(intPtr2) : null;
-				}
-				set
-				{
-					IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-					IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(PartnerInfoKisume.KisumeEffect.NativeFieldInfoPtr_exclamationMarkEffect), IL2CPP.Il2CppObjectBaseToPtr(value));
-				}
-			}
-
-			// Token: 0x04009BC3 RID: 39875
-			private static readonly IntPtr NativeFieldInfoPtr_jumpEffectShakeAmplitude;
-
-			// Token: 0x04009BC4 RID: 39876
-			private static readonly IntPtr NativeFieldInfoPtr_jumpEffectShakeFadeDuration;
-
-			// Token: 0x04009BC5 RID: 39877
-			private static readonly IntPtr NativeFieldInfoPtr_mudamudamudaShakeAmplitude;
-
-			// Token: 0x04009BC6 RID: 39878
-			private static readonly IntPtr NativeFieldInfoPtr_mudamudamudaDuration;
-
-			// Token: 0x04009BC7 RID: 39879
-			private static readonly IntPtr NativeFieldInfoPtr_jumpEffect;
-
-			// Token: 0x04009BC8 RID: 39880
-			private static readonly IntPtr NativeFieldInfoPtr_jumpEffectDuration;
-
-			// Token: 0x04009BC9 RID: 39881
-			private static readonly IntPtr NativeFieldInfoPtr_dropEffect;
-
-			// Token: 0x04009BCA RID: 39882
-			private static readonly IntPtr NativeFieldInfoPtr_mudamudamudaEffect;
-
-			// Token: 0x04009BCB RID: 39883
-			private static readonly IntPtr NativeFieldInfoPtr_exclamationMarkEffect;
+			// Token: 0x04004649 RID: 17993
+			[Token(Token = "0x4004649")]
+			[FieldOffset(Offset = "0x30")]
+			public GameObject exclamationMarkEffect;
 		}
 	}
 }

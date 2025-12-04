@@ -1,98 +1,62 @@
 ﻿using System;
-using System.Runtime.InteropServices;
-using Il2CppInterop.Common.Attributes;
-using Il2CppInterop.Runtime;
-using Il2CppSystem;
+using Il2CppDummyDll;
+using UnityEngine;
 
 namespace Common.DialogUtility
 {
-	// Token: 0x02000342 RID: 834
+	// Token: 0x02000D97 RID: 3479
+	[Token(Token = "0x2000D97")]
 	[Serializable]
-	[StructLayout(2)]
 	public struct SpeakerIdentity
 	{
-		// Token: 0x06006374 RID: 25460 RVA: 0x001EAF64 File Offset: 0x001E9164
-		// Note: this type is marked as 'beforefieldinit'.
-		static SpeakerIdentity()
+		// Token: 0x060051BB RID: 20923 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x60051BB")]
+		[Address(RVA = "0x783A10", Offset = "0x782410", VA = "0x180783A10")]
+		public SpeakerIdentity(SpeakerIdentity.Identity speakerType, int speakerId, int speakerPortrayalVariationId)
 		{
-			Il2CppClassPointerStore<SpeakerIdentity>.NativeClassPtr = IL2CPP.GetIl2CppClass("Assembly-CSharp.dll", "Common.DialogUtility", "SpeakerIdentity");
-			IL2CPP.il2cpp_runtime_class_init(Il2CppClassPointerStore<SpeakerIdentity>.NativeClassPtr);
-			SpeakerIdentity.NativeFieldInfoPtr_speakerType = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SpeakerIdentity>.NativeClassPtr, "speakerType");
-			SpeakerIdentity.NativeFieldInfoPtr_speakerId = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SpeakerIdentity>.NativeClassPtr, "speakerId");
-			SpeakerIdentity.NativeFieldInfoPtr_speakerPortrayalVariationId = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<SpeakerIdentity>.NativeClassPtr, "speakerPortrayalVariationId");
-			SpeakerIdentity.NativeMethodInfoPtr__ctor_Public_Void_Identity_Int32_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<SpeakerIdentity>.NativeClassPtr, 100684219);
-			SpeakerIdentity.NativeMethodInfoPtr_op_Implicit_Public_Static_ValueTuple_2_Identity_Int32_SpeakerIdentity_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<SpeakerIdentity>.NativeClassPtr, 100684220);
 		}
 
-		// Token: 0x06006375 RID: 25461 RVA: 0x001EAFF8 File Offset: 0x001E91F8
-		[CallerCount(0)]
-		public unsafe SpeakerIdentity(SpeakerIdentity.Identity speakerType, int speakerId, int speakerPortrayalVariationId)
+		// Token: 0x060051BC RID: 20924 RVA: 0x0001DAF0 File Offset: 0x0001BCF0
+		[Token(Token = "0x60051BC")]
+		[Address(RVA = "0x800650", Offset = "0x7FF050", VA = "0x180800650")]
+		public static implicit operator ValueTuple<SpeakerIdentity.Identity, int>(SpeakerIdentity speakerIdentity)
 		{
-			IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)3) * (UIntPtr)sizeof(IntPtr))];
-			*ptr = ref speakerType;
-			ptr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr)) / (UIntPtr)sizeof(IntPtr)] = ref speakerId;
-			ptr[checked(unchecked((UIntPtr)2) * (UIntPtr)sizeof(IntPtr)) / (UIntPtr)sizeof(IntPtr)] = ref speakerPortrayalVariationId;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(SpeakerIdentity.NativeMethodInfoPtr__ctor_Public_Void_Identity_Int32_Int32_0, ref this, (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
+			return default(ValueTuple<SpeakerIdentity.Identity, int>);
 		}
 
-		// Token: 0x06006376 RID: 25462 RVA: 0x001EB048 File Offset: 0x001E9248
-		[CallerCount(5)]
-		[CachedScanResults(RefRangeStart = 257117, RefRangeEnd = 257122, XrefRangeStart = 257114, XrefRangeEnd = 257117, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe static implicit operator ValueTuple<SpeakerIdentity.Identity, int>(SpeakerIdentity speakerIdentity)
-		{
-			IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr))];
-			*ptr = ref speakerIdentity;
-			IntPtr intPtr;
-			IntPtr pointer = IL2CPP.il2cpp_runtime_invoke(SpeakerIdentity.NativeMethodInfoPtr_op_Implicit_Public_Static_ValueTuple_2_Identity_Int32_SpeakerIdentity_0, 0, (void**)ptr, ref intPtr);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr);
-			return new ValueTuple<SpeakerIdentity.Identity, int>(pointer);
-		}
-
-		// Token: 0x06006377 RID: 25463 RVA: 0x00035BD1 File Offset: 0x00033DD1
-		public Object BoxIl2CppObject()
-		{
-			return new Object(IL2CPP.il2cpp_value_box(Il2CppClassPointerStore<SpeakerIdentity>.NativeClassPtr, ref this));
-		}
-
-		// Token: 0x040041EC RID: 16876
-		private static readonly IntPtr NativeFieldInfoPtr_speakerType;
-
-		// Token: 0x040041ED RID: 16877
-		private static readonly IntPtr NativeFieldInfoPtr_speakerId;
-
-		// Token: 0x040041EE RID: 16878
-		private static readonly IntPtr NativeFieldInfoPtr_speakerPortrayalVariationId;
-
-		// Token: 0x040041EF RID: 16879
-		private static readonly IntPtr NativeMethodInfoPtr__ctor_Public_Void_Identity_Int32_Int32_0;
-
-		// Token: 0x040041F0 RID: 16880
-		private static readonly IntPtr NativeMethodInfoPtr_op_Implicit_Public_Static_ValueTuple_2_Identity_Int32_SpeakerIdentity_0;
-
-		// Token: 0x040041F1 RID: 16881
-		[FieldOffset(0)]
+		// Token: 0x04004CAF RID: 19631
+		[Token(Token = "0x4004CAF")]
+		[FieldOffset(Offset = "0x0")]
+		[SerializeField]
 		public SpeakerIdentity.Identity speakerType;
 
-		// Token: 0x040041F2 RID: 16882
-		[FieldOffset(4)]
+		// Token: 0x04004CB0 RID: 19632
+		[Token(Token = "0x4004CB0")]
+		[FieldOffset(Offset = "0x4")]
+		[SerializeField]
 		public int speakerId;
 
-		// Token: 0x040041F3 RID: 16883
-		[FieldOffset(8)]
+		// Token: 0x04004CB1 RID: 19633
+		[Token(Token = "0x4004CB1")]
+		[FieldOffset(Offset = "0x8")]
+		[SerializeField]
 		public int speakerPortrayalVariationId;
 
-		// Token: 0x02000DFF RID: 3583
+		// Token: 0x02000D98 RID: 3480
+		[Token(Token = "0x2000D98")]
 		public enum Identity
 		{
-			// Token: 0x0400A40C RID: 41996
+			// Token: 0x04004CB3 RID: 19635
+			[Token(Token = "0x4004CB3")]
 			Self,
-			// Token: 0x0400A40D RID: 41997
+			// Token: 0x04004CB4 RID: 19636
+			[Token(Token = "0x4004CB4")]
 			Special,
-			// Token: 0x0400A40E RID: 41998
+			// Token: 0x04004CB5 RID: 19637
+			[Token(Token = "0x4004CB5")]
 			Normal,
-			// Token: 0x0400A40F RID: 41999
+			// Token: 0x04004CB6 RID: 19638
+			[Token(Token = "0x4004CB6")]
 			Unknown
 		}
 	}

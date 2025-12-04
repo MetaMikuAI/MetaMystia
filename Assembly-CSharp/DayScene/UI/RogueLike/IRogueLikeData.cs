@@ -1,1343 +1,794 @@
 ﻿using System;
+using System.Collections.Generic;
 using GameData;
 using GameData.Core.Collections.DaySceneUtility.Collections;
-using Il2CppInterop.Common.Attributes;
-using Il2CppInterop.Runtime;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using Il2CppInterop.Runtime.Runtime;
-using Il2CppSystem;
-using Il2CppSystem.Collections.Generic;
+using Il2CppDummyDll;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
 namespace DayScene.UI.RogueLike
 {
-	// Token: 0x0200012E RID: 302
-	public sealed class IRogueLikeData : ValueType
+	// Token: 0x02000442 RID: 1090
+	[Token(Token = "0x2000442")]
+	public struct IRogueLikeData : IRogueLikeCustomizedDataProfile
 	{
-		// Token: 0x0600232C RID: 9004 RVA: 0x00113378 File Offset: 0x00111578
-		// Note: this type is marked as 'beforefieldinit'.
-		static IRogueLikeData()
+		// Token: 0x06001850 RID: 6224 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x6001850")]
+		[Address(RVA = "0x40C360", Offset = "0x40AD60", VA = "0x18040C360")]
+		public IRogueLikeData(IRogueLikeCustomizedDataProfile customizedData, DLC5_RogueLikeDataProfileUnchangeable unchangeableData)
 		{
-			Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr = IL2CPP.GetIl2CppClass("Assembly-CSharp.dll", "DayScene.UI.RogueLike", "IRogueLikeData");
-			IL2CPP.il2cpp_runtime_class_init(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr);
-			IRogueLikeData.NativeFieldInfoPtr_m_CustomizedData = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, "m_CustomizedData");
-			IRogueLikeData.NativeFieldInfoPtr_m_UnchangeableData = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, "m_UnchangeableData");
-			IRogueLikeData.NativeMethodInfoPtr__ctor_Public_Void_IRogueLikeCustomizedDataProfile_DLC5_RogueLikeDataProfileUnchangeable_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669520);
-			IRogueLikeData.NativeMethodInfoPtr_EnsureDataValid_Public_Boolean_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669521);
-			IRogueLikeData.NativeMethodInfoPtr_get_InitialProducts_Public_Virtual_Final_New_get_IReadOnlyList_1_Product_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669522);
-			IRogueLikeData.NativeMethodInfoPtr_get_InitialRecipePool_Public_Virtual_Final_New_get_IReadOnlyList_1_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669523);
-			IRogueLikeData.NativeMethodInfoPtr_get_InitialBevPool_Public_Virtual_Final_New_get_IReadOnlyList_1_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669524);
-			IRogueLikeData.NativeMethodInfoPtr_get_BevLevelLinkToNum_Public_Virtual_Final_New_get_IReadOnlyList_1_Vector2Int_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669525);
-			IRogueLikeData.NativeMethodInfoPtr_get_RoundSetups_Public_Virtual_Final_New_get_IReadOnlyList_1_RogueLikeRoundSetup_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669526);
-			IRogueLikeData.NativeMethodInfoPtr_get_MapSetups_Public_Virtual_Final_New_get_IReadOnlyList_1_MapSetup_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669527);
-			IRogueLikeData.NativeMethodInfoPtr_get_CookerPriceSetups_Public_Virtual_Final_New_get_IReadOnlyList_1_CookerPriceSetup_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669528);
-			IRogueLikeData.NativeMethodInfoPtr_get_GachaTriggerData_Public_Virtual_Final_New_get_IReadOnlyList_1_TriggerCardData_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669529);
-			IRogueLikeData.NativeMethodInfoPtr_get_GachaRewardPairData_Public_Virtual_Final_New_get_IReadOnlyList_1_RogueLikeCardRewardPair_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669530);
-			IRogueLikeData.NativeMethodInfoPtr_get_RoundDuration_Public_Virtual_Final_New_get_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669531);
-			IRogueLikeData.NativeMethodInfoPtr_get_GlobalProductMultiplier_Public_Virtual_Final_New_get_Single_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669532);
-			IRogueLikeData.NativeMethodInfoPtr_get_Level1RecipePriceMultiplier_Public_Virtual_Final_New_get_Single_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669533);
-			IRogueLikeData.NativeMethodInfoPtr_get_Level2RecipePriceMultiplier_Public_Virtual_Final_New_get_Single_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669534);
-			IRogueLikeData.NativeMethodInfoPtr_get_Level3RecipePriceMultiplier_Public_Virtual_Final_New_get_Single_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669535);
-			IRogueLikeData.NativeMethodInfoPtr_get_Level4RecipePriceMultiplier_Public_Virtual_Final_New_get_Single_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669536);
-			IRogueLikeData.NativeMethodInfoPtr_get_Level5RecipePriceMultiplier_Public_Virtual_Final_New_get_Single_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669537);
-			IRogueLikeData.NativeMethodInfoPtr_get_PartnerBasePrice_Public_Virtual_Final_New_get_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669538);
-			IRogueLikeData.NativeMethodInfoPtr_get_SpecialGuestPrice_Public_Virtual_Final_New_get_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669539);
-			IRogueLikeData.NativeMethodInfoPtr_get_EliteSpecialGuestPrice_Public_Virtual_Final_New_get_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669540);
-			IRogueLikeData.NativeMethodInfoPtr_get_ClothesPrice_Public_Virtual_Final_New_get_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669541);
-			IRogueLikeData.NativeMethodInfoPtr_get_DecorationPrice_Public_Virtual_Final_New_get_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669542);
-			IRogueLikeData.NativeMethodInfoPtr_get_GachaNeedComboNum_Public_Virtual_Final_New_get_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669543);
-			IRogueLikeData.NativeMethodInfoPtr_get_GachaNeedSpellNum_Public_Virtual_Final_New_get_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669544);
-			IRogueLikeData.NativeMethodInfoPtr_get_GachaMaxCardNum_Public_Virtual_Final_New_get_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669545);
-			IRogueLikeData.NativeMethodInfoPtr_get_BeginToSpawnDangerousCardRoundIndex_Public_Virtual_Final_New_get_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669546);
-			IRogueLikeData.NativeMethodInfoPtr_get_UnlockAllLevel2SpotRoundIndex_Public_Virtual_Final_New_get_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669547);
-			IRogueLikeData.NativeMethodInfoPtr_get_UnlockAllLevel3SpotRoundIndex_Public_Virtual_Final_New_get_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669548);
-			IRogueLikeData.NativeMethodInfoPtr_get_LuckyLeafExtraMultiplier_Public_Virtual_Final_New_get_Single_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669549);
-			IRogueLikeData.NativeMethodInfoPtr_get_AyaNewsBeginRoundIndex_Public_Virtual_Final_New_get_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669550);
-			IRogueLikeData.NativeMethodInfoPtr_get_PriceToRefreshAyaNews_Public_Virtual_Final_New_get_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669551);
-			IRogueLikeData.NativeMethodInfoPtr_get_AkyuuWashiPrice_Public_Virtual_Final_New_get_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669552);
-			IRogueLikeData.NativeMethodInfoPtr_get_EllenCandyPrice_Public_Virtual_Final_New_get_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669553);
-			IRogueLikeData.NativeMethodInfoPtr_get_KourindouDiscount_Public_Virtual_Final_New_get_Single_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669554);
-			IRogueLikeData.NativeMethodInfoPtr_get_GachaRecipeInitialNum_Public_Virtual_Final_New_get_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669555);
-			IRogueLikeData.NativeMethodInfoPtr_get_GachaBevInitialNum_Public_Virtual_Final_New_get_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669556);
-			IRogueLikeData.NativeMethodInfoPtr_get_SelectRecipeInitialNum_Public_Virtual_Final_New_get_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669557);
-			IRogueLikeData.NativeMethodInfoPtr_get_BaseGachaNumWhenSettle_Public_Virtual_Final_New_get_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669558);
-			IRogueLikeData.NativeMethodInfoPtr_get_BaseMoveAction_Public_Virtual_Final_New_get_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669559);
-			IRogueLikeData.NativeMethodInfoPtr_get_BaseIngredientNumWhenGetRecipe_Public_Virtual_Final_New_get_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669560);
-			IRogueLikeData.NativeMethodInfoPtr_get_StartFund_Public_Virtual_Final_New_get_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669561);
-			IRogueLikeData.NativeMethodInfoPtr_get_SpecialGuestVisitEverywhere_Public_Virtual_Final_New_get_IReadOnlyList_1_ConditionalSpecialGuest_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669562);
-			IRogueLikeData.NativeMethodInfoPtr_get_RoguelikePoolEditMessagePanel_Public_get_DLC5_RogueLikePoolResultPanel_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669563);
-			IRogueLikeData.NativeMethodInfoPtr_get_RoguelikePoolViewerPanel_Public_get_DLC5_RogueLikePoolViewerPanel_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669564);
-			IRogueLikeData.NativeMethodInfoPtr_get_RoguelikeTutorialPanel_Public_get_AssetReference_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669565);
-			IRogueLikeData.NativeMethodInfoPtr_get_RogueLikeCardScorePanel_Public_get_AssetReference_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669566);
-			IRogueLikeData.NativeMethodInfoPtr_get_CardSelectorPanel_Public_get_DLC5_RogueLikeCardSelectorPanel_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669567);
-			IRogueLikeData.NativeMethodInfoPtr_get_Cards_Public_get_Il2CppReferenceArray_1_RogueLikeCard_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669568);
-			IRogueLikeData.NativeMethodInfoPtr_get_CardDescriptionLang_Public_get_MultiLanguageTextAsset_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669569);
-			IRogueLikeData.NativeMethodInfoPtr_get_CardsPersistent_Public_get_Il2CppReferenceArray_1_RogueLikeCardPersistent_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669570);
-			IRogueLikeData.NativeMethodInfoPtr_get_RecipeCollectRateWeight_Public_get_Single_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669571);
-			IRogueLikeData.NativeMethodInfoPtr_get_ItemCollectRateWeight_Public_get_Single_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669572);
-			IRogueLikeData.NativeMethodInfoPtr_get_PartnerCollectRateWeight_Public_get_Single_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669573);
-			IRogueLikeData.NativeMethodInfoPtr_get_IzakayaCollectRateWeight_Public_get_Single_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669574);
-			IRogueLikeData.NativeMethodInfoPtr_get_RogueLikeAchievements_Public_get_Il2CppReferenceArray_1_RogueLikeAchievement_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669575);
-			IRogueLikeData.NativeMethodInfoPtr_get_PartnerPrice_Public_get_Il2CppStructArray_1_Vector2Int_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669576);
-			IRogueLikeData.NativeMethodInfoPtr_get_FirstRefreshCardPrice_Public_get_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669577);
-			IRogueLikeData.NativeMethodInfoPtr_get_EliteChallengeProfiles_Public_get_Il2CppReferenceArray_1_EliteChallengeBase_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669578);
-			IRogueLikeData.NativeMethodInfoPtr_get_EliteRewardSelectionPanel_Public_get_DLC5_RogueLikeEliteRewardSelectionPanel_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr, 100669579);
 		}
 
-		// Token: 0x0600232D RID: 9005 RVA: 0x00113880 File Offset: 0x00111A80
-		[CallerCount(272)]
-		[CachedScanResults(RefRangeStart = 17829, RefRangeEnd = 18101, XrefRangeStart = 17829, XrefRangeEnd = 18101, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe IRogueLikeData(IRogueLikeCustomizedDataProfile customizedData, DLC5_RogueLikeDataProfileUnchangeable unchangeableData) : this(IL2CPP.il2cpp_object_new(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr))
+		// Token: 0x06001851 RID: 6225 RVA: 0x000090F0 File Offset: 0x000072F0
+		[Token(Token = "0x6001851")]
+		[Address(RVA = "0x477FB0", Offset = "0x4769B0", VA = "0x180477FB0")]
+		public bool EnsureDataValid()
 		{
-			IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)2) * (UIntPtr)sizeof(IntPtr))];
-			*ptr = IL2CPP.Il2CppObjectBaseToPtr(customizedData);
-			ptr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr)) / (UIntPtr)sizeof(IntPtr)] = IL2CPP.Il2CppObjectBaseToPtr(unchangeableData);
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr__ctor_Public_Void_IRogueLikeCustomizedDataProfile_DLC5_RogueLikeDataProfileUnchangeable_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
+			return default(bool);
 		}
 
-		// Token: 0x0600232E RID: 9006 RVA: 0x001138E4 File Offset: 0x00111AE4
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 83718, XrefRangeEnd = 83722, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe bool EnsureDataValid()
+		// Token: 0x1700030C RID: 780
+		// (get) Token: 0x06001852 RID: 6226 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x1700030C")]
+		public IReadOnlyList<Product> InitialProducts
 		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_EnsureDataValid_Public_Boolean_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-			return *IL2CPP.il2cpp_object_unbox(intPtr);
-		}
-
-		// Token: 0x17000BFA RID: 3066
-		// (get) Token: 0x0600232F RID: 9007 RVA: 0x00113928 File Offset: 0x00111B28
-		public unsafe IReadOnlyList<Product> InitialProducts
-		{
-			[CallerCount(1)]
-			[CachedScanResults(RefRangeStart = 83726, RefRangeEnd = 83727, XrefRangeStart = 83722, XrefRangeEnd = 83726, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x6001852")]
+			[Address(RVA = "0x478810", Offset = "0x477210", VA = "0x180478810", Slot = "4")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_InitialProducts_Public_Virtual_Final_New_get_IReadOnlyList_1_Product_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				IntPtr intPtr3 = intPtr;
-				return (intPtr3 != 0) ? Il2CppObjectPool.Get<IReadOnlyList<Product>>(intPtr3) : null;
+				return null;
 			}
 		}
 
-		// Token: 0x17000BFB RID: 3067
-		// (get) Token: 0x06002330 RID: 9008 RVA: 0x0011396C File Offset: 0x00111B6C
-		public unsafe IReadOnlyList<int> InitialRecipePool
+		// Token: 0x1700030D RID: 781
+		// (get) Token: 0x06001853 RID: 6227 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x1700030D")]
+		public IReadOnlyList<int> InitialRecipePool
 		{
-			[CallerCount(1)]
-			[CachedScanResults(RefRangeStart = 83736, RefRangeEnd = 83737, XrefRangeStart = 83727, XrefRangeEnd = 83736, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x6001853")]
+			[Address(RVA = "0x478860", Offset = "0x477260", VA = "0x180478860", Slot = "5")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_InitialRecipePool_Public_Virtual_Final_New_get_IReadOnlyList_1_Int32_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				IntPtr intPtr3 = intPtr;
-				return (intPtr3 != 0) ? Il2CppObjectPool.Get<IReadOnlyList<int>>(intPtr3) : null;
+				return null;
 			}
 		}
 
-		// Token: 0x17000BFC RID: 3068
-		// (get) Token: 0x06002331 RID: 9009 RVA: 0x001139B0 File Offset: 0x00111BB0
-		public unsafe IReadOnlyList<int> InitialBevPool
+		// Token: 0x1700030E RID: 782
+		// (get) Token: 0x06001854 RID: 6228 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x1700030E")]
+		public IReadOnlyList<int> InitialBevPool
 		{
-			[CallerCount(1)]
-			[CachedScanResults(RefRangeStart = 83746, RefRangeEnd = 83747, XrefRangeStart = 83737, XrefRangeEnd = 83746, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x6001854")]
+			[Address(RVA = "0x478780", Offset = "0x477180", VA = "0x180478780", Slot = "6")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_InitialBevPool_Public_Virtual_Final_New_get_IReadOnlyList_1_Int32_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				IntPtr intPtr3 = intPtr;
-				return (intPtr3 != 0) ? Il2CppObjectPool.Get<IReadOnlyList<int>>(intPtr3) : null;
+				return null;
 			}
 		}
 
-		// Token: 0x17000BFD RID: 3069
-		// (get) Token: 0x06002332 RID: 9010 RVA: 0x001139F4 File Offset: 0x00111BF4
-		public unsafe IReadOnlyList<Vector2Int> BevLevelLinkToNum
+		// Token: 0x1700030F RID: 783
+		// (get) Token: 0x06001855 RID: 6229 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x1700030F")]
+		public IReadOnlyList<Vector2Int> BevLevelLinkToNum
 		{
-			[CallerCount(1)]
-			[CachedScanResults(RefRangeStart = 83756, RefRangeEnd = 83757, XrefRangeStart = 83747, XrefRangeEnd = 83756, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x6001855")]
+			[Address(RVA = "0x478200", Offset = "0x476C00", VA = "0x180478200", Slot = "7")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_BevLevelLinkToNum_Public_Virtual_Final_New_get_IReadOnlyList_1_Vector2Int_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				IntPtr intPtr3 = intPtr;
-				return (intPtr3 != 0) ? Il2CppObjectPool.Get<IReadOnlyList<Vector2Int>>(intPtr3) : null;
+				return null;
 			}
 		}
 
-		// Token: 0x17000BFE RID: 3070
-		// (get) Token: 0x06002333 RID: 9011 RVA: 0x00113A38 File Offset: 0x00111C38
-		public unsafe IReadOnlyList<DLC5_RogueLikeDataProfile.RogueLikeRoundSetup> RoundSetups
+		// Token: 0x17000310 RID: 784
+		// (get) Token: 0x06001856 RID: 6230 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x17000310")]
+		public IReadOnlyList<DLC5_RogueLikeDataProfile.RogueLikeRoundSetup> RoundSetups
 		{
-			[CallerCount(7)]
-			[CachedScanResults(RefRangeStart = 83761, RefRangeEnd = 83768, XrefRangeStart = 83757, XrefRangeEnd = 83761, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x6001856")]
+			[Address(RVA = "0x478DA0", Offset = "0x4777A0", VA = "0x180478DA0", Slot = "8")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_RoundSetups_Public_Virtual_Final_New_get_IReadOnlyList_1_RogueLikeRoundSetup_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				IntPtr intPtr3 = intPtr;
-				return (intPtr3 != 0) ? Il2CppObjectPool.Get<IReadOnlyList<DLC5_RogueLikeDataProfile.RogueLikeRoundSetup>>(intPtr3) : null;
+				return null;
 			}
 		}
 
-		// Token: 0x17000BFF RID: 3071
-		// (get) Token: 0x06002334 RID: 9012 RVA: 0x00113A7C File Offset: 0x00111C7C
-		public unsafe IReadOnlyList<DLC5_RogueLikeDataProfile.MapSetup> MapSetups
+		// Token: 0x17000311 RID: 785
+		// (get) Token: 0x06001857 RID: 6231 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x17000311")]
+		public IReadOnlyList<DLC5_RogueLikeDataProfile.MapSetup> MapSetups
 		{
-			[CallerCount(1)]
-			[CachedScanResults(RefRangeStart = 83772, RefRangeEnd = 83773, XrefRangeStart = 83768, XrefRangeEnd = 83772, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x6001857")]
+			[Address(RVA = "0x478B60", Offset = "0x477560", VA = "0x180478B60", Slot = "9")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_MapSetups_Public_Virtual_Final_New_get_IReadOnlyList_1_MapSetup_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				IntPtr intPtr3 = intPtr;
-				return (intPtr3 != 0) ? Il2CppObjectPool.Get<IReadOnlyList<DLC5_RogueLikeDataProfile.MapSetup>>(intPtr3) : null;
+				return null;
 			}
 		}
 
-		// Token: 0x17000C00 RID: 3072
-		// (get) Token: 0x06002335 RID: 9013 RVA: 0x00113AC0 File Offset: 0x00111CC0
-		public unsafe IReadOnlyList<DLC5_RogueLikeDataProfile.CookerPriceSetup> CookerPriceSetups
+		// Token: 0x17000312 RID: 786
+		// (get) Token: 0x06001858 RID: 6232 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x17000312")]
+		public IReadOnlyList<DLC5_RogueLikeDataProfile.CookerPriceSetup> CookerPriceSetups
 		{
-			[CallerCount(0)]
-			[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 83773, XrefRangeEnd = 83777, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x6001858")]
+			[Address(RVA = "0x478360", Offset = "0x476D60", VA = "0x180478360", Slot = "10")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_CookerPriceSetups_Public_Virtual_Final_New_get_IReadOnlyList_1_CookerPriceSetup_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				IntPtr intPtr3 = intPtr;
-				return (intPtr3 != 0) ? Il2CppObjectPool.Get<IReadOnlyList<DLC5_RogueLikeDataProfile.CookerPriceSetup>>(intPtr3) : null;
+				return null;
 			}
 		}
 
-		// Token: 0x17000C01 RID: 3073
-		// (get) Token: 0x06002336 RID: 9014 RVA: 0x00113B04 File Offset: 0x00111D04
-		public unsafe IReadOnlyList<TriggerCardData> GachaTriggerData
+		// Token: 0x17000313 RID: 787
+		// (get) Token: 0x06001859 RID: 6233 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x17000313")]
+		public IReadOnlyList<TriggerCardData> GachaTriggerData
 		{
-			[CallerCount(0)]
-			[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 83777, XrefRangeEnd = 83781, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x6001859")]
+			[Address(RVA = "0x4786E0", Offset = "0x4770E0", VA = "0x1804786E0", Slot = "11")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_GachaTriggerData_Public_Virtual_Final_New_get_IReadOnlyList_1_TriggerCardData_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				IntPtr intPtr3 = intPtr;
-				return (intPtr3 != 0) ? Il2CppObjectPool.Get<IReadOnlyList<TriggerCardData>>(intPtr3) : null;
+				return null;
 			}
 		}
 
-		// Token: 0x17000C02 RID: 3074
-		// (get) Token: 0x06002337 RID: 9015 RVA: 0x00113B48 File Offset: 0x00111D48
-		public unsafe IReadOnlyList<RogueLikeCardRewardPair> GachaRewardPairData
+		// Token: 0x17000314 RID: 788
+		// (get) Token: 0x0600185A RID: 6234 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x17000314")]
+		public IReadOnlyList<RogueLikeCardRewardPair> GachaRewardPairData
 		{
-			[CallerCount(0)]
-			[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 83781, XrefRangeEnd = 83785, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x600185A")]
+			[Address(RVA = "0x478690", Offset = "0x477090", VA = "0x180478690", Slot = "12")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_GachaRewardPairData_Public_Virtual_Final_New_get_IReadOnlyList_1_RogueLikeCardRewardPair_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				IntPtr intPtr3 = intPtr;
-				return (intPtr3 != 0) ? Il2CppObjectPool.Get<IReadOnlyList<RogueLikeCardRewardPair>>(intPtr3) : null;
+				return null;
 			}
 		}
 
-		// Token: 0x17000C03 RID: 3075
-		// (get) Token: 0x06002338 RID: 9016 RVA: 0x00113B8C File Offset: 0x00111D8C
-		public unsafe int RoundDuration
+		// Token: 0x17000315 RID: 789
+		// (get) Token: 0x0600185B RID: 6235 RVA: 0x00009108 File Offset: 0x00007308
+		[Token(Token = "0x17000315")]
+		public int RoundDuration
 		{
-			[CallerCount(1)]
-			[CachedScanResults(RefRangeStart = 83789, RefRangeEnd = 83790, XrefRangeStart = 83785, XrefRangeEnd = 83789, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x600185B")]
+			[Address(RVA = "0x478D50", Offset = "0x477750", VA = "0x180478D50", Slot = "13")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_RoundDuration_Public_Virtual_Final_New_get_Int32_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0;
 			}
 		}
 
-		// Token: 0x17000C04 RID: 3076
-		// (get) Token: 0x06002339 RID: 9017 RVA: 0x00113BD0 File Offset: 0x00111DD0
-		public unsafe float GlobalProductMultiplier
+		// Token: 0x17000316 RID: 790
+		// (get) Token: 0x0600185C RID: 6236 RVA: 0x00009120 File Offset: 0x00007320
+		[Token(Token = "0x17000316")]
+		public float GlobalProductMultiplier
 		{
-			[CallerCount(0)]
-			[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 83790, XrefRangeEnd = 83794, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x600185C")]
+			[Address(RVA = "0x478730", Offset = "0x477130", VA = "0x180478730", Slot = "14")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_GlobalProductMultiplier_Public_Virtual_Final_New_get_Single_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0f;
 			}
 		}
 
-		// Token: 0x17000C05 RID: 3077
-		// (get) Token: 0x0600233A RID: 9018 RVA: 0x00113C14 File Offset: 0x00111E14
-		public unsafe float Level1RecipePriceMultiplier
+		// Token: 0x17000317 RID: 791
+		// (get) Token: 0x0600185D RID: 6237 RVA: 0x00009138 File Offset: 0x00007338
+		[Token(Token = "0x17000317")]
+		public float Level1RecipePriceMultiplier
 		{
-			[CallerCount(0)]
-			[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 83794, XrefRangeEnd = 83798, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x600185D")]
+			[Address(RVA = "0x478980", Offset = "0x477380", VA = "0x180478980", Slot = "15")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_Level1RecipePriceMultiplier_Public_Virtual_Final_New_get_Single_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0f;
 			}
 		}
 
-		// Token: 0x17000C06 RID: 3078
-		// (get) Token: 0x0600233B RID: 9019 RVA: 0x00113C58 File Offset: 0x00111E58
-		public unsafe float Level2RecipePriceMultiplier
+		// Token: 0x17000318 RID: 792
+		// (get) Token: 0x0600185E RID: 6238 RVA: 0x00009150 File Offset: 0x00007350
+		[Token(Token = "0x17000318")]
+		public float Level2RecipePriceMultiplier
 		{
-			[CallerCount(0)]
-			[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 83798, XrefRangeEnd = 83802, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x600185E")]
+			[Address(RVA = "0x4789D0", Offset = "0x4773D0", VA = "0x1804789D0", Slot = "16")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_Level2RecipePriceMultiplier_Public_Virtual_Final_New_get_Single_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0f;
 			}
 		}
 
-		// Token: 0x17000C07 RID: 3079
-		// (get) Token: 0x0600233C RID: 9020 RVA: 0x00113C9C File Offset: 0x00111E9C
-		public unsafe float Level3RecipePriceMultiplier
+		// Token: 0x17000319 RID: 793
+		// (get) Token: 0x0600185F RID: 6239 RVA: 0x00009168 File Offset: 0x00007368
+		[Token(Token = "0x17000319")]
+		public float Level3RecipePriceMultiplier
 		{
-			[CallerCount(0)]
-			[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 83802, XrefRangeEnd = 83806, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x600185F")]
+			[Address(RVA = "0x478A20", Offset = "0x477420", VA = "0x180478A20", Slot = "17")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_Level3RecipePriceMultiplier_Public_Virtual_Final_New_get_Single_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0f;
 			}
 		}
 
-		// Token: 0x17000C08 RID: 3080
-		// (get) Token: 0x0600233D RID: 9021 RVA: 0x00113CE0 File Offset: 0x00111EE0
-		public unsafe float Level4RecipePriceMultiplier
+		// Token: 0x1700031A RID: 794
+		// (get) Token: 0x06001860 RID: 6240 RVA: 0x00009180 File Offset: 0x00007380
+		[Token(Token = "0x1700031A")]
+		public float Level4RecipePriceMultiplier
 		{
-			[CallerCount(0)]
-			[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 83806, XrefRangeEnd = 83810, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x6001860")]
+			[Address(RVA = "0x478A70", Offset = "0x477470", VA = "0x180478A70", Slot = "18")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_Level4RecipePriceMultiplier_Public_Virtual_Final_New_get_Single_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0f;
 			}
 		}
 
-		// Token: 0x17000C09 RID: 3081
-		// (get) Token: 0x0600233E RID: 9022 RVA: 0x00113D24 File Offset: 0x00111F24
-		public unsafe float Level5RecipePriceMultiplier
+		// Token: 0x1700031B RID: 795
+		// (get) Token: 0x06001861 RID: 6241 RVA: 0x00009198 File Offset: 0x00007398
+		[Token(Token = "0x1700031B")]
+		public float Level5RecipePriceMultiplier
 		{
-			[CallerCount(0)]
-			[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 83810, XrefRangeEnd = 83814, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x6001861")]
+			[Address(RVA = "0x478AC0", Offset = "0x4774C0", VA = "0x180478AC0", Slot = "19")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_Level5RecipePriceMultiplier_Public_Virtual_Final_New_get_Single_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0f;
 			}
 		}
 
-		// Token: 0x17000C0A RID: 3082
-		// (get) Token: 0x0600233F RID: 9023 RVA: 0x00113D68 File Offset: 0x00111F68
-		public unsafe int PartnerBasePrice
+		// Token: 0x1700031C RID: 796
+		// (get) Token: 0x06001862 RID: 6242 RVA: 0x000091B0 File Offset: 0x000073B0
+		[Token(Token = "0x1700031C")]
+		public int PartnerBasePrice
 		{
-			[CallerCount(0)]
-			[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 83814, XrefRangeEnd = 83818, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x6001862")]
+			[Address(RVA = "0x478BB0", Offset = "0x4775B0", VA = "0x180478BB0", Slot = "20")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_PartnerBasePrice_Public_Virtual_Final_New_get_Int32_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0;
 			}
 		}
 
-		// Token: 0x17000C0B RID: 3083
-		// (get) Token: 0x06002340 RID: 9024 RVA: 0x00113DAC File Offset: 0x00111FAC
-		public unsafe int SpecialGuestPrice
+		// Token: 0x1700031D RID: 797
+		// (get) Token: 0x06001863 RID: 6243 RVA: 0x000091C8 File Offset: 0x000073C8
+		[Token(Token = "0x1700031D")]
+		public int SpecialGuestPrice
 		{
-			[CallerCount(0)]
-			[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 83818, XrefRangeEnd = 83822, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x6001863")]
+			[Address(RVA = "0x478E40", Offset = "0x477840", VA = "0x180478E40", Slot = "21")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_SpecialGuestPrice_Public_Virtual_Final_New_get_Int32_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0;
 			}
 		}
 
-		// Token: 0x17000C0C RID: 3084
-		// (get) Token: 0x06002341 RID: 9025 RVA: 0x00113DF0 File Offset: 0x00111FF0
-		public unsafe int EliteSpecialGuestPrice
+		// Token: 0x1700031E RID: 798
+		// (get) Token: 0x06001864 RID: 6244 RVA: 0x000091E0 File Offset: 0x000073E0
+		[Token(Token = "0x1700031E")]
+		public int EliteSpecialGuestPrice
 		{
-			[CallerCount(1)]
-			[CachedScanResults(RefRangeStart = 83826, RefRangeEnd = 83827, XrefRangeStart = 83822, XrefRangeEnd = 83826, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x6001864")]
+			[Address(RVA = "0x478440", Offset = "0x476E40", VA = "0x180478440", Slot = "22")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_EliteSpecialGuestPrice_Public_Virtual_Final_New_get_Int32_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0;
 			}
 		}
 
-		// Token: 0x17000C0D RID: 3085
-		// (get) Token: 0x06002342 RID: 9026 RVA: 0x00113E34 File Offset: 0x00112034
-		public unsafe int ClothesPrice
+		// Token: 0x1700031F RID: 799
+		// (get) Token: 0x06001865 RID: 6245 RVA: 0x000091F8 File Offset: 0x000073F8
+		[Token(Token = "0x1700031F")]
+		public int ClothesPrice
 		{
-			[CallerCount(0)]
-			[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 83827, XrefRangeEnd = 83831, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x6001865")]
+			[Address(RVA = "0x478310", Offset = "0x476D10", VA = "0x180478310", Slot = "23")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_ClothesPrice_Public_Virtual_Final_New_get_Int32_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0;
 			}
 		}
 
-		// Token: 0x17000C0E RID: 3086
-		// (get) Token: 0x06002343 RID: 9027 RVA: 0x00113E78 File Offset: 0x00112078
-		public unsafe int DecorationPrice
+		// Token: 0x17000320 RID: 800
+		// (get) Token: 0x06001866 RID: 6246 RVA: 0x00009210 File Offset: 0x00007410
+		[Token(Token = "0x17000320")]
+		public int DecorationPrice
 		{
-			[CallerCount(1)]
-			[CachedScanResults(RefRangeStart = 83835, RefRangeEnd = 83836, XrefRangeStart = 83831, XrefRangeEnd = 83835, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x6001866")]
+			[Address(RVA = "0x4783B0", Offset = "0x476DB0", VA = "0x1804783B0", Slot = "24")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_DecorationPrice_Public_Virtual_Final_New_get_Int32_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0;
 			}
 		}
 
-		// Token: 0x17000C0F RID: 3087
-		// (get) Token: 0x06002344 RID: 9028 RVA: 0x00113EBC File Offset: 0x001120BC
-		public unsafe int GachaNeedComboNum
+		// Token: 0x17000321 RID: 801
+		// (get) Token: 0x06001867 RID: 6247 RVA: 0x00009228 File Offset: 0x00007428
+		[Token(Token = "0x17000321")]
+		public int GachaNeedComboNum
 		{
-			[CallerCount(0)]
-			[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 83836, XrefRangeEnd = 83840, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x6001867")]
+			[Address(RVA = "0x4785A0", Offset = "0x476FA0", VA = "0x1804785A0", Slot = "25")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_GachaNeedComboNum_Public_Virtual_Final_New_get_Int32_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0;
 			}
 		}
 
-		// Token: 0x17000C10 RID: 3088
-		// (get) Token: 0x06002345 RID: 9029 RVA: 0x00113F00 File Offset: 0x00112100
-		public unsafe int GachaNeedSpellNum
+		// Token: 0x17000322 RID: 802
+		// (get) Token: 0x06001868 RID: 6248 RVA: 0x00009240 File Offset: 0x00007440
+		[Token(Token = "0x17000322")]
+		public int GachaNeedSpellNum
 		{
-			[CallerCount(0)]
-			[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 83840, XrefRangeEnd = 83844, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x6001868")]
+			[Address(RVA = "0x4785F0", Offset = "0x476FF0", VA = "0x1804785F0", Slot = "26")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_GachaNeedSpellNum_Public_Virtual_Final_New_get_Int32_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0;
 			}
 		}
 
-		// Token: 0x17000C11 RID: 3089
-		// (get) Token: 0x06002346 RID: 9030 RVA: 0x00113F44 File Offset: 0x00112144
-		public unsafe int GachaMaxCardNum
+		// Token: 0x17000323 RID: 803
+		// (get) Token: 0x06001869 RID: 6249 RVA: 0x00009258 File Offset: 0x00007458
+		[Token(Token = "0x17000323")]
+		public int GachaMaxCardNum
 		{
-			[CallerCount(1)]
-			[CachedScanResults(RefRangeStart = 83848, RefRangeEnd = 83849, XrefRangeStart = 83844, XrefRangeEnd = 83848, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x6001869")]
+			[Address(RVA = "0x478550", Offset = "0x476F50", VA = "0x180478550", Slot = "27")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_GachaMaxCardNum_Public_Virtual_Final_New_get_Int32_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0;
 			}
 		}
 
-		// Token: 0x17000C12 RID: 3090
-		// (get) Token: 0x06002347 RID: 9031 RVA: 0x00113F88 File Offset: 0x00112188
-		public unsafe int BeginToSpawnDangerousCardRoundIndex
+		// Token: 0x17000324 RID: 804
+		// (get) Token: 0x0600186A RID: 6250 RVA: 0x00009270 File Offset: 0x00007470
+		[Token(Token = "0x17000324")]
+		public int BeginToSpawnDangerousCardRoundIndex
 		{
-			[CallerCount(4)]
-			[CachedScanResults(RefRangeStart = 83853, RefRangeEnd = 83857, XrefRangeStart = 83849, XrefRangeEnd = 83853, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x600186A")]
+			[Address(RVA = "0x4781B0", Offset = "0x476BB0", VA = "0x1804781B0", Slot = "28")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_BeginToSpawnDangerousCardRoundIndex_Public_Virtual_Final_New_get_Int32_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0;
 			}
 		}
 
-		// Token: 0x17000C13 RID: 3091
-		// (get) Token: 0x06002348 RID: 9032 RVA: 0x00113FCC File Offset: 0x001121CC
-		public unsafe int UnlockAllLevel2SpotRoundIndex
+		// Token: 0x17000325 RID: 805
+		// (get) Token: 0x0600186B RID: 6251 RVA: 0x00009288 File Offset: 0x00007488
+		[Token(Token = "0x17000325")]
+		public int UnlockAllLevel2SpotRoundIndex
 		{
-			[CallerCount(0)]
-			[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 83857, XrefRangeEnd = 83861, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x600186B")]
+			[Address(RVA = "0x478F30", Offset = "0x477930", VA = "0x180478F30", Slot = "29")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_UnlockAllLevel2SpotRoundIndex_Public_Virtual_Final_New_get_Int32_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0;
 			}
 		}
 
-		// Token: 0x17000C14 RID: 3092
-		// (get) Token: 0x06002349 RID: 9033 RVA: 0x00114010 File Offset: 0x00112210
-		public unsafe int UnlockAllLevel3SpotRoundIndex
+		// Token: 0x17000326 RID: 806
+		// (get) Token: 0x0600186C RID: 6252 RVA: 0x000092A0 File Offset: 0x000074A0
+		[Token(Token = "0x17000326")]
+		public int UnlockAllLevel3SpotRoundIndex
 		{
-			[CallerCount(0)]
-			[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 83861, XrefRangeEnd = 83865, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x600186C")]
+			[Address(RVA = "0x478F80", Offset = "0x477980", VA = "0x180478F80", Slot = "30")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_UnlockAllLevel3SpotRoundIndex_Public_Virtual_Final_New_get_Int32_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0;
 			}
 		}
 
-		// Token: 0x17000C15 RID: 3093
-		// (get) Token: 0x0600234A RID: 9034 RVA: 0x00114054 File Offset: 0x00112254
-		public unsafe float LuckyLeafExtraMultiplier
+		// Token: 0x17000327 RID: 807
+		// (get) Token: 0x0600186D RID: 6253 RVA: 0x000092B8 File Offset: 0x000074B8
+		[Token(Token = "0x17000327")]
+		public float LuckyLeafExtraMultiplier
 		{
-			[CallerCount(4)]
-			[CachedScanResults(RefRangeStart = 83869, RefRangeEnd = 83873, XrefRangeStart = 83865, XrefRangeEnd = 83869, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x600186D")]
+			[Address(RVA = "0x478B10", Offset = "0x477510", VA = "0x180478B10", Slot = "31")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_LuckyLeafExtraMultiplier_Public_Virtual_Final_New_get_Single_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0f;
 			}
 		}
 
-		// Token: 0x17000C16 RID: 3094
-		// (get) Token: 0x0600234B RID: 9035 RVA: 0x00114098 File Offset: 0x00112298
-		public unsafe int AyaNewsBeginRoundIndex
+		// Token: 0x17000328 RID: 808
+		// (get) Token: 0x0600186E RID: 6254 RVA: 0x000092D0 File Offset: 0x000074D0
+		[Token(Token = "0x17000328")]
+		public int AyaNewsBeginRoundIndex
 		{
-			[CallerCount(1)]
-			[CachedScanResults(RefRangeStart = 83877, RefRangeEnd = 83878, XrefRangeStart = 83873, XrefRangeEnd = 83877, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x600186E")]
+			[Address(RVA = "0x478070", Offset = "0x476A70", VA = "0x180478070", Slot = "32")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_AyaNewsBeginRoundIndex_Public_Virtual_Final_New_get_Int32_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0;
 			}
 		}
 
-		// Token: 0x17000C17 RID: 3095
-		// (get) Token: 0x0600234C RID: 9036 RVA: 0x001140DC File Offset: 0x001122DC
-		public unsafe int PriceToRefreshAyaNews
+		// Token: 0x17000329 RID: 809
+		// (get) Token: 0x0600186F RID: 6255 RVA: 0x000092E8 File Offset: 0x000074E8
+		[Token(Token = "0x17000329")]
+		public int PriceToRefreshAyaNews
 		{
-			[CallerCount(5)]
-			[CachedScanResults(RefRangeStart = 83882, RefRangeEnd = 83887, XrefRangeStart = 83878, XrefRangeEnd = 83882, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x600186F")]
+			[Address(RVA = "0x478C40", Offset = "0x477640", VA = "0x180478C40", Slot = "33")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_PriceToRefreshAyaNews_Public_Virtual_Final_New_get_Int32_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0;
 			}
 		}
 
-		// Token: 0x17000C18 RID: 3096
-		// (get) Token: 0x0600234D RID: 9037 RVA: 0x00114120 File Offset: 0x00112320
-		public unsafe int AkyuuWashiPrice
+		// Token: 0x1700032A RID: 810
+		// (get) Token: 0x06001870 RID: 6256 RVA: 0x00009300 File Offset: 0x00007500
+		[Token(Token = "0x1700032A")]
+		public int AkyuuWashiPrice
 		{
-			[CallerCount(1)]
-			[CachedScanResults(RefRangeStart = 83891, RefRangeEnd = 83892, XrefRangeStart = 83887, XrefRangeEnd = 83891, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x6001870")]
+			[Address(RVA = "0x478020", Offset = "0x476A20", VA = "0x180478020", Slot = "34")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_AkyuuWashiPrice_Public_Virtual_Final_New_get_Int32_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0;
 			}
 		}
 
-		// Token: 0x17000C19 RID: 3097
-		// (get) Token: 0x0600234E RID: 9038 RVA: 0x00114164 File Offset: 0x00112364
-		public unsafe int EllenCandyPrice
+		// Token: 0x1700032B RID: 811
+		// (get) Token: 0x06001871 RID: 6257 RVA: 0x00009318 File Offset: 0x00007518
+		[Token(Token = "0x1700032B")]
+		public int EllenCandyPrice
 		{
-			[CallerCount(0)]
-			[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 83892, XrefRangeEnd = 83896, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x6001871")]
+			[Address(RVA = "0x478490", Offset = "0x476E90", VA = "0x180478490", Slot = "35")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_EllenCandyPrice_Public_Virtual_Final_New_get_Int32_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0;
 			}
 		}
 
-		// Token: 0x17000C1A RID: 3098
-		// (get) Token: 0x0600234F RID: 9039 RVA: 0x001141A8 File Offset: 0x001123A8
-		public unsafe float KourindouDiscount
+		// Token: 0x1700032C RID: 812
+		// (get) Token: 0x06001872 RID: 6258 RVA: 0x00009330 File Offset: 0x00007530
+		[Token(Token = "0x1700032C")]
+		public float KourindouDiscount
 		{
-			[CallerCount(3)]
-			[CachedScanResults(RefRangeStart = 83900, RefRangeEnd = 83903, XrefRangeStart = 83896, XrefRangeEnd = 83900, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x6001872")]
+			[Address(RVA = "0x478930", Offset = "0x477330", VA = "0x180478930", Slot = "36")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_KourindouDiscount_Public_Virtual_Final_New_get_Single_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0f;
 			}
 		}
 
-		// Token: 0x17000C1B RID: 3099
-		// (get) Token: 0x06002350 RID: 9040 RVA: 0x001141EC File Offset: 0x001123EC
-		public unsafe int GachaRecipeInitialNum
+		// Token: 0x1700032D RID: 813
+		// (get) Token: 0x06001873 RID: 6259 RVA: 0x00009348 File Offset: 0x00007548
+		[Token(Token = "0x1700032D")]
+		public int GachaRecipeInitialNum
 		{
-			[CallerCount(0)]
-			[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 83903, XrefRangeEnd = 83907, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x6001873")]
+			[Address(RVA = "0x478640", Offset = "0x477040", VA = "0x180478640", Slot = "37")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_GachaRecipeInitialNum_Public_Virtual_Final_New_get_Int32_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0;
 			}
 		}
 
-		// Token: 0x17000C1C RID: 3100
-		// (get) Token: 0x06002351 RID: 9041 RVA: 0x00114230 File Offset: 0x00112430
-		public unsafe int GachaBevInitialNum
+		// Token: 0x1700032E RID: 814
+		// (get) Token: 0x06001874 RID: 6260 RVA: 0x00009360 File Offset: 0x00007560
+		[Token(Token = "0x1700032E")]
+		public int GachaBevInitialNum
 		{
-			[CallerCount(0)]
-			[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 83907, XrefRangeEnd = 83911, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x6001874")]
+			[Address(RVA = "0x478500", Offset = "0x476F00", VA = "0x180478500", Slot = "38")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_GachaBevInitialNum_Public_Virtual_Final_New_get_Int32_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0;
 			}
 		}
 
-		// Token: 0x17000C1D RID: 3101
-		// (get) Token: 0x06002352 RID: 9042 RVA: 0x00114274 File Offset: 0x00112474
-		public unsafe int SelectRecipeInitialNum
+		// Token: 0x1700032F RID: 815
+		// (get) Token: 0x06001875 RID: 6261 RVA: 0x00009378 File Offset: 0x00007578
+		[Token(Token = "0x1700032F")]
+		public int SelectRecipeInitialNum
 		{
-			[CallerCount(0)]
-			[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 83911, XrefRangeEnd = 83915, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x6001875")]
+			[Address(RVA = "0x478DF0", Offset = "0x4777F0", VA = "0x180478DF0", Slot = "39")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_SelectRecipeInitialNum_Public_Virtual_Final_New_get_Int32_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0;
 			}
 		}
 
-		// Token: 0x17000C1E RID: 3102
-		// (get) Token: 0x06002353 RID: 9043 RVA: 0x001142B8 File Offset: 0x001124B8
-		public unsafe int BaseGachaNumWhenSettle
+		// Token: 0x17000330 RID: 816
+		// (get) Token: 0x06001876 RID: 6262 RVA: 0x00009390 File Offset: 0x00007590
+		[Token(Token = "0x17000330")]
+		public int BaseGachaNumWhenSettle
 		{
-			[CallerCount(1)]
-			[CachedScanResults(RefRangeStart = 83919, RefRangeEnd = 83920, XrefRangeStart = 83915, XrefRangeEnd = 83919, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x6001876")]
+			[Address(RVA = "0x4780C0", Offset = "0x476AC0", VA = "0x1804780C0", Slot = "40")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_BaseGachaNumWhenSettle_Public_Virtual_Final_New_get_Int32_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0;
 			}
 		}
 
-		// Token: 0x17000C1F RID: 3103
-		// (get) Token: 0x06002354 RID: 9044 RVA: 0x001142FC File Offset: 0x001124FC
-		public unsafe int BaseMoveAction
+		// Token: 0x17000331 RID: 817
+		// (get) Token: 0x06001877 RID: 6263 RVA: 0x000093A8 File Offset: 0x000075A8
+		[Token(Token = "0x17000331")]
+		public int BaseMoveAction
 		{
-			[CallerCount(0)]
-			[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 83920, XrefRangeEnd = 83924, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x6001877")]
+			[Address(RVA = "0x478160", Offset = "0x476B60", VA = "0x180478160", Slot = "41")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_BaseMoveAction_Public_Virtual_Final_New_get_Int32_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0;
 			}
 		}
 
-		// Token: 0x17000C20 RID: 3104
-		// (get) Token: 0x06002355 RID: 9045 RVA: 0x00114340 File Offset: 0x00112540
-		public unsafe int BaseIngredientNumWhenGetRecipe
+		// Token: 0x17000332 RID: 818
+		// (get) Token: 0x06001878 RID: 6264 RVA: 0x000093C0 File Offset: 0x000075C0
+		[Token(Token = "0x17000332")]
+		public int BaseIngredientNumWhenGetRecipe
 		{
-			[CallerCount(0)]
-			[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 83924, XrefRangeEnd = 83928, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x6001878")]
+			[Address(RVA = "0x478110", Offset = "0x476B10", VA = "0x180478110", Slot = "42")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_BaseIngredientNumWhenGetRecipe_Public_Virtual_Final_New_get_Int32_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0;
 			}
 		}
 
-		// Token: 0x17000C21 RID: 3105
-		// (get) Token: 0x06002356 RID: 9046 RVA: 0x00114384 File Offset: 0x00112584
-		public unsafe int StartFund
+		// Token: 0x17000333 RID: 819
+		// (get) Token: 0x06001879 RID: 6265 RVA: 0x000093D8 File Offset: 0x000075D8
+		[Token(Token = "0x17000333")]
+		public int StartFund
 		{
-			[CallerCount(1)]
-			[CachedScanResults(RefRangeStart = 83932, RefRangeEnd = 83933, XrefRangeStart = 83928, XrefRangeEnd = 83932, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x6001879")]
+			[Address(RVA = "0x478EE0", Offset = "0x4778E0", VA = "0x180478EE0", Slot = "43")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_StartFund_Public_Virtual_Final_New_get_Int32_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0;
 			}
 		}
 
-		// Token: 0x17000C22 RID: 3106
-		// (get) Token: 0x06002357 RID: 9047 RVA: 0x001143C8 File Offset: 0x001125C8
-		public unsafe IReadOnlyList<DLC5_RogueLikeDataProfile.MapSetup.ConditionalSpecialGuest> SpecialGuestVisitEverywhere
+		// Token: 0x17000334 RID: 820
+		// (get) Token: 0x0600187A RID: 6266 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x17000334")]
+		public IReadOnlyList<DLC5_RogueLikeDataProfile.MapSetup.ConditionalSpecialGuest> SpecialGuestVisitEverywhere
 		{
-			[CallerCount(1)]
-			[CachedScanResults(RefRangeStart = 83937, RefRangeEnd = 83938, XrefRangeStart = 83933, XrefRangeEnd = 83937, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x600187A")]
+			[Address(RVA = "0x478E90", Offset = "0x477890", VA = "0x180478E90", Slot = "44")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_SpecialGuestVisitEverywhere_Public_Virtual_Final_New_get_IReadOnlyList_1_ConditionalSpecialGuest_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				IntPtr intPtr3 = intPtr;
-				return (intPtr3 != 0) ? Il2CppObjectPool.Get<IReadOnlyList<DLC5_RogueLikeDataProfile.MapSetup.ConditionalSpecialGuest>>(intPtr3) : null;
+				return null;
 			}
 		}
 
-		// Token: 0x17000C23 RID: 3107
-		// (get) Token: 0x06002358 RID: 9048 RVA: 0x0011440C File Offset: 0x0011260C
-		public unsafe DLC5_RogueLikePoolResultPanel RoguelikePoolEditMessagePanel
+		// Token: 0x17000335 RID: 821
+		// (get) Token: 0x0600187B RID: 6267 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x17000335")]
+		public DLC5_RogueLikePoolResultPanel RoguelikePoolEditMessagePanel
 		{
-			[CallerCount(1)]
-			[CachedScanResults(RefRangeStart = 83938, RefRangeEnd = 83939, XrefRangeStart = 83938, XrefRangeEnd = 83938, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x600187B")]
+			[Address(RVA = "0x478CF0", Offset = "0x4776F0", VA = "0x180478CF0")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_RoguelikePoolEditMessagePanel_Public_get_DLC5_RogueLikePoolResultPanel_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				IntPtr intPtr3 = intPtr;
-				return (intPtr3 != 0) ? Il2CppObjectPool.Get<DLC5_RogueLikePoolResultPanel>(intPtr3) : null;
+				return null;
 			}
 		}
 
-		// Token: 0x17000C24 RID: 3108
-		// (get) Token: 0x06002359 RID: 9049 RVA: 0x00114450 File Offset: 0x00112650
-		public unsafe DLC5_RogueLikePoolViewerPanel RoguelikePoolViewerPanel
+		// Token: 0x17000336 RID: 822
+		// (get) Token: 0x0600187C RID: 6268 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x17000336")]
+		public DLC5_RogueLikePoolViewerPanel RoguelikePoolViewerPanel
 		{
-			[CallerCount(0)]
+			[Token(Token = "0x600187C")]
+			[Address(RVA = "0x478D10", Offset = "0x477710", VA = "0x180478D10")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_RoguelikePoolViewerPanel_Public_get_DLC5_RogueLikePoolViewerPanel_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				IntPtr intPtr3 = intPtr;
-				return (intPtr3 != 0) ? Il2CppObjectPool.Get<DLC5_RogueLikePoolViewerPanel>(intPtr3) : null;
+				return null;
 			}
 		}
 
-		// Token: 0x17000C25 RID: 3109
-		// (get) Token: 0x0600235A RID: 9050 RVA: 0x00114494 File Offset: 0x00112694
-		public unsafe AssetReference RoguelikeTutorialPanel
+		// Token: 0x17000337 RID: 823
+		// (get) Token: 0x0600187D RID: 6269 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x17000337")]
+		public AssetReference RoguelikeTutorialPanel
 		{
-			[CallerCount(0)]
+			[Token(Token = "0x600187D")]
+			[Address(RVA = "0x478D30", Offset = "0x477730", VA = "0x180478D30")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_RoguelikeTutorialPanel_Public_get_AssetReference_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				IntPtr intPtr3 = intPtr;
-				return (intPtr3 != 0) ? Il2CppObjectPool.Get<AssetReference>(intPtr3) : null;
+				return null;
 			}
 		}
 
-		// Token: 0x17000C26 RID: 3110
-		// (get) Token: 0x0600235B RID: 9051 RVA: 0x001144D8 File Offset: 0x001126D8
-		public unsafe AssetReference RogueLikeCardScorePanel
+		// Token: 0x17000338 RID: 824
+		// (get) Token: 0x0600187E RID: 6270 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x17000338")]
+		public AssetReference RogueLikeCardScorePanel
 		{
-			[CallerCount(1)]
-			[CachedScanResults(RefRangeStart = 83939, RefRangeEnd = 83940, XrefRangeStart = 83939, XrefRangeEnd = 83939, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x600187E")]
+			[Address(RVA = "0x478CD0", Offset = "0x4776D0", VA = "0x180478CD0")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_RogueLikeCardScorePanel_Public_get_AssetReference_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				IntPtr intPtr3 = intPtr;
-				return (intPtr3 != 0) ? Il2CppObjectPool.Get<AssetReference>(intPtr3) : null;
+				return null;
 			}
 		}
 
-		// Token: 0x17000C27 RID: 3111
-		// (get) Token: 0x0600235C RID: 9052 RVA: 0x0011451C File Offset: 0x0011271C
-		public unsafe DLC5_RogueLikeCardSelectorPanel CardSelectorPanel
+		// Token: 0x17000339 RID: 825
+		// (get) Token: 0x0600187F RID: 6271 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x17000339")]
+		public DLC5_RogueLikeCardSelectorPanel CardSelectorPanel
 		{
-			[CallerCount(1)]
-			[CachedScanResults(RefRangeStart = 83940, RefRangeEnd = 83941, XrefRangeStart = 83940, XrefRangeEnd = 83940, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x600187F")]
+			[Address(RVA = "0x4782B0", Offset = "0x476CB0", VA = "0x1804782B0")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_CardSelectorPanel_Public_get_DLC5_RogueLikeCardSelectorPanel_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				IntPtr intPtr3 = intPtr;
-				return (intPtr3 != 0) ? Il2CppObjectPool.Get<DLC5_RogueLikeCardSelectorPanel>(intPtr3) : null;
+				return null;
 			}
 		}
 
-		// Token: 0x17000C28 RID: 3112
-		// (get) Token: 0x0600235D RID: 9053 RVA: 0x00114560 File Offset: 0x00112760
-		public unsafe Il2CppReferenceArray<RogueLikeCard> Cards
+		// Token: 0x1700033A RID: 826
+		// (get) Token: 0x06001880 RID: 6272 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x1700033A")]
+		public RogueLikeCard[] Cards
 		{
-			[CallerCount(0)]
+			[Token(Token = "0x6001880")]
+			[Address(RVA = "0x4782F0", Offset = "0x476CF0", VA = "0x1804782F0")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_Cards_Public_get_Il2CppReferenceArray_1_RogueLikeCard_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				IntPtr intPtr3 = intPtr;
-				return (intPtr3 != 0) ? Il2CppObjectPool.Get<Il2CppReferenceArray<RogueLikeCard>>(intPtr3) : null;
+				return null;
 			}
 		}
 
-		// Token: 0x17000C29 RID: 3113
-		// (get) Token: 0x0600235E RID: 9054 RVA: 0x001145A4 File Offset: 0x001127A4
-		public unsafe MultiLanguageTextMesh.MultiLanguageTextAsset CardDescriptionLang
+		// Token: 0x1700033B RID: 827
+		// (get) Token: 0x06001881 RID: 6273 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x1700033B")]
+		public MultiLanguageTextMesh.MultiLanguageTextAsset CardDescriptionLang
 		{
-			[CallerCount(0)]
+			[Token(Token = "0x6001881")]
+			[Address(RVA = "0x478290", Offset = "0x476C90", VA = "0x180478290")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_CardDescriptionLang_Public_get_MultiLanguageTextAsset_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				IntPtr intPtr3 = intPtr;
-				return (intPtr3 != 0) ? Il2CppObjectPool.Get<MultiLanguageTextMesh.MultiLanguageTextAsset>(intPtr3) : null;
+				return null;
 			}
 		}
 
-		// Token: 0x17000C2A RID: 3114
-		// (get) Token: 0x0600235F RID: 9055 RVA: 0x001145E8 File Offset: 0x001127E8
-		public unsafe Il2CppReferenceArray<RogueLikeCardPersistent> CardsPersistent
+		// Token: 0x1700033C RID: 828
+		// (get) Token: 0x06001882 RID: 6274 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x1700033C")]
+		public RogueLikeCardPersistent[] CardsPersistent
 		{
-			[CallerCount(1)]
-			[CachedScanResults(RefRangeStart = 83941, RefRangeEnd = 83942, XrefRangeStart = 83941, XrefRangeEnd = 83941, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x6001882")]
+			[Address(RVA = "0x4782D0", Offset = "0x476CD0", VA = "0x1804782D0")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_CardsPersistent_Public_get_Il2CppReferenceArray_1_RogueLikeCardPersistent_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				IntPtr intPtr3 = intPtr;
-				return (intPtr3 != 0) ? Il2CppObjectPool.Get<Il2CppReferenceArray<RogueLikeCardPersistent>>(intPtr3) : null;
+				return null;
 			}
 		}
 
-		// Token: 0x17000C2B RID: 3115
-		// (get) Token: 0x06002360 RID: 9056 RVA: 0x0011462C File Offset: 0x0011282C
-		public unsafe float RecipeCollectRateWeight
+		// Token: 0x1700033D RID: 829
+		// (get) Token: 0x06001883 RID: 6275 RVA: 0x000093F0 File Offset: 0x000075F0
+		[Token(Token = "0x1700033D")]
+		public float RecipeCollectRateWeight
 		{
-			[CallerCount(0)]
+			[Token(Token = "0x6001883")]
+			[Address(RVA = "0x478C90", Offset = "0x477690", VA = "0x180478C90")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_RecipeCollectRateWeight_Public_get_Single_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0f;
 			}
 		}
 
-		// Token: 0x17000C2C RID: 3116
-		// (get) Token: 0x06002361 RID: 9057 RVA: 0x00114670 File Offset: 0x00112870
-		public unsafe float ItemCollectRateWeight
+		// Token: 0x1700033E RID: 830
+		// (get) Token: 0x06001884 RID: 6276 RVA: 0x00009408 File Offset: 0x00007608
+		[Token(Token = "0x1700033E")]
+		public float ItemCollectRateWeight
 		{
-			[CallerCount(0)]
+			[Token(Token = "0x6001884")]
+			[Address(RVA = "0x4788F0", Offset = "0x4772F0", VA = "0x1804788F0")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_ItemCollectRateWeight_Public_get_Single_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0f;
 			}
 		}
 
-		// Token: 0x17000C2D RID: 3117
-		// (get) Token: 0x06002362 RID: 9058 RVA: 0x001146B4 File Offset: 0x001128B4
-		public unsafe float PartnerCollectRateWeight
+		// Token: 0x1700033F RID: 831
+		// (get) Token: 0x06001885 RID: 6277 RVA: 0x00009420 File Offset: 0x00007620
+		[Token(Token = "0x1700033F")]
+		public float PartnerCollectRateWeight
 		{
-			[CallerCount(0)]
+			[Token(Token = "0x6001885")]
+			[Address(RVA = "0x478C00", Offset = "0x477600", VA = "0x180478C00")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_PartnerCollectRateWeight_Public_get_Single_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0f;
 			}
 		}
 
-		// Token: 0x17000C2E RID: 3118
-		// (get) Token: 0x06002363 RID: 9059 RVA: 0x001146F8 File Offset: 0x001128F8
-		public unsafe float IzakayaCollectRateWeight
+		// Token: 0x17000340 RID: 832
+		// (get) Token: 0x06001886 RID: 6278 RVA: 0x00009438 File Offset: 0x00007638
+		[Token(Token = "0x17000340")]
+		public float IzakayaCollectRateWeight
 		{
-			[CallerCount(0)]
+			[Token(Token = "0x6001886")]
+			[Address(RVA = "0x478910", Offset = "0x477310", VA = "0x180478910")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_IzakayaCollectRateWeight_Public_get_Single_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0f;
 			}
 		}
 
-		// Token: 0x17000C2F RID: 3119
-		// (get) Token: 0x06002364 RID: 9060 RVA: 0x0011473C File Offset: 0x0011293C
-		public unsafe Il2CppReferenceArray<DLC5_RogueLikeDataProfile.RogueLikeAchievement> RogueLikeAchievements
+		// Token: 0x17000341 RID: 833
+		// (get) Token: 0x06001887 RID: 6279 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x17000341")]
+		public DLC5_RogueLikeDataProfile.RogueLikeAchievement[] RogueLikeAchievements
 		{
-			[CallerCount(0)]
+			[Token(Token = "0x6001887")]
+			[Address(RVA = "0x478CB0", Offset = "0x4776B0", VA = "0x180478CB0")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_RogueLikeAchievements_Public_get_Il2CppReferenceArray_1_RogueLikeAchievement_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				IntPtr intPtr3 = intPtr;
-				return (intPtr3 != 0) ? Il2CppObjectPool.Get<Il2CppReferenceArray<DLC5_RogueLikeDataProfile.RogueLikeAchievement>>(intPtr3) : null;
+				return null;
 			}
 		}
 
-		// Token: 0x17000C30 RID: 3120
-		// (get) Token: 0x06002365 RID: 9061 RVA: 0x00114780 File Offset: 0x00112980
-		public unsafe Il2CppStructArray<Vector2Int> PartnerPrice
+		// Token: 0x17000342 RID: 834
+		// (get) Token: 0x06001888 RID: 6280 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x17000342")]
+		public Vector2Int[] PartnerPrice
 		{
-			[CallerCount(0)]
+			[Token(Token = "0x6001888")]
+			[Address(RVA = "0x478C20", Offset = "0x477620", VA = "0x180478C20")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_PartnerPrice_Public_get_Il2CppStructArray_1_Vector2Int_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				IntPtr intPtr3 = intPtr;
-				return (intPtr3 != 0) ? Il2CppObjectPool.Get<Il2CppStructArray<Vector2Int>>(intPtr3) : null;
+				return null;
 			}
 		}
 
-		// Token: 0x17000C31 RID: 3121
-		// (get) Token: 0x06002366 RID: 9062 RVA: 0x001147C4 File Offset: 0x001129C4
-		public unsafe int FirstRefreshCardPrice
+		// Token: 0x17000343 RID: 835
+		// (get) Token: 0x06001889 RID: 6281 RVA: 0x00009450 File Offset: 0x00007650
+		[Token(Token = "0x17000343")]
+		public int FirstRefreshCardPrice
 		{
-			[CallerCount(1)]
-			[CachedScanResults(RefRangeStart = 83942, RefRangeEnd = 83943, XrefRangeStart = 83942, XrefRangeEnd = 83942, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x6001889")]
+			[Address(RVA = "0x4784E0", Offset = "0x476EE0", VA = "0x1804784E0")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_FirstRefreshCardPrice_Public_get_Int32_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0;
 			}
 		}
 
-		// Token: 0x17000C32 RID: 3122
-		// (get) Token: 0x06002367 RID: 9063 RVA: 0x00114808 File Offset: 0x00112A08
-		public unsafe Il2CppReferenceArray<RogueLikeRunTimeData.EliteChallengeBase> EliteChallengeProfiles
+		// Token: 0x17000344 RID: 836
+		// (get) Token: 0x0600188A RID: 6282 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x17000344")]
+		public RogueLikeRunTimeData.EliteChallengeBase[] EliteChallengeProfiles
 		{
-			[CallerCount(0)]
+			[Token(Token = "0x600188A")]
+			[Address(RVA = "0x478400", Offset = "0x476E00", VA = "0x180478400")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_EliteChallengeProfiles_Public_get_Il2CppReferenceArray_1_EliteChallengeBase_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				IntPtr intPtr3 = intPtr;
-				return (intPtr3 != 0) ? Il2CppObjectPool.Get<Il2CppReferenceArray<RogueLikeRunTimeData.EliteChallengeBase>>(intPtr3) : null;
+				return null;
 			}
 		}
 
-		// Token: 0x17000C33 RID: 3123
-		// (get) Token: 0x06002368 RID: 9064 RVA: 0x0011484C File Offset: 0x00112A4C
-		public unsafe DLC5_RogueLikeEliteRewardSelectionPanel EliteRewardSelectionPanel
+		// Token: 0x17000345 RID: 837
+		// (get) Token: 0x0600188B RID: 6283 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x17000345")]
+		public DLC5_RogueLikeEliteRewardSelectionPanel EliteRewardSelectionPanel
 		{
-			[CallerCount(1)]
-			[CachedScanResults(RefRangeStart = 83943, RefRangeEnd = 83944, XrefRangeStart = 83943, XrefRangeEnd = 83943, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x600188B")]
+			[Address(RVA = "0x478420", Offset = "0x476E20", VA = "0x180478420")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IRogueLikeData.NativeMethodInfoPtr_get_EliteRewardSelectionPanel_Public_get_DLC5_RogueLikeEliteRewardSelectionPanel_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				IntPtr intPtr3 = intPtr;
-				return (intPtr3 != 0) ? Il2CppObjectPool.Get<DLC5_RogueLikeEliteRewardSelectionPanel>(intPtr3) : null;
+				return null;
 			}
 		}
 
-		// Token: 0x06002369 RID: 9065 RVA: 0x0001545C File Offset: 0x0001365C
-		public IRogueLikeData(IntPtr pointer) : base(pointer)
-		{
-		}
-
-		// Token: 0x0600236A RID: 9066 RVA: 0x00015465 File Offset: 0x00013665
-		public IRogueLikeData() : base(IL2CPP.il2cpp_object_new(Il2CppClassPointerStore<IRogueLikeData>.NativeClassPtr))
-		{
-		}
-
-		// Token: 0x17000BF8 RID: 3064
-		// (get) Token: 0x0600236B RID: 9067 RVA: 0x00114890 File Offset: 0x00112A90
-		// (set) Token: 0x0600236C RID: 9068 RVA: 0x00015477 File Offset: 0x00013677
-		public unsafe IRogueLikeCustomizedDataProfile m_CustomizedData
-		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(IRogueLikeData.NativeFieldInfoPtr_m_CustomizedData);
-				IntPtr intPtr2 = *intPtr;
-				return (intPtr2 != 0) ? Il2CppObjectPool.Get<IRogueLikeCustomizedDataProfile>(intPtr2) : null;
-			}
-			set
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(IRogueLikeData.NativeFieldInfoPtr_m_CustomizedData), IL2CPP.Il2CppObjectBaseToPtr(value));
-			}
-		}
-
-		// Token: 0x17000BF9 RID: 3065
-		// (get) Token: 0x0600236D RID: 9069 RVA: 0x001148C0 File Offset: 0x00112AC0
-		// (set) Token: 0x0600236E RID: 9070 RVA: 0x00015496 File Offset: 0x00013696
-		public unsafe DLC5_RogueLikeDataProfileUnchangeable m_UnchangeableData
-		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(IRogueLikeData.NativeFieldInfoPtr_m_UnchangeableData);
-				IntPtr intPtr2 = *intPtr;
-				return (intPtr2 != 0) ? Il2CppObjectPool.Get<DLC5_RogueLikeDataProfileUnchangeable>(intPtr2) : null;
-			}
-			set
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(IRogueLikeData.NativeFieldInfoPtr_m_UnchangeableData), IL2CPP.Il2CppObjectBaseToPtr(value));
-			}
-		}
-
-		// Token: 0x04001760 RID: 5984
-		private static readonly IntPtr NativeFieldInfoPtr_m_CustomizedData;
-
-		// Token: 0x04001761 RID: 5985
-		private static readonly IntPtr NativeFieldInfoPtr_m_UnchangeableData;
-
-		// Token: 0x04001762 RID: 5986
-		private static readonly IntPtr NativeMethodInfoPtr__ctor_Public_Void_IRogueLikeCustomizedDataProfile_DLC5_RogueLikeDataProfileUnchangeable_0;
-
-		// Token: 0x04001763 RID: 5987
-		private static readonly IntPtr NativeMethodInfoPtr_EnsureDataValid_Public_Boolean_0;
-
-		// Token: 0x04001764 RID: 5988
-		private static readonly IntPtr NativeMethodInfoPtr_get_InitialProducts_Public_Virtual_Final_New_get_IReadOnlyList_1_Product_0;
-
-		// Token: 0x04001765 RID: 5989
-		private static readonly IntPtr NativeMethodInfoPtr_get_InitialRecipePool_Public_Virtual_Final_New_get_IReadOnlyList_1_Int32_0;
-
-		// Token: 0x04001766 RID: 5990
-		private static readonly IntPtr NativeMethodInfoPtr_get_InitialBevPool_Public_Virtual_Final_New_get_IReadOnlyList_1_Int32_0;
-
-		// Token: 0x04001767 RID: 5991
-		private static readonly IntPtr NativeMethodInfoPtr_get_BevLevelLinkToNum_Public_Virtual_Final_New_get_IReadOnlyList_1_Vector2Int_0;
-
-		// Token: 0x04001768 RID: 5992
-		private static readonly IntPtr NativeMethodInfoPtr_get_RoundSetups_Public_Virtual_Final_New_get_IReadOnlyList_1_RogueLikeRoundSetup_0;
-
-		// Token: 0x04001769 RID: 5993
-		private static readonly IntPtr NativeMethodInfoPtr_get_MapSetups_Public_Virtual_Final_New_get_IReadOnlyList_1_MapSetup_0;
-
-		// Token: 0x0400176A RID: 5994
-		private static readonly IntPtr NativeMethodInfoPtr_get_CookerPriceSetups_Public_Virtual_Final_New_get_IReadOnlyList_1_CookerPriceSetup_0;
-
-		// Token: 0x0400176B RID: 5995
-		private static readonly IntPtr NativeMethodInfoPtr_get_GachaTriggerData_Public_Virtual_Final_New_get_IReadOnlyList_1_TriggerCardData_0;
-
-		// Token: 0x0400176C RID: 5996
-		private static readonly IntPtr NativeMethodInfoPtr_get_GachaRewardPairData_Public_Virtual_Final_New_get_IReadOnlyList_1_RogueLikeCardRewardPair_0;
-
-		// Token: 0x0400176D RID: 5997
-		private static readonly IntPtr NativeMethodInfoPtr_get_RoundDuration_Public_Virtual_Final_New_get_Int32_0;
-
-		// Token: 0x0400176E RID: 5998
-		private static readonly IntPtr NativeMethodInfoPtr_get_GlobalProductMultiplier_Public_Virtual_Final_New_get_Single_0;
-
-		// Token: 0x0400176F RID: 5999
-		private static readonly IntPtr NativeMethodInfoPtr_get_Level1RecipePriceMultiplier_Public_Virtual_Final_New_get_Single_0;
-
-		// Token: 0x04001770 RID: 6000
-		private static readonly IntPtr NativeMethodInfoPtr_get_Level2RecipePriceMultiplier_Public_Virtual_Final_New_get_Single_0;
-
-		// Token: 0x04001771 RID: 6001
-		private static readonly IntPtr NativeMethodInfoPtr_get_Level3RecipePriceMultiplier_Public_Virtual_Final_New_get_Single_0;
-
-		// Token: 0x04001772 RID: 6002
-		private static readonly IntPtr NativeMethodInfoPtr_get_Level4RecipePriceMultiplier_Public_Virtual_Final_New_get_Single_0;
-
-		// Token: 0x04001773 RID: 6003
-		private static readonly IntPtr NativeMethodInfoPtr_get_Level5RecipePriceMultiplier_Public_Virtual_Final_New_get_Single_0;
-
-		// Token: 0x04001774 RID: 6004
-		private static readonly IntPtr NativeMethodInfoPtr_get_PartnerBasePrice_Public_Virtual_Final_New_get_Int32_0;
-
-		// Token: 0x04001775 RID: 6005
-		private static readonly IntPtr NativeMethodInfoPtr_get_SpecialGuestPrice_Public_Virtual_Final_New_get_Int32_0;
-
-		// Token: 0x04001776 RID: 6006
-		private static readonly IntPtr NativeMethodInfoPtr_get_EliteSpecialGuestPrice_Public_Virtual_Final_New_get_Int32_0;
-
-		// Token: 0x04001777 RID: 6007
-		private static readonly IntPtr NativeMethodInfoPtr_get_ClothesPrice_Public_Virtual_Final_New_get_Int32_0;
-
-		// Token: 0x04001778 RID: 6008
-		private static readonly IntPtr NativeMethodInfoPtr_get_DecorationPrice_Public_Virtual_Final_New_get_Int32_0;
-
-		// Token: 0x04001779 RID: 6009
-		private static readonly IntPtr NativeMethodInfoPtr_get_GachaNeedComboNum_Public_Virtual_Final_New_get_Int32_0;
-
-		// Token: 0x0400177A RID: 6010
-		private static readonly IntPtr NativeMethodInfoPtr_get_GachaNeedSpellNum_Public_Virtual_Final_New_get_Int32_0;
-
-		// Token: 0x0400177B RID: 6011
-		private static readonly IntPtr NativeMethodInfoPtr_get_GachaMaxCardNum_Public_Virtual_Final_New_get_Int32_0;
-
-		// Token: 0x0400177C RID: 6012
-		private static readonly IntPtr NativeMethodInfoPtr_get_BeginToSpawnDangerousCardRoundIndex_Public_Virtual_Final_New_get_Int32_0;
-
-		// Token: 0x0400177D RID: 6013
-		private static readonly IntPtr NativeMethodInfoPtr_get_UnlockAllLevel2SpotRoundIndex_Public_Virtual_Final_New_get_Int32_0;
-
-		// Token: 0x0400177E RID: 6014
-		private static readonly IntPtr NativeMethodInfoPtr_get_UnlockAllLevel3SpotRoundIndex_Public_Virtual_Final_New_get_Int32_0;
-
-		// Token: 0x0400177F RID: 6015
-		private static readonly IntPtr NativeMethodInfoPtr_get_LuckyLeafExtraMultiplier_Public_Virtual_Final_New_get_Single_0;
-
-		// Token: 0x04001780 RID: 6016
-		private static readonly IntPtr NativeMethodInfoPtr_get_AyaNewsBeginRoundIndex_Public_Virtual_Final_New_get_Int32_0;
-
-		// Token: 0x04001781 RID: 6017
-		private static readonly IntPtr NativeMethodInfoPtr_get_PriceToRefreshAyaNews_Public_Virtual_Final_New_get_Int32_0;
-
-		// Token: 0x04001782 RID: 6018
-		private static readonly IntPtr NativeMethodInfoPtr_get_AkyuuWashiPrice_Public_Virtual_Final_New_get_Int32_0;
-
-		// Token: 0x04001783 RID: 6019
-		private static readonly IntPtr NativeMethodInfoPtr_get_EllenCandyPrice_Public_Virtual_Final_New_get_Int32_0;
-
-		// Token: 0x04001784 RID: 6020
-		private static readonly IntPtr NativeMethodInfoPtr_get_KourindouDiscount_Public_Virtual_Final_New_get_Single_0;
-
-		// Token: 0x04001785 RID: 6021
-		private static readonly IntPtr NativeMethodInfoPtr_get_GachaRecipeInitialNum_Public_Virtual_Final_New_get_Int32_0;
-
-		// Token: 0x04001786 RID: 6022
-		private static readonly IntPtr NativeMethodInfoPtr_get_GachaBevInitialNum_Public_Virtual_Final_New_get_Int32_0;
-
-		// Token: 0x04001787 RID: 6023
-		private static readonly IntPtr NativeMethodInfoPtr_get_SelectRecipeInitialNum_Public_Virtual_Final_New_get_Int32_0;
-
-		// Token: 0x04001788 RID: 6024
-		private static readonly IntPtr NativeMethodInfoPtr_get_BaseGachaNumWhenSettle_Public_Virtual_Final_New_get_Int32_0;
-
-		// Token: 0x04001789 RID: 6025
-		private static readonly IntPtr NativeMethodInfoPtr_get_BaseMoveAction_Public_Virtual_Final_New_get_Int32_0;
-
-		// Token: 0x0400178A RID: 6026
-		private static readonly IntPtr NativeMethodInfoPtr_get_BaseIngredientNumWhenGetRecipe_Public_Virtual_Final_New_get_Int32_0;
-
-		// Token: 0x0400178B RID: 6027
-		private static readonly IntPtr NativeMethodInfoPtr_get_StartFund_Public_Virtual_Final_New_get_Int32_0;
-
-		// Token: 0x0400178C RID: 6028
-		private static readonly IntPtr NativeMethodInfoPtr_get_SpecialGuestVisitEverywhere_Public_Virtual_Final_New_get_IReadOnlyList_1_ConditionalSpecialGuest_0;
-
-		// Token: 0x0400178D RID: 6029
-		private static readonly IntPtr NativeMethodInfoPtr_get_RoguelikePoolEditMessagePanel_Public_get_DLC5_RogueLikePoolResultPanel_0;
-
-		// Token: 0x0400178E RID: 6030
-		private static readonly IntPtr NativeMethodInfoPtr_get_RoguelikePoolViewerPanel_Public_get_DLC5_RogueLikePoolViewerPanel_0;
-
-		// Token: 0x0400178F RID: 6031
-		private static readonly IntPtr NativeMethodInfoPtr_get_RoguelikeTutorialPanel_Public_get_AssetReference_0;
-
-		// Token: 0x04001790 RID: 6032
-		private static readonly IntPtr NativeMethodInfoPtr_get_RogueLikeCardScorePanel_Public_get_AssetReference_0;
-
-		// Token: 0x04001791 RID: 6033
-		private static readonly IntPtr NativeMethodInfoPtr_get_CardSelectorPanel_Public_get_DLC5_RogueLikeCardSelectorPanel_0;
-
-		// Token: 0x04001792 RID: 6034
-		private static readonly IntPtr NativeMethodInfoPtr_get_Cards_Public_get_Il2CppReferenceArray_1_RogueLikeCard_0;
-
-		// Token: 0x04001793 RID: 6035
-		private static readonly IntPtr NativeMethodInfoPtr_get_CardDescriptionLang_Public_get_MultiLanguageTextAsset_0;
-
-		// Token: 0x04001794 RID: 6036
-		private static readonly IntPtr NativeMethodInfoPtr_get_CardsPersistent_Public_get_Il2CppReferenceArray_1_RogueLikeCardPersistent_0;
-
-		// Token: 0x04001795 RID: 6037
-		private static readonly IntPtr NativeMethodInfoPtr_get_RecipeCollectRateWeight_Public_get_Single_0;
-
-		// Token: 0x04001796 RID: 6038
-		private static readonly IntPtr NativeMethodInfoPtr_get_ItemCollectRateWeight_Public_get_Single_0;
-
-		// Token: 0x04001797 RID: 6039
-		private static readonly IntPtr NativeMethodInfoPtr_get_PartnerCollectRateWeight_Public_get_Single_0;
-
-		// Token: 0x04001798 RID: 6040
-		private static readonly IntPtr NativeMethodInfoPtr_get_IzakayaCollectRateWeight_Public_get_Single_0;
-
-		// Token: 0x04001799 RID: 6041
-		private static readonly IntPtr NativeMethodInfoPtr_get_RogueLikeAchievements_Public_get_Il2CppReferenceArray_1_RogueLikeAchievement_0;
-
-		// Token: 0x0400179A RID: 6042
-		private static readonly IntPtr NativeMethodInfoPtr_get_PartnerPrice_Public_get_Il2CppStructArray_1_Vector2Int_0;
-
-		// Token: 0x0400179B RID: 6043
-		private static readonly IntPtr NativeMethodInfoPtr_get_FirstRefreshCardPrice_Public_get_Int32_0;
-
-		// Token: 0x0400179C RID: 6044
-		private static readonly IntPtr NativeMethodInfoPtr_get_EliteChallengeProfiles_Public_get_Il2CppReferenceArray_1_EliteChallengeBase_0;
-
-		// Token: 0x0400179D RID: 6045
-		private static readonly IntPtr NativeMethodInfoPtr_get_EliteRewardSelectionPanel_Public_get_DLC5_RogueLikeEliteRewardSelectionPanel_0;
+		// Token: 0x040016B8 RID: 5816
+		[Token(Token = "0x40016B8")]
+		[FieldOffset(Offset = "0x0")]
+		private IRogueLikeCustomizedDataProfile m_CustomizedData;
+
+		// Token: 0x040016B9 RID: 5817
+		[Token(Token = "0x40016B9")]
+		[FieldOffset(Offset = "0x8")]
+		private DLC5_RogueLikeDataProfileUnchangeable m_UnchangeableData;
 	}
 }

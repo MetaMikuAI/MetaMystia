@@ -1,143 +1,123 @@
 ﻿using System;
-using Il2CppInterop.Common.Attributes;
-using Il2CppInterop.Runtime;
+using Il2CppDummyDll;
 using UnityEngine.Tilemaps;
 
 namespace NightScene.Tiles
 {
-	// Token: 0x020001AF RID: 431
+	// Token: 0x0200067D RID: 1661
+	[Token(Token = "0x200067D")]
 	public class InteractableTile : Tile
 	{
-		// Token: 0x0600341C RID: 13340 RVA: 0x00151904 File Offset: 0x0014FB04
-		// Note: this type is marked as 'beforefieldinit'.
-		static InteractableTile()
-		{
-			Il2CppClassPointerStore<InteractableTile>.NativeClassPtr = IL2CPP.GetIl2CppClass("Assembly-CSharp.dll", "NightScene.Tiles", "InteractableTile");
-			IL2CPP.il2cpp_runtime_class_init(Il2CppClassPointerStore<InteractableTile>.NativeClassPtr);
-			InteractableTile.NativeFieldInfoPtr_type = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<InteractableTile>.NativeClassPtr, "type");
-			InteractableTile.NativeFieldInfoPtr_index = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<InteractableTile>.NativeClassPtr, "index");
-			InteractableTile.NativeMethodInfoPtr__ctor_Public_Void_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<InteractableTile>.NativeClassPtr, 100673281);
-		}
-
-		// Token: 0x0600341D RID: 13341 RVA: 0x00151970 File Offset: 0x0014FB70
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 123979, XrefRangeEnd = 123980, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe InteractableTile() : this(IL2CPP.il2cpp_object_new(Il2CppClassPointerStore<InteractableTile>.NativeClassPtr))
-		{
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(InteractableTile.NativeMethodInfoPtr__ctor_Public_Void_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x0600341E RID: 13342 RVA: 0x0001CF9A File Offset: 0x0001B19A
-		public InteractableTile(IntPtr pointer) : base(pointer)
+		// Token: 0x06002701 RID: 9985 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x6002701")]
+		[Address(RVA = "0x531520", Offset = "0x52FF20", VA = "0x180531520")]
+		public InteractableTile()
 		{
 		}
 
-		// Token: 0x170011D8 RID: 4568
-		// (get) Token: 0x0600341F RID: 13343 RVA: 0x001519AC File Offset: 0x0014FBAC
-		// (set) Token: 0x06003420 RID: 13344 RVA: 0x0001CFA3 File Offset: 0x0001B1A3
-		public unsafe InteractableTile.TileType type
-		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(InteractableTile.NativeFieldInfoPtr_type);
-				return *intPtr;
-			}
-			set
-			{
-				*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(InteractableTile.NativeFieldInfoPtr_type)) = value;
-			}
-		}
+		// Token: 0x04002386 RID: 9094
+		[Token(Token = "0x4002386")]
+		[FieldOffset(Offset = "0x80")]
+		public InteractableTile.TileType type;
 
-		// Token: 0x170011D9 RID: 4569
-		// (get) Token: 0x06003421 RID: 13345 RVA: 0x001519D4 File Offset: 0x0014FBD4
-		// (set) Token: 0x06003422 RID: 13346 RVA: 0x0001CFBE File Offset: 0x0001B1BE
-		public unsafe byte index
-		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(InteractableTile.NativeFieldInfoPtr_index);
-				return *intPtr;
-			}
-			set
-			{
-				*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(InteractableTile.NativeFieldInfoPtr_index)) = value;
-			}
-		}
+		// Token: 0x04002387 RID: 9095
+		[Token(Token = "0x4002387")]
+		[FieldOffset(Offset = "0x84")]
+		public byte index;
 
-		// Token: 0x04002330 RID: 9008
-		private static readonly IntPtr NativeFieldInfoPtr_type;
-
-		// Token: 0x04002331 RID: 9009
-		private static readonly IntPtr NativeFieldInfoPtr_index;
-
-		// Token: 0x04002332 RID: 9010
-		private static readonly IntPtr NativeMethodInfoPtr__ctor_Public_Void_0;
-
-		// Token: 0x020008FB RID: 2299
+		// Token: 0x0200067E RID: 1662
+		[Token(Token = "0x200067E")]
 		public enum TileType
 		{
-			// Token: 0x04007604 RID: 30212
+			// Token: 0x04002389 RID: 9097
+			[Token(Token = "0x4002389")]
 			CookDesk,
-			// Token: 0x04007605 RID: 30213
+			// Token: 0x0400238A RID: 9098
+			[Token(Token = "0x400238A")]
 			FoodStorage,
-			// Token: 0x04007606 RID: 30214
+			// Token: 0x0400238B RID: 9099
+			[Token(Token = "0x400238B")]
 			BeverageStorage,
-			// Token: 0x04007607 RID: 30215
+			// Token: 0x0400238C RID: 9100
+			[Token(Token = "0x400238C")]
 			Trash,
-			// Token: 0x04007608 RID: 30216
+			// Token: 0x0400238D RID: 9101
+			[Token(Token = "0x400238D")]
 			GuestTable,
-			// Token: 0x04007609 RID: 30217
+			// Token: 0x0400238E RID: 9102
+			[Token(Token = "0x400238E")]
 			GuestSeat,
-			// Token: 0x0400760A RID: 30218
+			// Token: 0x0400238F RID: 9103
+			[Token(Token = "0x400238F")]
 			LEGACY_HeadOfLine,
-			// Token: 0x0400760B RID: 30219
+			// Token: 0x04002390 RID: 9104
+			[Token(Token = "0x4002390")]
 			LEGACY_TailOfLine,
-			// Token: 0x0400760C RID: 30220
+			// Token: 0x04002391 RID: 9105
+			[Token(Token = "0x4002391")]
 			GuestSpawnA,
-			// Token: 0x0400760D RID: 30221
+			// Token: 0x04002392 RID: 9106
+			[Token(Token = "0x4002392")]
 			GuestSpawnB,
-			// Token: 0x0400760E RID: 30222
+			// Token: 0x04002393 RID: 9107
+			[Token(Token = "0x4002393")]
 			PlayerSpawn,
-			// Token: 0x0400760F RID: 30223
+			// Token: 0x04002394 RID: 9108
+			[Token(Token = "0x4002394")]
 			PlayerBorder,
-			// Token: 0x04007610 RID: 30224
+			// Token: 0x04002395 RID: 9109
+			[Token(Token = "0x4002395")]
 			WaitSeat,
-			// Token: 0x04007611 RID: 30225
+			// Token: 0x04002396 RID: 9110
+			[Token(Token = "0x4002396")]
 			InDoor,
-			// Token: 0x04007612 RID: 30226
+			// Token: 0x04002397 RID: 9111
+			[Token(Token = "0x4002397")]
 			OutDoor,
-			// Token: 0x04007613 RID: 30227
+			// Token: 0x04002398 RID: 9112
+			[Token(Token = "0x4002398")]
 			AreaA,
-			// Token: 0x04007614 RID: 30228
+			// Token: 0x04002399 RID: 9113
+			[Token(Token = "0x4002399")]
 			AreaB,
-			// Token: 0x04007615 RID: 30229
+			// Token: 0x0400239A RID: 9114
+			[Token(Token = "0x400239A")]
 			DoorA,
-			// Token: 0x04007616 RID: 30230
+			// Token: 0x0400239B RID: 9115
+			[Token(Token = "0x400239B")]
 			DoorB,
-			// Token: 0x04007617 RID: 30231
+			// Token: 0x0400239C RID: 9116
+			[Token(Token = "0x400239C")]
 			Line,
-			// Token: 0x04007618 RID: 30232
+			// Token: 0x0400239D RID: 9117
+			[Token(Token = "0x400239D")]
 			PasserBorder,
-			// Token: 0x04007619 RID: 30233
+			// Token: 0x0400239E RID: 9118
+			[Token(Token = "0x400239E")]
 			AIdle,
-			// Token: 0x0400761A RID: 30234
+			// Token: 0x0400239F RID: 9119
+			[Token(Token = "0x400239F")]
 			RabbitIdle,
-			// Token: 0x0400761B RID: 30235
+			// Token: 0x040023A0 RID: 9120
+			[Token(Token = "0x40023A0")]
 			FoodStorage_BOSS,
-			// Token: 0x0400761C RID: 30236
+			// Token: 0x040023A1 RID: 9121
+			[Token(Token = "0x40023A1")]
 			BeverageStorage_BOSS,
-			// Token: 0x0400761D RID: 30237
+			// Token: 0x040023A2 RID: 9122
+			[Token(Token = "0x40023A2")]
 			Trash_BOSS,
-			// Token: 0x0400761E RID: 30238
+			// Token: 0x040023A3 RID: 9123
+			[Token(Token = "0x40023A3")]
 			FurnitureArea_Ground,
-			// Token: 0x0400761F RID: 30239
+			// Token: 0x040023A4 RID: 9124
+			[Token(Token = "0x40023A4")]
 			FurnitureArea_Wall,
-			// Token: 0x04007620 RID: 30240
+			// Token: 0x040023A5 RID: 9125
+			[Token(Token = "0x40023A5")]
 			FurnitureArea_Carpet,
-			// Token: 0x04007621 RID: 30241
+			// Token: 0x040023A6 RID: 9126
+			[Token(Token = "0x40023A6")]
 			Null
 		}
 	}

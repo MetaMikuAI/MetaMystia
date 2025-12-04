@@ -1,396 +1,160 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using DEYU.AdpUISystem.PanelCollection;
-using Il2CppInterop.Common.Attributes;
-using Il2CppInterop.Runtime;
-using Il2CppInterop.Runtime.Runtime;
-using Il2CppSystem;
+using Il2CppDummyDll;
+using UnityCSharpCleanupGenerator.Attribute;
 
 namespace Common.UI.Story
 {
-	// Token: 0x020003C7 RID: 967
+	// Token: 0x02000F62 RID: 3938
+	[Token(Token = "0x2000F62")]
+	[GenerateCleanupMethod]
 	public class EventToutetsuYuumaTutorialPanel : UIPanelParamOpen<EventToutetsuYuumaTutorialPanel.YuumaTutorialPhase>
 	{
-		// Token: 0x06007338 RID: 29496 RVA: 0x0021EBD4 File Offset: 0x0021CDD4
-		// Note: this type is marked as 'beforefieldinit'.
-		static EventToutetsuYuumaTutorialPanel()
+		// Token: 0x17000D04 RID: 3332
+		// (get) Token: 0x06005C99 RID: 23705 RVA: 0x00020310 File Offset: 0x0001E510
+		// (set) Token: 0x06005C9A RID: 23706 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x17000D04")]
+		private EventToutetsuYuumaTutorialPanel.YuumaTutorialPhase CurrentYuumaTutorialPhase
 		{
-			Il2CppClassPointerStore<EventToutetsuYuumaTutorialPanel>.NativeClassPtr = IL2CPP.GetIl2CppClass("Assembly-CSharp.dll", "Common.UI.Story", "EventToutetsuYuumaTutorialPanel");
-			IL2CPP.il2cpp_runtime_class_init(Il2CppClassPointerStore<EventToutetsuYuumaTutorialPanel>.NativeClassPtr);
-			EventToutetsuYuumaTutorialPanel.NativeFieldInfoPtr_pageA = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<EventToutetsuYuumaTutorialPanel>.NativeClassPtr, "pageA");
-			EventToutetsuYuumaTutorialPanel.NativeFieldInfoPtr_pageB = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<EventToutetsuYuumaTutorialPanel>.NativeClassPtr, "pageB");
-			EventToutetsuYuumaTutorialPanel.NativeFieldInfoPtr_pageC = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<EventToutetsuYuumaTutorialPanel>.NativeClassPtr, "pageC");
-			EventToutetsuYuumaTutorialPanel.NativeFieldInfoPtr_pageD = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<EventToutetsuYuumaTutorialPanel>.NativeClassPtr, "pageD");
-			EventToutetsuYuumaTutorialPanel.NativeFieldInfoPtr__CurrentYuumaTutorialPhase_k__BackingField = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<EventToutetsuYuumaTutorialPanel>.NativeClassPtr, "<CurrentYuumaTutorialPhase>k__BackingField");
-			EventToutetsuYuumaTutorialPanel.NativeMethodInfoPtr_get_CurrentYuumaTutorialPhase_Private_get_YuumaTutorialPhase_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<EventToutetsuYuumaTutorialPanel>.NativeClassPtr, 100687001);
-			EventToutetsuYuumaTutorialPanel.NativeMethodInfoPtr_set_CurrentYuumaTutorialPhase_Private_set_Void_YuumaTutorialPhase_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<EventToutetsuYuumaTutorialPanel>.NativeClassPtr, 100687002);
-			EventToutetsuYuumaTutorialPanel.NativeMethodInfoPtr_OnPanelOpen_Protected_Virtual_Void_YuumaTutorialPhase_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<EventToutetsuYuumaTutorialPanel>.NativeClassPtr, 100687003);
-			EventToutetsuYuumaTutorialPanel.NativeMethodInfoPtr_OpenPanel_Private_Void_ValueTuple_2_Boolean_Boolean_EventToutetsuYuumaTutorialSubPanel_Action_1_PannelCloseType_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<EventToutetsuYuumaTutorialPanel>.NativeClassPtr, 100687004);
-			EventToutetsuYuumaTutorialPanel.NativeMethodInfoPtr_OpenPanelA_Private_Void_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<EventToutetsuYuumaTutorialPanel>.NativeClassPtr, 100687005);
-			EventToutetsuYuumaTutorialPanel.NativeMethodInfoPtr_OpenPanelB_Private_Void_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<EventToutetsuYuumaTutorialPanel>.NativeClassPtr, 100687006);
-			EventToutetsuYuumaTutorialPanel.NativeMethodInfoPtr_OpenPanelC_Private_Void_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<EventToutetsuYuumaTutorialPanel>.NativeClassPtr, 100687007);
-			EventToutetsuYuumaTutorialPanel.NativeMethodInfoPtr_OpenPanelD_Private_Void_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<EventToutetsuYuumaTutorialPanel>.NativeClassPtr, 100687008);
-			EventToutetsuYuumaTutorialPanel.NativeMethodInfoPtr_OnPanelClose_Private_Void_PannelCloseType_Action_Action_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<EventToutetsuYuumaTutorialPanel>.NativeClassPtr, 100687009);
-			EventToutetsuYuumaTutorialPanel.NativeMethodInfoPtr_OnPanelAClose_Private_Void_PannelCloseType_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<EventToutetsuYuumaTutorialPanel>.NativeClassPtr, 100687010);
-			EventToutetsuYuumaTutorialPanel.NativeMethodInfoPtr_OnPanelBClose_Private_Void_PannelCloseType_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<EventToutetsuYuumaTutorialPanel>.NativeClassPtr, 100687011);
-			EventToutetsuYuumaTutorialPanel.NativeMethodInfoPtr_OnPanelCClose_Private_Void_PannelCloseType_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<EventToutetsuYuumaTutorialPanel>.NativeClassPtr, 100687012);
-			EventToutetsuYuumaTutorialPanel.NativeMethodInfoPtr_OnPanelDClose_Private_Void_PannelCloseType_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<EventToutetsuYuumaTutorialPanel>.NativeClassPtr, 100687013);
-			EventToutetsuYuumaTutorialPanel.NativeMethodInfoPtr_Cleanup_Generated_Protected_Virtual_Void_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<EventToutetsuYuumaTutorialPanel>.NativeClassPtr, 100687014);
-			EventToutetsuYuumaTutorialPanel.NativeMethodInfoPtr__ctor_Public_Void_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<EventToutetsuYuumaTutorialPanel>.NativeClassPtr, 100687015);
-		}
-
-		// Token: 0x17002771 RID: 10097
-		// (get) Token: 0x06007339 RID: 29497 RVA: 0x0021ED94 File Offset: 0x0021CF94
-		// (set) Token: 0x0600733A RID: 29498 RVA: 0x0021EDD0 File Offset: 0x0021CFD0
-		public unsafe EventToutetsuYuumaTutorialPanel.YuumaTutorialPhase CurrentYuumaTutorialPhase
-		{
-			[CallerCount(0)]
+			[Token(Token = "0x6005C99")]
+			[Address(RVA = "0x477F00", Offset = "0x476900", VA = "0x180477F00")]
+			[CompilerGenerated]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(EventToutetsuYuumaTutorialPanel.NativeMethodInfoPtr_get_CurrentYuumaTutorialPhase_Private_get_YuumaTutorialPhase_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return EventToutetsuYuumaTutorialPanel.YuumaTutorialPhase.First;
 			}
-			[CallerCount(0)]
+			[Token(Token = "0x6005C9A")]
+			[Address(RVA = "0x4D2350", Offset = "0x4D0D50", VA = "0x1804D2350")]
+			[CompilerGenerated]
 			set
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr))];
-				*ptr = ref value;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(EventToutetsuYuumaTutorialPanel.NativeMethodInfoPtr_set_CurrentYuumaTutorialPhase_Private_set_Void_YuumaTutorialPhase_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
 			}
 		}
 
-		// Token: 0x0600733B RID: 29499 RVA: 0x0021EE10 File Offset: 0x0021D010
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 287362, XrefRangeEnd = 287381, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe override void OnPanelOpen(EventToutetsuYuumaTutorialPanel.YuumaTutorialPhase yuumaTutorialPhase)
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr))];
-			*ptr = ref yuumaTutorialPhase;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IL2CPP.il2cpp_object_get_virtual_method(IL2CPP.Il2CppObjectBaseToPtr(this), EventToutetsuYuumaTutorialPanel.NativeMethodInfoPtr_OnPanelOpen_Protected_Virtual_Void_YuumaTutorialPhase_0), IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x0600733C RID: 29500 RVA: 0x0021EE5C File Offset: 0x0021D05C
-		[CallerCount(5)]
-		[CachedScanResults(RefRangeStart = 287390, RefRangeEnd = 287395, XrefRangeStart = 287381, XrefRangeEnd = 287390, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe void OpenPanel(ValueTuple<bool, bool> isLastPage, EventToutetsuYuumaTutorialSubPanel pannelPrefab, Action<EventToutetsuYuumaTutorialSubPanel.PannelCloseType> onPannelClose)
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)3) * (UIntPtr)sizeof(IntPtr))];
-			*ptr = IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(isLastPage));
-			ptr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr)) / (UIntPtr)sizeof(IntPtr)] = IL2CPP.Il2CppObjectBaseToPtr(pannelPrefab);
-			ptr[checked(unchecked((UIntPtr)2) * (UIntPtr)sizeof(IntPtr)) / (UIntPtr)sizeof(IntPtr)] = IL2CPP.Il2CppObjectBaseToPtr(onPannelClose);
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(EventToutetsuYuumaTutorialPanel.NativeMethodInfoPtr_OpenPanel_Private_Void_ValueTuple_2_Boolean_Boolean_EventToutetsuYuumaTutorialSubPanel_Action_1_PannelCloseType_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x0600733D RID: 29501 RVA: 0x0021EEC8 File Offset: 0x0021D0C8
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 287395, XrefRangeEnd = 287405, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe void OpenPanelA()
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(EventToutetsuYuumaTutorialPanel.NativeMethodInfoPtr_OpenPanelA_Private_Void_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x0600733E RID: 29502 RVA: 0x0021EEFC File Offset: 0x0021D0FC
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 287405, XrefRangeEnd = 287415, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe void OpenPanelB()
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(EventToutetsuYuumaTutorialPanel.NativeMethodInfoPtr_OpenPanelB_Private_Void_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x0600733F RID: 29503 RVA: 0x0021EF30 File Offset: 0x0021D130
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 287415, XrefRangeEnd = 287425, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe void OpenPanelC()
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(EventToutetsuYuumaTutorialPanel.NativeMethodInfoPtr_OpenPanelC_Private_Void_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x06007340 RID: 29504 RVA: 0x0021EF64 File Offset: 0x0021D164
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 287425, XrefRangeEnd = 287435, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe void OpenPanelD()
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(EventToutetsuYuumaTutorialPanel.NativeMethodInfoPtr_OpenPanelD_Private_Void_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x06007341 RID: 29505 RVA: 0x0021EF98 File Offset: 0x0021D198
-		[CallerCount(0)]
-		public unsafe void OnPanelClose(EventToutetsuYuumaTutorialSubPanel.PannelCloseType closeInfo, Action prev, Action next)
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)3) * (UIntPtr)sizeof(IntPtr))];
-			*ptr = ref closeInfo;
-			ptr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr)) / (UIntPtr)sizeof(IntPtr)] = IL2CPP.Il2CppObjectBaseToPtr(prev);
-			ptr[checked(unchecked((UIntPtr)2) * (UIntPtr)sizeof(IntPtr)) / (UIntPtr)sizeof(IntPtr)] = IL2CPP.Il2CppObjectBaseToPtr(next);
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(EventToutetsuYuumaTutorialPanel.NativeMethodInfoPtr_OnPanelClose_Private_Void_PannelCloseType_Action_Action_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x06007342 RID: 29506 RVA: 0x0021EFFC File Offset: 0x0021D1FC
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 287435, XrefRangeEnd = 287441, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe void OnPanelAClose(EventToutetsuYuumaTutorialSubPanel.PannelCloseType closeInfo)
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr))];
-			*ptr = ref closeInfo;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(EventToutetsuYuumaTutorialPanel.NativeMethodInfoPtr_OnPanelAClose_Private_Void_PannelCloseType_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x06007343 RID: 29507 RVA: 0x0021F03C File Offset: 0x0021D23C
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 287441, XrefRangeEnd = 287452, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe void OnPanelBClose(EventToutetsuYuumaTutorialSubPanel.PannelCloseType closeInfo)
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr))];
-			*ptr = ref closeInfo;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(EventToutetsuYuumaTutorialPanel.NativeMethodInfoPtr_OnPanelBClose_Private_Void_PannelCloseType_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x06007344 RID: 29508 RVA: 0x0021F07C File Offset: 0x0021D27C
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 287452, XrefRangeEnd = 287467, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe void OnPanelCClose(EventToutetsuYuumaTutorialSubPanel.PannelCloseType closeInfo)
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr))];
-			*ptr = ref closeInfo;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(EventToutetsuYuumaTutorialPanel.NativeMethodInfoPtr_OnPanelCClose_Private_Void_PannelCloseType_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x06007345 RID: 29509 RVA: 0x0021F0BC File Offset: 0x0021D2BC
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 287467, XrefRangeEnd = 287479, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe void OnPanelDClose(EventToutetsuYuumaTutorialSubPanel.PannelCloseType closeInfo)
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr))];
-			*ptr = ref closeInfo;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(EventToutetsuYuumaTutorialPanel.NativeMethodInfoPtr_OnPanelDClose_Private_Void_PannelCloseType_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x06007346 RID: 29510 RVA: 0x0021F0FC File Offset: 0x0021D2FC
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 0, XrefRangeEnd = 0, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe override void Cleanup_Generated()
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IL2CPP.il2cpp_object_get_virtual_method(IL2CPP.Il2CppObjectBaseToPtr(this), EventToutetsuYuumaTutorialPanel.NativeMethodInfoPtr_Cleanup_Generated_Protected_Virtual_Void_0), IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x06007347 RID: 29511 RVA: 0x0021F138 File Offset: 0x0021D338
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 287479, XrefRangeEnd = 287482, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe EventToutetsuYuumaTutorialPanel() : this(IL2CPP.il2cpp_object_new(Il2CppClassPointerStore<EventToutetsuYuumaTutorialPanel>.NativeClassPtr))
-		{
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(EventToutetsuYuumaTutorialPanel.NativeMethodInfoPtr__ctor_Public_Void_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x06007348 RID: 29512 RVA: 0x0003E4BB File Offset: 0x0003C6BB
-		public EventToutetsuYuumaTutorialPanel(IntPtr pointer) : base(pointer)
+		// Token: 0x06005C9B RID: 23707 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x6005C9B")]
+		[Address(RVA = "0x8ABB60", Offset = "0x8AA560", VA = "0x1808ABB60", Slot = "32")]
+		protected override void OnPanelOpen(EventToutetsuYuumaTutorialPanel.YuumaTutorialPhase yuumaTutorialPhase)
 		{
 		}
 
-		// Token: 0x1700276C RID: 10092
-		// (get) Token: 0x06007349 RID: 29513 RVA: 0x0021F174 File Offset: 0x0021D374
-		// (set) Token: 0x0600734A RID: 29514 RVA: 0x0003E4C4 File Offset: 0x0003C6C4
-		public unsafe EventToutetsuYuumaTutorialSubPanel pageA
+		// Token: 0x06005C9C RID: 23708 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x6005C9C")]
+		[Address(RVA = "0x8AC030", Offset = "0x8AAA30", VA = "0x1808AC030")]
+		private void OpenPanel(ValueTuple<bool, bool> isLastPage, EventToutetsuYuumaTutorialSubPanel pannelPrefab, Action<EventToutetsuYuumaTutorialSubPanel.PannelCloseType> onPannelClose)
 		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(EventToutetsuYuumaTutorialPanel.NativeFieldInfoPtr_pageA);
-				IntPtr intPtr2 = *intPtr;
-				return (intPtr2 != 0) ? Il2CppObjectPool.Get<EventToutetsuYuumaTutorialSubPanel>(intPtr2) : null;
-			}
-			set
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(EventToutetsuYuumaTutorialPanel.NativeFieldInfoPtr_pageA), IL2CPP.Il2CppObjectBaseToPtr(value));
-			}
 		}
 
-		// Token: 0x1700276D RID: 10093
-		// (get) Token: 0x0600734B RID: 29515 RVA: 0x0021F1A4 File Offset: 0x0021D3A4
-		// (set) Token: 0x0600734C RID: 29516 RVA: 0x0003E4E3 File Offset: 0x0003C6E3
-		public unsafe EventToutetsuYuumaTutorialSubPanel pageB
+		// Token: 0x06005C9D RID: 23709 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x6005C9D")]
+		[Address(RVA = "0x8ABCD0", Offset = "0x8AA6D0", VA = "0x1808ABCD0")]
+		private void OpenPanelA()
 		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(EventToutetsuYuumaTutorialPanel.NativeFieldInfoPtr_pageB);
-				IntPtr intPtr2 = *intPtr;
-				return (intPtr2 != 0) ? Il2CppObjectPool.Get<EventToutetsuYuumaTutorialSubPanel>(intPtr2) : null;
-			}
-			set
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(EventToutetsuYuumaTutorialPanel.NativeFieldInfoPtr_pageB), IL2CPP.Il2CppObjectBaseToPtr(value));
-			}
 		}
 
-		// Token: 0x1700276E RID: 10094
-		// (get) Token: 0x0600734D RID: 29517 RVA: 0x0021F1D4 File Offset: 0x0021D3D4
-		// (set) Token: 0x0600734E RID: 29518 RVA: 0x0003E502 File Offset: 0x0003C702
-		public unsafe EventToutetsuYuumaTutorialSubPanel pageC
+		// Token: 0x06005C9E RID: 23710 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x6005C9E")]
+		[Address(RVA = "0x8ABDA0", Offset = "0x8AA7A0", VA = "0x1808ABDA0")]
+		private void OpenPanelB()
 		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(EventToutetsuYuumaTutorialPanel.NativeFieldInfoPtr_pageC);
-				IntPtr intPtr2 = *intPtr;
-				return (intPtr2 != 0) ? Il2CppObjectPool.Get<EventToutetsuYuumaTutorialSubPanel>(intPtr2) : null;
-			}
-			set
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(EventToutetsuYuumaTutorialPanel.NativeFieldInfoPtr_pageC), IL2CPP.Il2CppObjectBaseToPtr(value));
-			}
 		}
 
-		// Token: 0x1700276F RID: 10095
-		// (get) Token: 0x0600734F RID: 29519 RVA: 0x0021F204 File Offset: 0x0021D404
-		// (set) Token: 0x06007350 RID: 29520 RVA: 0x0003E521 File Offset: 0x0003C721
-		public unsafe EventToutetsuYuumaTutorialSubPanel pageD
+		// Token: 0x06005C9F RID: 23711 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x6005C9F")]
+		[Address(RVA = "0x8ABE70", Offset = "0x8AA870", VA = "0x1808ABE70")]
+		private void OpenPanelC()
 		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(EventToutetsuYuumaTutorialPanel.NativeFieldInfoPtr_pageD);
-				IntPtr intPtr2 = *intPtr;
-				return (intPtr2 != 0) ? Il2CppObjectPool.Get<EventToutetsuYuumaTutorialSubPanel>(intPtr2) : null;
-			}
-			set
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(EventToutetsuYuumaTutorialPanel.NativeFieldInfoPtr_pageD), IL2CPP.Il2CppObjectBaseToPtr(value));
-			}
 		}
 
-		// Token: 0x17002770 RID: 10096
-		// (get) Token: 0x06007351 RID: 29521 RVA: 0x0021F234 File Offset: 0x0021D434
-		// (set) Token: 0x06007352 RID: 29522 RVA: 0x0003E540 File Offset: 0x0003C740
-		public unsafe EventToutetsuYuumaTutorialPanel.YuumaTutorialPhase _CurrentYuumaTutorialPhase_k__BackingField
+		// Token: 0x06005CA0 RID: 23712 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x6005CA0")]
+		[Address(RVA = "0x8ABF50", Offset = "0x8AA950", VA = "0x1808ABF50")]
+		private void OpenPanelD()
 		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(EventToutetsuYuumaTutorialPanel.NativeFieldInfoPtr__CurrentYuumaTutorialPhase_k__BackingField);
-				return *intPtr;
-			}
-			set
-			{
-				*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(EventToutetsuYuumaTutorialPanel.NativeFieldInfoPtr__CurrentYuumaTutorialPhase_k__BackingField)) = value;
-			}
 		}
 
-		// Token: 0x04004C61 RID: 19553
-		private static readonly IntPtr NativeFieldInfoPtr_pageA;
+		// Token: 0x06005CA1 RID: 23713 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x6005CA1")]
+		[Address(RVA = "0x8AB3C0", Offset = "0x8A9DC0", VA = "0x1808AB3C0")]
+		private void OnPanelClose(EventToutetsuYuumaTutorialSubPanel.PannelCloseType closeInfo, Action prev, Action next)
+		{
+		}
 
-		// Token: 0x04004C62 RID: 19554
-		private static readonly IntPtr NativeFieldInfoPtr_pageB;
+		// Token: 0x06005CA2 RID: 23714 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x6005CA2")]
+		[Address(RVA = "0x8AB7E0", Offset = "0x8AA1E0", VA = "0x1808AB7E0")]
+		private void OnPanelAClose(EventToutetsuYuumaTutorialSubPanel.PannelCloseType closeInfo)
+		{
+		}
 
-		// Token: 0x04004C63 RID: 19555
-		private static readonly IntPtr NativeFieldInfoPtr_pageC;
+		// Token: 0x06005CA3 RID: 23715 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x6005CA3")]
+		[Address(RVA = "0x8AB880", Offset = "0x8AA280", VA = "0x1808AB880")]
+		private void OnPanelBClose(EventToutetsuYuumaTutorialSubPanel.PannelCloseType closeInfo)
+		{
+		}
 
-		// Token: 0x04004C64 RID: 19556
-		private static readonly IntPtr NativeFieldInfoPtr_pageD;
+		// Token: 0x06005CA4 RID: 23716 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x6005CA4")]
+		[Address(RVA = "0x8AB960", Offset = "0x8AA360", VA = "0x1808AB960")]
+		private void OnPanelCClose(EventToutetsuYuumaTutorialSubPanel.PannelCloseType closeInfo)
+		{
+		}
 
-		// Token: 0x04004C65 RID: 19557
-		private static readonly IntPtr NativeFieldInfoPtr__CurrentYuumaTutorialPhase_k__BackingField;
+		// Token: 0x06005CA5 RID: 23717 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x6005CA5")]
+		[Address(RVA = "0x8ABA70", Offset = "0x8AA470", VA = "0x1808ABA70")]
+		private void OnPanelDClose(EventToutetsuYuumaTutorialSubPanel.PannelCloseType closeInfo)
+		{
+		}
 
-		// Token: 0x04004C66 RID: 19558
-		private static readonly IntPtr NativeMethodInfoPtr_get_CurrentYuumaTutorialPhase_Private_get_YuumaTutorialPhase_0;
+		// Token: 0x06005CA6 RID: 23718 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x6005CA6")]
+		[Address(RVA = "0x4644B0", Offset = "0x462EB0", VA = "0x1804644B0", Slot = "31")]
+		protected override void Cleanup_Generated()
+		{
+		}
 
-		// Token: 0x04004C67 RID: 19559
-		private static readonly IntPtr NativeMethodInfoPtr_set_CurrentYuumaTutorialPhase_Private_set_Void_YuumaTutorialPhase_0;
+		// Token: 0x06005CA7 RID: 23719 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x6005CA7")]
+		[Address(RVA = "0x8AC0E0", Offset = "0x8AAAE0", VA = "0x1808AC0E0")]
+		public EventToutetsuYuumaTutorialPanel()
+		{
+		}
 
-		// Token: 0x04004C68 RID: 19560
-		private static readonly IntPtr NativeMethodInfoPtr_OnPanelOpen_Protected_Virtual_Void_YuumaTutorialPhase_0;
+		// Token: 0x040055C2 RID: 21954
+		[Token(Token = "0x40055C2")]
+		[FieldOffset(Offset = "0x78")]
+		public EventToutetsuYuumaTutorialSubPanel pageA;
 
-		// Token: 0x04004C69 RID: 19561
-		private static readonly IntPtr NativeMethodInfoPtr_OpenPanel_Private_Void_ValueTuple_2_Boolean_Boolean_EventToutetsuYuumaTutorialSubPanel_Action_1_PannelCloseType_0;
+		// Token: 0x040055C3 RID: 21955
+		[Token(Token = "0x40055C3")]
+		[FieldOffset(Offset = "0x80")]
+		public EventToutetsuYuumaTutorialSubPanel pageB;
 
-		// Token: 0x04004C6A RID: 19562
-		private static readonly IntPtr NativeMethodInfoPtr_OpenPanelA_Private_Void_0;
+		// Token: 0x040055C4 RID: 21956
+		[Token(Token = "0x40055C4")]
+		[FieldOffset(Offset = "0x88")]
+		public EventToutetsuYuumaTutorialSubPanel pageC;
 
-		// Token: 0x04004C6B RID: 19563
-		private static readonly IntPtr NativeMethodInfoPtr_OpenPanelB_Private_Void_0;
+		// Token: 0x040055C5 RID: 21957
+		[Token(Token = "0x40055C5")]
+		[FieldOffset(Offset = "0x90")]
+		public EventToutetsuYuumaTutorialSubPanel pageD;
 
-		// Token: 0x04004C6C RID: 19564
-		private static readonly IntPtr NativeMethodInfoPtr_OpenPanelC_Private_Void_0;
-
-		// Token: 0x04004C6D RID: 19565
-		private static readonly IntPtr NativeMethodInfoPtr_OpenPanelD_Private_Void_0;
-
-		// Token: 0x04004C6E RID: 19566
-		private static readonly IntPtr NativeMethodInfoPtr_OnPanelClose_Private_Void_PannelCloseType_Action_Action_0;
-
-		// Token: 0x04004C6F RID: 19567
-		private static readonly IntPtr NativeMethodInfoPtr_OnPanelAClose_Private_Void_PannelCloseType_0;
-
-		// Token: 0x04004C70 RID: 19568
-		private static readonly IntPtr NativeMethodInfoPtr_OnPanelBClose_Private_Void_PannelCloseType_0;
-
-		// Token: 0x04004C71 RID: 19569
-		private static readonly IntPtr NativeMethodInfoPtr_OnPanelCClose_Private_Void_PannelCloseType_0;
-
-		// Token: 0x04004C72 RID: 19570
-		private static readonly IntPtr NativeMethodInfoPtr_OnPanelDClose_Private_Void_PannelCloseType_0;
-
-		// Token: 0x04004C73 RID: 19571
-		private static readonly IntPtr NativeMethodInfoPtr_Cleanup_Generated_Protected_Virtual_Void_0;
-
-		// Token: 0x04004C74 RID: 19572
-		private static readonly IntPtr NativeMethodInfoPtr__ctor_Public_Void_0;
-
-		// Token: 0x02000F4B RID: 3915
+		// Token: 0x02000F63 RID: 3939
+		[Token(Token = "0x2000F63")]
 		public enum YuumaTutorialPhase
 		{
-			// Token: 0x0400AC74 RID: 44148
+			// Token: 0x040055C8 RID: 21960
+			[Token(Token = "0x40055C8")]
 			First,
-			// Token: 0x0400AC75 RID: 44149
+			// Token: 0x040055C9 RID: 21961
+			[Token(Token = "0x40055C9")]
 			Second,
-			// Token: 0x0400AC76 RID: 44150
+			// Token: 0x040055CA RID: 21962
+			[Token(Token = "0x40055CA")]
 			ReMemory
 		}
 	}

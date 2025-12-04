@@ -1,128 +1,72 @@
 ﻿using System;
-using Il2CppInterop.Common.Attributes;
-using Il2CppInterop.Runtime;
-using Il2CppInterop.Runtime.Runtime;
-using Il2CppSystem;
+using Il2CppDummyDll;
+using UnityEngine;
 using UnityEngine.AddressableAssets;
 
 namespace MusicGame.UI
 {
-	// Token: 0x02000020 RID: 32
+	// Token: 0x0200004D RID: 77
+	[Token(Token = "0x200004D")]
 	[Serializable]
-	public sealed class CheerGuestSpawnMode : ValueType
+	public struct CheerGuestSpawnMode
 	{
-		// Token: 0x0600028F RID: 655 RVA: 0x000A72B4 File Offset: 0x000A54B4
-		// Note: this type is marked as 'beforefieldinit'.
-		static CheerGuestSpawnMode()
+		// Token: 0x17000023 RID: 35
+		// (get) Token: 0x06000182 RID: 386 RVA: 0x00002688 File Offset: 0x00000888
+		[Token(Token = "0x17000023")]
+		public CheerGuestSpawnMode.CornerType Corner
 		{
-			Il2CppClassPointerStore<CheerGuestSpawnMode>.NativeClassPtr = IL2CPP.GetIl2CppClass("Assembly-CSharp.dll", "MusicGame.UI", "CheerGuestSpawnMode");
-			IL2CPP.il2cpp_runtime_class_init(Il2CppClassPointerStore<CheerGuestSpawnMode>.NativeClassPtr);
-			CheerGuestSpawnMode.NativeFieldInfoPtr_corner = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<CheerGuestSpawnMode>.NativeClassPtr, "corner");
-			CheerGuestSpawnMode.NativeFieldInfoPtr_cheerGuestImage = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<CheerGuestSpawnMode>.NativeClassPtr, "cheerGuestImage");
-			CheerGuestSpawnMode.NativeMethodInfoPtr_get_Corner_Public_get_CornerType_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<CheerGuestSpawnMode>.NativeClassPtr, 100663682);
-			CheerGuestSpawnMode.NativeMethodInfoPtr_get_CheerGuestImage_Public_get_AssetReference_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<CheerGuestSpawnMode>.NativeClassPtr, 100663683);
-		}
-
-		// Token: 0x170000C9 RID: 201
-		// (get) Token: 0x06000290 RID: 656 RVA: 0x000A7334 File Offset: 0x000A5534
-		public unsafe CheerGuestSpawnMode.CornerType Corner
-		{
-			[CallerCount(140)]
-			[CachedScanResults(RefRangeStart = 18568, RefRangeEnd = 18708, XrefRangeStart = 18568, XrefRangeEnd = 18708, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x6000182")]
+			[Address(RVA = "0x406CA0", Offset = "0x4056A0", VA = "0x180406CA0")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(CheerGuestSpawnMode.NativeMethodInfoPtr_get_Corner_Public_get_CornerType_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return CheerGuestSpawnMode.CornerType.RightBottom;
 			}
 		}
 
-		// Token: 0x170000CA RID: 202
-		// (get) Token: 0x06000291 RID: 657 RVA: 0x000A7378 File Offset: 0x000A5578
-		public unsafe AssetReference CheerGuestImage
+		// Token: 0x17000024 RID: 36
+		// (get) Token: 0x06000183 RID: 387 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x17000024")]
+		public AssetReference CheerGuestImage
 		{
-			[CallerCount(0)]
+			[Token(Token = "0x6000183")]
+			[Address(RVA = "0x406CB0", Offset = "0x4056B0", VA = "0x180406CB0")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(CheerGuestSpawnMode.NativeMethodInfoPtr_get_CheerGuestImage_Public_get_AssetReference_0, IL2CPP.il2cpp_object_unbox(IL2CPP.Il2CppObjectBaseToPtrNotNull(this)), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				IntPtr intPtr3 = intPtr;
-				return (intPtr3 != 0) ? Il2CppObjectPool.Get<AssetReference>(intPtr3) : null;
+				return null;
 			}
 		}
 
-		// Token: 0x06000292 RID: 658 RVA: 0x00003573 File Offset: 0x00001773
-		public CheerGuestSpawnMode(IntPtr pointer) : base(pointer)
-		{
-		}
+		// Token: 0x0400014C RID: 332
+		[Token(Token = "0x400014C")]
+		[FieldOffset(Offset = "0x0")]
+		[SerializeField]
+		private CheerGuestSpawnMode.CornerType corner;
 
-		// Token: 0x06000293 RID: 659 RVA: 0x0000357C File Offset: 0x0000177C
-		public CheerGuestSpawnMode() : base(IL2CPP.il2cpp_object_new(Il2CppClassPointerStore<CheerGuestSpawnMode>.NativeClassPtr))
-		{
-		}
+		// Token: 0x0400014D RID: 333
+		[Token(Token = "0x400014D")]
+		[FieldOffset(Offset = "0x8")]
+		[SerializeField]
+		private AssetReference cheerGuestImage;
 
-		// Token: 0x170000C7 RID: 199
-		// (get) Token: 0x06000294 RID: 660 RVA: 0x000A73BC File Offset: 0x000A55BC
-		// (set) Token: 0x06000295 RID: 661 RVA: 0x0000358E File Offset: 0x0000178E
-		public unsafe CheerGuestSpawnMode.CornerType corner
-		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(CheerGuestSpawnMode.NativeFieldInfoPtr_corner);
-				return *intPtr;
-			}
-			set
-			{
-				*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(CheerGuestSpawnMode.NativeFieldInfoPtr_corner)) = value;
-			}
-		}
-
-		// Token: 0x170000C8 RID: 200
-		// (get) Token: 0x06000296 RID: 662 RVA: 0x000A73E4 File Offset: 0x000A55E4
-		// (set) Token: 0x06000297 RID: 663 RVA: 0x000035A9 File Offset: 0x000017A9
-		public unsafe AssetReference cheerGuestImage
-		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(CheerGuestSpawnMode.NativeFieldInfoPtr_cheerGuestImage);
-				IntPtr intPtr2 = *intPtr;
-				return (intPtr2 != 0) ? Il2CppObjectPool.Get<AssetReference>(intPtr2) : null;
-			}
-			set
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(CheerGuestSpawnMode.NativeFieldInfoPtr_cheerGuestImage), IL2CPP.Il2CppObjectBaseToPtr(value));
-			}
-		}
-
-		// Token: 0x040001A3 RID: 419
-		private static readonly IntPtr NativeFieldInfoPtr_corner;
-
-		// Token: 0x040001A4 RID: 420
-		private static readonly IntPtr NativeFieldInfoPtr_cheerGuestImage;
-
-		// Token: 0x040001A5 RID: 421
-		private static readonly IntPtr NativeMethodInfoPtr_get_Corner_Public_get_CornerType_0;
-
-		// Token: 0x040001A6 RID: 422
-		private static readonly IntPtr NativeMethodInfoPtr_get_CheerGuestImage_Public_get_AssetReference_0;
-
-		// Token: 0x0200048F RID: 1167
+		// Token: 0x0200004E RID: 78
+		[Token(Token = "0x200004E")]
 		public enum CornerType
 		{
-			// Token: 0x040052A2 RID: 21154
+			// Token: 0x0400014F RID: 335
+			[Token(Token = "0x400014F")]
+			[InspectorName("右下")]
 			RightBottom,
-			// Token: 0x040052A3 RID: 21155
+			// Token: 0x04000150 RID: 336
+			[Token(Token = "0x4000150")]
+			[InspectorName("左下（不支持）")]
 			LeftBottom,
-			// Token: 0x040052A4 RID: 21156
+			// Token: 0x04000151 RID: 337
+			[Token(Token = "0x4000151")]
+			[InspectorName("左上")]
 			LeftTop,
-			// Token: 0x040052A5 RID: 21157
+			// Token: 0x04000152 RID: 338
+			[Token(Token = "0x4000152")]
+			[InspectorName("右上")]
 			RightTop
 		}
 	}

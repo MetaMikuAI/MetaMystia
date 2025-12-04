@@ -2,328 +2,119 @@
 using Common.CharacterUtility;
 using DayScene.Input;
 using GameData.Core.Collections.CharacterUtility;
-using Il2CppInterop.Common.Attributes;
-using Il2CppInterop.Runtime;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using Il2CppInterop.Runtime.Runtime;
-using Il2CppSystem;
+using Il2CppDummyDll;
+using UnityCSharpCleanupGenerator.Attribute;
 using UnityEngine;
 
 namespace DayScene.Interactables.Collections.BehaviourComponents
 {
-	// Token: 0x02000176 RID: 374
+	// Token: 0x020004D8 RID: 1240
+	[Token(Token = "0x20004D8")]
+	[GenerateCleanupMethod]
+	[RequireComponent(typeof(CharacterControllerUnit))]
 	public class HakureiFestivalCharacterBehaviourComponent : EntityBehaviourComponent
 	{
-		// Token: 0x0600290D RID: 10509 RVA: 0x001270BC File Offset: 0x001252BC
-		// Note: this type is marked as 'beforefieldinit'.
-		static HakureiFestivalCharacterBehaviourComponent()
-		{
-			Il2CppClassPointerStore<HakureiFestivalCharacterBehaviourComponent>.NativeClassPtr = IL2CPP.GetIl2CppClass("Assembly-CSharp.dll", "DayScene.Interactables.Collections.BehaviourComponents", "HakureiFestivalCharacterBehaviourComponent");
-			IL2CPP.il2cpp_runtime_class_init(Il2CppClassPointerStore<HakureiFestivalCharacterBehaviourComponent>.NativeClassPtr);
-			HakureiFestivalCharacterBehaviourComponent.NativeFieldInfoPtr_m_DaySceneNPCLabel = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<HakureiFestivalCharacterBehaviourComponent>.NativeClassPtr, "m_DaySceneNPCLabel");
-			HakureiFestivalCharacterBehaviourComponent.NativeFieldInfoPtr_m_UsePlainSpriteSet = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<HakureiFestivalCharacterBehaviourComponent>.NativeClassPtr, "m_UsePlainSpriteSet");
-			HakureiFestivalCharacterBehaviourComponent.NativeFieldInfoPtr_m_CharacterSpriteSet = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<HakureiFestivalCharacterBehaviourComponent>.NativeClassPtr, "m_CharacterSpriteSet");
-			HakureiFestivalCharacterBehaviourComponent.NativeFieldInfoPtr_m_FaceDirection = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<HakureiFestivalCharacterBehaviourComponent>.NativeClassPtr, "m_FaceDirection");
-			HakureiFestivalCharacterBehaviourComponent.NativeFieldInfoPtr_m_DialogPackages = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<HakureiFestivalCharacterBehaviourComponent>.NativeClassPtr, "m_DialogPackages");
-			HakureiFestivalCharacterBehaviourComponent.NativeFieldInfoPtr_m_Collider = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<HakureiFestivalCharacterBehaviourComponent>.NativeClassPtr, "m_Collider");
-			HakureiFestivalCharacterBehaviourComponent.NativeFieldInfoPtr_hasInteracted = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<HakureiFestivalCharacterBehaviourComponent>.NativeClassPtr, "hasInteracted");
-			HakureiFestivalCharacterBehaviourComponent.NativeFieldInfoPtr_m_CharacterControllerUnit = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<HakureiFestivalCharacterBehaviourComponent>.NativeClassPtr, "m_CharacterControllerUnit");
-			HakureiFestivalCharacterBehaviourComponent.NativeMethodInfoPtr_OnValidate_Private_Void_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<HakureiFestivalCharacterBehaviourComponent>.NativeClassPtr, 100670478);
-			HakureiFestivalCharacterBehaviourComponent.NativeMethodInfoPtr_OnInitialize_Protected_Virtual_Void_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<HakureiFestivalCharacterBehaviourComponent>.NativeClassPtr, 100670479);
-			HakureiFestivalCharacterBehaviourComponent.NativeMethodInfoPtr_OnPlayerStay_Public_Virtual_Void_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<HakureiFestivalCharacterBehaviourComponent>.NativeClassPtr, 100670480);
-			HakureiFestivalCharacterBehaviourComponent.NativeMethodInfoPtr_OnPlayerExit_Public_Virtual_Void_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<HakureiFestivalCharacterBehaviourComponent>.NativeClassPtr, 100670481);
-			HakureiFestivalCharacterBehaviourComponent.NativeMethodInfoPtr_OnInteract_Public_Virtual_Void_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<HakureiFestivalCharacterBehaviourComponent>.NativeClassPtr, 100670482);
-			HakureiFestivalCharacterBehaviourComponent.NativeMethodInfoPtr_GetSpriteCode_Private_ValueTuple_2_Int32_Int32_Int32_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<HakureiFestivalCharacterBehaviourComponent>.NativeClassPtr, 100670483);
-			HakureiFestivalCharacterBehaviourComponent.NativeMethodInfoPtr_Cleanup_Generated_Protected_Virtual_Void_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<HakureiFestivalCharacterBehaviourComponent>.NativeClassPtr, 100670484);
-			HakureiFestivalCharacterBehaviourComponent.NativeMethodInfoPtr__ctor_Public_Void_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<HakureiFestivalCharacterBehaviourComponent>.NativeClassPtr, 100670485);
-		}
-
-		// Token: 0x0600290E RID: 10510 RVA: 0x0012722C File Offset: 0x0012542C
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 92886, XrefRangeEnd = 92913, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe void OnValidate()
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(HakureiFestivalCharacterBehaviourComponent.NativeMethodInfoPtr_OnValidate_Private_Void_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x0600290F RID: 10511 RVA: 0x00127260 File Offset: 0x00125460
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 92913, XrefRangeEnd = 92927, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe override void OnInitialize()
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IL2CPP.il2cpp_object_get_virtual_method(IL2CPP.Il2CppObjectBaseToPtr(this), HakureiFestivalCharacterBehaviourComponent.NativeMethodInfoPtr_OnInitialize_Protected_Virtual_Void_0), IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x06002910 RID: 10512 RVA: 0x0012729C File Offset: 0x0012549C
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 92927, XrefRangeEnd = 92938, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe override void OnPlayerStay()
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IL2CPP.il2cpp_object_get_virtual_method(IL2CPP.Il2CppObjectBaseToPtr(this), HakureiFestivalCharacterBehaviourComponent.NativeMethodInfoPtr_OnPlayerStay_Public_Virtual_Void_0), IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x06002911 RID: 10513 RVA: 0x001272D8 File Offset: 0x001254D8
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 92938, XrefRangeEnd = 92941, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe override void OnPlayerExit()
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IL2CPP.il2cpp_object_get_virtual_method(IL2CPP.Il2CppObjectBaseToPtr(this), HakureiFestivalCharacterBehaviourComponent.NativeMethodInfoPtr_OnPlayerExit_Public_Virtual_Void_0), IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x06002912 RID: 10514 RVA: 0x00127314 File Offset: 0x00125514
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 92941, XrefRangeEnd = 92948, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe override void OnInteract()
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IL2CPP.il2cpp_object_get_virtual_method(IL2CPP.Il2CppObjectBaseToPtr(this), HakureiFestivalCharacterBehaviourComponent.NativeMethodInfoPtr_OnInteract_Public_Virtual_Void_0), IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x06002913 RID: 10515 RVA: 0x00127350 File Offset: 0x00125550
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 92948, XrefRangeEnd = 92951, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe ValueTuple<int, int> GetSpriteCode(int orientation, int faceId)
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)2) * (UIntPtr)sizeof(IntPtr))];
-			*ptr = ref orientation;
-			ptr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr)) / (UIntPtr)sizeof(IntPtr)] = ref faceId;
-			IntPtr intPtr;
-			IntPtr pointer = IL2CPP.il2cpp_runtime_invoke(HakureiFestivalCharacterBehaviourComponent.NativeMethodInfoPtr_GetSpriteCode_Private_ValueTuple_2_Int32_Int32_Int32_Int32_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr);
-			return new ValueTuple<int, int>(pointer);
-		}
-
-		// Token: 0x06002914 RID: 10516 RVA: 0x001273A4 File Offset: 0x001255A4
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 92951, XrefRangeEnd = 92957, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe override void Cleanup_Generated()
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IL2CPP.il2cpp_object_get_virtual_method(IL2CPP.Il2CppObjectBaseToPtr(this), HakureiFestivalCharacterBehaviourComponent.NativeMethodInfoPtr_Cleanup_Generated_Protected_Virtual_Void_0), IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x06002915 RID: 10517 RVA: 0x001273E0 File Offset: 0x001255E0
-		[CallerCount(2)]
-		[CachedScanResults(RefRangeStart = 19188, RefRangeEnd = 19190, XrefRangeStart = 19188, XrefRangeEnd = 19190, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe HakureiFestivalCharacterBehaviourComponent() : this(IL2CPP.il2cpp_object_new(Il2CppClassPointerStore<HakureiFestivalCharacterBehaviourComponent>.NativeClassPtr))
-		{
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(HakureiFestivalCharacterBehaviourComponent.NativeMethodInfoPtr__ctor_Public_Void_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x06002916 RID: 10518 RVA: 0x0001803F File Offset: 0x0001623F
-		public HakureiFestivalCharacterBehaviourComponent(IntPtr pointer) : base(pointer)
+		// Token: 0x06001C0E RID: 7182 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x6001C0E")]
+		[Address(RVA = "0x49ED40", Offset = "0x49D740", VA = "0x18049ED40")]
+		private void OnValidate()
 		{
 		}
 
-		// Token: 0x17000E24 RID: 3620
-		// (get) Token: 0x06002917 RID: 10519 RVA: 0x0012741C File Offset: 0x0012561C
-		// (set) Token: 0x06002918 RID: 10520 RVA: 0x00018048 File Offset: 0x00016248
-		public unsafe string m_DaySceneNPCLabel
+		// Token: 0x06001C0F RID: 7183 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x6001C0F")]
+		[Address(RVA = "0x49EA40", Offset = "0x49D440", VA = "0x18049EA40", Slot = "12")]
+		protected override void OnInitialize()
 		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(HakureiFestivalCharacterBehaviourComponent.NativeFieldInfoPtr_m_DaySceneNPCLabel);
-				return IL2CPP.Il2CppStringToManaged(*intPtr);
-			}
-			set
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(HakureiFestivalCharacterBehaviourComponent.NativeFieldInfoPtr_m_DaySceneNPCLabel), IL2CPP.ManagedStringToIl2Cpp(value));
-			}
 		}
 
-		// Token: 0x17000E25 RID: 3621
-		// (get) Token: 0x06002919 RID: 10521 RVA: 0x00127444 File Offset: 0x00125644
-		// (set) Token: 0x0600291A RID: 10522 RVA: 0x00018067 File Offset: 0x00016267
-		public unsafe bool m_UsePlainSpriteSet
+		// Token: 0x06001C10 RID: 7184 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x6001C10")]
+		[Address(RVA = "0x49EC40", Offset = "0x49D640", VA = "0x18049EC40", Slot = "8")]
+		public override void OnPlayerStay()
 		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(HakureiFestivalCharacterBehaviourComponent.NativeFieldInfoPtr_m_UsePlainSpriteSet);
-				return *intPtr;
-			}
-			set
-			{
-				*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(HakureiFestivalCharacterBehaviourComponent.NativeFieldInfoPtr_m_UsePlainSpriteSet)) = value;
-			}
 		}
 
-		// Token: 0x17000E26 RID: 3622
-		// (get) Token: 0x0600291B RID: 10523 RVA: 0x0012746C File Offset: 0x0012566C
-		// (set) Token: 0x0600291C RID: 10524 RVA: 0x00018082 File Offset: 0x00016282
-		public unsafe CharacterSpriteSetCompact m_CharacterSpriteSet
+		// Token: 0x06001C11 RID: 7185 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x6001C11")]
+		[Address(RVA = "0x49EC00", Offset = "0x49D600", VA = "0x18049EC00", Slot = "9")]
+		public override void OnPlayerExit()
 		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(HakureiFestivalCharacterBehaviourComponent.NativeFieldInfoPtr_m_CharacterSpriteSet);
-				IntPtr intPtr2 = *intPtr;
-				return (intPtr2 != 0) ? Il2CppObjectPool.Get<CharacterSpriteSetCompact>(intPtr2) : null;
-			}
-			set
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(HakureiFestivalCharacterBehaviourComponent.NativeFieldInfoPtr_m_CharacterSpriteSet), IL2CPP.Il2CppObjectBaseToPtr(value));
-			}
 		}
 
-		// Token: 0x17000E27 RID: 3623
-		// (get) Token: 0x0600291D RID: 10525 RVA: 0x0012749C File Offset: 0x0012569C
-		// (set) Token: 0x0600291E RID: 10526 RVA: 0x000180A1 File Offset: 0x000162A1
-		public unsafe DayScenePlayerInputGenerator.CharacterRotation m_FaceDirection
+		// Token: 0x06001C12 RID: 7186 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x6001C12")]
+		[Address(RVA = "0x49EB40", Offset = "0x49D540", VA = "0x18049EB40", Slot = "6")]
+		public override void OnInteract()
 		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(HakureiFestivalCharacterBehaviourComponent.NativeFieldInfoPtr_m_FaceDirection);
-				return *intPtr;
-			}
-			set
-			{
-				*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(HakureiFestivalCharacterBehaviourComponent.NativeFieldInfoPtr_m_FaceDirection)) = value;
-			}
 		}
 
-		// Token: 0x17000E28 RID: 3624
-		// (get) Token: 0x0600291F RID: 10527 RVA: 0x001274C4 File Offset: 0x001256C4
-		// (set) Token: 0x06002920 RID: 10528 RVA: 0x000180BC File Offset: 0x000162BC
-		public unsafe Il2CppStringArray m_DialogPackages
+		// Token: 0x06001C13 RID: 7187 RVA: 0x0000ACB0 File Offset: 0x00008EB0
+		[Token(Token = "0x6001C13")]
+		[Address(RVA = "0x49E9A0", Offset = "0x49D3A0", VA = "0x18049E9A0")]
+		private ValueTuple<int, int> GetSpriteCode(int orientation, int faceId)
 		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(HakureiFestivalCharacterBehaviourComponent.NativeFieldInfoPtr_m_DialogPackages);
-				IntPtr intPtr2 = *intPtr;
-				return (intPtr2 != 0) ? Il2CppObjectPool.Get<Il2CppStringArray>(intPtr2) : null;
-			}
-			set
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(HakureiFestivalCharacterBehaviourComponent.NativeFieldInfoPtr_m_DialogPackages), IL2CPP.Il2CppObjectBaseToPtr(value));
-			}
+			return default(ValueTuple<int, int>);
 		}
 
-		// Token: 0x17000E29 RID: 3625
-		// (get) Token: 0x06002921 RID: 10529 RVA: 0x001274F4 File Offset: 0x001256F4
-		// (set) Token: 0x06002922 RID: 10530 RVA: 0x000180DB File Offset: 0x000162DB
-		public unsafe Collider2D m_Collider
+		// Token: 0x06001C14 RID: 7188 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x6001C14")]
+		[Address(RVA = "0x49E930", Offset = "0x49D330", VA = "0x18049E930", Slot = "13")]
+		protected override void Cleanup_Generated()
 		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(HakureiFestivalCharacterBehaviourComponent.NativeFieldInfoPtr_m_Collider);
-				IntPtr intPtr2 = *intPtr;
-				return (intPtr2 != 0) ? Il2CppObjectPool.Get<Collider2D>(intPtr2) : null;
-			}
-			set
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(HakureiFestivalCharacterBehaviourComponent.NativeFieldInfoPtr_m_Collider), IL2CPP.Il2CppObjectBaseToPtr(value));
-			}
 		}
 
-		// Token: 0x17000E2A RID: 3626
-		// (get) Token: 0x06002923 RID: 10531 RVA: 0x00127524 File Offset: 0x00125724
-		// (set) Token: 0x06002924 RID: 10532 RVA: 0x000180FA File Offset: 0x000162FA
-		public unsafe bool hasInteracted
+		// Token: 0x06001C15 RID: 7189 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x6001C15")]
+		[Address(RVA = "0x40B840", Offset = "0x40A240", VA = "0x18040B840")]
+		public HakureiFestivalCharacterBehaviourComponent()
 		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(HakureiFestivalCharacterBehaviourComponent.NativeFieldInfoPtr_hasInteracted);
-				return *intPtr;
-			}
-			set
-			{
-				*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(HakureiFestivalCharacterBehaviourComponent.NativeFieldInfoPtr_hasInteracted)) = value;
-			}
 		}
 
-		// Token: 0x17000E2B RID: 3627
-		// (get) Token: 0x06002925 RID: 10533 RVA: 0x0012754C File Offset: 0x0012574C
-		// (set) Token: 0x06002926 RID: 10534 RVA: 0x00018115 File Offset: 0x00016315
-		public unsafe CharacterControllerUnit m_CharacterControllerUnit
-		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(HakureiFestivalCharacterBehaviourComponent.NativeFieldInfoPtr_m_CharacterControllerUnit);
-				IntPtr intPtr2 = *intPtr;
-				return (intPtr2 != 0) ? Il2CppObjectPool.Get<CharacterControllerUnit>(intPtr2) : null;
-			}
-			set
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(HakureiFestivalCharacterBehaviourComponent.NativeFieldInfoPtr_m_CharacterControllerUnit), IL2CPP.Il2CppObjectBaseToPtr(value));
-			}
-		}
+		// Token: 0x040019A2 RID: 6562
+		[Token(Token = "0x40019A2")]
+		[FieldOffset(Offset = "0x18")]
+		[SerializeField]
+		private string m_DaySceneNPCLabel;
 
-		// Token: 0x04001B2B RID: 6955
-		private static readonly IntPtr NativeFieldInfoPtr_m_DaySceneNPCLabel;
+		// Token: 0x040019A3 RID: 6563
+		[Token(Token = "0x40019A3")]
+		[FieldOffset(Offset = "0x20")]
+		[SerializeField]
+		private bool m_UsePlainSpriteSet;
 
-		// Token: 0x04001B2C RID: 6956
-		private static readonly IntPtr NativeFieldInfoPtr_m_UsePlainSpriteSet;
+		// Token: 0x040019A4 RID: 6564
+		[Token(Token = "0x40019A4")]
+		[FieldOffset(Offset = "0x28")]
+		[SerializeField]
+		private CharacterSpriteSetCompact m_CharacterSpriteSet;
 
-		// Token: 0x04001B2D RID: 6957
-		private static readonly IntPtr NativeFieldInfoPtr_m_CharacterSpriteSet;
+		// Token: 0x040019A5 RID: 6565
+		[Token(Token = "0x40019A5")]
+		[FieldOffset(Offset = "0x30")]
+		[SerializeField]
+		private DayScenePlayerInputGenerator.CharacterRotation m_FaceDirection;
 
-		// Token: 0x04001B2E RID: 6958
-		private static readonly IntPtr NativeFieldInfoPtr_m_FaceDirection;
+		// Token: 0x040019A6 RID: 6566
+		[Token(Token = "0x40019A6")]
+		[FieldOffset(Offset = "0x38")]
+		[SerializeField]
+		private string[] m_DialogPackages;
 
-		// Token: 0x04001B2F RID: 6959
-		private static readonly IntPtr NativeFieldInfoPtr_m_DialogPackages;
+		// Token: 0x040019A7 RID: 6567
+		[Token(Token = "0x40019A7")]
+		[FieldOffset(Offset = "0x40")]
+		[SerializeField]
+		private Collider2D m_Collider;
 
-		// Token: 0x04001B30 RID: 6960
-		private static readonly IntPtr NativeFieldInfoPtr_m_Collider;
+		// Token: 0x040019A8 RID: 6568
+		[Token(Token = "0x40019A8")]
+		[FieldOffset(Offset = "0x48")]
+		private bool hasInteracted;
 
-		// Token: 0x04001B31 RID: 6961
-		private static readonly IntPtr NativeFieldInfoPtr_hasInteracted;
-
-		// Token: 0x04001B32 RID: 6962
-		private static readonly IntPtr NativeFieldInfoPtr_m_CharacterControllerUnit;
-
-		// Token: 0x04001B33 RID: 6963
-		private static readonly IntPtr NativeMethodInfoPtr_OnValidate_Private_Void_0;
-
-		// Token: 0x04001B34 RID: 6964
-		private static readonly IntPtr NativeMethodInfoPtr_OnInitialize_Protected_Virtual_Void_0;
-
-		// Token: 0x04001B35 RID: 6965
-		private static readonly IntPtr NativeMethodInfoPtr_OnPlayerStay_Public_Virtual_Void_0;
-
-		// Token: 0x04001B36 RID: 6966
-		private static readonly IntPtr NativeMethodInfoPtr_OnPlayerExit_Public_Virtual_Void_0;
-
-		// Token: 0x04001B37 RID: 6967
-		private static readonly IntPtr NativeMethodInfoPtr_OnInteract_Public_Virtual_Void_0;
-
-		// Token: 0x04001B38 RID: 6968
-		private static readonly IntPtr NativeMethodInfoPtr_GetSpriteCode_Private_ValueTuple_2_Int32_Int32_Int32_Int32_0;
-
-		// Token: 0x04001B39 RID: 6969
-		private static readonly IntPtr NativeMethodInfoPtr_Cleanup_Generated_Protected_Virtual_Void_0;
-
-		// Token: 0x04001B3A RID: 6970
-		private static readonly IntPtr NativeMethodInfoPtr__ctor_Public_Void_0;
+		// Token: 0x040019A9 RID: 6569
+		[Token(Token = "0x40019A9")]
+		[FieldOffset(Offset = "0x50")]
+		private CharacterControllerUnit m_CharacterControllerUnit;
 	}
 }

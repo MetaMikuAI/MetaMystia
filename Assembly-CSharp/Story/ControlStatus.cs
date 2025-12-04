@@ -1,19 +1,26 @@
 ﻿using System;
+using Il2CppDummyDll;
 
 namespace Story
 {
-	// Token: 0x02000032 RID: 50
+	// Token: 0x02000082 RID: 130
+	[Token(Token = "0x2000082")]
 	public enum ControlStatus : byte
 	{
-		// Token: 0x04000359 RID: 857
+		// Token: 0x040002B4 RID: 692
+		[Token(Token = "0x40002B4")]
 		None,
-		// Token: 0x0400035A RID: 858
+		// Token: 0x040002B5 RID: 693
+		[Token(Token = "0x40002B5")]
 		PreControl,
-		// Token: 0x0400035B RID: 859
+		// Token: 0x040002B6 RID: 694
+		[Token(Token = "0x40002B6")]
 		Controlled,
-		// Token: 0x0400035C RID: 860
+		// Token: 0x040002B7 RID: 695
+		[Token(Token = "0x40002B7")]
 		PreDisappear,
-		// Token: 0x0400035D RID: 861
+		// Token: 0x040002B8 RID: 696
+		[Token(Token = "0x40002B8")]
 		Disappear
 	}
 }

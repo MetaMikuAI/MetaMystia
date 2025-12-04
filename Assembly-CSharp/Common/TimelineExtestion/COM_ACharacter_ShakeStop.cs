@@ -1,80 +1,32 @@
 ﻿using System;
-using Il2CppInterop.Common.Attributes;
-using Il2CppInterop.Runtime;
+using Il2CppDummyDll;
 using UnityEngine;
 using UnityEngine.Playables;
 
 namespace Common.TimelineExtestion
 {
-	// Token: 0x020003E9 RID: 1001
+	// Token: 0x02000FC0 RID: 4032
+	[Token(Token = "0x2000FC0")]
 	public class COM_ACharacter_ShakeStop : PlayableAsset
 	{
-		// Token: 0x06007676 RID: 30326 RVA: 0x002291C4 File Offset: 0x002273C4
-		// Note: this type is marked as 'beforefieldinit'.
-		static COM_ACharacter_ShakeStop()
+		// Token: 0x06005E95 RID: 24213 RVA: 0x00020B38 File Offset: 0x0001ED38
+		[Token(Token = "0x6005E95")]
+		[Address(RVA = "0x8BC800", Offset = "0x8BB200", VA = "0x1808BC800", Slot = "6")]
+		public override Playable CreatePlayable(PlayableGraph graph, GameObject owner)
 		{
-			Il2CppClassPointerStore<COM_ACharacter_ShakeStop>.NativeClassPtr = IL2CPP.GetIl2CppClass("Assembly-CSharp.dll", "Common.TimelineExtestion", "COM_ACharacter_ShakeStop");
-			IL2CPP.il2cpp_runtime_class_init(Il2CppClassPointerStore<COM_ACharacter_ShakeStop>.NativeClassPtr);
-			COM_ACharacter_ShakeStop.NativeFieldInfoPtr_label = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<COM_ACharacter_ShakeStop>.NativeClassPtr, "label");
-			COM_ACharacter_ShakeStop.NativeMethodInfoPtr_CreatePlayable_Public_Virtual_Playable_PlayableGraph_GameObject_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<COM_ACharacter_ShakeStop>.NativeClassPtr, 100687509);
-			COM_ACharacter_ShakeStop.NativeMethodInfoPtr__ctor_Public_Void_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<COM_ACharacter_ShakeStop>.NativeClassPtr, 100687510);
+			return default(Playable);
 		}
 
-		// Token: 0x06007677 RID: 30327 RVA: 0x00229230 File Offset: 0x00227430
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 292765, XrefRangeEnd = 292778, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe override Playable CreatePlayable(PlayableGraph graph, GameObject owner)
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)2) * (UIntPtr)sizeof(IntPtr))];
-			*ptr = ref graph;
-			ptr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr)) / (UIntPtr)sizeof(IntPtr)] = IL2CPP.Il2CppObjectBaseToPtr(owner);
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IL2CPP.il2cpp_object_get_virtual_method(IL2CPP.Il2CppObjectBaseToPtr(this), COM_ACharacter_ShakeStop.NativeMethodInfoPtr_CreatePlayable_Public_Virtual_Playable_PlayableGraph_GameObject_0), IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-			return *IL2CPP.il2cpp_object_unbox(intPtr);
-		}
-
-		// Token: 0x06007678 RID: 30328 RVA: 0x00229298 File Offset: 0x00227498
-		[CallerCount(2)]
-		[CachedScanResults(RefRangeStart = 40720, RefRangeEnd = 40722, XrefRangeStart = 40720, XrefRangeEnd = 40722, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe COM_ACharacter_ShakeStop() : this(IL2CPP.il2cpp_object_new(Il2CppClassPointerStore<COM_ACharacter_ShakeStop>.NativeClassPtr))
-		{
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(COM_ACharacter_ShakeStop.NativeMethodInfoPtr__ctor_Public_Void_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x06007679 RID: 30329 RVA: 0x0004018B File Offset: 0x0003E38B
-		public COM_ACharacter_ShakeStop(IntPtr pointer) : base(pointer)
+		// Token: 0x06005E96 RID: 24214 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x6005E96")]
+		[Address(RVA = "0x495780", Offset = "0x494180", VA = "0x180495780")]
+		public COM_ACharacter_ShakeStop()
 		{
 		}
 
-		// Token: 0x1700286F RID: 10351
-		// (get) Token: 0x0600767A RID: 30330 RVA: 0x002292D4 File Offset: 0x002274D4
-		// (set) Token: 0x0600767B RID: 30331 RVA: 0x00040194 File Offset: 0x0003E394
-		public unsafe string label
-		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(COM_ACharacter_ShakeStop.NativeFieldInfoPtr_label);
-				return IL2CPP.Il2CppStringToManaged(*intPtr);
-			}
-			set
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(COM_ACharacter_ShakeStop.NativeFieldInfoPtr_label), IL2CPP.ManagedStringToIl2Cpp(value));
-			}
-		}
-
-		// Token: 0x04004E6A RID: 20074
-		private static readonly IntPtr NativeFieldInfoPtr_label;
-
-		// Token: 0x04004E6B RID: 20075
-		private static readonly IntPtr NativeMethodInfoPtr_CreatePlayable_Public_Virtual_Playable_PlayableGraph_GameObject_0;
-
-		// Token: 0x04004E6C RID: 20076
-		private static readonly IntPtr NativeMethodInfoPtr__ctor_Public_Void_0;
+		// Token: 0x04005792 RID: 22418
+		[Token(Token = "0x4005792")]
+		[FieldOffset(Offset = "0x18")]
+		public string label;
 	}
 }

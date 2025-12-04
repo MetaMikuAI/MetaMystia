@@ -1,13 +1,17 @@
 ﻿using System;
+using Il2CppDummyDll;
 
 namespace Common.UI.Filter
 {
-	// Token: 0x020003B6 RID: 950
+	// Token: 0x02000EF8 RID: 3832
+	[Token(Token = "0x2000EF8")]
 	public enum FilterType
 	{
-		// Token: 0x04004B24 RID: 19236
+		// Token: 0x04005487 RID: 21639
+		[Token(Token = "0x4005487")]
 		SingleChoice,
-		// Token: 0x04004B25 RID: 19237
+		// Token: 0x04005488 RID: 21640
+		[Token(Token = "0x4005488")]
 		MultipleChoice
 	}
 }

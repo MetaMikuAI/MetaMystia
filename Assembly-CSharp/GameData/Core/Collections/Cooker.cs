@@ -1,12 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using GameData.Core.Collections.NightSceneUtility;
 using GameData.CoreLanguage;
 using GameData.Profile;
-using Il2CppInterop.Common.Attributes;
-using Il2CppInterop.Runtime;
-using Il2CppInterop.Runtime.Runtime;
-using Il2CppSystem;
-using Il2CppSystem.Collections.Generic;
+using Il2CppDummyDll;
+using JetBrains.Annotations;
 using NightScene.CookingUtility;
 using NightScene.GuestManagementUtility;
 using NightScene.UI.CookingUtility;
@@ -15,882 +13,446 @@ using UnityEngine.Tilemaps;
 
 namespace GameData.Core.Collections
 {
-	// Token: 0x02000246 RID: 582
+	// Token: 0x020008E3 RID: 2275
+	[Token(Token = "0x20008E3")]
 	[Serializable]
 	public class Cooker : NonTradableObjectBase
 	{
-		// Token: 0x0600487C RID: 18556 RVA: 0x00199D4C File Offset: 0x00197F4C
-		// Note: this type is marked as 'beforefieldinit'.
-		static Cooker()
+		// Token: 0x0600389E RID: 14494 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x600389E")]
+		[Address(RVA = "0x680230", Offset = "0x67EC30", VA = "0x180680230")]
+		public Cooker(int id, Cooker.CookerType type, Cooker.CookerSeries cookerSeries, CookerAssetBase cookerAsset, AnimatedTile idle, AnimatedTile loaded, AnimatedTile cooking, float illuminationIntensity, AudioClip startCookSFX, AudioClip openCookSFX)
 		{
-			Il2CppClassPointerStore<Cooker>.NativeClassPtr = IL2CPP.GetIl2CppClass("Assembly-CSharp.dll", "GameData.Core.Collections", "Cooker");
-			IL2CPP.il2cpp_runtime_class_init(Il2CppClassPointerStore<Cooker>.NativeClassPtr);
-			Cooker.NativeFieldInfoPtr_type = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<Cooker>.NativeClassPtr, "type");
-			Cooker.NativeFieldInfoPtr_cookerSeries = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<Cooker>.NativeClassPtr, "cookerSeries");
-			Cooker.NativeFieldInfoPtr_cookerAsset = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<Cooker>.NativeClassPtr, "cookerAsset");
-			Cooker.NativeFieldInfoPtr_idle = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<Cooker>.NativeClassPtr, "idle");
-			Cooker.NativeFieldInfoPtr_loaded = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<Cooker>.NativeClassPtr, "loaded");
-			Cooker.NativeFieldInfoPtr_cooking = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<Cooker>.NativeClassPtr, "cooking");
-			Cooker.NativeFieldInfoPtr_illuminationIntensity = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<Cooker>.NativeClassPtr, "illuminationIntensity");
-			Cooker.NativeFieldInfoPtr_startCookSFX = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<Cooker>.NativeClassPtr, "startCookSFX");
-			Cooker.NativeFieldInfoPtr_openCookSFX = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<Cooker>.NativeClassPtr, "openCookSFX");
-			Cooker.NativeFieldInfoPtr_EMPTY_DESK = IL2CPP.GetIl2CppField(Il2CppClassPointerStore<Cooker>.NativeClassPtr, "EMPTY_DESK");
-			Cooker.NativeMethodInfoPtr__ctor_Public_Void_Int32_CookerType_CookerSeries_CookerAssetBase_AnimatedTile_AnimatedTile_AnimatedTile_Single_AudioClip_AudioClip_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<Cooker>.NativeClassPtr, 100677790);
-			Cooker.NativeMethodInfoPtr_get_Type_Public_get_CookerType_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<Cooker>.NativeClassPtr, 100677791);
-			Cooker.NativeMethodInfoPtr_get_Series_Public_get_CookerSeries_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<Cooker>.NativeClassPtr, 100677792);
-			Cooker.NativeMethodInfoPtr_get_CanOpenByPartner_Public_get_Boolean_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<Cooker>.NativeClassPtr, 100677793);
-			Cooker.NativeMethodInfoPtr_get_CookTimeMultiplierCanUseByPartner_Public_get_Boolean_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<Cooker>.NativeClassPtr, 100677794);
-			Cooker.NativeMethodInfoPtr_get_CookTimeMultiplier_Public_get_Single_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<Cooker>.NativeClassPtr, 100677795);
-			Cooker.NativeMethodInfoPtr_get_AdditiveNextOrderProb_Public_get_Single_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<Cooker>.NativeClassPtr, 100677796);
-			Cooker.NativeMethodInfoPtr_get_Idle_Public_get_AnimatedTile_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<Cooker>.NativeClassPtr, 100677797);
-			Cooker.NativeMethodInfoPtr_get_Loaded_Public_get_AnimatedTile_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<Cooker>.NativeClassPtr, 100677798);
-			Cooker.NativeMethodInfoPtr_get_Cooking_Public_get_AnimatedTile_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<Cooker>.NativeClassPtr, 100677799);
-			Cooker.NativeMethodInfoPtr_get_IlluminationIntensity_Public_get_Single_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<Cooker>.NativeClassPtr, 100677800);
-			Cooker.NativeMethodInfoPtr_get_OpenCookSFX_Public_get_AudioClip_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<Cooker>.NativeClassPtr, 100677801);
-			Cooker.NativeMethodInfoPtr_GetStartCookSFX_Public_AudioClip_CookerType_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<Cooker>.NativeClassPtr, 100677802);
-			Cooker.NativeMethodInfoPtr_GetText_Protected_Virtual_ObjectLanguageBase_Int32_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<Cooker>.NativeClassPtr, 100677803);
-			Cooker.NativeMethodInfoPtr_get_CanTriggerSpecialCookerSkill_Private_get_Boolean_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<Cooker>.NativeClassPtr, 100677804);
-			Cooker.NativeMethodInfoPtr_OnGetNormalGuests_Public_IEnumerable_1_IEnumerable_1_NormalGuest_IEnumerable_1_IEnumerable_1_NormalGuest_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<Cooker>.NativeClassPtr, 100677805);
-			Cooker.NativeMethodInfoPtr_OnGetCookerOutput_Public_IEnumerable_1_MatchedCookCombo_IEnumerable_1_MatchedCookCombo_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<Cooker>.NativeClassPtr, 100677806);
-			Cooker.NativeMethodInfoPtr_GetExtraCookSpeedMultiplier_Public_Single_CookController_Sellable_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<Cooker>.NativeClassPtr, 100677807);
-			Cooker.NativeMethodInfoPtr_GetExtraAdditiveNextOrderProb_Public_Single_Sellable_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<Cooker>.NativeClassPtr, 100677808);
-			Cooker.NativeMethodInfoPtr_OnStartCook_Public_Void_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<Cooker>.NativeClassPtr, 100677809);
-			Cooker.NativeMethodInfoPtr_OnFinishCook_Public_Sellable_Sellable_Single_Boolean_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<Cooker>.NativeClassPtr, 100677810);
-			Cooker.NativeMethodInfoPtr_OnEvaluate_Public_Int32_Int32_GuestGroupController_Sellable_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<Cooker>.NativeClassPtr, 100677811);
-			Cooker.NativeMethodInfoPtr_ShouldShowThisCookerBG_Public_Boolean_Sellable_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<Cooker>.NativeClassPtr, 100677812);
-			Cooker.NativeMethodInfoPtr_OnPlayerFinishExtract_Public_Void_CookController_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<Cooker>.NativeClassPtr, 100677813);
-			Cooker.NativeMethodInfoPtr_WhenPlayerTryExtractWithFullTray_Public_Void_CookController_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<Cooker>.NativeClassPtr, 100677814);
-			Cooker.NativeMethodInfoPtr_get_BGSprite_Public_Virtual_get_Sprite_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<Cooker>.NativeClassPtr, 100677815);
-			Cooker.NativeMethodInfoPtr_Clone_Public_Virtual_Object_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<Cooker>.NativeClassPtr, 100677816);
-			Cooker.NativeMethodInfoPtr_get_AllAvailableCookerType_Public_get_IEnumerable_1_CookerType_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<Cooker>.NativeClassPtr, 100677817);
-			Cooker.NativeMethodInfoPtr_get_OverrideTypeName_Public_get_String_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<Cooker>.NativeClassPtr, 100677818);
-			Cooker.NativeMethodInfoPtr_OnCookerWorkTimeUpdate_Public_Void_CookController_Single_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<Cooker>.NativeClassPtr, 100677819);
 		}
 
-		// Token: 0x0600487D RID: 18557 RVA: 0x0019A09C File Offset: 0x0019829C
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 190413, XrefRangeEnd = 190420, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe Cooker(int id, Cooker.CookerType type, Cooker.CookerSeries cookerSeries, CookerAssetBase cookerAsset, AnimatedTile idle, AnimatedTile loaded, AnimatedTile cooking, float illuminationIntensity, AudioClip startCookSFX, AudioClip openCookSFX) : this(IL2CPP.il2cpp_object_new(Il2CppClassPointerStore<Cooker>.NativeClassPtr))
+		// Token: 0x170007B4 RID: 1972
+		// (get) Token: 0x0600389F RID: 14495 RVA: 0x00015690 File Offset: 0x00013890
+		[Token(Token = "0x170007B4")]
+		public Cooker.CookerType Type
 		{
-			IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)10) * (UIntPtr)sizeof(IntPtr))];
-			*ptr = ref id;
-			ptr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr)) / (UIntPtr)sizeof(IntPtr)] = ref type;
-			ptr[checked(unchecked((UIntPtr)2) * (UIntPtr)sizeof(IntPtr)) / (UIntPtr)sizeof(IntPtr)] = ref cookerSeries;
-			ptr[checked(unchecked((UIntPtr)3) * (UIntPtr)sizeof(IntPtr)) / (UIntPtr)sizeof(IntPtr)] = IL2CPP.Il2CppObjectBaseToPtr(cookerAsset);
-			ptr[checked(unchecked((UIntPtr)4) * (UIntPtr)sizeof(IntPtr)) / (UIntPtr)sizeof(IntPtr)] = IL2CPP.Il2CppObjectBaseToPtr(idle);
-			ptr[checked(unchecked((UIntPtr)5) * (UIntPtr)sizeof(IntPtr)) / (UIntPtr)sizeof(IntPtr)] = IL2CPP.Il2CppObjectBaseToPtr(loaded);
-			ptr[checked(unchecked((UIntPtr)6) * (UIntPtr)sizeof(IntPtr)) / (UIntPtr)sizeof(IntPtr)] = IL2CPP.Il2CppObjectBaseToPtr(cooking);
-			ptr[checked(unchecked((UIntPtr)7) * (UIntPtr)sizeof(IntPtr)) / (UIntPtr)sizeof(IntPtr)] = ref illuminationIntensity;
-			ptr[checked(unchecked((UIntPtr)8) * (UIntPtr)sizeof(IntPtr)) / (UIntPtr)sizeof(IntPtr)] = IL2CPP.Il2CppObjectBaseToPtr(startCookSFX);
-			ptr[checked(unchecked((UIntPtr)9) * (UIntPtr)sizeof(IntPtr)) / (UIntPtr)sizeof(IntPtr)] = IL2CPP.Il2CppObjectBaseToPtr(openCookSFX);
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(Cooker.NativeMethodInfoPtr__ctor_Public_Void_Int32_CookerType_CookerSeries_CookerAssetBase_AnimatedTile_AnimatedTile_AnimatedTile_Single_AudioClip_AudioClip_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x1700183A RID: 6202
-		// (get) Token: 0x0600487E RID: 18558 RVA: 0x0019A184 File Offset: 0x00198384
-		public unsafe Cooker.CookerType Type
-		{
-			[CallerCount(0)]
+			[Token(Token = "0x600389F")]
+			[Address(RVA = "0x403830", Offset = "0x402230", VA = "0x180403830")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(Cooker.NativeMethodInfoPtr_get_Type_Public_get_CookerType_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return Cooker.CookerType.Empty;
 			}
 		}
 
-		// Token: 0x1700183B RID: 6203
-		// (get) Token: 0x0600487F RID: 18559 RVA: 0x0019A1C0 File Offset: 0x001983C0
-		public unsafe Cooker.CookerSeries Series
+		// Token: 0x170007B5 RID: 1973
+		// (get) Token: 0x060038A0 RID: 14496 RVA: 0x000156A8 File Offset: 0x000138A8
+		[Token(Token = "0x170007B5")]
+		public Cooker.CookerSeries Series
 		{
-			[CallerCount(0)]
+			[Token(Token = "0x60038A0")]
+			[Address(RVA = "0x4506E0", Offset = "0x44F0E0", VA = "0x1804506E0")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(Cooker.NativeMethodInfoPtr_get_Series_Public_get_CookerSeries_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return Cooker.CookerSeries.Base;
 			}
 		}
 
-		// Token: 0x1700183C RID: 6204
-		// (get) Token: 0x06004880 RID: 18560 RVA: 0x0019A1FC File Offset: 0x001983FC
-		public unsafe bool CanOpenByPartner
+		// Token: 0x170007B6 RID: 1974
+		// (get) Token: 0x060038A1 RID: 14497 RVA: 0x000156C0 File Offset: 0x000138C0
+		[Token(Token = "0x170007B6")]
+		public bool CanOpenByPartner
 		{
-			[CallerCount(1)]
-			[CachedScanResults(RefRangeStart = 190420, RefRangeEnd = 190421, XrefRangeStart = 190420, XrefRangeEnd = 190420, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x60038A1")]
+			[Address(RVA = "0x680430", Offset = "0x67EE30", VA = "0x180680430")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(Cooker.NativeMethodInfoPtr_get_CanOpenByPartner_Public_get_Boolean_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return default(bool);
 			}
 		}
 
-		// Token: 0x1700183D RID: 6205
-		// (get) Token: 0x06004881 RID: 18561 RVA: 0x0019A238 File Offset: 0x00198438
-		public unsafe bool CookTimeMultiplierCanUseByPartner
+		// Token: 0x170007B7 RID: 1975
+		// (get) Token: 0x060038A2 RID: 14498 RVA: 0x000156D8 File Offset: 0x000138D8
+		[Token(Token = "0x170007B7")]
+		public bool CookTimeMultiplierCanUseByPartner
 		{
-			[CallerCount(1)]
-			[CachedScanResults(RefRangeStart = 190421, RefRangeEnd = 190422, XrefRangeStart = 190421, XrefRangeEnd = 190421, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x60038A2")]
+			[Address(RVA = "0x6804F0", Offset = "0x67EEF0", VA = "0x1806804F0")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(Cooker.NativeMethodInfoPtr_get_CookTimeMultiplierCanUseByPartner_Public_get_Boolean_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return default(bool);
 			}
 		}
 
-		// Token: 0x1700183E RID: 6206
-		// (get) Token: 0x06004882 RID: 18562 RVA: 0x0019A274 File Offset: 0x00198474
-		public unsafe float CookTimeMultiplier
+		// Token: 0x170007B8 RID: 1976
+		// (get) Token: 0x060038A3 RID: 14499 RVA: 0x000156F0 File Offset: 0x000138F0
+		[Token(Token = "0x170007B8")]
+		public float CookTimeMultiplier
 		{
-			[CallerCount(2)]
-			[CachedScanResults(RefRangeStart = 190423, RefRangeEnd = 190425, XrefRangeStart = 190422, XrefRangeEnd = 190423, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x60038A3")]
+			[Address(RVA = "0x680510", Offset = "0x67EF10", VA = "0x180680510")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(Cooker.NativeMethodInfoPtr_get_CookTimeMultiplier_Public_get_Single_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0f;
 			}
 		}
 
-		// Token: 0x1700183F RID: 6207
-		// (get) Token: 0x06004883 RID: 18563 RVA: 0x0019A2B0 File Offset: 0x001984B0
-		public unsafe float AdditiveNextOrderProb
+		// Token: 0x170007B9 RID: 1977
+		// (get) Token: 0x060038A4 RID: 14500 RVA: 0x00015708 File Offset: 0x00013908
+		[Token(Token = "0x170007B9")]
+		public float AdditiveNextOrderProb
 		{
-			[CallerCount(1)]
-			[CachedScanResults(RefRangeStart = 190426, RefRangeEnd = 190427, XrefRangeStart = 190425, XrefRangeEnd = 190426, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x60038A4")]
+			[Address(RVA = "0x6802E0", Offset = "0x67ECE0", VA = "0x1806802E0")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(Cooker.NativeMethodInfoPtr_get_AdditiveNextOrderProb_Public_get_Single_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0f;
 			}
 		}
 
-		// Token: 0x17001840 RID: 6208
-		// (get) Token: 0x06004884 RID: 18564 RVA: 0x0019A2EC File Offset: 0x001984EC
-		public unsafe AnimatedTile Idle
+		// Token: 0x170007BA RID: 1978
+		// (get) Token: 0x060038A5 RID: 14501 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x170007BA")]
+		public AnimatedTile Idle
 		{
-			[CallerCount(3)]
-			[CachedScanResults(RefRangeStart = 20145, RefRangeEnd = 20148, XrefRangeStart = 20145, XrefRangeEnd = 20148, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x60038A5")]
+			[Address(RVA = "0x403820", Offset = "0x402220", VA = "0x180403820")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(Cooker.NativeMethodInfoPtr_get_Idle_Public_get_AnimatedTile_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				IntPtr intPtr3 = intPtr;
-				return (intPtr3 != 0) ? Il2CppObjectPool.Get<AnimatedTile>(intPtr3) : null;
+				return null;
 			}
 		}
 
-		// Token: 0x17001841 RID: 6209
-		// (get) Token: 0x06004885 RID: 18565 RVA: 0x0019A32C File Offset: 0x0019852C
-		public unsafe AnimatedTile Loaded
+		// Token: 0x170007BB RID: 1979
+		// (get) Token: 0x060038A6 RID: 14502 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x170007BB")]
+		public AnimatedTile Loaded
 		{
-			[CallerCount(17)]
-			[CachedScanResults(RefRangeStart = 40377, RefRangeEnd = 40394, XrefRangeStart = 40377, XrefRangeEnd = 40394, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x60038A6")]
+			[Address(RVA = "0x3F1D60", Offset = "0x3F0760", VA = "0x1803F1D60")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(Cooker.NativeMethodInfoPtr_get_Loaded_Public_get_AnimatedTile_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				IntPtr intPtr3 = intPtr;
-				return (intPtr3 != 0) ? Il2CppObjectPool.Get<AnimatedTile>(intPtr3) : null;
+				return null;
 			}
 		}
 
-		// Token: 0x17001842 RID: 6210
-		// (get) Token: 0x06004886 RID: 18566 RVA: 0x0019A36C File Offset: 0x0019856C
-		public unsafe AnimatedTile Cooking
+		// Token: 0x170007BC RID: 1980
+		// (get) Token: 0x060038A7 RID: 14503 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x170007BC")]
+		public AnimatedTile Cooking
 		{
-			[CallerCount(7)]
-			[CachedScanResults(RefRangeStart = 47603, RefRangeEnd = 47610, XrefRangeStart = 47603, XrefRangeEnd = 47610, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x60038A7")]
+			[Address(RVA = "0x440280", Offset = "0x43EC80", VA = "0x180440280")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(Cooker.NativeMethodInfoPtr_get_Cooking_Public_get_AnimatedTile_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				IntPtr intPtr3 = intPtr;
-				return (intPtr3 != 0) ? Il2CppObjectPool.Get<AnimatedTile>(intPtr3) : null;
+				return null;
 			}
 		}
 
-		// Token: 0x17001843 RID: 6211
-		// (get) Token: 0x06004887 RID: 18567 RVA: 0x0019A3AC File Offset: 0x001985AC
-		public unsafe float IlluminationIntensity
+		// Token: 0x170007BD RID: 1981
+		// (get) Token: 0x060038A8 RID: 14504 RVA: 0x00015720 File Offset: 0x00013920
+		[Token(Token = "0x170007BD")]
+		public float IlluminationIntensity
 		{
-			[CallerCount(0)]
+			[Token(Token = "0x60038A8")]
+			[Address(RVA = "0x680550", Offset = "0x67EF50", VA = "0x180680550")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(Cooker.NativeMethodInfoPtr_get_IlluminationIntensity_Public_get_Single_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return 0f;
 			}
 		}
 
-		// Token: 0x17001844 RID: 6212
-		// (get) Token: 0x06004888 RID: 18568 RVA: 0x0019A3E8 File Offset: 0x001985E8
-		public unsafe AudioClip OpenCookSFX
+		// Token: 0x170007BE RID: 1982
+		// (get) Token: 0x060038A9 RID: 14505 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x170007BE")]
+		public AudioClip OpenCookSFX
 		{
-			[CallerCount(1)]
-			[CachedScanResults(RefRangeStart = 73874, RefRangeEnd = 73875, XrefRangeStart = 73874, XrefRangeEnd = 73875, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x60038A9")]
+			[Address(RVA = "0x440270", Offset = "0x43EC70", VA = "0x180440270")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(Cooker.NativeMethodInfoPtr_get_OpenCookSFX_Public_get_AudioClip_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				IntPtr intPtr3 = intPtr;
-				return (intPtr3 != 0) ? Il2CppObjectPool.Get<AudioClip>(intPtr3) : null;
+				return null;
 			}
 		}
 
-		// Token: 0x06004889 RID: 18569 RVA: 0x0019A428 File Offset: 0x00198628
-		[CallerCount(1)]
-		[CachedScanResults(RefRangeStart = 190427, RefRangeEnd = 190428, XrefRangeStart = 190427, XrefRangeEnd = 190427, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe AudioClip GetStartCookSFX(Cooker.CookerType cookerType)
+		// Token: 0x060038AA RID: 14506 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x60038AA")]
+		[Address(RVA = "0x67FE00", Offset = "0x67E800", VA = "0x18067FE00")]
+		public AudioClip GetStartCookSFX(Cooker.CookerType cookerType)
 		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr))];
-			*ptr = ref cookerType;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(Cooker.NativeMethodInfoPtr_GetStartCookSFX_Public_AudioClip_CookerType_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-			IntPtr intPtr3 = intPtr;
-			return (intPtr3 != 0) ? Il2CppObjectPool.Get<AudioClip>(intPtr3) : null;
+			return null;
 		}
 
-		// Token: 0x0600488A RID: 18570 RVA: 0x0019A474 File Offset: 0x00198674
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 190428, XrefRangeEnd = 190437, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe override ObjectLanguageBase GetText(int id)
+		// Token: 0x060038AB RID: 14507 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x60038AB")]
+		[Address(RVA = "0x67FE40", Offset = "0x67E840", VA = "0x18067FE40", Slot = "8")]
+		protected override ObjectLanguageBase GetText(int id)
 		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr))];
-			*ptr = ref id;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IL2CPP.il2cpp_object_get_virtual_method(IL2CPP.Il2CppObjectBaseToPtr(this), Cooker.NativeMethodInfoPtr_GetText_Protected_Virtual_ObjectLanguageBase_Int32_0), IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-			IntPtr intPtr3 = intPtr;
-			return (intPtr3 != 0) ? Il2CppObjectPool.Get<ObjectLanguageBase>(intPtr3) : null;
+			return null;
 		}
 
-		// Token: 0x17001845 RID: 6213
-		// (get) Token: 0x0600488B RID: 18571 RVA: 0x0019A4CC File Offset: 0x001986CC
-		public unsafe bool CanTriggerSpecialCookerSkill
+		// Token: 0x170007BF RID: 1983
+		// (get) Token: 0x060038AC RID: 14508 RVA: 0x00015738 File Offset: 0x00013938
+		[Token(Token = "0x170007BF")]
+		private bool CanTriggerSpecialCookerSkill
 		{
-			[CallerCount(12)]
-			[CachedScanResults(RefRangeStart = 190444, RefRangeEnd = 190456, XrefRangeStart = 190437, XrefRangeEnd = 190444, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x60038AC")]
+			[Address(RVA = "0x680450", Offset = "0x67EE50", VA = "0x180680450")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(Cooker.NativeMethodInfoPtr_get_CanTriggerSpecialCookerSkill_Private_get_Boolean_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return *IL2CPP.il2cpp_object_unbox(intPtr);
+				return default(bool);
 			}
 		}
 
-		// Token: 0x0600488C RID: 18572 RVA: 0x0019A508 File Offset: 0x00198708
-		[CallerCount(1)]
-		[CachedScanResults(RefRangeStart = 190457, RefRangeEnd = 190458, XrefRangeStart = 190456, XrefRangeEnd = 190457, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe IEnumerable<IEnumerable<NormalGuest>> OnGetNormalGuests(IEnumerable<IEnumerable<NormalGuest>> preFillteredGuests)
+		// Token: 0x060038AD RID: 14509 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x60038AD")]
+		[Address(RVA = "0x680090", Offset = "0x67EA90", VA = "0x180680090")]
+		public IEnumerable<IEnumerable<NormalGuest>> OnGetNormalGuests(IEnumerable<IEnumerable<NormalGuest>> preFillteredGuests)
 		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr))];
-			*ptr = IL2CPP.Il2CppObjectBaseToPtr(preFillteredGuests);
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(Cooker.NativeMethodInfoPtr_OnGetNormalGuests_Public_IEnumerable_1_IEnumerable_1_NormalGuest_IEnumerable_1_IEnumerable_1_NormalGuest_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-			IntPtr intPtr3 = intPtr;
-			return (intPtr3 != 0) ? Il2CppObjectPool.Get<IEnumerable<IEnumerable<NormalGuest>>>(intPtr3) : null;
+			return null;
 		}
 
-		// Token: 0x0600488D RID: 18573 RVA: 0x0019A558 File Offset: 0x00198758
-		[CallerCount(1)]
-		[CachedScanResults(RefRangeStart = 190459, RefRangeEnd = 190460, XrefRangeStart = 190458, XrefRangeEnd = 190459, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe IEnumerable<WorkSceneCookingSelectionPannel.MatchedCookCombo> OnGetCookerOutput(IEnumerable<WorkSceneCookingSelectionPannel.MatchedCookCombo> preFillteredRecipe)
+		// Token: 0x060038AE RID: 14510 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x60038AE")]
+		[Address(RVA = "0x680030", Offset = "0x67EA30", VA = "0x180680030")]
+		public IEnumerable<WorkSceneCookingSelectionPannel.MatchedCookCombo> OnGetCookerOutput(IEnumerable<WorkSceneCookingSelectionPannel.MatchedCookCombo> preFillteredRecipe)
 		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr))];
-			*ptr = IL2CPP.Il2CppObjectBaseToPtr(preFillteredRecipe);
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(Cooker.NativeMethodInfoPtr_OnGetCookerOutput_Public_IEnumerable_1_MatchedCookCombo_IEnumerable_1_MatchedCookCombo_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-			IntPtr intPtr3 = intPtr;
-			return (intPtr3 != 0) ? Il2CppObjectPool.Get<IEnumerable<WorkSceneCookingSelectionPannel.MatchedCookCombo>>(intPtr3) : null;
+			return null;
 		}
 
-		// Token: 0x0600488E RID: 18574 RVA: 0x0019A5A8 File Offset: 0x001987A8
-		[CallerCount(2)]
-		[CachedScanResults(RefRangeStart = 190461, RefRangeEnd = 190463, XrefRangeStart = 190460, XrefRangeEnd = 190461, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe float GetExtraCookSpeedMultiplier(CookController targetCooker, Sellable sellable)
+		// Token: 0x060038AF RID: 14511 RVA: 0x00015750 File Offset: 0x00013950
+		[Token(Token = "0x60038AF")]
+		[Address(RVA = "0x67FD80", Offset = "0x67E780", VA = "0x18067FD80")]
+		public float GetExtraCookSpeedMultiplier(CookController targetCooker, Sellable sellable)
 		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)2) * (UIntPtr)sizeof(IntPtr))];
-			*ptr = IL2CPP.Il2CppObjectBaseToPtr(targetCooker);
-			ptr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr)) / (UIntPtr)sizeof(IntPtr)] = IL2CPP.Il2CppObjectBaseToPtr(sellable);
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(Cooker.NativeMethodInfoPtr_GetExtraCookSpeedMultiplier_Public_Single_CookController_Sellable_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-			return *IL2CPP.il2cpp_object_unbox(intPtr);
+			return 0f;
 		}
 
-		// Token: 0x0600488F RID: 18575 RVA: 0x0019A608 File Offset: 0x00198808
-		[CallerCount(1)]
-		[CachedScanResults(RefRangeStart = 190464, RefRangeEnd = 190465, XrefRangeStart = 190463, XrefRangeEnd = 190464, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe float GetExtraAdditiveNextOrderProb(Sellable sellable)
+		// Token: 0x060038B0 RID: 14512 RVA: 0x00015768 File Offset: 0x00013968
+		[Token(Token = "0x60038B0")]
+		[Address(RVA = "0x67FD20", Offset = "0x67E720", VA = "0x18067FD20")]
+		public float GetExtraAdditiveNextOrderProb(Sellable sellable)
 		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr))];
-			*ptr = IL2CPP.Il2CppObjectBaseToPtr(sellable);
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(Cooker.NativeMethodInfoPtr_GetExtraAdditiveNextOrderProb_Public_Single_Sellable_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-			return *IL2CPP.il2cpp_object_unbox(intPtr);
+			return 0f;
 		}
 
-		// Token: 0x06004890 RID: 18576 RVA: 0x0019A658 File Offset: 0x00198858
-		[CallerCount(1)]
-		[CachedScanResults(RefRangeStart = 190466, RefRangeEnd = 190467, XrefRangeStart = 190465, XrefRangeEnd = 190466, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe void OnStartCook()
+		// Token: 0x060038B1 RID: 14513 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x60038B1")]
+		[Address(RVA = "0x680140", Offset = "0x67EB40", VA = "0x180680140")]
+		public void OnStartCook()
 		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(Cooker.NativeMethodInfoPtr_OnStartCook_Public_Void_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
 		}
 
-		// Token: 0x06004891 RID: 18577 RVA: 0x0019A68C File Offset: 0x0019888C
-		[CallerCount(1)]
-		[CachedScanResults(RefRangeStart = 190469, RefRangeEnd = 190470, XrefRangeStart = 190467, XrefRangeEnd = 190469, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe Sellable OnFinishCook(Sellable finishedFood, float qteScore, bool couldReturnIngredients)
+		// Token: 0x060038B2 RID: 14514 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x60038B2")]
+		[Address(RVA = "0x67FFB0", Offset = "0x67E9B0", VA = "0x18067FFB0")]
+		public Sellable OnFinishCook(Sellable finishedFood, float qteScore, bool couldReturnIngredients)
 		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)3) * (UIntPtr)sizeof(IntPtr))];
-			*ptr = IL2CPP.Il2CppObjectBaseToPtr(finishedFood);
-			ptr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr)) / (UIntPtr)sizeof(IntPtr)] = ref qteScore;
-			ptr[checked(unchecked((UIntPtr)2) * (UIntPtr)sizeof(IntPtr)) / (UIntPtr)sizeof(IntPtr)] = ref couldReturnIngredients;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(Cooker.NativeMethodInfoPtr_OnFinishCook_Public_Sellable_Sellable_Single_Boolean_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-			IntPtr intPtr3 = intPtr;
-			return (intPtr3 != 0) ? Il2CppObjectPool.Get<Sellable>(intPtr3) : null;
+			return null;
 		}
 
-		// Token: 0x06004892 RID: 18578 RVA: 0x0019A6F8 File Offset: 0x001988F8
-		[CallerCount(1)]
-		[CachedScanResults(RefRangeStart = 190472, RefRangeEnd = 190473, XrefRangeStart = 190470, XrefRangeEnd = 190472, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe int OnEvaluate(int evaluationResult, GuestGroupController guestGroupController, Sellable serveFood)
+		// Token: 0x060038B3 RID: 14515 RVA: 0x00015780 File Offset: 0x00013980
+		[Token(Token = "0x60038B3")]
+		[Address(RVA = "0x67FF30", Offset = "0x67E930", VA = "0x18067FF30")]
+		public int OnEvaluate(int evaluationResult, GuestGroupController guestGroupController, Sellable serveFood)
 		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)3) * (UIntPtr)sizeof(IntPtr))];
-			*ptr = ref evaluationResult;
-			ptr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr)) / (UIntPtr)sizeof(IntPtr)] = IL2CPP.Il2CppObjectBaseToPtr(guestGroupController);
-			ptr[checked(unchecked((UIntPtr)2) * (UIntPtr)sizeof(IntPtr)) / (UIntPtr)sizeof(IntPtr)] = IL2CPP.Il2CppObjectBaseToPtr(serveFood);
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(Cooker.NativeMethodInfoPtr_OnEvaluate_Public_Int32_Int32_GuestGroupController_Sellable_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-			return *IL2CPP.il2cpp_object_unbox(intPtr);
+			return 0;
 		}
 
-		// Token: 0x06004893 RID: 18579 RVA: 0x0019A768 File Offset: 0x00198968
-		[CallerCount(1)]
-		[CachedScanResults(RefRangeStart = 190474, RefRangeEnd = 190475, XrefRangeStart = 190473, XrefRangeEnd = 190474, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe bool ShouldShowThisCookerBG(Sellable outputFood)
+		// Token: 0x060038B4 RID: 14516 RVA: 0x00015798 File Offset: 0x00013998
+		[Token(Token = "0x60038B4")]
+		[Address(RVA = "0x680180", Offset = "0x67EB80", VA = "0x180680180")]
+		public bool ShouldShowThisCookerBG(Sellable outputFood)
 		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr))];
-			*ptr = IL2CPP.Il2CppObjectBaseToPtr(outputFood);
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(Cooker.NativeMethodInfoPtr_ShouldShowThisCookerBG_Public_Boolean_Sellable_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-			return *IL2CPP.il2cpp_object_unbox(intPtr);
+			return default(bool);
 		}
 
-		// Token: 0x06004894 RID: 18580 RVA: 0x0019A7B8 File Offset: 0x001989B8
-		[CallerCount(1)]
-		[CachedScanResults(RefRangeStart = 190476, RefRangeEnd = 190477, XrefRangeStart = 190475, XrefRangeEnd = 190476, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe void OnPlayerFinishExtract(CookController targetCooker)
+		// Token: 0x060038B5 RID: 14517 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x60038B5")]
+		[Address(RVA = "0x6800F0", Offset = "0x67EAF0", VA = "0x1806800F0")]
+		public void OnPlayerFinishExtract(CookController targetCooker)
 		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr))];
-			*ptr = IL2CPP.Il2CppObjectBaseToPtr(targetCooker);
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(Cooker.NativeMethodInfoPtr_OnPlayerFinishExtract_Public_Void_CookController_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
 		}
 
-		// Token: 0x06004895 RID: 18581 RVA: 0x0019A7FC File Offset: 0x001989FC
-		[CallerCount(2)]
-		[CachedScanResults(RefRangeStart = 190478, RefRangeEnd = 190480, XrefRangeStart = 190477, XrefRangeEnd = 190478, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe void WhenPlayerTryExtractWithFullTray(CookController targetCooker)
+		// Token: 0x060038B6 RID: 14518 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x60038B6")]
+		[Address(RVA = "0x6801E0", Offset = "0x67EBE0", VA = "0x1806801E0")]
+		public void WhenPlayerTryExtractWithFullTray(CookController targetCooker)
 		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr))];
-			*ptr = IL2CPP.Il2CppObjectBaseToPtr(targetCooker);
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(Cooker.NativeMethodInfoPtr_WhenPlayerTryExtractWithFullTray_Public_Void_CookController_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
 		}
 
-		// Token: 0x17001846 RID: 6214
-		// (get) Token: 0x06004896 RID: 18582 RVA: 0x0019A840 File Offset: 0x00198A40
-		public unsafe override Sprite BGSprite
+		// Token: 0x170007C0 RID: 1984
+		// (get) Token: 0x060038B7 RID: 14519 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x170007C0")]
+		public override Sprite BGSprite
 		{
-			[CallerCount(0)]
-			[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 190480, XrefRangeEnd = 190481, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x60038B7")]
+			[Address(RVA = "0x680420", Offset = "0x67EE20", VA = "0x180680420", Slot = "6")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IL2CPP.il2cpp_object_get_virtual_method(IL2CPP.Il2CppObjectBaseToPtr(this), Cooker.NativeMethodInfoPtr_get_BGSprite_Public_Virtual_get_Sprite_0), IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				IntPtr intPtr3 = intPtr;
-				return (intPtr3 != 0) ? Il2CppObjectPool.Get<Sprite>(intPtr3) : null;
+				return null;
 			}
 		}
 
-		// Token: 0x06004897 RID: 18583 RVA: 0x0019A88C File Offset: 0x00198A8C
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 190481, XrefRangeEnd = 190491, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe override Il2CppSystem.Object Clone()
+		// Token: 0x060038B8 RID: 14520 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x60038B8")]
+		[Address(RVA = "0x67FBF0", Offset = "0x67E5F0", VA = "0x18067FBF0", Slot = "7")]
+		public override object Clone()
 		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IL2CPP.il2cpp_object_get_virtual_method(IL2CPP.Il2CppObjectBaseToPtr(this), Cooker.NativeMethodInfoPtr_Clone_Public_Virtual_Object_0), IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-			IntPtr intPtr3 = intPtr;
-			return (intPtr3 != 0) ? Il2CppObjectPool.Get<Il2CppSystem.Object>(intPtr3) : null;
+			return null;
 		}
 
-		// Token: 0x17001847 RID: 6215
-		// (get) Token: 0x06004898 RID: 18584 RVA: 0x0019A8D8 File Offset: 0x00198AD8
-		public unsafe IEnumerable<Cooker.CookerType> AllAvailableCookerType
+		// Token: 0x170007C1 RID: 1985
+		// (get) Token: 0x060038B9 RID: 14521 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x170007C1")]
+		public IEnumerable<Cooker.CookerType> AllAvailableCookerType
 		{
-			[CallerCount(16)]
-			[CachedScanResults(RefRangeStart = 190506, RefRangeEnd = 190522, XrefRangeStart = 190491, XrefRangeEnd = 190506, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x60038B9")]
+			[Address(RVA = "0x680320", Offset = "0x67ED20", VA = "0x180680320")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(Cooker.NativeMethodInfoPtr_get_AllAvailableCookerType_Public_get_IEnumerable_1_CookerType_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				IntPtr intPtr3 = intPtr;
-				return (intPtr3 != 0) ? Il2CppObjectPool.Get<IEnumerable<Cooker.CookerType>>(intPtr3) : null;
+				return null;
 			}
 		}
 
-		// Token: 0x17001848 RID: 6216
-		// (get) Token: 0x06004899 RID: 18585 RVA: 0x0019A918 File Offset: 0x00198B18
-		public unsafe string OverrideTypeName
+		// Token: 0x170007C2 RID: 1986
+		// (get) Token: 0x060038BA RID: 14522 RVA: 0x00002050 File Offset: 0x00000250
+		[Token(Token = "0x170007C2")]
+		public string OverrideTypeName
 		{
-			[CallerCount(1)]
-			[CachedScanResults(RefRangeStart = 190526, RefRangeEnd = 190527, XrefRangeStart = 190522, XrefRangeEnd = 190526, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
+			[Token(Token = "0x60038BA")]
+			[Address(RVA = "0x680560", Offset = "0x67EF60", VA = "0x180680560")]
 			get
 			{
-				IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IntPtr* ptr = null;
-				IntPtr intPtr2;
-				IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(Cooker.NativeMethodInfoPtr_get_OverrideTypeName_Public_get_String_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-				Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-				return IL2CPP.Il2CppStringToManaged(intPtr);
+				return null;
 			}
 		}
 
-		// Token: 0x0600489A RID: 18586 RVA: 0x0019A950 File Offset: 0x00198B50
-		[CallerCount(3)]
-		[CachedScanResults(RefRangeStart = 190528, RefRangeEnd = 190531, XrefRangeStart = 190527, XrefRangeEnd = 190528, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe void OnCookerWorkTimeUpdate(CookController targetCooker, float oldWorkTime)
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)2) * (UIntPtr)sizeof(IntPtr))];
-			*ptr = IL2CPP.Il2CppObjectBaseToPtr(targetCooker);
-			ptr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr)) / (UIntPtr)sizeof(IntPtr)] = ref oldWorkTime;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(Cooker.NativeMethodInfoPtr_OnCookerWorkTimeUpdate_Public_Void_CookController_Single_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x0600489B RID: 18587 RVA: 0x000253B4 File Offset: 0x000235B4
-		public Cooker(IntPtr pointer) : base(pointer)
+		// Token: 0x060038BB RID: 14523 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x60038BB")]
+		[Address(RVA = "0x67FF00", Offset = "0x67E900", VA = "0x18067FF00")]
+		public void OnCookerWorkTimeUpdate(CookController targetCooker, float oldWorkTime)
 		{
 		}
 
-		// Token: 0x17001830 RID: 6192
-		// (get) Token: 0x0600489C RID: 18588 RVA: 0x0019A9A0 File Offset: 0x00198BA0
-		// (set) Token: 0x0600489D RID: 18589 RVA: 0x000253BD File Offset: 0x000235BD
-		public unsafe Cooker.CookerType type
-		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(Cooker.NativeFieldInfoPtr_type);
-				return *intPtr;
-			}
-			set
-			{
-				*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(Cooker.NativeFieldInfoPtr_type)) = value;
-			}
-		}
+		// Token: 0x0400304B RID: 12363
+		[Token(Token = "0x400304B")]
+		[FieldOffset(Offset = "0x18")]
+		[SerializeField]
+		private Cooker.CookerType type;
 
-		// Token: 0x17001831 RID: 6193
-		// (get) Token: 0x0600489E RID: 18590 RVA: 0x0019A9C8 File Offset: 0x00198BC8
-		// (set) Token: 0x0600489F RID: 18591 RVA: 0x000253D8 File Offset: 0x000235D8
-		public unsafe Cooker.CookerSeries cookerSeries
-		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(Cooker.NativeFieldInfoPtr_cookerSeries);
-				return *intPtr;
-			}
-			set
-			{
-				*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(Cooker.NativeFieldInfoPtr_cookerSeries)) = value;
-			}
-		}
+		// Token: 0x0400304C RID: 12364
+		[Token(Token = "0x400304C")]
+		[FieldOffset(Offset = "0x1C")]
+		[SerializeField]
+		private Cooker.CookerSeries cookerSeries;
 
-		// Token: 0x17001832 RID: 6194
-		// (get) Token: 0x060048A0 RID: 18592 RVA: 0x0019A9F0 File Offset: 0x00198BF0
-		// (set) Token: 0x060048A1 RID: 18593 RVA: 0x000253F3 File Offset: 0x000235F3
-		public unsafe CookerAssetBase cookerAsset
-		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(Cooker.NativeFieldInfoPtr_cookerAsset);
-				IntPtr intPtr2 = *intPtr;
-				return (intPtr2 != 0) ? Il2CppObjectPool.Get<CookerAssetBase>(intPtr2) : null;
-			}
-			set
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(Cooker.NativeFieldInfoPtr_cookerAsset), IL2CPP.Il2CppObjectBaseToPtr(value));
-			}
-		}
+		// Token: 0x0400304D RID: 12365
+		[Token(Token = "0x400304D")]
+		[FieldOffset(Offset = "0x20")]
+		[SerializeField]
+		private CookerAssetBase cookerAsset;
 
-		// Token: 0x17001833 RID: 6195
-		// (get) Token: 0x060048A2 RID: 18594 RVA: 0x0019AA20 File Offset: 0x00198C20
-		// (set) Token: 0x060048A3 RID: 18595 RVA: 0x00025412 File Offset: 0x00023612
-		public unsafe AnimatedTile idle
-		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(Cooker.NativeFieldInfoPtr_idle);
-				IntPtr intPtr2 = *intPtr;
-				return (intPtr2 != 0) ? Il2CppObjectPool.Get<AnimatedTile>(intPtr2) : null;
-			}
-			set
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(Cooker.NativeFieldInfoPtr_idle), IL2CPP.Il2CppObjectBaseToPtr(value));
-			}
-		}
+		// Token: 0x0400304E RID: 12366
+		[Token(Token = "0x400304E")]
+		[FieldOffset(Offset = "0x28")]
+		[SerializeField]
+		private AnimatedTile idle;
 
-		// Token: 0x17001834 RID: 6196
-		// (get) Token: 0x060048A4 RID: 18596 RVA: 0x0019AA50 File Offset: 0x00198C50
-		// (set) Token: 0x060048A5 RID: 18597 RVA: 0x00025431 File Offset: 0x00023631
-		public unsafe AnimatedTile loaded
-		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(Cooker.NativeFieldInfoPtr_loaded);
-				IntPtr intPtr2 = *intPtr;
-				return (intPtr2 != 0) ? Il2CppObjectPool.Get<AnimatedTile>(intPtr2) : null;
-			}
-			set
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(Cooker.NativeFieldInfoPtr_loaded), IL2CPP.Il2CppObjectBaseToPtr(value));
-			}
-		}
+		// Token: 0x0400304F RID: 12367
+		[Token(Token = "0x400304F")]
+		[FieldOffset(Offset = "0x30")]
+		[SerializeField]
+		private AnimatedTile loaded;
 
-		// Token: 0x17001835 RID: 6197
-		// (get) Token: 0x060048A6 RID: 18598 RVA: 0x0019AA80 File Offset: 0x00198C80
-		// (set) Token: 0x060048A7 RID: 18599 RVA: 0x00025450 File Offset: 0x00023650
-		public unsafe AnimatedTile cooking
-		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(Cooker.NativeFieldInfoPtr_cooking);
-				IntPtr intPtr2 = *intPtr;
-				return (intPtr2 != 0) ? Il2CppObjectPool.Get<AnimatedTile>(intPtr2) : null;
-			}
-			set
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(Cooker.NativeFieldInfoPtr_cooking), IL2CPP.Il2CppObjectBaseToPtr(value));
-			}
-		}
+		// Token: 0x04003050 RID: 12368
+		[Token(Token = "0x4003050")]
+		[FieldOffset(Offset = "0x38")]
+		[SerializeField]
+		private AnimatedTile cooking;
 
-		// Token: 0x17001836 RID: 6198
-		// (get) Token: 0x060048A8 RID: 18600 RVA: 0x0019AAB0 File Offset: 0x00198CB0
-		// (set) Token: 0x060048A9 RID: 18601 RVA: 0x0002546F File Offset: 0x0002366F
-		public unsafe float illuminationIntensity
-		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(Cooker.NativeFieldInfoPtr_illuminationIntensity);
-				return *intPtr;
-			}
-			set
-			{
-				*(IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(Cooker.NativeFieldInfoPtr_illuminationIntensity)) = value;
-			}
-		}
+		// Token: 0x04003051 RID: 12369
+		[Token(Token = "0x4003051")]
+		[FieldOffset(Offset = "0x40")]
+		[SerializeField]
+		private float illuminationIntensity;
 
-		// Token: 0x17001837 RID: 6199
-		// (get) Token: 0x060048AA RID: 18602 RVA: 0x0019AAD8 File Offset: 0x00198CD8
-		// (set) Token: 0x060048AB RID: 18603 RVA: 0x0002548A File Offset: 0x0002368A
-		public unsafe AudioClip startCookSFX
-		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(Cooker.NativeFieldInfoPtr_startCookSFX);
-				IntPtr intPtr2 = *intPtr;
-				return (intPtr2 != 0) ? Il2CppObjectPool.Get<AudioClip>(intPtr2) : null;
-			}
-			set
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(Cooker.NativeFieldInfoPtr_startCookSFX), IL2CPP.Il2CppObjectBaseToPtr(value));
-			}
-		}
+		// Token: 0x04003052 RID: 12370
+		[Token(Token = "0x4003052")]
+		[FieldOffset(Offset = "0x48")]
+		[SerializeField]
+		private AudioClip startCookSFX;
 
-		// Token: 0x17001838 RID: 6200
-		// (get) Token: 0x060048AC RID: 18604 RVA: 0x0019AB08 File Offset: 0x00198D08
-		// (set) Token: 0x060048AD RID: 18605 RVA: 0x000254A9 File Offset: 0x000236A9
-		public unsafe AudioClip openCookSFX
-		{
-			get
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this) + (IntPtr)IL2CPP.il2cpp_field_get_offset(Cooker.NativeFieldInfoPtr_openCookSFX);
-				IntPtr intPtr2 = *intPtr;
-				return (intPtr2 != 0) ? Il2CppObjectPool.Get<AudioClip>(intPtr2) : null;
-			}
-			set
-			{
-				IntPtr intPtr = IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-				IL2CPP.il2cpp_gc_wbarrier_set_field(intPtr, intPtr + (IntPtr)IL2CPP.il2cpp_field_get_offset(Cooker.NativeFieldInfoPtr_openCookSFX), IL2CPP.Il2CppObjectBaseToPtr(value));
-			}
-		}
+		// Token: 0x04003053 RID: 12371
+		[Token(Token = "0x4003053")]
+		[FieldOffset(Offset = "0x50")]
+		[SerializeField]
+		[CanBeNull]
+		private AudioClip openCookSFX;
 
-		// Token: 0x17001839 RID: 6201
-		// (get) Token: 0x060048AE RID: 18606 RVA: 0x0019AB38 File Offset: 0x00198D38
-		// (set) Token: 0x060048AF RID: 18607 RVA: 0x000254C8 File Offset: 0x000236C8
-		public unsafe static int EMPTY_DESK
-		{
-			get
-			{
-				int result;
-				IL2CPP.il2cpp_field_static_get_value(Cooker.NativeFieldInfoPtr_EMPTY_DESK, (void*)(&result));
-				return result;
-			}
-			set
-			{
-				IL2CPP.il2cpp_field_static_set_value(Cooker.NativeFieldInfoPtr_EMPTY_DESK, (void*)(&value));
-			}
-		}
+		// Token: 0x04003054 RID: 12372
+		[Token(Token = "0x4003054")]
+		private const int EMPTY_DESK = -1;
 
-		// Token: 0x040031CC RID: 12748
-		private static readonly IntPtr NativeFieldInfoPtr_type;
-
-		// Token: 0x040031CD RID: 12749
-		private static readonly IntPtr NativeFieldInfoPtr_cookerSeries;
-
-		// Token: 0x040031CE RID: 12750
-		private static readonly IntPtr NativeFieldInfoPtr_cookerAsset;
-
-		// Token: 0x040031CF RID: 12751
-		private static readonly IntPtr NativeFieldInfoPtr_idle;
-
-		// Token: 0x040031D0 RID: 12752
-		private static readonly IntPtr NativeFieldInfoPtr_loaded;
-
-		// Token: 0x040031D1 RID: 12753
-		private static readonly IntPtr NativeFieldInfoPtr_cooking;
-
-		// Token: 0x040031D2 RID: 12754
-		private static readonly IntPtr NativeFieldInfoPtr_illuminationIntensity;
-
-		// Token: 0x040031D3 RID: 12755
-		private static readonly IntPtr NativeFieldInfoPtr_startCookSFX;
-
-		// Token: 0x040031D4 RID: 12756
-		private static readonly IntPtr NativeFieldInfoPtr_openCookSFX;
-
-		// Token: 0x040031D5 RID: 12757
-		private static readonly IntPtr NativeFieldInfoPtr_EMPTY_DESK;
-
-		// Token: 0x040031D6 RID: 12758
-		private static readonly IntPtr NativeMethodInfoPtr__ctor_Public_Void_Int32_CookerType_CookerSeries_CookerAssetBase_AnimatedTile_AnimatedTile_AnimatedTile_Single_AudioClip_AudioClip_0;
-
-		// Token: 0x040031D7 RID: 12759
-		private static readonly IntPtr NativeMethodInfoPtr_get_Type_Public_get_CookerType_0;
-
-		// Token: 0x040031D8 RID: 12760
-		private static readonly IntPtr NativeMethodInfoPtr_get_Series_Public_get_CookerSeries_0;
-
-		// Token: 0x040031D9 RID: 12761
-		private static readonly IntPtr NativeMethodInfoPtr_get_CanOpenByPartner_Public_get_Boolean_0;
-
-		// Token: 0x040031DA RID: 12762
-		private static readonly IntPtr NativeMethodInfoPtr_get_CookTimeMultiplierCanUseByPartner_Public_get_Boolean_0;
-
-		// Token: 0x040031DB RID: 12763
-		private static readonly IntPtr NativeMethodInfoPtr_get_CookTimeMultiplier_Public_get_Single_0;
-
-		// Token: 0x040031DC RID: 12764
-		private static readonly IntPtr NativeMethodInfoPtr_get_AdditiveNextOrderProb_Public_get_Single_0;
-
-		// Token: 0x040031DD RID: 12765
-		private static readonly IntPtr NativeMethodInfoPtr_get_Idle_Public_get_AnimatedTile_0;
-
-		// Token: 0x040031DE RID: 12766
-		private static readonly IntPtr NativeMethodInfoPtr_get_Loaded_Public_get_AnimatedTile_0;
-
-		// Token: 0x040031DF RID: 12767
-		private static readonly IntPtr NativeMethodInfoPtr_get_Cooking_Public_get_AnimatedTile_0;
-
-		// Token: 0x040031E0 RID: 12768
-		private static readonly IntPtr NativeMethodInfoPtr_get_IlluminationIntensity_Public_get_Single_0;
-
-		// Token: 0x040031E1 RID: 12769
-		private static readonly IntPtr NativeMethodInfoPtr_get_OpenCookSFX_Public_get_AudioClip_0;
-
-		// Token: 0x040031E2 RID: 12770
-		private static readonly IntPtr NativeMethodInfoPtr_GetStartCookSFX_Public_AudioClip_CookerType_0;
-
-		// Token: 0x040031E3 RID: 12771
-		private static readonly IntPtr NativeMethodInfoPtr_GetText_Protected_Virtual_ObjectLanguageBase_Int32_0;
-
-		// Token: 0x040031E4 RID: 12772
-		private static readonly IntPtr NativeMethodInfoPtr_get_CanTriggerSpecialCookerSkill_Private_get_Boolean_0;
-
-		// Token: 0x040031E5 RID: 12773
-		private static readonly IntPtr NativeMethodInfoPtr_OnGetNormalGuests_Public_IEnumerable_1_IEnumerable_1_NormalGuest_IEnumerable_1_IEnumerable_1_NormalGuest_0;
-
-		// Token: 0x040031E6 RID: 12774
-		private static readonly IntPtr NativeMethodInfoPtr_OnGetCookerOutput_Public_IEnumerable_1_MatchedCookCombo_IEnumerable_1_MatchedCookCombo_0;
-
-		// Token: 0x040031E7 RID: 12775
-		private static readonly IntPtr NativeMethodInfoPtr_GetExtraCookSpeedMultiplier_Public_Single_CookController_Sellable_0;
-
-		// Token: 0x040031E8 RID: 12776
-		private static readonly IntPtr NativeMethodInfoPtr_GetExtraAdditiveNextOrderProb_Public_Single_Sellable_0;
-
-		// Token: 0x040031E9 RID: 12777
-		private static readonly IntPtr NativeMethodInfoPtr_OnStartCook_Public_Void_0;
-
-		// Token: 0x040031EA RID: 12778
-		private static readonly IntPtr NativeMethodInfoPtr_OnFinishCook_Public_Sellable_Sellable_Single_Boolean_0;
-
-		// Token: 0x040031EB RID: 12779
-		private static readonly IntPtr NativeMethodInfoPtr_OnEvaluate_Public_Int32_Int32_GuestGroupController_Sellable_0;
-
-		// Token: 0x040031EC RID: 12780
-		private static readonly IntPtr NativeMethodInfoPtr_ShouldShowThisCookerBG_Public_Boolean_Sellable_0;
-
-		// Token: 0x040031ED RID: 12781
-		private static readonly IntPtr NativeMethodInfoPtr_OnPlayerFinishExtract_Public_Void_CookController_0;
-
-		// Token: 0x040031EE RID: 12782
-		private static readonly IntPtr NativeMethodInfoPtr_WhenPlayerTryExtractWithFullTray_Public_Void_CookController_0;
-
-		// Token: 0x040031EF RID: 12783
-		private static readonly IntPtr NativeMethodInfoPtr_get_BGSprite_Public_Virtual_get_Sprite_0;
-
-		// Token: 0x040031F0 RID: 12784
-		private static readonly IntPtr NativeMethodInfoPtr_Clone_Public_Virtual_Object_0;
-
-		// Token: 0x040031F1 RID: 12785
-		private static readonly IntPtr NativeMethodInfoPtr_get_AllAvailableCookerType_Public_get_IEnumerable_1_CookerType_0;
-
-		// Token: 0x040031F2 RID: 12786
-		private static readonly IntPtr NativeMethodInfoPtr_get_OverrideTypeName_Public_get_String_0;
-
-		// Token: 0x040031F3 RID: 12787
-		private static readonly IntPtr NativeMethodInfoPtr_OnCookerWorkTimeUpdate_Public_Void_CookController_Single_0;
-
-		// Token: 0x02000AC3 RID: 2755
+		// Token: 0x020008E4 RID: 2276
+		[Token(Token = "0x20008E4")]
 		public enum CookerSeries
 		{
-			// Token: 0x04008488 RID: 33928
+			// Token: 0x04003056 RID: 12374
+			[Token(Token = "0x4003056")]
 			Base,
-			// Token: 0x04008489 RID: 33929
+			// Token: 0x04003057 RID: 12375
+			[Token(Token = "0x4003057")]
 			Sparrow,
-			// Token: 0x0400848A RID: 33930
+			// Token: 0x04003058 RID: 12376
+			[Token(Token = "0x4003058")]
 			Super,
-			// Token: 0x0400848B RID: 33931
+			// Token: 0x04003059 RID: 12377
+			[Token(Token = "0x4003059")]
 			Extreme,
-			// Token: 0x0400848C RID: 33932
+			// Token: 0x0400305A RID: 12378
+			[Token(Token = "0x400305A")]
 			Nuclear,
-			// Token: 0x0400848D RID: 33933
+			// Token: 0x0400305B RID: 12379
+			[Token(Token = "0x400305B")]
 			Suspicious,
-			// Token: 0x0400848E RID: 33934
+			// Token: 0x0400305C RID: 12380
+			[Token(Token = "0x400305C")]
 			Tsukimi,
-			// Token: 0x0400848F RID: 33935
+			// Token: 0x0400305D RID: 12381
+			[Token(Token = "0x400305D")]
 			StarMagicPot = 1000,
-			// Token: 0x04008490 RID: 33936
+			// Token: 0x0400305E RID: 12382
+			[Token(Token = "0x400305E")]
 			PureHellFryer = 2000,
-			// Token: 0x04008491 RID: 33937
+			// Token: 0x0400305F RID: 12383
+			[Token(Token = "0x400305F")]
 			SamadhiFire = 3000,
-			// Token: 0x04008492 RID: 33938
+			// Token: 0x04003060 RID: 12384
+			[Token(Token = "0x4003060")]
 			PeerlessWindGod = 4000,
-			// Token: 0x04008493 RID: 33939
+			// Token: 0x04003061 RID: 12385
+			[Token(Token = "0x4003061")]
 			ByakurenCuttingBoard = 5000,
-			// Token: 0x04008494 RID: 33940
+			// Token: 0x04003062 RID: 12386
+			[Token(Token = "0x4003062")]
 			Trinity
 		}
 
-		// Token: 0x02000AC4 RID: 2756
+		// Token: 0x020008E5 RID: 2277
+		[Token(Token = "0x20008E5")]
 		public enum CookerType
 		{
-			// Token: 0x04008496 RID: 33942
+			// Token: 0x04003064 RID: 12388
+			[Token(Token = "0x4003064")]
 			Empty,
-			// Token: 0x04008497 RID: 33943
+			// Token: 0x04003065 RID: 12389
+			[Token(Token = "0x4003065")]
 			Pot,
-			// Token: 0x04008498 RID: 33944
+			// Token: 0x04003066 RID: 12390
+			[Token(Token = "0x4003066")]
 			Grill,
-			// Token: 0x04008499 RID: 33945
+			// Token: 0x04003067 RID: 12391
+			[Token(Token = "0x4003067")]
 			Fryer,
-			// Token: 0x0400849A RID: 33946
+			// Token: 0x04003068 RID: 12392
+			[Token(Token = "0x4003068")]
 			Steamer,
-			// Token: 0x0400849B RID: 33947
+			// Token: 0x04003069 RID: 12393
+			[Token(Token = "0x4003069")]
 			CuttingBoard
 		}
 	}

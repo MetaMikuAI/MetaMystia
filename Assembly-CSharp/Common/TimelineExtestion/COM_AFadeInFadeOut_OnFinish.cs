@@ -1,59 +1,27 @@
 ﻿using System;
-using Il2CppInterop.Common.Attributes;
-using Il2CppInterop.Runtime;
+using Il2CppDummyDll;
 using UnityEngine;
 using UnityEngine.Playables;
 
 namespace Common.TimelineExtestion
 {
-	// Token: 0x020003F2 RID: 1010
+	// Token: 0x02000FC9 RID: 4041
+	[Token(Token = "0x2000FC9")]
 	public class COM_AFadeInFadeOut_OnFinish : PlayableAsset
 	{
-		// Token: 0x060076C6 RID: 30406 RVA: 0x00229FD8 File Offset: 0x002281D8
-		// Note: this type is marked as 'beforefieldinit'.
-		static COM_AFadeInFadeOut_OnFinish()
+		// Token: 0x06005EA7 RID: 24231 RVA: 0x00020C10 File Offset: 0x0001EE10
+		[Token(Token = "0x6005EA7")]
+		[Address(RVA = "0x8BE180", Offset = "0x8BCB80", VA = "0x1808BE180", Slot = "6")]
+		public override Playable CreatePlayable(PlayableGraph graph, GameObject owner)
 		{
-			Il2CppClassPointerStore<COM_AFadeInFadeOut_OnFinish>.NativeClassPtr = IL2CPP.GetIl2CppClass("Assembly-CSharp.dll", "Common.TimelineExtestion", "COM_AFadeInFadeOut_OnFinish");
-			IL2CPP.il2cpp_runtime_class_init(Il2CppClassPointerStore<COM_AFadeInFadeOut_OnFinish>.NativeClassPtr);
-			COM_AFadeInFadeOut_OnFinish.NativeMethodInfoPtr_CreatePlayable_Public_Virtual_Playable_PlayableGraph_GameObject_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<COM_AFadeInFadeOut_OnFinish>.NativeClassPtr, 100687527);
-			COM_AFadeInFadeOut_OnFinish.NativeMethodInfoPtr__ctor_Public_Void_0 = IL2CPP.GetIl2CppMethodByToken(Il2CppClassPointerStore<COM_AFadeInFadeOut_OnFinish>.NativeClassPtr, 100687528);
+			return default(Playable);
 		}
 
-		// Token: 0x060076C7 RID: 30407 RVA: 0x0022A030 File Offset: 0x00228230
-		[CallerCount(0)]
-		[CachedScanResults(RefRangeStart = 0, RefRangeEnd = 0, XrefRangeStart = 292886, XrefRangeEnd = 292895, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe override Playable CreatePlayable(PlayableGraph graph, GameObject owner)
-		{
-			IL2CPP.Il2CppObjectBaseToPtrNotNull(this);
-			IntPtr* ptr = stackalloc IntPtr[checked(unchecked((UIntPtr)2) * (UIntPtr)sizeof(IntPtr))];
-			*ptr = ref graph;
-			ptr[checked(unchecked((UIntPtr)1) * (UIntPtr)sizeof(IntPtr)) / (UIntPtr)sizeof(IntPtr)] = IL2CPP.Il2CppObjectBaseToPtr(owner);
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(IL2CPP.il2cpp_object_get_virtual_method(IL2CPP.Il2CppObjectBaseToPtr(this), COM_AFadeInFadeOut_OnFinish.NativeMethodInfoPtr_CreatePlayable_Public_Virtual_Playable_PlayableGraph_GameObject_0), IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-			return *IL2CPP.il2cpp_object_unbox(intPtr);
-		}
-
-		// Token: 0x060076C8 RID: 30408 RVA: 0x0022A098 File Offset: 0x00228298
-		[CallerCount(2)]
-		[CachedScanResults(RefRangeStart = 40720, RefRangeEnd = 40722, XrefRangeStart = 40720, XrefRangeEnd = 40722, MetadataInitTokenRva = 0L, MetadataInitFlagRva = 0L)]
-		public unsafe COM_AFadeInFadeOut_OnFinish() : this(IL2CPP.il2cpp_object_new(Il2CppClassPointerStore<COM_AFadeInFadeOut_OnFinish>.NativeClassPtr))
-		{
-			IntPtr* ptr = null;
-			IntPtr intPtr2;
-			IntPtr intPtr = IL2CPP.il2cpp_runtime_invoke(COM_AFadeInFadeOut_OnFinish.NativeMethodInfoPtr__ctor_Public_Void_0, IL2CPP.Il2CppObjectBaseToPtrNotNull(this), (void**)ptr, ref intPtr2);
-			Il2CppException.RaiseExceptionIfNecessary(intPtr2);
-		}
-
-		// Token: 0x060076C9 RID: 30409 RVA: 0x0004044E File Offset: 0x0003E64E
-		public COM_AFadeInFadeOut_OnFinish(IntPtr pointer) : base(pointer)
+		// Token: 0x06005EA8 RID: 24232 RVA: 0x00002053 File Offset: 0x00000253
+		[Token(Token = "0x6005EA8")]
+		[Address(RVA = "0x495780", Offset = "0x494180", VA = "0x180495780")]
+		public COM_AFadeInFadeOut_OnFinish()
 		{
 		}
-
-		// Token: 0x04004E92 RID: 20114
-		private static readonly IntPtr NativeMethodInfoPtr_CreatePlayable_Public_Virtual_Playable_PlayableGraph_GameObject_0;
-
-		// Token: 0x04004E93 RID: 20115
-		private static readonly IntPtr NativeMethodInfoPtr__ctor_Public_Void_0;
 	}
 }
