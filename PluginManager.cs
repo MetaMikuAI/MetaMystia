@@ -3,6 +3,7 @@ using UnityEngine;
 using System;
 using Il2CppInterop.Runtime;
 using System.Collections.Concurrent;
+using PrepNightScene.UI;
 
 namespace MetaMystia;
 public class PluginManager : MonoBehaviour
@@ -94,13 +95,30 @@ public class PluginManager : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.F1))
         {
-            // GameData.Profile.DaySceneMapProfile.
-            // var allMapNodes = DaySceneMapProfilePatch.instanceRef.allMapNodes;
-            var daySceneMap = new GameData.Profile.DaySceneMapProfile();
-            foreach (var node in daySceneMap.allMapNodes)
+            GameData.RunTime.NightSceneUtility.IzakayaConfigure.Instance.CookerConfigure[0]++;
+        }
+        if (Input.GetKeyDown(KeyCode.F2))
+        {
+            if (Common.UI.UniversalGameManager.s_IzakayaConfigPannel != null)
             {
-                Log.LogWarning($"[F1] MapNode: {node.mapName}");
+                try
+                {
+                    Common.UI.UniversalGameManager.s_IzakayaConfigPannel.SolveDailyCompletion();
+                    Log.LogInfo($"{LOG_TAG} F2: SolveDailyCompletion called successfully via UniversalGameManager");
+                }
+                catch (System.Exception ex)
+                {
+                    Log.LogError($"{LOG_TAG} F2: Error calling SolveDailyCompletion: {ex.Message}");
+                }
             }
+            else
+            {
+                Log.LogWarning($"{LOG_TAG} F2: IzakayaConfigPannel is null in UniversalGameManager");
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.F3))
+        {
+            IzakayaConfigPannelPatch.instanceRef.SolveDailyCompletion();
         }
     }
 

@@ -6,6 +6,7 @@ using DayScene.Input;
 using GameData.RunTime.Common;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace MetaMystia;
 
@@ -398,4 +399,134 @@ public class SceneManagerPatch : PatchBase<SceneManagerPatch>
         PluginManager.Instance.CurrentGameStage = PluginManager.GameStage.PrepScene;
         Log.LogInfo($"{LOG_TAG} CurrentGameStage switched to PrepScene");
     }
+}
+
+[HarmonyPatch(typeof(GameData.RunTime.NightSceneUtility.IzakayaConfigure))]
+public class IzakayaConfigurePatch : PatchBase<IzakayaConfigurePatch>
+{
+    // MetaMiku 注:
+    //     下面分别是 IzakayaConfigure 中 菜单/酒水/厨具 注册与注销 的 hook
+    //     但是其中对于 厨具，厨具无论是注册还是注销，都会触发 RegisterToCookers，而只有在注销时才会触发 LogOffFromCookers
+    
+    private static int _lastLogoffCookerId = -1;
+    private static long _lastLogoffCookerTime = 0;
+
+    [HarmonyPatch(nameof(GameData.RunTime.NightSceneUtility.IzakayaConfigure.RegisterToDailyRecipes))]
+    [HarmonyPrefix]
+    public static void RegisterToDailyRecipes_Prefix(int id)
+    {
+        Log.LogInfo($"{LOG_TAG} RegisterToDailyRecipes: {id}");
+        PrepSceneManager.localPrepTable.RecipeAdditions[id] = MpManager.GetSynchronizedTimestampNow;
+        MpManager.Instance.SendPrep(PrepSceneManager.localPrepTable);
+    }
+    
+    [HarmonyPatch(nameof(GameData.RunTime.NightSceneUtility.IzakayaConfigure.RegisterToDailyBeverages))]
+    [HarmonyPrefix]
+    public static void RegisterToDailyBeverages_Prefix(int id)
+    {
+        Log.LogInfo($"{LOG_TAG} RegisterToDailyBeverages: {id}");
+        PrepSceneManager.localPrepTable.BeverageAdditions[id] = MpManager.GetSynchronizedTimestampNow;
+        MpManager.Instance.SendPrep(PrepSceneManager.localPrepTable);
+    }
+
+    [HarmonyPatch(nameof(GameData.RunTime.NightSceneUtility.IzakayaConfigure.RegisterToCookers))]
+    [HarmonyPrefix]
+    public static void RegisterToCookers_Prefix(int id)
+    {
+        // long now = MpManager.GetSynchronizedTimestampNow;
+        
+        // // Workaround: If this register is triggered by logoff, ignore it
+        // if (id == _lastLogoffCookerId && Math.Abs(now - _lastLogoffCookerTime) < 100)
+        // {
+        //      Log.LogInfo($"{LOG_TAG} RegisterToCookers: {id} (Ignored due to recent logoff)");
+        //      return;
+        // }
+
+        Log.LogInfo($"{LOG_TAG} RegisterToCookers: {id}");
+        // PrepSceneManager.localPrepTable.CookersAdditions[id] = now;
+    }
+
+    [HarmonyPatch(nameof(GameData.RunTime.NightSceneUtility.IzakayaConfigure.LogoffFromDailyRecipes))]
+    [HarmonyPrefix]
+    public static void LogoffFromDailyRecipes_Prefix(int id)
+    {
+        Log.LogInfo($"{LOG_TAG} LogoffFromDailyRecipes: {id}");
+        PrepSceneManager.localPrepTable.RecipeDeletions[id] = MpManager.GetSynchronizedTimestampNow;
+        MpManager.Instance.SendPrep(PrepSceneManager.localPrepTable);
+    }
+
+    [HarmonyPatch(nameof(GameData.RunTime.NightSceneUtility.IzakayaConfigure.LogoffFromDailyBeverages))]
+    [HarmonyPrefix]
+    public static void LogoffFromDailyBeverages_Prefix(int id)
+    {
+        Log.LogInfo($"{LOG_TAG} LogoffFromDailyBeverages: {id}");
+        PrepSceneManager.localPrepTable.BeverageDeletions[id] = MpManager.GetSynchronizedTimestampNow;
+        MpManager.Instance.SendPrep(PrepSceneManager.localPrepTable);
+    }
+
+    [HarmonyPatch(nameof(GameData.RunTime.NightSceneUtility.IzakayaConfigure.LogOffFromCookers))]
+    [HarmonyPrefix]
+    public static void LogOffFromCookers_Prefix(int index)
+    {
+        // long now = MpManager.GetSynchronizedTimestampNow;
+        Log.LogInfo($"{LOG_TAG} LogOffFromCookers: {index}");
+        
+        // PrepSceneManager.localPrepTable.CookersDeletions[id] = now;
+        
+        // _lastLogoffCookerId = id;
+        // _lastLogoffCookerTime = now;
+    }
+}
+
+
+[HarmonyPatch(typeof(PrepNightScene.UI.IzakayaConfigPannel))]
+public class IzakayaConfigPannelPatch : PatchBase<IzakayaConfigPannelPatch>
+{
+    public static PrepNightScene.UI.IzakayaConfigPannel instanceRef = null;
+
+    [HarmonyPatch(MethodType.Constructor)]
+    public static void IzakayaConfigPannel_Constructor_Postfix(PrepNightScene.UI.IzakayaConfigPannel __instance)
+    {
+        instanceRef = __instance;
+        Log.LogWarning($"{LOG_TAG} IzakayaConfigPannel instance created");
+    }
+
+    [HarmonyPatch(nameof(PrepNightScene.UI.IzakayaConfigPannel.OnEnable))]
+    public static void IzakayaConfigPannel_OnEnable_Postfix(PrepNightScene.UI.IzakayaConfigPannel __instance)
+    {
+        instanceRef = __instance;
+        Log.LogWarning($"{LOG_TAG} IzakayaConfigPannel fully initialized and ready");
+    }
+
+    // OnPanelOpen
+    [HarmonyPatch(nameof(PrepNightScene.UI.IzakayaConfigPannel.OnPanelOpen))]
+    public static void IzakayaConfigPannel_OnPanelOpen_Postfix(PrepNightScene.UI.IzakayaConfigPannel __instance)
+    {
+        instanceRef = __instance;
+        Log.LogWarning($"{LOG_TAG} IzakayaConfigPannel OnPanelOpen called");
+        Log.LogWarning($"{LOG_TAG} IzakayaConfigPannel OnPanelOpen called");
+        Log.LogWarning($"{LOG_TAG} IzakayaConfigPannel OnPanelOpen called");
+        Log.LogWarning($"{LOG_TAG} IzakayaConfigPannel OnPanelOpen called");
+        Log.LogWarning($"{LOG_TAG} IzakayaConfigPannel OnPanelOpen called");
+        Log.LogWarning($"{LOG_TAG} IzakayaConfigPannel OnPanelOpen called");
+    }
+
+    // GoToSpecific
+    [HarmonyPatch(nameof(PrepNightScene.UI.IzakayaConfigPannel.GoToSpecific))]
+    public static void IzakayaConfigPannel_GoToSpecific_Postfix(PrepNightScene.UI.IzakayaConfigPannel __instance, int index)
+    {
+        instanceRef = __instance;
+        Log.LogWarning($"{LOG_TAG} IzakayaConfigPannel GoToSpecific called with index: {index}");
+    }
+
+    // GotoWork
+    [HarmonyPatch(nameof(PrepNightScene.UI.IzakayaConfigPannel.GotoWork))]
+    public static void IzakayaConfigPannel_GotoWork_Postfix(PrepNightScene.UI.IzakayaConfigPannel __instance)
+    {
+        instanceRef = __instance;
+        Log.LogWarning($"{LOG_TAG} IzakayaConfigPannel GotoWork called");
+    }
+
+    // 
+
 }
