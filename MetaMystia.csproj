@@ -13,6 +13,7 @@
     </RestoreAdditionalProjectSources>
     <RootNamespace>MetaMystia</RootNamespace>
     <GamePath>D:\SteamLibrary\steamapps\common\Touhou Mystia Izakaya</GamePath>
+    <GamePath>E:\Steam\steamapps\common\Touhou Mystia Izakaya</GamePath>
     <OutputPath>$(GamePath)\BepInEx\plugins</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>

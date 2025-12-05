@@ -1,3 +1,4 @@
+using GameData.Core.Collections;
 using MemoryPack;
 using System;
 using System.Collections.Generic;
@@ -371,7 +372,8 @@ public enum ActionType : ushort
     READY,
     MESSAGE,
     SELECT,
-    CONFIRM
+    CONFIRM,
+    PREP,
 }
 
 [MemoryPackable]
@@ -383,6 +385,7 @@ public enum ActionType : ushort
 [MemoryPackUnion((ushort)ActionType.MESSAGE, typeof(MessageAction))]
 [MemoryPackUnion((ushort)ActionType.SELECT, typeof(SelectAction))]
 [MemoryPackUnion((ushort)ActionType.CONFIRM, typeof(ConfirmAction))]
+[MemoryPackUnion((ushort)ActionType.PREP, typeof(PrepAction))]
 public abstract partial class NetAction
 {
     public abstract ActionType Type { get; }
@@ -405,15 +408,20 @@ public partial class PingAction : NetAction
 {
     public override ActionType Type => ActionType.PING;
     public int Id { get; set; }
+    public long Timestamp { get; set; }
     public override void OnReceived()
     {
         Plugin.Instance.Log.LogInfo($"Received PING: {Id}");
+        MpManager.TimeOffset = (MpManager.GetTimestampNow - Timestamp) / 2;
         MpManager.Instance.SendPong(Id);
     }
     public static NetPacket CreatePingPacket(int id)
     {
         NetPacket packet = new NetPacket { };
-        packet.Actions.Add(new PingAction { Id = id});
+        packet.Actions.Add(new PingAction { 
+            Id = id, 
+            Timestamp = MpManager.GetTimestampNow
+        });
         return packet;
     }
 }
@@ -578,5 +586,34 @@ public partial class ConfirmAction : NetAction
             };
             DialogManager.ShowConfirmDialog(KyoukoManager.IzakayaMapLabel, closePanelCallback);
         });
+    }
+}
+
+[MemoryPackable]
+public partial class PrepTable
+{
+    public Dictionary<int, long> RecipeAdditions { get; set; } = new Dictionary<int, long>();
+    public Dictionary<int, long> RecipeDeletions { get; set; } = new Dictionary<int, long>();
+
+    public Dictionary<int, long> BeverageAdditions { get; set; } = new Dictionary<int, long>();
+    public Dictionary<int, long> BeverageDeletions { get; set; } = new Dictionary<int, long>();
+
+    public Dictionary<int, long> CookersAdditions { get; set; } = new Dictionary<int, long>();
+    public Dictionary<int, long> CookersDeletions { get; set; } = new Dictionary<int, long>();
+
+}
+
+
+[MemoryPackable]
+public partial class PrepAction : NetAction
+{
+    public override ActionType Type => ActionType.PREP;
+    public PrepTable prepTable { get; set; } = new PrepTable();
+
+    public override void OnReceived()
+    {
+        Plugin.Instance.Log.LogInfo($"Received PREP action");
+        
+        PrepSceneManager.MergeFromPeer(prepTable);
     }
 }

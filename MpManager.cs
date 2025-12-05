@@ -24,6 +24,8 @@ public class MpManager
     public long Latency {get; private set;} = 0;
     private System.Collections.Concurrent.ConcurrentDictionary<int, long> pingSendTimes = new();
     public static long GetTimestampNow => DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+    public static long TimeOffset = 0;
+    public static long GetSynchronizedTimestampNow => GetTimestampNow - TimeOffset;
     private int _pingId = 0;
 
     public static MpManager Instance
@@ -319,6 +321,16 @@ public class MpManager
         {
             MapLabel = mapLabel,
             Level = level
+        });
+        SendToPeer(packet);
+    }
+
+    public void SendPrep(PrepTable prepTable)
+    {
+        NetPacket packet = new() { };
+        packet.Actions.Add(new PrepAction
+        {
+            prepTable = prepTable
         });
         SendToPeer(packet);
     }

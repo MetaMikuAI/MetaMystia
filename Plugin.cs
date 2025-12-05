@@ -51,6 +51,8 @@ public class Plugin : BasePlugin
                 // typeof(UniversalGameManagerPatch),
                 typeof(SceneManagerPatch),
                 typeof(DaySceneMapProfilePatch),
+                typeof(IzakayaConfigurePatch),
+                typeof(IzakayaConfigPannelPatch)
             };
             foreach (var patch in patchList)
             {
