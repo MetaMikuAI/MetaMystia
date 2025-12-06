@@ -4,7 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>MetaMystia</AssemblyName>
     <Product>MetaMystia</Product>
-    <Version>0.2</Version>
+    <Version>0.4</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <RestoreAdditionalProjectSources>
@@ -115,6 +115,7 @@
     </Reference>
     <Reference Include="Unity.TextMeshPro">
       <HintPath>$(GamePath)\BepInEx\interop\Unity.TextMeshPro.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="DEYU.Singletons">
       <HintPath>$(GamePath)\BepInEx\interop\DEYU.Singletons.dll</HintPath>
@@ -142,7 +143,7 @@
     </Reference>
     <Reference Include="MemoryPack.Core">
       <HintPath>$(NuGetPackageRoot)memorypack\1.21.4\lib\netstandard2.0\MemoryPack.Core.dll</HintPath>
-      <Private>true</Private> 
+      <Private>False</Private> 
     </Reference>
   </ItemGroup>
 </Project>
