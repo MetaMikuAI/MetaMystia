@@ -133,10 +133,17 @@ public class DaySceneSceneManagerPatch : PatchBase<DaySceneSceneManagerPatch>
         Log.LogInfo($"{LOG_TAG} CurrentGameStage switched to DayScene");
     }
 
+    private static bool _skipPatch = false;
+
     [HarmonyPatch(nameof(DayScene.SceneManager.OnDayOver))]
     [HarmonyPrefix]
     public static bool OnDayOver_Prefix()
     {
+        if (_skipPatch)
+        {
+            Log.LogDebug($"{LOG_TAG} skipPatch is true, skipping prefix");
+            return true;
+        }
         if (!MpManager.Instance.IsConnected)
         {
             Log.LogDebug($"{LOG_TAG} Not in multiplayer session, skipping prefix");
@@ -168,7 +175,8 @@ public class DaySceneSceneManagerPatch : PatchBase<DaySceneSceneManagerPatch>
         {
             Log.LogInfo($"{LOG_TAG} Both Mystia and Kyouko are not ready -> Mystia is ready => show **not ready** dialog");
             MpManager.Instance.SendReady();
-            DialogManager.ShowReadyDialog(false, () => MystiaManager.IsReady = true);
+            MystiaManager.IsReady = true;
+            DialogManager.ShowReadyDialog(false);
             return false;
         }
 
@@ -177,10 +185,12 @@ public class DaySceneSceneManagerPatch : PatchBase<DaySceneSceneManagerPatch>
         {
             Log.LogInfo($"{LOG_TAG} Mystia is not ready but Kyouko is ready -> both are ready => show **ready** dialog");
             MpManager.Instance.SendReady();
+            MystiaManager.IsReady = true;
             DialogManager.ShowReadyDialog(true, () => 
             {
-                MystiaManager.IsReady = true;
+                _skipPatch = true;
                 DayScene.SceneManager.Instance.OnDayOver();
+                _skipPatch = false;
             });
             return false;
         }
@@ -199,7 +209,7 @@ public class DaySceneSceneManagerPatch : PatchBase<DaySceneSceneManagerPatch>
 [HarmonyPatch(typeof(Common.UI.IzakayaSelectorPanel_New))]
 public class IzakayaSelectorPanelPatch : PatchBase<IzakayaSelectorPanelPatch>
 {
-    public static bool skipPatchIzakayaSelectionConfirmation = false;
+    public static bool _skipPatchIzakayaSelectionConfirmation = false;
     public static Common.UI.IzakayaSelectorPanel_New instanceRef = null;
     public static Dictionary<string, Common.UI.GlobalMap.IGuideMapSpot> cachedSpots = new Dictionary<string, Common.UI.GlobalMap.IGuideMapSpot>();
 
@@ -248,7 +258,7 @@ public class IzakayaSelectorPanelPatch : PatchBase<IzakayaSelectorPanelPatch>
             Log.LogWarning($"{LOG_TAG} Not in multiplayer session, skipping patch");
             return true;
         }
-        if (skipPatchIzakayaSelectionConfirmation)
+        if (_skipPatchIzakayaSelectionConfirmation)
         {
             Log.LogWarning($"{LOG_TAG} skipPatchIzakayaSelectionConfirmation is true, skipping patch");
             return true;
@@ -286,9 +296,9 @@ public class IzakayaSelectorPanelPatch : PatchBase<IzakayaSelectorPanelPatch>
         MpManager.Instance.SendConfirmedIzakaya(izakayaMapLabel, izakayaLevel);
         
         System.Action closePanelCallback = () => {
-            skipPatchIzakayaSelectionConfirmation = true;
+            _skipPatchIzakayaSelectionConfirmation = true;
             instanceRef._OnGuideMapInitialize_b__21_0();
-            skipPatchIzakayaSelectionConfirmation = false;
+            _skipPatchIzakayaSelectionConfirmation = false;
         };
 
         DialogManager.ShowConfirmDialog(izakayaMapLabel, closePanelCallback);
