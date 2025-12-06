@@ -105,6 +105,7 @@ namespace MetaMystia
                     IsOpen = true;
                     input = Input.GetKeyDown(KeyCode.Slash) ? "/" : "";
                     focusTextField = true;
+                    moveCursor = true;
                     justOpened = true;
                 }
             }

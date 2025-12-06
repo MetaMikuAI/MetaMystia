@@ -221,7 +221,9 @@ public partial class ConfirmAction : NetAction
                 IzakayaSelectorPanelPatch.instanceRef._OnGuideMapInitialize_b__21_0();
                 IzakayaSelectorPanelPatch.skipPatchIzakayaSelectionConfirmation = false;
             }
-            DialogManager.ShowConfirmDialog(KyoukoManager.IzakayaMapLabel, closePanelCallback);
+            KyoukoManager.IzakayaLevel = Level;
+            KyoukoManager.IzakayaMapLabel = MapLabel;
+            DialogManager.ShowConfirmDialog(MapLabel, closePanelCallback);
         });
     }
 }
