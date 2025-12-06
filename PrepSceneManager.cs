@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using BepInEx.Logging;
+using JetBrains.Annotations;
 
 namespace MetaMystia;
 
@@ -9,13 +10,11 @@ public static class PrepSceneManager
     private static ManualLogSource Log => Plugin.Instance.Log;
     private static readonly string LOG_TAG = "[PrepSceneManager.cs]";
 
-    // private static long LastChangeTimeMs = 0;
-
     public static PrepAction.Table localPrepTable = new ();
 
     public static readonly int MaxRecipes = 8;
     public static readonly int MaxBeverages = 8;
-    public static int MaxCookers = 8;
+    public static readonly int MaxCookers = 8; // 可信联机下双方都不会越界
 
     public static void MergeFromPeer(PrepAction.Table remotePrepTable)
     {
@@ -29,8 +28,6 @@ public static class PrepSceneManager
 
         changed |= MergeCookers(remotePrepTable);
 
-        UpdateMaxLimits();
-
         // Check limits and trim if necessary
         changed |= CheckAndTrimLimit(localPrepTable.RecipeAdditions, localPrepTable.RecipeDeletions, MaxRecipes);
         changed |= CheckAndTrimLimit(localPrepTable.BeverageAdditions, localPrepTable.BeverageDeletions, MaxBeverages);
@@ -38,13 +35,7 @@ public static class PrepSceneManager
         if (changed)
         {
             Log.LogInfo($"{LOG_TAG} Merged from peer, state changed.");
-            PluginManager.Instance.RunOnMainThread(() =>
-            {
-                UpdateRecipes();
-                UpdateBeverages();
-                UpdateCookers();
-            });
-            UpdateUI();
+            UpdateAll();
         }
     }
 
@@ -327,9 +318,7 @@ public static class PrepSceneManager
 
         var sourceSlots = EnsureLocalCookerSlots();
 
-        // int availableLength = Math.Min(sourceSlots.Length, cookerConfigure.Length);
-        // int usableLength = Math.Min(MaxCookers, availableLength);
-        int usableLength = 8;
+        int usableLength = cookerConfigure.Length; // 该数组长度即为实际可用长度(3/6/8)
 
         for (int i = 0; i < usableLength; i++)
         {
@@ -354,27 +343,26 @@ public static class PrepSceneManager
     }
 
 
+    public static void UpdateGroups()
+    {
+        UpdateRecipes();
+        UpdateBeverages();
+        UpdateCookers();
+    }
     public static void UpdateUI()
     {
-        PluginManager.Instance.RunOnMainThread(() =>
-    {
-            IzakayaConfigPannelPatch.instanceRef.SolveDailyCompletion();
-            IzakayaConfigPannelPatch.instanceRef.m_CookerGroup.UpdateGroupRaw();
-            IzakayaConfigPannelPatch.instanceRef.m_BeverageGroup.UpdateGroupRaw();
-            IzakayaConfigPannelPatch.instanceRef.m_RecipeGroup.UpdateGroupRaw();
-        });
+        IzakayaConfigPannelPatch.instanceRef.SolveDailyCompletion();
+        IzakayaConfigPannelPatch.instanceRef.m_CookerGroup.UpdateGroupRaw();
+        IzakayaConfigPannelPatch.instanceRef.m_BeverageGroup.UpdateGroupRaw();
+        IzakayaConfigPannelPatch.instanceRef.m_RecipeGroup.UpdateGroupRaw();
     }
 
-    public static void UpdateMaxLimits()
+    public static void UpdateAll()
     {
-        // MaxRecipes = 8;
-        // MaxBeverages = 8;
-        MaxCookers = KyoukoManager.IzakayaLevel switch
+        PluginManager.Instance.RunOnMainThread(() =>
         {
-            1 => 3,
-            2 => 6,
-            3 => 8,
-            _ => 8,
-        };
+            UpdateGroups();
+            UpdateUI();
+        });
     }
 }

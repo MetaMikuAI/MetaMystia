@@ -4,6 +4,7 @@ using UnityEngine;
 using Common.UI;
 using GameData.Profile;
 using Il2CppInterop.Runtime;
+using Common.DialogUtility;
 
 namespace MetaMystia;
 
@@ -22,7 +23,7 @@ public static class DialogManager
         // 构造对话包是对游戏原有逻辑的简化版，适用于简单的对话展示需求
         // 其中对话的文本内容需要通过 overrideReplaceTextCallback 来替换
         // 使用方法可以参考后面的函数
-        // TODO: 使用更好的方式表明 CharacterId 和 PortrayalVariationId 等信息
+        // TODO: 【重要】如果显示某个对话时又触发新的对话，可能导致回调混乱
         // TODO: 使用 json 或其他格式来定义对话内容，以便避免硬编码
         // TODO: i18n
 
@@ -37,12 +38,12 @@ public static class DialogManager
         }
         var newDialogPackage = UnityEngine.Object.Instantiate(ExampleDialog);
         var length = dialogList.Count;
-        var newMeta = new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Common.DialogUtility.DialogMeta>(length);
+        var newMeta = new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<DialogMeta>(length);
         for (int i = 0; i < length; i++)
         {
             var dialog = dialogList[i];
 
-            var meta = new Common.DialogUtility.DialogMeta();
+            var meta = new DialogMeta();
             
             meta = ExampleDialog.dialogMeta[0];
 
@@ -79,15 +80,15 @@ public static class DialogManager
         if (isReady)
         {
             var dialogList = new CustomDialogList();
-            dialogList.AddDialog(14, Common.DialogUtility.SpeakerIdentity.Identity.Special, 0, Common.DialogUtility.Position.Left, "米斯琪——营业时间快要到啦——");
-            dialogList.AddDialog(-1, Common.DialogUtility.SpeakerIdentity.Identity.Self, 16, Common.DialogUtility.Position.Right, "好呐，我们现在就出发吧~");
+            dialogList.AddDialog(14, SpeakerIdentity.Identity.Special, 0, Position.Left, "米斯琪——营业时间快要到啦——");
+            dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 16, Position.Right, "好呐，我们现在就出发吧~");
             BuildAndShow(dialogList, onFinishCallback);
         }
         else
         {
             var dialogList = new CustomDialogList();
-            dialogList.AddDialog(14, Common.DialogUtility.SpeakerIdentity.Identity.Special, 0, Common.DialogUtility.Position.Left, "等等——还有点事没处理好嘛——");
-            dialogList.AddDialog(-1, Common.DialogUtility.SpeakerIdentity.Identity.Self, 16, Common.DialogUtility.Position.Right, "没关系呀，现在距离营业时间还有点时间。~");
+            dialogList.AddDialog(14, SpeakerIdentity.Identity.Special, 0, Position.Left, "等等——还有点事没处理好嘛——");
+            dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 16, Position.Right, "没关系呀，现在距离营业时间还有点时间。~");
             BuildAndShow(dialogList, onFinishCallback);
         } // 文案: 余烬特调
     }
@@ -103,7 +104,7 @@ public static class DialogManager
         var textM = textsM[UnityEngine.Random.Range(0, textsM.Length)];
         
         var dialogList = new CustomDialogList();
-        dialogList.AddDialog(-1, Common.DialogUtility.SpeakerIdentity.Identity.Self, 16, Common.DialogUtility.Position.Right, textM);
+        dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 16, Position.Right, textM);
         BuildAndShow(dialogList, onFinishCallback);
     }
 
@@ -112,13 +113,13 @@ public static class DialogManager
         var mapNameK = Utils.GetMapNameCN(mapLabelK);
         var textsK = new[] 
         {
-            $"让我想想……{mapNameK}好像是个好主意！",
-            $"就决定是这里啦！{mapNameK}！",
+            $"让我想想……「{mapNameK}」好像是个好主意！",
+            $"就决定是这里啦！「{mapNameK}」！",
         };
         var textK = textsK[UnityEngine.Random.Range(0, textsK.Length)];
 
         var dialogList = new CustomDialogList();
-        dialogList.AddDialog(14, Common.DialogUtility.SpeakerIdentity.Identity.Special, 0, Common.DialogUtility.Position.Left, textK);
+        dialogList.AddDialog(14, SpeakerIdentity.Identity.Special, 0, Position.Left, textK);
         BuildAndShow(dialogList, onFinishCallback);
 
     }
@@ -142,8 +143,8 @@ public static class DialogManager
         var textK = textsK[UnityEngine.Random.Range(0, textsK.Length)];
 
         var dialogList = new CustomDialogList();
-        dialogList.AddDialog(-1, Common.DialogUtility.SpeakerIdentity.Identity.Self, 16, Common.DialogUtility.Position.Right, textM);
-        dialogList.AddDialog(14, Common.DialogUtility.SpeakerIdentity.Identity.Special, 0, Common.DialogUtility.Position.Left, textK);
+        dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 16, Position.Right, textM);
+        dialogList.AddDialog(14, SpeakerIdentity.Identity.Special, 0, Position.Left, textK);
         BuildAndShow(dialogList, onFinishCallback);
     }
 
@@ -165,25 +166,60 @@ public static class DialogManager
         var textK = textsK[UnityEngine.Random.Range(0, textsK.Length)];
 
         var dialogList = new CustomDialogList();
-        dialogList.AddDialog(-1, Common.DialogUtility.SpeakerIdentity.Identity.Self, 16, Common.DialogUtility.Position.Right, textM);
-        dialogList.AddDialog(14, Common.DialogUtility.SpeakerIdentity.Identity.Special, 0, Common.DialogUtility.Position.Left, textK);
+        dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 16, Position.Right, textM);
+        dialogList.AddDialog(14, SpeakerIdentity.Identity.Special, 0, Position.Left, textK);
         BuildAndShow(dialogList, onFinishCallback);
 
     }
     public static void ShowTestDialog(System.Action onFinishCallback = null) 
     {
         var dialogList = new CustomDialogList();
-        dialogList.AddDialog(-1, Common.DialogUtility.SpeakerIdentity.Identity.Self, 2, Common.DialogUtility.Position.Right, "你为什么上来就粉评啊，夜雀食堂不是这样的啊！");
-        dialogList.AddDialog(-1, Common.DialogUtility.SpeakerIdentity.Identity.Self, 2, Common.DialogUtility.Position.Right, "你应该先慢慢跟我提要求，我猜一猜你的喜好，再偶尔来点绿评暗示我你还不够满意，还嘲讽我「您完全没有文化底蕴是吗」");
-        dialogList.AddDialog(-1, Common.DialogUtility.SpeakerIdentity.Identity.Self, 7, Common.DialogUtility.Position.Right, "最后我饭团加好料的时候开始提新的要求，我继续加料说「怎么口味这么刁」，然后给你满足你4个喜好tag的食物和酒水你才正式开启奖励符卡啊！");
-        dialogList.AddDialog(-1, Common.DialogUtility.SpeakerIdentity.Identity.Self, 7, Common.DialogUtility.Position.Right, "夜雀食堂里根本不是这样的啊我不接受");
-        dialogList.AddDialog(14, Common.DialogUtility.SpeakerIdentity.Identity.Special, 13, Common.DialogUtility.Position.Left, "……");
-        dialogList.AddDialog(14, Common.DialogUtility.SpeakerIdentity.Identity.Special, 13, Common.DialogUtility.Position.Left, "米斯琪，你还好吗？");
-        dialogList.AddDialog(-1, Common.DialogUtility.SpeakerIdentity.Identity.Self, 18, Common.DialogUtility.Position.Right, "没事的，这只是个测试");
-        dialogList.AddDialog(14, Common.DialogUtility.SpeakerIdentity.Identity.Special, 13, Common.DialogUtility.Position.Left, "……");
-        dialogList.AddDialog(14, Common.DialogUtility.SpeakerIdentity.Identity.Special, 16, Common.DialogUtility.Position.Left, "……好~");
+        dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 2, Position.Right, "你为什么上来就粉评啊，夜雀食堂不是这样的啊！");
+        dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 2, Position.Right, "你应该先慢慢跟我提要求，我猜一猜你的喜好，再偶尔来点绿评暗示我你还不够满意，还嘲讽我「您完全没有文化底蕴是吗」");
+        dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 7, Position.Right, "最后我饭团加好料的时候开始提新的要求，我继续加料说「怎么口味这么刁」，然后给你满足你4个喜好tag的食物和酒水你才正式开启奖励符卡啊！");
+        dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 7, Position.Right, "夜雀食堂里根本不是这样的啊我不接受");
+        dialogList.AddDialog(14, SpeakerIdentity.Identity.Special, 13, Position.Left, "……");
+        dialogList.AddDialog(14, SpeakerIdentity.Identity.Special, 13, Position.Left, "米斯琪，你还好吗？");
+        dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 18, Position.Right, "没事的，这只是个测试");
+        dialogList.AddDialog(14, SpeakerIdentity.Identity.Special, 13, Position.Left, "……");
+        dialogList.AddDialog(14, SpeakerIdentity.Identity.Special, 16, Position.Left, "……好~");
         BuildAndShow(dialogList, onFinishCallback);
     }
+    public static void ShowAnimationDialog()
+    {
+        var dialogList = new CustomDialogList();
+        dialogList.AddDialog(14, SpeakerIdentity.Identity.Special, 4, Position.Right, "夜雀食堂的七大不可思议……");
+        dialogList.AddDialog(14, SpeakerIdentity.Identity.Special, 4, Position.Right, "<i>（啊…）</i>");
+        dialogList.AddDialog(18, SpeakerIdentity.Identity.Special, 9, Position.Left, "大家好！这里是神秘的探访频道！");
+        dialogList.AddDialog(14, SpeakerIdentity.Identity.Special, 1, Position.Right, "<i>（呜…）</i>");
+        dialogList.AddDialog(18, SpeakerIdentity.Identity.Special, 9, Position.Left, "这是我们的特别节目！");
+        dialogList.AddDialog(18, SpeakerIdentity.Identity.Special, 1, Position.Left, "我们将探访夜雀食堂不为人知的七大不可思议！");
+        dialogList.AddDialog(14, SpeakerIdentity.Identity.Special, 1, Position.Right, "是……是哦！");
+        dialogList.AddDialog(14, SpeakerIdentity.Identity.Special, 1, Position.Right, "这是满足游戏玩家的超级福利单元哦！");
+        dialogList.AddDialog(18, SpeakerIdentity.Identity.Special, 9, Position.Left, "今天我们要为玩家们解开的话题是——");
+        dialogList.AddDialog(18, SpeakerIdentity.Identity.Special, 9, Position.Left, "夜雀食堂的食材并没有米！");
+        dialogList.AddDialog(18, SpeakerIdentity.Identity.Special, 0, Position.Left, "那么饭团到底是怎么做出来的！？");
+        dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 3, Position.Right, "<i>（嗯？）</i>");
+        dialogList.AddDialog(18, SpeakerIdentity.Identity.Special, 8, Position.Left, "<i>（盯—）</i>");
+        dialogList.AddDialog(18, SpeakerIdentity.Identity.Special, 2, Position.Left, "今天，在这里！");
+        dialogList.AddDialog(18, SpeakerIdentity.Identity.Special, 2, Position.Left, "请务必！");
+        dialogList.AddDialog(18, SpeakerIdentity.Identity.Special, 1, Position.Left, "务必向大家展示一下好吗？！");
+        dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 22, Position.Right, "诶~");
+        dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 18, Position.Right, "这，原来是这个意思啊—");
+        dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 16, Position.Right, "我，我知道啦");
+        dialogList.AddDialog(18, SpeakerIdentity.Identity.Special, 2, Position.Left, "是吗？竟然真的打算解释吗！？");
+        dialogList.AddDialog(18, SpeakerIdentity.Identity.Special, 2, Position.Left, "<i>不不不，我原本只是故意来凑个热闹</i>");
+        dialogList.AddDialog(18, SpeakerIdentity.Identity.Special, 2, Position.Left, "<i>没想到真的打算说明吗？</i>");
+        dialogList.AddDialog(18, SpeakerIdentity.Identity.Special, 1, Position.Left, "那可就太好了！");
+        dialogList.AddDialog(18, SpeakerIdentity.Identity.Special, 1, Position.Left, "帮了大忙啦！");
+        dialogList.AddDialog(18, SpeakerIdentity.Identity.Special, 0, Position.Left, "（嗯？）");
+        dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 8, Position.Right, "<i>（施法中…）</i>");
+        dialogList.AddDialog(18, SpeakerIdentity.Identity.Special, 8, Position.Left, "（啊？）");
+        dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 9, Position.Right, "好啦~就是这样~！");
+        dialogList.AddDialog(18, SpeakerIdentity.Identity.Special, 8, Position.Left, "你就扯吧！");
+        BuildAndShow(dialogList);
+    }
+
     public static void DumpExampleDialog()
     {
         try
@@ -232,11 +268,11 @@ public static class DialogManager
 public class CustomDialog
 {
     public int characterId;
-    public Common.DialogUtility.SpeakerIdentity.Identity speakerType;
+    public SpeakerIdentity.Identity speakerType;
     public int speakerPortrayalVariationId;
     public string message;
-    public Common.DialogUtility.Position position;
-    public CustomDialog(int characterId, Common.DialogUtility.SpeakerIdentity.Identity speakerType, int speakerPortrayalVariationId, Common.DialogUtility.Position position, string message)
+    public Position position;
+    public CustomDialog(int characterId, SpeakerIdentity.Identity speakerType, int speakerPortrayalVariationId, Position position, string message)
     {
         this.characterId = characterId;
         this.speakerType = speakerType;
@@ -255,7 +291,7 @@ public class CustomDialogList
         dialogs = new System.Collections.Generic.List<CustomDialog>();
     }
 
-    public void AddDialog(int characterId, Common.DialogUtility.SpeakerIdentity.Identity speakerType, int speakerPortrayalVariationId, Common.DialogUtility.Position position, string message)
+    public void AddDialog(int characterId, SpeakerIdentity.Identity speakerType, int speakerPortrayalVariationId, Position position, string message)
     {
         dialogs.Add(new CustomDialog(characterId, speakerType, speakerPortrayalVariationId, position, message));
     }

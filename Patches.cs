@@ -202,7 +202,6 @@ public class IzakayaSelectorPanelPatch : PatchBase<IzakayaSelectorPanelPatch>
     public static bool skipPatchIzakayaSelectionConfirmation = false;
     public static Common.UI.IzakayaSelectorPanel_New instanceRef = null;
     public static Dictionary<string, Common.UI.GlobalMap.IGuideMapSpot> cachedSpots = new Dictionary<string, Common.UI.GlobalMap.IGuideMapSpot>();
-    public static Common.UI.IzakayaLevel cachedLevel;
 
     [HarmonyPatch(nameof(Common.UI.IzakayaSelectorPanel_New.OnGuideMapInitialize))]
     [HarmonyPrefix]
@@ -300,7 +299,6 @@ public class IzakayaSelectorPanelPatch : PatchBase<IzakayaSelectorPanelPatch>
     [HarmonyPrefix]
     public static void TryChangeIzakayaLevel_Prefix(ref Common.UI.IzakayaLevel izakayaLevel, Common.UI.IzakayaLevel targetLevel)
     {
-        cachedLevel = izakayaLevel;
         Log.LogInfo($"{LOG_TAG} TryChangeIzakayaLevel called with izakayaLevel: {izakayaLevel}, targetLevel: {targetLevel}");
     }
 
@@ -471,7 +469,7 @@ public class IzakayaConfigurePatch : PatchBase<IzakayaConfigurePatch>
     [HarmonyPrefix]
     public static void LogOffFromCookers_Prefix(int index)
     {
-        Log.LogWarning($"{LOG_TAG} LogOffFromCookers: {index}");
+        Log.LogInfo($"{LOG_TAG} LogOffFromCookers: {index}");
     }
 }
 

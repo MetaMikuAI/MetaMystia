@@ -98,12 +98,12 @@ namespace MetaMystia
 
             if (justOpened) justOpened = false;
 
-            if (Input.GetKeyDown(KeyCode.Slash))
+            if (Input.GetKeyDown(KeyCode.Slash) || Input.GetKeyDown(KeyCode.T))
             {
                 if (!IsOpen)
                 {
                     IsOpen = true;
-                    input = "";
+                    input = Input.GetKeyDown(KeyCode.Slash) ? "/" : "";
                     focusTextField = true;
                     justOpened = true;
                 }

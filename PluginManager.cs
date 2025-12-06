@@ -3,7 +3,6 @@ using UnityEngine;
 using System;
 using Il2CppInterop.Runtime;
 using System.Collections.Concurrent;
-using PrepNightScene.UI;
 using Common.UI;
 
 namespace MetaMystia;
@@ -83,35 +82,6 @@ public class PluginManager : MonoBehaviour
         {
             isTextVisible = !isTextVisible;
             Log.LogMessage($"{LOG_TAG} Toggled text visibility: " + isTextVisible);
-        }
-        if (Input.GetKeyDown(KeyCode.F1))
-        {
-            GameData.RunTime.NightSceneUtility.IzakayaConfigure.Instance.CookerConfigure[0]++;
-        }
-        if (Input.GetKeyDown(KeyCode.F2))
-        {
-            GameData.RunTime.NightSceneUtility.IzakayaConfigure.Instance.CookerConfigure[0]--;
-        }
-        if (Input.GetKeyDown(KeyCode.F3))
-        {
-            PrepSceneManager.UpdateUI();
-        }
-        if (Input.GetKeyDown(KeyCode.F4))
-        {
-            IzakayaConfigPannelPatch.instanceRef.GoToSpecific(IzakayaConfigPannel.CurrentConfigType.Recipe);
-        }
-        if (Input.GetKeyDown(KeyCode.F5))
-        {
-            IzakayaConfigPannelPatch.instanceRef.GoToSpecific(IzakayaConfigPannel.CurrentConfigType.Beverage);
-        }
-        if (Input.GetKeyDown(KeyCode.F6))
-        {
-            IzakayaConfigPannelPatch.instanceRef.GoToSpecific(IzakayaConfigPannel.CurrentConfigType.Cooker);
-        }
-        if (Input.GetKeyDown(KeyCode.F7))
-        {
-            var cookersList = GameData.RunTime.NightSceneUtility.IzakayaConfigure.Instance.CookerConfigure;
-            Log.LogInfo($"{LOG_TAG} Current Cookers: " + string.Join(", ", cookersList));
         }
     }
 
