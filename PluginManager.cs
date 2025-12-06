@@ -99,26 +99,23 @@ public class PluginManager : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.F2))
         {
-            if (Common.UI.UniversalGameManager.s_IzakayaConfigPannel != null)
-            {
-                try
-                {
-                    Common.UI.UniversalGameManager.s_IzakayaConfigPannel.SolveDailyCompletion();
-                    Log.LogInfo($"{LOG_TAG} F2: SolveDailyCompletion called successfully via UniversalGameManager");
-                }
-                catch (System.Exception ex)
-                {
-                    Log.LogError($"{LOG_TAG} F2: Error calling SolveDailyCompletion: {ex.Message}");
-                }
-            }
-            else
-            {
-                Log.LogWarning($"{LOG_TAG} F2: IzakayaConfigPannel is null in UniversalGameManager");
-            }
+            GameData.RunTime.NightSceneUtility.IzakayaConfigure.Instance.CookerConfigure[0]--;
         }
         if (Input.GetKeyDown(KeyCode.F3))
         {
-            IzakayaConfigPannelPatch.instanceRef.SolveDailyCompletion();
+            PrepSceneManager.UpdateUI();
+        }
+        if (Input.GetKeyDown(KeyCode.F4))
+        {
+            IzakayaConfigPannelPatch.instanceRef.GoToSpecific(IzakayaConfigPannel.CurrentConfigType.Recipe);
+        }
+        if (Input.GetKeyDown(KeyCode.F5))
+        {
+            IzakayaConfigPannelPatch.instanceRef.GoToSpecific(IzakayaConfigPannel.CurrentConfigType.Beverage);
+        }
+        if (Input.GetKeyDown(KeyCode.F6))
+        {
+            IzakayaConfigPannelPatch.instanceRef.GoToSpecific(IzakayaConfigPannel.CurrentConfigType.Cooker);
         }
     }
 

@@ -60,7 +60,6 @@ public class PrepSceneManager
         changed |= MergeDictionary(localPrepTable.CookersAdditions, remotePrepTable.CookersAdditions);
         changed |= MergeDictionary(localPrepTable.CookersDeletions, remotePrepTable.CookersDeletions);
 
-
         UpdateMaxLimits();
 
         // Check limits and trim if necessary
@@ -71,7 +70,12 @@ public class PrepSceneManager
         if (changed)
         {
             Log.LogInfo($"{LOG_TAG} Merged from peer, state changed.");
-            // TODO: Trigger UI update or logic update here
+            PluginManager.Instance.RunOnMainThread(() =>
+            {
+                UpdateRecipes();
+                UpdateBeverages();
+            });
+            UpdateUI();
         }
     }
 
@@ -126,30 +130,163 @@ public class PrepSceneManager
         return changed;
     }
 
-    private static void UpdateMaxLimits()
+    public static void UpdateRecipes()
     {
-        switch (KyoukoManager.IzakayaLevel)
+        var dailyRecipesList = GameData.RunTime.NightSceneUtility.IzakayaConfigure.Instance.DailyRecipes;
+        if (dailyRecipesList == null)
+        {
+            Log.LogError($"{LOG_TAG} DailyRecipes list is null!");
+            return;
+        }
+
+        // Get all available recipes
+        var allRecipes = GameData.RunTime.Common.RunTimeStorage.GetAllRecipes();
+        // Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<GameData.Core.Collections.Recipe> 
+        // GameData.RunTime.Common.RunTimeStorage.GetAllRecipes()
+        if (allRecipes == null) return;
+
+        // Create a lookup for recipes by ID
+        var recipeLookup = new Dictionary<int, GameData.Core.Collections.Recipe>();
+        foreach (var recipe in allRecipes)
+        {
+            if (recipe != null && !recipeLookup.ContainsKey(recipe.Id))
+            {
+                recipeLookup[recipe.Id] = recipe;
+            }
+        }
+
+        // Filter valid recipes from localPrepTable
+        var validRecipes = new List<KeyValuePair<int, long>>();
+        foreach (var kvp in localPrepTable.RecipeAdditions)
+        {
+            int id = kvp.Key;
+            long addTs = kvp.Value;
+            long delTs = localPrepTable.RecipeDeletions.ContainsKey(id) ? localPrepTable.RecipeDeletions[id] : 0;
+
+            if (addTs > delTs)
+            {
+                validRecipes.Add(kvp);
+            }
+        }
+
+        // Sort by timestamp ascending
+        validRecipes.Sort((a, b) => a.Value.CompareTo(b.Value));
+
+        // Update DailyRecipes
+        dailyRecipesList.Clear();
+
+        foreach (var kvp in validRecipes)
+        {
+            if (recipeLookup.TryGetValue(kvp.Key, out var recipe))
+            {
+                dailyRecipesList.Add(recipe);
+            }
+            else
+            {
+                Log.LogWarning($"{LOG_TAG} Recipe with ID {kvp.Key} not found in RunTimeStorage.");
+            }
+        }
+        
+        Log.LogInfo($"{LOG_TAG} Updated DailyRecipes with {dailyRecipesList.Count} items.");
+    }
+
+    public static void UpdateBeverages()
+    {
+        var dailyBeveragesList = GameData.RunTime.NightSceneUtility.IzakayaConfigure.Instance.DailyBeverages;
+        if (dailyBeveragesList == null)
+        {
+            Log.LogError($"{LOG_TAG} DailyBeverages list is null!");
+            return;
+        }
+
+        // Get all available beverages
+        // Returns Il2CppReferenceArray<KeyValuePair<Sellable, int>>
+        var allBeverages = GameData.RunTime.Common.RunTimeStorage.GetAllBeverages(); 
+
+        if (allBeverages == null) return;
+
+        // Create a lookup for beverages by ID
+        var beverageLookup = new Dictionary<int, GameData.Core.Collections.Sellable>();
+        foreach (var kvp in allBeverages)
+        {
+            // kvp is Il2CppSystem.Collections.Generic.KeyValuePair<Sellable, int>
+            var sellable = kvp.Key;
+            if (sellable != null && !beverageLookup.ContainsKey(sellable.Id))
+            {
+                beverageLookup[sellable.Id] = sellable;
+            }
+        }
+
+        // Filter valid beverages from localPrepTable
+        var validBeverages = new List<KeyValuePair<int, long>>();
+        foreach (var kvp in localPrepTable.BeverageAdditions)
+        {
+            int id = kvp.Key;
+            long addTs = kvp.Value;
+            long delTs = localPrepTable.BeverageDeletions.ContainsKey(id) ? localPrepTable.BeverageDeletions[id] : 0;
+
+            if (addTs > delTs)
+            {
+                validBeverages.Add(kvp);
+            }
+        }
+
+        // Sort by timestamp ascending
+        validBeverages.Sort((a, b) => a.Value.CompareTo(b.Value));
+
+        // Update DailyBeverages
+        dailyBeveragesList.Clear();
+
+        foreach (var kvp in validBeverages)
+        {
+            if (beverageLookup.TryGetValue(kvp.Key, out var sellable))
+            {
+                dailyBeveragesList.Add(sellable);
+            }
+            else
+            {
+                Log.LogWarning($"{LOG_TAG} Beverage with ID {kvp.Key} not found in RunTimeStorage.");
+            }
+        }
+        
+        Log.LogInfo($"{LOG_TAG} Updated DailyBeverages with {dailyBeveragesList.Count} items.");
+    }
+
+    public static void UpdateUI()
+    {
+        PluginManager.Instance.RunOnMainThread(() =>
+    {
+            IzakayaConfigPannelPatch.instanceRef.SolveDailyCompletion();
+            IzakayaConfigPannelPatch.instanceRef.m_CookerGroup.UpdateGroupRaw();
+            IzakayaConfigPannelPatch.instanceRef.m_BeverageGroup.UpdateGroupRaw();
+            IzakayaConfigPannelPatch.instanceRef.m_RecipeGroup.UpdateGroupRaw();
+        });
+    }
+
+    public static void UpdateMaxLimits()
+    {
+        switch (KyoukoManager.IzakayaLevel) 
         {
             case 1:
-                MaxRecipes = 3;
+                MaxRecipes = 8;
                 MaxBeverages = 8;
-                MaxCookers = 8;
-                return;
+                MaxCookers = 3;
+                break;
             case 2:
-                MaxRecipes = 6;
+                MaxRecipes = 8;
                 MaxBeverages = 8;
                 MaxCookers = 6;
-                return;
+                break;
             case 3:
                 MaxRecipes = 8;
                 MaxBeverages = 8;
                 MaxCookers = 8;
-                return;
+                break;
             default:
                 MaxRecipes = 8;
                 MaxBeverages = 8;
                 MaxCookers = 8;
-                return;
+                break;
         }
     }
 }
