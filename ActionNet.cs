@@ -132,7 +132,9 @@ public partial class ReadyAction : NetAction
             {
                 DialogManager.ShowReadyDialog(true, () =>
                 {
+                    DaySceneSceneManagerPatch._skipPatchOnDayOver = true;
                     DayScene.SceneManager.Instance.OnDayOver();
+                    DaySceneSceneManagerPatch._skipPatchOnDayOver = false;
                 });
             });
         }
@@ -215,7 +217,7 @@ public partial class ConfirmAction : NetAction
             IzakayaSelectorPanelPatch.instanceRef.TryChangeIzakayaLevel(ref currentLevel, targetLevel);
             IzakayaSelectorPanelPatch.instanceRef.m_CurrentSelectedIzakayaLevel = currentLevel;
 
-            void closePanelCallback()
+            static void closePanelCallback()
             {
                 IzakayaSelectorPanelPatch._skipPatchIzakayaSelectionConfirmation = true;
                 IzakayaSelectorPanelPatch.instanceRef._OnGuideMapInitialize_b__21_0();

@@ -58,7 +58,7 @@ public static class DialogManager
             newMeta[i] = meta;
         }
         newDialogPackage.dialogMeta = newMeta;
-        newDialogPackage.name = "MetaMystia_CustomDialogPackage";
+        newDialogPackage.name = dialogList.packageName;
 
         System.Action<Il2CppSystem.Collections.Generic.Dictionary<int, string>> overrideReplaceTextCallback = (replaceDict) =>
         {
@@ -285,6 +285,7 @@ public class CustomDialog
 public class CustomDialogList
 {
     public System.Collections.Generic.List<CustomDialog> dialogs;
+    public string packageName = "MetaMystia_CustomDialogPackage";
 
     public CustomDialogList()
     {
@@ -310,4 +311,5 @@ public class CustomDialogList
     {
         get { return dialogs[index]; }
     }
+
 }

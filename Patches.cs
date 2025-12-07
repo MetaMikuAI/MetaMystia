@@ -133,13 +133,13 @@ public class DaySceneSceneManagerPatch : PatchBase<DaySceneSceneManagerPatch>
         Log.LogInfo($"{LOG_TAG} CurrentGameStage switched to DayScene");
     }
 
-    private static bool _skipPatch = false;
+    public static bool _skipPatchOnDayOver = false;
 
     [HarmonyPatch(nameof(DayScene.SceneManager.OnDayOver))]
     [HarmonyPrefix]
     public static bool OnDayOver_Prefix()
     {
-        if (_skipPatch)
+        if (_skipPatchOnDayOver)
         {
             Log.LogDebug($"{LOG_TAG} skipPatch is true, skipping prefix");
             return true;
@@ -188,9 +188,9 @@ public class DaySceneSceneManagerPatch : PatchBase<DaySceneSceneManagerPatch>
             MystiaManager.IsReady = true;
             DialogManager.ShowReadyDialog(true, () => 
             {
-                _skipPatch = true;
+                _skipPatchOnDayOver = true;
                 DayScene.SceneManager.Instance.OnDayOver();
-                _skipPatch = false;
+                _skipPatchOnDayOver = false;
             });
             return false;
         }
