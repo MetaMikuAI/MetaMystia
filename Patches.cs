@@ -410,15 +410,6 @@ public class SceneManagerPatch : PatchBase<SceneManagerPatch>
         PluginManager.Instance.CurrentGameScene = Scene.StaffScene;
         Log.LogInfo($"{LOG_TAG} CurrentGameStage switched to StaffScene");
     }
-
-    [HarmonyPatch(typeof(PrepNightScene.SceneManager), nameof(PrepNightScene.SceneManager.Start))]
-    [HarmonyPostfix]
-    public static void PrepNightScene_Start_Postfix()
-    {
-        PluginManager.Instance.CurrentGameScene = Scene.IzakayaPrepScene;
-        PrepSceneManager.ClearLocalPrepData();
-        Log.LogInfo($"{LOG_TAG} CurrentGameStage switched to IzakayaPrepScene");
-    }
 }
 
 [HarmonyPatch(typeof(GameData.RunTime.NightSceneUtility.IzakayaConfigure))]
@@ -519,8 +510,8 @@ public class IzakayaConfigPannelPatch : PatchBase<IzakayaConfigPannelPatch>
 
         // MetaMiku 注:
         //     游戏原生的 GoToSpecific 会变更玩家的活跃选项面板，即 菜谱/酒水/厨具 三选一
-        //     但是还会附带检查更新不合法的 厨具 选项
-        //     如果在多人模式中直接调用该方法，可能会导致 厨具 选项出现不同步的问题
+        //     但是还会附带检查除去不合法的 厨具 选项
+        //     如果在联机中直接调用该方法，可能会导致 厨具 选项出现不同步的问题
         //     因此这里做了一个补丁，强制在调用 GoToSpecific 之后再重新更新厨具选项
         PluginManager.Instance.RunOnMainThread(() => 
         {
@@ -528,5 +519,56 @@ public class IzakayaConfigPannelPatch : PatchBase<IzakayaConfigPannelPatch>
             PrepSceneManager.UpdateUI();
         });
         
+    }
+    
+    [HarmonyPatch(nameof(PrepNightScene.UI.IzakayaConfigPannel._SolveDailyCompletion_b__61_7))]
+    [HarmonyPrefix]
+    public static bool _SolveDailyCompletion_b__61_7_Prefix()
+    {
+        if (!MpManager.Instance.IsConnected)
+        {
+            Log.LogInfo($"{LOG_TAG} Not in multiplayer session, skipping patch");
+            return true;
+        }
+
+        // MetaMiku 注:
+        //     当 Mystia 确认营业后，Prep 面板关闭，触发但跳过 _SolveDailyCompletion_b__61_7 Ready 信号
+        //     等待 Kyouko 也准备好后合并 菜单/酒水/厨具 数据并真正进入工作场景
+        //     当收到 Kyouko 的 Ready 信号后，立即返回 Ready 信号并直接调用 _SolveDailyCompletion_b__61_7 以真正进入工作场景
+        //     即使双方同时确认营业，也不会导致数据分歧或死锁
+        //     Mystia 必须等待对方也 Ready 才能继续的目的是确保数据的一致性
+        //     _SolveDailyCompletion_b__61_7 负责关闭 PrepScene 并进入 WorkScene （大概）
+
+        Log.LogInfo($"{LOG_TAG} _SolveDailyCompletion_b__61_7 called");
+        var remotePlayerReady = PrepSceneManager.remotePlayerReady;
+        if (!PrepSceneManager.localPlayerReady)
+        {
+            PrepSceneManager.localPlayerReady = true;
+            MpManager.Instance.SendPrep(PrepSceneManager.localPrepTable, true);
+        }
+        Log.LogInfo($"{LOG_TAG} remotePlayerReady: {remotePlayerReady}");
+        return remotePlayerReady;
+    }
+}
+
+
+[HarmonyPatch(typeof(PrepNightScene.SceneManager))]
+public class PrepNightSceneSceneManagerPatch : PatchBase<PrepNightSceneSceneManagerPatch>
+{
+    
+    [HarmonyPatch(nameof(PrepNightScene.SceneManager.Start))]
+    [HarmonyPostfix]
+    public static void PrepNightScene_Start_Postfix()
+    {
+        PluginManager.Instance.CurrentGameScene = Scene.IzakayaPrepScene;
+        PrepSceneManager.ClearLocalPrepData();
+        Log.LogInfo($"{LOG_TAG} CurrentGameStage switched to IzakayaPrepScene");
+    }
+    
+    [HarmonyPatch(nameof(PrepNightScene.SceneManager.ToWork))]
+    [HarmonyPrefix]
+    public static bool ToWork_Prefix()
+    {
+        return true;
     }
 }

@@ -93,6 +93,10 @@
       <HintPath>$(GamePath)\BepInEx\interop\UnityEngine.UIModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="UniTask">
+      <HintPath>$(GamePath)\BepInEx\interop\UniTask.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>$(GamePath)\BepInEx\interop\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>

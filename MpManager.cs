@@ -319,11 +319,12 @@ public class MpManager
         SendToPeer(packet);
     }
 
-    public void SendPrep(PrepAction.Table prepTable)
+    public void SendPrep(PrepAction.Table prepTable, bool ready = false)
     {
         NetPacket packet = NetPacket.Create(new PrepAction
         {
-            PrepTable = prepTable
+            PrepTable = prepTable,
+            Ready = ready
         });
         SendToPeer(packet);
     }

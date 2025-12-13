@@ -16,6 +16,8 @@ public static class PrepSceneManager
     public static readonly int MaxRecipes = 8;
     public static readonly int MaxBeverages = 8;
     public static readonly int MaxCookers = 8; // 可信联机下双方都不会越界
+    public static bool localPlayerReady = false;
+    public static bool remotePlayerReady = false;
 
     public static void MergeFromPeer(PrepAction.Table remotePrepTable)
     {

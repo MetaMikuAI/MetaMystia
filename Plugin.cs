@@ -52,7 +52,8 @@ public class Plugin : BasePlugin
                 typeof(SceneManagerPatch),
                 typeof(DaySceneMapProfilePatch),
                 typeof(IzakayaConfigurePatch),
-                typeof(IzakayaConfigPannelPatch)
+                typeof(IzakayaConfigPannelPatch),
+                typeof(PrepNightSceneSceneManagerPatch)
             };
             foreach (var patch in patchList)
             {
