@@ -561,8 +561,9 @@ public class PrepNightSceneSceneManagerPatch : PatchBase<PrepNightSceneSceneMana
     public static void PrepNightScene_Start_Postfix()
     {
         PluginManager.Instance.CurrentGameScene = Scene.IzakayaPrepScene;
-        PrepSceneManager.ClearLocalPrepData();
+        PrepSceneManager.init();
         Log.LogInfo($"{LOG_TAG} CurrentGameStage switched to IzakayaPrepScene");
+        
     }
     
     [HarmonyPatch(nameof(PrepNightScene.SceneManager.ToWork))]

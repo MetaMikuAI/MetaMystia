@@ -18,6 +18,18 @@ public static class PrepSceneManager
     public static readonly int MaxCookers = 8; // 可信联机下双方都不会越界
     public static bool localPlayerReady = false;
     public static bool remotePlayerReady = false;
+    public static void init()
+    {
+        localPrepTable = new PrepAction.Table();
+        localPlayerReady = false;
+        remotePlayerReady = false;
+
+        if (!MpManager.Instance.IsConnected)
+        {
+            return;
+        }
+        GameData.RunTime.Common.StatusTracker.Instance.partners.Clear();
+    }
 
     public static void MergeFromPeer(PrepAction.Table remotePrepTable)
     {
@@ -315,11 +327,5 @@ public static class PrepSceneManager
             UpdateGroups();
             UpdateUI();
         });
-    }
-
-    public static void ClearLocalPrepData()
-    {
-        localPrepTable = new PrepAction.Table();
-        Log.LogInfo($"{LOG_TAG} Cleared local prep data and updated UI.");
     }
 }
