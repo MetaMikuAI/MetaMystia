@@ -230,25 +230,41 @@ public class MpManager
 
     public void SendSync()
     {
-        // Maybe called before connected (because of patch), just ignore
         if (!IsConnected)
         {
             return;
         }
-        var mapLabel = MystiaManager.MapLabel;
-        var position = MystiaManager.Instance.GetPosition();
-        var isSprinting = MystiaManager.IsSprinting;
-        var inputDirection = MystiaManager.InputDirection;
 
-        NetPacket packet = NetPacket.Create(new SyncAction
+        var inputDirection = MystiaManager.InputDirection;
+        var position = MystiaManager.Instance.GetPosition();
+
+        NetPacket packet = null;
+        if (PluginManager.CurrentGameScene == Common.UI.Scene.WorkScene)
         {
-            IsSprinting = isSprinting,
-            Vx = inputDirection.x,
-            Vy = inputDirection.y,
-            MapLabel = mapLabel,
-            Px = position.x,
-            Py = position.y
-        });
+            packet = NetPacket.Create(new NightSyncAction
+            {
+                Vx = inputDirection.x,
+                Vy = inputDirection.y,
+                Px = position.x,
+                Py = position.y
+            });
+        }
+        else
+        {
+            var mapLabel = MystiaManager.MapLabel;
+            var isSprinting = MystiaManager.IsSprinting;
+
+            packet = NetPacket.Create(new SyncAction
+            {
+                IsSprinting = isSprinting,
+                Vx = inputDirection.x,
+                Vy = inputDirection.y,
+                MapLabel = mapLabel,
+                Px = position.x,
+                Py = position.y
+            });
+        }
+
         SendToPeer(packet);
     }
 
@@ -321,6 +337,11 @@ public class MpManager
 
     public void SendPrep(PrepAction.Table prepTable, bool ready = false)
     {
+        if (!IsConnected)
+        {
+            return;
+        }
+        
         NetPacket packet = NetPacket.Create(new PrepAction
         {
             PrepTable = prepTable,

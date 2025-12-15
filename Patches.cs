@@ -7,7 +7,7 @@ using GameData.RunTime.Common;
 using System.Collections.Generic;
 using System.Linq;
 using Common.UI;
-using Il2CppSystem;
+using DEYU.Utils;
 
 namespace MetaMystia;
 
@@ -25,13 +25,12 @@ public class CharacterInputPatch : PatchBase<CharacterInputPatch>
     [HarmonyPrefix]
     public static void UpdateInputDirection_Prefix(CharacterControllerInputGeneratorComponent __instance, ref Vector2 inputDirection)
     {
-        if (!MpManager.Instance.IsConnected || PluginManager.Instance.CurrentGameScene == Scene.IzakayaPrepScene)
+        if (!MpManager.Instance.IsConnected)
         {
             return;
         }
 
-        // TODO: sync for night scene
-        if (PluginManager.Instance.CurrentGameScene == Scene.WorkScene)
+        if (PluginManager.CurrentGameScene != Scene.DayScene && PluginManager.CurrentGameScene != Scene.WorkScene)
         {
             return;
         }
@@ -43,8 +42,13 @@ public class CharacterInputPatch : PatchBase<CharacterInputPatch>
 
         try
         {
-            var playerInputGenerator = MystiaManager.Instance.GetInputGenerator();
-            if (playerInputGenerator != null && __instance == playerInputGenerator)
+            var characterCollection = Common.SceneDirector.Instance.characterCollection;
+            if (!characterCollection.ContainsKey("Self"))
+            {
+                Log.LogWarning($"{LOG_TAG} characterCollection does not contain 'Self' key");
+                return;
+            }
+            if (__instance.name == characterCollection["Self"].name)
             {
                 MystiaManager.InputDirection = inputDirection;
                 MpManager.Instance.SendSync();
@@ -108,6 +112,7 @@ public class CharacterControllerUnitInitializePatch : PatchBase<CharacterControl
     [HarmonyPrefix]
     public static void Initialize_Prefix(CharacterControllerUnit __instance, ref bool shouldTurnOnCollider)
     {
+        // TODO: 使用新 API 方案来替换 KyoukoNames 方案，并设置 IgnoreCollision
         var kyoukoNames = new List<string>
         {
             "幽谷响子", // CHS
@@ -120,6 +125,11 @@ public class CharacterControllerUnitInitializePatch : PatchBase<CharacterControl
             shouldTurnOnCollider = true;
             Log.LogMessage($"{LOG_TAG} found {__instance.name}, forcing shouldTurnOnCollider to true");
         } 
+        if (__instance.name == KyoukoManager.KYOUKO_ID)
+        {
+            shouldTurnOnCollider = true;
+            Log.LogMessage($"{LOG_TAG} found {__instance.name}, forcing shouldTurnOnCollider to true");
+        }
     }
 }
 
@@ -130,7 +140,9 @@ public class DaySceneSceneManagerPatch : PatchBase<DaySceneSceneManagerPatch>
     [HarmonyPostfix]
     public static void Awake_Postfix()
     {
-        PluginManager.Instance.CurrentGameScene = Scene.DayScene;
+        PluginManager.CurrentGameScene = Scene.DayScene;
+        MystiaManager.Instance.Initialize();
+        KyoukoManager.Initialize();
         Log.LogInfo($"{LOG_TAG} CurrentGameStage switched to DayScene");
     }
 
@@ -167,6 +179,8 @@ public class DaySceneSceneManagerPatch : PatchBase<DaySceneSceneManagerPatch>
                 00->01, 10->11 为 MpManager 触发
                     00->01: 正常更新状态，不触发 OnDayOver_Prefix 也不执行 OnDayOver
                     10->11: 需要先显示「准备完成」对话框再在其回调中执行 OnDayOver
+            
+            BUG & TODO: 解决当游戏原有结束剧情时的错误处理
         */
 
         Log.LogDebug($"{LOG_TAG} Day over detected");
@@ -355,6 +369,14 @@ public class UniversalGameManagerPatch : PatchBase<UniversalGameManagerPatch>
         );
         return false;
     }
+
+    [HarmonyPatch(nameof(Common.UI.UniversalGameManager.LoadScene))]
+    [HarmonyPrefix]
+    public static void LoadScene_Prefix()
+    {
+        PluginManager.CurrentGameScene = Common.UI.Scene.LoadScene;
+        Log.LogInfo($"{LOG_TAG} LoadScene called.");
+    }
 }
 
 
@@ -371,17 +393,6 @@ public class DaySceneMapProfilePatch : PatchBase<DaySceneMapProfilePatch>
         Log.LogWarning($"DaySceneMapProfile created: {__instance.name}");
         instanceRef = __instance;
     }
-
-    // [HarmonyPatch("allMapNodes", MethodType.Getter)]
-    // [HarmonyPostfix]
-    // public static void EnableDebugCosole_Postfix(ref Il2CppReferenceArray<GameData.Profile.DaySceneMapProfile.MapNode> __result)
-    // {
-        
-    //     foreach (var node in __result)
-    //     {
-    //         Log.LogWarning($"MapNode: {node.mapName}");
-    //     }
-    // }
 }
 
 [HarmonyPatch]
@@ -391,15 +402,27 @@ public class SceneManagerPatch : PatchBase<SceneManagerPatch>
     [HarmonyPostfix]
     public static void NightScene_Start_Postfix()
     {
-        PluginManager.Instance.CurrentGameScene = Scene.WorkScene;
+        PluginManager.CurrentGameScene = Scene.WorkScene;
         Log.LogInfo($"{LOG_TAG} CurrentGameStage switched to WorkScene");
+        if (!MpManager.Instance.IsConnected) // DEBUG: only for test
+        {
+            return;
+        }
+
+        MystiaManager.Instance.Initialize();
+        KyoukoManager.Initialize();
+        PluginManager.Instance.RunOnMainThread(() =>
+        {
+            var position = MystiaManager.Instance.GetPosition();
+            KyoukoManager.SpawnNightKyouko(position, true, true);
+        }, () => Common.SceneDirector.instance.characterCollection.ContainsKey("Self"));
     }
 
     [HarmonyPatch(typeof(MainScene.SceneManager), nameof(MainScene.SceneManager.Awake))]
     [HarmonyPostfix]
     public static void MainScene_Awake_Postfix()
     {
-        PluginManager.Instance.CurrentGameScene = Scene.MainScene;
+        PluginManager.CurrentGameScene = Scene.MainScene;
         Log.LogInfo($"{LOG_TAG} CurrentGameStage switched to MainScene");
     }
 
@@ -407,7 +430,7 @@ public class SceneManagerPatch : PatchBase<SceneManagerPatch>
     [HarmonyPostfix]
     public static void StaffScene_Start_Postfix()
     {
-        PluginManager.Instance.CurrentGameScene = Scene.StaffScene;
+        PluginManager.CurrentGameScene = Scene.StaffScene;
         Log.LogInfo($"{LOG_TAG} CurrentGameStage switched to StaffScene");
     }
 }
@@ -560,9 +583,10 @@ public class PrepNightSceneSceneManagerPatch : PatchBase<PrepNightSceneSceneMana
     [HarmonyPostfix]
     public static void PrepNightScene_Start_Postfix()
     {
-        PluginManager.Instance.CurrentGameScene = Scene.IzakayaPrepScene;
-        PrepSceneManager.ClearLocalPrepData();
+        PluginManager.CurrentGameScene = Scene.IzakayaPrepScene;
+        PrepSceneManager.init();
         Log.LogInfo($"{LOG_TAG} CurrentGameStage switched to IzakayaPrepScene");
+        
     }
     
     [HarmonyPatch(nameof(PrepNightScene.SceneManager.ToWork))]

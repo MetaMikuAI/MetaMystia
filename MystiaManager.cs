@@ -37,6 +37,17 @@ public class MystiaManager
     {
     }
 
+    public void Initialize()
+    {
+        Log.LogInfo($"{LOG_TAG} MystiaManager initialized");
+
+        _cachedInputGenerator = null;
+        MapLabel = "";
+        IsSprinting = false;
+        InputDirection = Vector2.zero;
+        IsReady = false;
+    }
+
     public DayScene.Input.DayScenePlayerInputGenerator GetInputGenerator(bool forceRefresh = false)
     {
         if (_cachedInputGenerator == null || forceRefresh)
@@ -58,16 +69,31 @@ public class MystiaManager
         return _cachedInputGenerator;
     }
 
-    private CharacterControllerUnit GetCharacterUnit(bool forceRefresh = false)
+    public CharacterControllerUnit GetCharacterUnit(bool forceRefresh = false)
     {
-        var inputGenerator = GetInputGenerator(forceRefresh);
-        if (inputGenerator == null)
+        
+        switch (PluginManager.CurrentGameScene)
         {
-            Log.LogWarning($"{LOG_TAG} GetInputGenerator returned null");
-            return null;
+            case Common.UI.Scene.DayScene:
+                var inputGenerator = GetInputGenerator(forceRefresh);
+                if (inputGenerator == null)
+                {
+                    Log.LogWarning($"{LOG_TAG} GetInputGenerator returned null");
+                    return null;
+                }
+                var characterUnit = inputGenerator.Character;
+                return characterUnit;        
+            case Common.UI.Scene.WorkScene:
+                if (!Common.SceneDirector.Instance.characterCollection.ContainsKey("Self"))
+                {
+                    Log.LogWarning($"{LOG_TAG} Character 'Self' not found in character collection");
+                    return null;
+                }
+                return Common.SceneDirector.Instance.characterCollection["Self"];
+            default:
+                Log.LogWarning($"{LOG_TAG} GetCharacterComponent called in invalid scene");
+                return null;
         }
-        var characterUnit = inputGenerator.Character;
-        return characterUnit;
     }
 
     private Rigidbody2D GetRigidbody2D(bool forceRefresh = false)

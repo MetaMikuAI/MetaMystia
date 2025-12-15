@@ -2,15 +2,14 @@ using BepInEx.Logging;
 using UnityEngine;
 using Common.CharacterUtility;
 using DayScene.Interactables.Collections.ConditionComponents;
+using AsmResolver.DotNet;
+using DEYU.Utils;
 
 namespace MetaMystia;
 
-public class KyoukoManager
+public static class KyoukoManager
 {
-    private static KyoukoManager _instance;
-    private static readonly object _lock = new object();
-    
-    public const string KYOUKO_ID = "Kyouko";
+    public static readonly string KYOUKO_ID = "Kyouko";
     private static ManualLogSource Log => Plugin.Instance.Log;
 
     public static string MapLabel { get; private set; }
@@ -25,24 +24,18 @@ public class KyoukoManager
     public static int IzakayaLevel = 0;
 
     private static readonly string LOG_TAG = "[KyoukoManager.cs]";
+    private static bool FirstSync = true;
 
-    public static KyoukoManager Instance
-    {
-        get
-        {
-            if (_instance == null)
-            {
-                lock (_lock)
-                {
-                    _instance ??= new KyoukoManager();
-                }
-            }
-            return _instance;
-        }
-    }
 
-    private KyoukoManager()
+    public static void Initialize()
     {
+        MapLabel = "";
+        actualVelocity = Vector2.zero;
+        positionOffset = Vector2.zero;
+        currectVelocity = Vector2.zero;
+        IsReady = true;
+        FirstSync = true;
+        Log.LogMessage($"{LOG_TAG} KyoukoManager initialized");
     }
 
     public static void OnFixedUpdate()
@@ -94,27 +87,40 @@ public class KyoukoManager
         characterUnit.UpdateInputVelocity(velocity);
     }
 
-    public static CharacterConditionComponent GetCharacterComponent()
-    {
-        return DayScene.DaySceneMap.TryGetCharacter(KYOUKO_ID);
-    }
-
     public static CharacterControllerUnit GetCharacterUnit()
     {
-        var component = GetCharacterComponent();
-        if (component == null)
+        switch (PluginManager.CurrentGameScene)
         {
-            return null;
+            case Common.UI.Scene.DayScene:
+                return DayScene.DaySceneMap.TryGetCharacter(KYOUKO_ID).Character;        
+            case Common.UI.Scene.WorkScene:
+                if (!Common.SceneDirector.Instance.characterCollection.ContainsKey(KYOUKO_ID))
+                {
+                    Log.LogWarning($"{LOG_TAG} Character '{KYOUKO_ID}' not found in character collection");
+                    return null;
+                }
+                return Common.SceneDirector.Instance.characterCollection[KYOUKO_ID];
+            default:
+                Log.LogWarning($"{LOG_TAG} GetCharacterComponent called in invalid scene");
+                return null;
         }
+    }
 
-        var characterUnit = component.Character;
+    public static CharacterConditionComponent GetCharacterComponent()
+    {
+        var characterUnit = GetCharacterUnit();
         if (characterUnit == null)
         {
-            Log.LogWarning($"{LOG_TAG} CharacterControllerUnit of '{KYOUKO_ID}' is null");
+            return null;
+        }
+        var component = characterUnit.GetComponent<CharacterConditionComponent>();
+        if (component == null)
+        {
+            Log.LogWarning($"{LOG_TAG} CharacterConditionComponent of '{KYOUKO_ID}' is null");
             return null;
         }
 
-        return characterUnit;
+        return component;
     }
 
     public static Rigidbody2D GetRigidbody2D()
@@ -199,7 +205,8 @@ public class KyoukoManager
         if (positionOffset.magnitude > 3.0f) // 偏差距离超过 3 直接传送
         {
             Log.LogMessage($"{LOG_TAG} Position offset too large ({positionOffset.magnitude}), teleporting Kyouko to sync position");
-            GameData.RunTime.DaySceneUtility.RunTimeDayScene.MoveCharacter("Kyouko", MapLabel, syncPosition, 0, out var oldNPCData);
+            GameData.RunTime.DaySceneUtility.RunTimeDayScene.MoveCharacter(KYOUKO_ID, MapLabel, syncPosition, 0, out var oldNPCData);
+            GetCharacterUnit().rb2d.position = syncPosition;
             positionOffset = Vector2.zero;    
         }
 
@@ -221,6 +228,18 @@ public class KyoukoManager
     }
     public static void SyncFromPeer(string mapLabel, bool isSprinting, Vector2 inputDirection, Vector2 position)
     {
+        if (FirstSync)
+        {
+            GameData.RunTime.DaySceneUtility.RunTimeDayScene.MoveCharacter(KYOUKO_ID, mapLabel, position, 0, out var oldNPCData);
+            PluginManager.Instance.RunOnMainThread(() =>
+            {
+                AddHeightProcessor();
+                IgnoreCollisionWithSelf();
+            });
+            FirstSync = false;
+            Log.LogWarning($"{LOG_TAG} First sync received, added HeightProcessor to Kyouko");
+        }
+
         /*
             MetaMiku 注
                 UpdateInputDirection 被触发时会触发更新，每个同步包会同步 mapLabel, isSprinting, 速度, 位置
@@ -232,7 +251,7 @@ public class KyoukoManager
         {
             Log.LogMessage($"{LOG_TAG} Kyouko map changed from {MapLabel} to {mapLabel}, teleporting to new position");
             MapLabel = mapLabel;
-            GameData.RunTime.DaySceneUtility.RunTimeDayScene.MoveCharacter("Kyouko", mapLabel, position, 0, out var oldNPCData);
+            GameData.RunTime.DaySceneUtility.RunTimeDayScene.MoveCharacter(KYOUKO_ID, mapLabel, position, 0, out var oldNPCData);
             UpdateInputDirection(inputDirection);
             UpdateSprintState(isSprinting);
             MpManager.Instance.SendSync();
@@ -244,5 +263,73 @@ public class KyoukoManager
             UpdateSprintState(isSprinting);
             UpdateOffsetPosition(position);
         }
+    }
+
+    
+    public static void NightSyncFromPeer(Vector2 inputDirection, Vector2 position)
+    {
+        Log.LogDebug($"{LOG_TAG} NightSyncFromPeer, inputDirection: ({inputDirection.x}, {inputDirection.y}), position: ({position.x}, {position.y})");
+
+        UpdateInputDirection(inputDirection);
+        UpdateOffsetPosition(position);
+    }
+
+    public static void SpawnNightKyouko(Vector2 position, bool enableHeightProcessor = true, bool ignoreCollisionWithSelf = true)
+    {
+        Common.SceneDirector.Instance.SpawnCharacter(Common.SceneDirector.Identity.Special, 14, position, KYOUKO_ID);
+        Log.LogWarning($"{LOG_TAG} Spawned NightKyouko for testing");
+        if (enableHeightProcessor)
+        {
+            AddHeightProcessor();
+        }
+        if (ignoreCollisionWithSelf)
+        {
+            IgnoreCollisionWithSelf();
+        }
+    }
+
+    public static void AddHeightProcessor()
+    {
+        var characterUnit = GetCharacterUnit();
+        if (characterUnit == null)
+        {
+            Log.LogWarning($"{LOG_TAG} Failed to get CharacterControllerUnit for Kyouko");
+            return;
+        }
+        var heightProcessor = characterUnit.AddInputProcessor<Common.CharacterUtility.HeightBlendedInputProcessorComponent>();
+        
+        // var selfUnit = Common.SceneDirector.Instance.characterCollection["Self"];
+        // var selfHeightProcessor = selfUnit.gameObject.GetComponent<Common.CharacterUtility.HeightBlendedInputProcessorComponent>();
+        // heightProcessor.Initialize(selfHeightProcessor.heightMap);
+        
+        switch (PluginManager.CurrentGameScene)
+        {
+            case Common.UI.Scene.DayScene:
+                heightProcessor.Initialize(DayScene.SceneManager.Instance.CurrentActiveMap.height);
+                break;
+            case Common.UI.Scene.WorkScene:
+                heightProcessor.Initialize(NightScene.MapManager.Instance.height);
+                break;
+            default:
+                Log.LogWarning($"{LOG_TAG} AddHeightProcessor called in invalid scene");
+                break;
+        }
+
+        Log.LogWarning($"{LOG_TAG} Added HeightBlendedInputProcessorComponent to NightKyouko");
+    }
+
+    public static void IgnoreCollisionWithSelf()
+    {
+        var characterUnit = GetCharacterUnit();
+        if (characterUnit == null)
+        {
+            Log.LogWarning($"{LOG_TAG} Failed to get CharacterControllerUnit for Kyouko");
+            return;
+        }
+        Physics2D.IgnoreCollision(
+            characterUnit.cl2d,
+            Common.SceneDirector.Instance.characterCollection["Self"].cl2d,
+            true);
+        Log.LogWarning($"{LOG_TAG} Ignoring collision between NightKyouko and Self");
     }
 }
