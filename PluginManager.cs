@@ -4,6 +4,7 @@ using System;
 using Il2CppInterop.Runtime;
 using System.Collections.Concurrent;
 using Common.UI;
+using System.Globalization;
 
 namespace MetaMystia;
 public class PluginManager : MonoBehaviour
@@ -83,6 +84,53 @@ public class PluginManager : MonoBehaviour
             isTextVisible = !isTextVisible;
             Log.LogMessage($"{LOG_TAG} Toggled text visibility: " + isTextVisible);
         }
+
+        // F2 
+        if (Input.GetKeyDown(KeyCode.F2))
+        {
+            var characters = Common.SceneDirector.Instance.characterCollection; // Il2CppSystem.Collections.Generic.Dictionary<string, Common.CharacterUtility.CharacterControllerUnit>
+            foreach (var kvp in characters)
+            {
+                Log.LogWarning($"{LOG_TAG} Character Key: {kvp.Key}, Name: {kvp.Value.name}");
+            }
+            Log.LogWarning("");
+            // 经测试，在白天中，玩家角色的 Key 即为 "Self", Name 为 "PlayerInstance"
+            // 白天未加载户外场景时，字典中有且仅有 "Self" 一个角色
+            // 夜间中，玩家角色的 Key 仍为 "Self", Name 变为 "米斯蒂娅"（可能随 Localization 变化）
+        }
+
+        if (Input.GetKeyDown(KeyCode.F3))
+        {
+            Physics2D.IgnoreCollision(
+                Common.SceneDirector.Instance.characterCollection[NightKyoukoManager.KYOUKO_ID].cl2d,
+                Common.SceneDirector.Instance.characterCollection["Self"].cl2d,
+                true);
+            Log.LogMessage($"{LOG_TAG} Ignoring collision between NightKyouko and Self (manual)");
+        }
+        
+        var inputDirection = new Vector2(0, 0);
+        if (Input.GetKey(KeyCode.Keypad4))
+        {
+            inputDirection.x -= 1;
+        }
+        if (Input.GetKey(KeyCode.Keypad6))
+        {
+            inputDirection.x += 1;
+        }
+        if (Input.GetKey(KeyCode.Keypad8))
+        {
+            inputDirection.y += 1;
+        }
+        if (Input.GetKey(KeyCode.Keypad2))
+        {
+            inputDirection.y -= 1;
+        }
+        if (inputDirection != Vector2.zero)
+        {
+            var magnitude = inputDirection.magnitude;
+            inputDirection /= magnitude; // Normalize
+            NightKyoukoManager.UpdateInputDirection(inputDirection);
+        }
     }
 
     public void RunOnMainThread(Action action)
@@ -97,6 +145,9 @@ public class PluginManager : MonoBehaviour
         {
             case Scene.DayScene:
                 KyoukoManager.OnFixedUpdate();
+                break;
+            case Scene.WorkScene:
+                NightKyoukoManager.OnFixedUpdate();
                 break;
             default:
                 break;

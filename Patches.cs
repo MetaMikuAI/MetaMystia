@@ -7,7 +7,6 @@ using GameData.RunTime.Common;
 using System.Collections.Generic;
 using System.Linq;
 using Common.UI;
-using Il2CppSystem;
 
 namespace MetaMystia;
 
@@ -108,6 +107,7 @@ public class CharacterControllerUnitInitializePatch : PatchBase<CharacterControl
     [HarmonyPrefix]
     public static void Initialize_Prefix(CharacterControllerUnit __instance, ref bool shouldTurnOnCollider)
     {
+        // TODO: 使用新 API 方案来替换 KyoukoNames 方案，并设置 IgnoreCollision
         var kyoukoNames = new List<string>
         {
             "幽谷响子", // CHS
@@ -120,6 +120,11 @@ public class CharacterControllerUnitInitializePatch : PatchBase<CharacterControl
             shouldTurnOnCollider = true;
             Log.LogMessage($"{LOG_TAG} found {__instance.name}, forcing shouldTurnOnCollider to true");
         } 
+        if (__instance.name == NightKyoukoManager.KYOUKO_ID)
+        {
+            shouldTurnOnCollider = true;
+            Log.LogMessage($"{LOG_TAG} found {__instance.name}, forcing shouldTurnOnCollider to true");
+        }
     }
 }
 
@@ -371,17 +376,6 @@ public class DaySceneMapProfilePatch : PatchBase<DaySceneMapProfilePatch>
         Log.LogWarning($"DaySceneMapProfile created: {__instance.name}");
         instanceRef = __instance;
     }
-
-    // [HarmonyPatch("allMapNodes", MethodType.Getter)]
-    // [HarmonyPostfix]
-    // public static void EnableDebugCosole_Postfix(ref Il2CppReferenceArray<GameData.Profile.DaySceneMapProfile.MapNode> __result)
-    // {
-        
-    //     foreach (var node in __result)
-    //     {
-    //         Log.LogWarning($"MapNode: {node.mapName}");
-    //     }
-    // }
 }
 
 [HarmonyPatch]
@@ -393,6 +387,13 @@ public class SceneManagerPatch : PatchBase<SceneManagerPatch>
     {
         PluginManager.Instance.CurrentGameScene = Scene.WorkScene;
         Log.LogInfo($"{LOG_TAG} CurrentGameStage switched to WorkScene");
+        // if (!MpManager.Instance.IsConnected) // DEBUG: only for test
+        // {
+        //     return;
+        // }
+        NightKyoukoManager.SpawnNightKyouko();
+        NightKyoukoManager.IgnoreCollisionWithSelf();
+        NightKyoukoManager.AddHeightProcessor();
     }
 
     [HarmonyPatch(typeof(MainScene.SceneManager), nameof(MainScene.SceneManager.Awake))]

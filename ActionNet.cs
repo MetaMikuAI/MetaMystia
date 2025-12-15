@@ -15,6 +15,7 @@ public enum ActionType : ushort
     SELECT,
     CONFIRM,
     PREP,
+    NIGHTSYNC
 }
 
 [MemoryPackable]
@@ -27,6 +28,7 @@ public enum ActionType : ushort
 [MemoryPackUnion((ushort)ActionType.SELECT, typeof(SelectAction))]
 [MemoryPackUnion((ushort)ActionType.CONFIRM, typeof(ConfirmAction))]
 [MemoryPackUnion((ushort)ActionType.PREP, typeof(PrepAction))]
+[MemoryPackUnion((ushort)ActionType.NIGHTSYNC, typeof(NightSyncAction))]
 public abstract partial class NetAction
 {
     public abstract ActionType Type { get; }
@@ -300,5 +302,21 @@ public partial class PrepAction : NetAction
         {
             IzakayaConfigPannelPatch.instanceRef._SolveDailyCompletion_b__61_7();
         });
+    }
+}
+
+[MemoryPackable]
+public partial class NightSyncAction : NetAction
+{
+    public override ActionType Type => ActionType.SYNC;
+    public float Vx {get; set; }
+    public float Vy {get; set; }
+    public float Px {get; set; }
+    public float Py {get; set; }
+    public override void OnReceived()
+    {
+        Plugin.Instance.Log.LogInfo($"Received NIGHTSYNC: {this.ToString()}");
+        // PluginManager.Instance.RunOnMainThread(() =>
+            // KyoukoManager.SyncFromPeer(new UnityEngine.Vector2(Vx, Vy), new UnityEngine.Vector2(Px, Py)));
     }
 }

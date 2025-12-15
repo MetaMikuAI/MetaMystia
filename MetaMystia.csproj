@@ -93,6 +93,10 @@
       <HintPath>$(GamePath)\BepInEx\interop\UnityEngine.UIModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="UnityEngine.TilemapModule">
+      <HintPath>$(GamePath)\BepInEx\interop\UnityEngine.TilemapModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="UniTask">
       <HintPath>$(GamePath)\BepInEx\interop\UniTask.dll</HintPath>
       <Private>False</Private>
