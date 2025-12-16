@@ -92,7 +92,7 @@ public static class KyoukoManager
         switch (PluginManager.CurrentGameScene)
         {
             case Common.UI.Scene.DayScene:
-                return DayScene.DaySceneMap.TryGetCharacter(KYOUKO_ID).Character;        
+                return DayScene.DaySceneMap.TryGetCharacter(KYOUKO_ID)?.Character;        
             case Common.UI.Scene.WorkScene:
                 if (!Common.SceneDirector.Instance.characterCollection.ContainsKey(KYOUKO_ID))
                 {
