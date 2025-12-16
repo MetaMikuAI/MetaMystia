@@ -40,16 +40,16 @@ DayScene 篇
 - [x] 游戏内 Console
 - [x] 解决 Kyouko 无物理问题
 - [x] 提前加载 Kyouko
-- [ ] 解决剧情冲突问题
-- [ ] 切换到兽道时，Kyouko 会被游戏原逻辑重置，需要 hook 掉
 - [x] 同步"结束"
 - [x] 同步对话(由 余烬特调 提供)
 - [x] ping 显示
 - [x] 连接后立即同步位置
-- [ ] 禁用 Kyouko 交互
 - [x] 禁用 OnDayOver 时 Mystia 的个人 Dialog
-- [ ] 解决 Kyouko 无法上下坡的问题
+- [x] 解决 Kyouko 无法上下坡的问题
 - [x] 禁用等待 Kyouko 状态下交互
+- [ ] 禁用 Kyouko 交互
+- [ ] 切换到兽道时，Kyouko 会被游戏原逻辑重置，需要 hook 掉
+- [ ] 解决剧情冲突问题
 - [ ] 禁用等待 Kyouko 状态下切换地图
 
 营业准备篇
@@ -71,8 +71,9 @@ NightScene 篇
 - [ ] 同步稀客生成
 - [ ] 同步符卡奖励/惩罚
 - [ ] 同步厨具状态
-- [ ] 同步运动状态
-- [ ] 移除原有伙伴
+- [ ] 同步保温箱
+- [x] 同步运动状态
+- [x] 移除原有伙伴
 - [ ] 同步 buff
 - [ ] 同步时钟
 
@@ -83,7 +84,7 @@ NightScene 篇
 - [ ] InGameConsole 与原有面板 UI 冲突
 - [ ] 对话 UI 与面板 UI 冲突
 - [ ] InGameConsole 与场景切换冲突
-- [ ] DayScene Kyouko 移动缺少 *高度* 变化
+- [x] DayScene Kyouko 移动缺少 *高度* 变化
 - [ ] A 在 loading 时 B 选择厨具会使 A 进入 Prep 后显示错误的厨具列表
 - [ ] 地图选择界面中不会缺少店铺等级的提示
 
