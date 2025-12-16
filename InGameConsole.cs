@@ -408,10 +408,11 @@ namespace MetaMystia
 
         private void MultiplayerCommand(string[] args)
         {
+            const string subcommandHelp = "Subcommands: start, stop, restart, status, id, connect, disconnect";
             if (args.Length == 0)
             {
                 Log("Usage: /mp <subcommand> [args]");
-                Log("Subcommands: start, stop, restart, status, ping, id, connect, disconnect");
+                Log(subcommandHelp);
                 return;
             }
 
@@ -503,7 +504,7 @@ namespace MetaMystia
                     break; 
                 default:
                     Log($"Unknown subcommand: {subcommand}");
-                    Log("Available subcommands: start, stop, restart, status, ping, id, connect, disconnect");
+                    Log(subcommandHelp);
                     break;
             }
         }
@@ -592,19 +593,6 @@ namespace MetaMystia
                     catch (System.Exception e)
                     {
                         Log($"Error calling scene_move: {e.Message}");
-                    }
-                    break;
-                case "sc_move_kyouko_here":
-                    try
-                    {
-                        var arr = new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<Vector2>(1);
-                        arr[0] = MystiaManager.Instance.GetPosition();
-                        Common.SceneDirector.Instance.MoveCharacter(KyoukoManager.KYOUKO_ID, arr, 2.0f, new System.Action(() => {}));
-                        Log($"Moved character '{KyoukoManager.KYOUKO_ID}' to position {arr[0]}'.");
-                    }
-                    catch (System.Exception e)
-                    {
-                        Log($"Error calling sc_move_kyouko_here: {e.Message}");
                     }
                     break;
                 default:

@@ -194,7 +194,7 @@ public partial class SelectAction : NetAction
 [MemoryPackable]
 public partial class ConfirmAction : NetAction
 {
-    public override ActionType Type => ActionType.SELECT;
+    public override ActionType Type => ActionType.CONFIRM;
     public string MapLabel { get; set; } = "";
     public int Level { get; set; } = 0;
     public override void OnReceived()
@@ -305,7 +305,7 @@ public partial class PrepAction : NetAction
 [MemoryPackable]
 public partial class NightSyncAction : NetAction
 {
-    public override ActionType Type => ActionType.SYNC;
+    public override ActionType Type => ActionType.NIGHTSYNC;
     public float Vx {get; set; }
     public float Vy {get; set; }
     public float Px {get; set; }

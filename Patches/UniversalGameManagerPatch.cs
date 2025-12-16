@@ -8,7 +8,7 @@ namespace MetaMystia;
 [HarmonyPatch(typeof(Common.UI.UniversalGameManager))]
 public class UniversalGameManagerPatch : PatchBase<UniversalGameManagerPatch>
 {
-    [HarmonyPatch(nameof(Common.UI.UniversalGameManager.OpenDialogMenu))]
+    [HarmonyPatch(nameof(UniversalGameManager.OpenDialogMenu))]
     [HarmonyPrefix]
     public static bool OpenDialogMenu_Prefix(ref GameData.Profile.DialogPackage dialogPackage, Il2CppSystem.Action onFinishCallback, Il2CppSystem.Action<Dictionary<int, string>> overrideReplaceTextCallback = null, DEYU.AdpUISystem.Managers.AdpUIPanelManager.PanelVisualMode previousPanelVisualMode = DEYU.AdpUISystem.Managers.AdpUIPanelManager.PanelVisualMode.HideVisual)
     {
@@ -33,11 +33,11 @@ public class UniversalGameManagerPatch : PatchBase<UniversalGameManagerPatch>
         return false;
     }
 
-    [HarmonyPatch(nameof(Common.UI.UniversalGameManager.LoadScene))]
+    [HarmonyPatch(nameof(UniversalGameManager.LoadScene))]
     [HarmonyPrefix]
     public static void LoadScene_Prefix()
     {
-        PluginManager.CurrentGameScene = Common.UI.Scene.LoadScene;
+        PluginManager.CurrentGameScene = Scene.LoadScene;
         Log.LogInfo($"{LOG_TAG} LoadScene called.");
     }
 }

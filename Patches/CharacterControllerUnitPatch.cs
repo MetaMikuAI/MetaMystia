@@ -20,16 +20,12 @@ public class CharacterControllerUnitPatch : PatchBase<CharacterControllerUnitPat
             "幽谷響子", // CHT, JPN
             "Kyouko Kasodani",  // ENG
             "카소다니 쿄코", // KOR
+            KyoukoManager.KYOUKO_ID
         };
         if (kyoukoNames.Any(name => __instance.name.Equals(name)))
         {
             shouldTurnOnCollider = true;
             Log.LogMessage($"{LOG_TAG} found {__instance.name}, forcing shouldTurnOnCollider to true");
         } 
-        if (__instance.name == KyoukoManager.KYOUKO_ID)
-        {
-            shouldTurnOnCollider = true;
-            Log.LogMessage($"{LOG_TAG} found {__instance.name}, forcing shouldTurnOnCollider to true");
-        }
     }
 }
