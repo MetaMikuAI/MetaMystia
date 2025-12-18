@@ -8,10 +8,10 @@ using Common.DialogUtility;
 
 namespace MetaMystia;
 
-public static class DialogManager
+public static class Dialog
 {
     private static ManualLogSource Log => Plugin.Instance.Log;
-    private static readonly string LOG_TAG = "[DialogManager.cs]";
+    private static readonly string LOG_TAG = "[Dialogs.cs]";
     public static DialogPackage ExampleDialog = null;
 
     public static void BuildAndShow(

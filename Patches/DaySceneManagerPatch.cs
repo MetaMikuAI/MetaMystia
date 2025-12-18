@@ -78,12 +78,12 @@ public class DaySceneManagerPatch : PatchBase<DaySceneManagerPatch>
         MpManager.Instance.SendReady();
         if (KyoukoManager.IsReady)
         {
-            DialogManager.ShowReadyDialog(true, OnDayOver_Original);
+            Dialog.ShowReadyDialog(true, OnDayOver_Original);
             return false;
         }
         else
         {
-            DialogManager.ShowReadyDialog(false, null);
+            Dialog.ShowReadyDialog(false, null);
             return false;
         }
     }

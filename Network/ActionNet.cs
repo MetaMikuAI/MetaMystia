@@ -192,7 +192,7 @@ public partial class SelectAction : NetAction
             KyoukoManager.IzakayaMapLabel = MapLabel;
             KyoukoManager.IzakayaLevel = Level;
 
-            DialogManager.ShowInformDialog(KyoukoManager.IzakayaMapLabel, null);
+            Dialog.ShowInformDialog(KyoukoManager.IzakayaMapLabel, null);
         });
     }
 }
@@ -230,7 +230,7 @@ public partial class ConfirmAction : NetAction
             }
             KyoukoManager.IzakayaLevel = Level;
             KyoukoManager.IzakayaMapLabel = MapLabel;
-            DialogManager.ShowConfirmDialog(MapLabel, closePanelCallback);
+            Dialog.ShowConfirmDialog(MapLabel, closePanelCallback);
         });
     }
 }

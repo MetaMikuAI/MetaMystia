@@ -79,14 +79,14 @@ public class IzakayaSelectorPanelPatch : PatchBase<IzakayaSelectorPanelPatch>
         {
             Log.LogWarning($"{LOG_TAG} Kyouko has not selected an Izakaya yet -> send SELECT and skip");
             MpManager.Instance.SendSelectedIzakaya(izakayaMapLabel, izakayaLevel);
-            DialogManager.ShowSelectedDialog(izakayaMapLabel, null);
+            Dialog.ShowSelectedDialog(izakayaMapLabel, null);
             return false;
         }
 
         if (izakayaMapLabel != KyoukoManager.IzakayaMapLabel || izakayaLevel != KyoukoManager.IzakayaLevel)
         {
             Log.LogWarning($"{LOG_TAG} Selected Izakaya does not match Kyouko's selection -> show rejection dialog");
-            DialogManager.ShowRejectDialog(izakayaMapLabel, KyoukoManager.IzakayaMapLabel, null);
+            Dialog.ShowRejectDialog(izakayaMapLabel, KyoukoManager.IzakayaMapLabel, null);
             return false;
         }
 
@@ -99,7 +99,7 @@ public class IzakayaSelectorPanelPatch : PatchBase<IzakayaSelectorPanelPatch>
             _skipPatchIzakayaSelectionConfirmation = false;
         };
 
-        DialogManager.ShowConfirmDialog(izakayaMapLabel, closePanelCallback);
+        Dialog.ShowConfirmDialog(izakayaMapLabel, closePanelCallback);
         return false;
     }
 
