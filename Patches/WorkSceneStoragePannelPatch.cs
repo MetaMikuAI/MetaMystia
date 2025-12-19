@@ -34,6 +34,6 @@ public class WorkSceneStoragePannelPatch : PatchBase<WorkSceneStoragePannelPatch
     {
         Plugin.Instance.Log.LogDebug("OnExtract_Prefix called");
         SellableFood food = SellableFood.FromSellable(toExtract);
-        MpManager.Instance.SendExtractFood(food);
+        MpManager.SendExtractFood(food);
     }
 }

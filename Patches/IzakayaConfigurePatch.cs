@@ -90,10 +90,10 @@ public class IzakayaConfigurePatch : PatchBase<IzakayaConfigurePatch>
     {
         Log.LogWarning(sellable.ToString());
         if (_skipPatchStoreFood) return;
-        if (!MpManager.Instance.IsConnected) return;
+        if (!MpManager.IsConnected) return;
 
         var food = SellableFood.FromSellable(sellable);
-        MpManager.Instance.SendStoreFood(food);
+        MpManager.SendStoreFood(food);
     }
     
 }
