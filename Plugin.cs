@@ -57,6 +57,7 @@ public class Plugin : BasePlugin
                 typeof(RunTimeSchedulerPatch),
                 typeof(StaffSceneManagerPatch),
                 typeof(UniversalGameManagerPatch),
+                typeof(WorkSceneStoragePannelPatch),
             };
             foreach (var patch in patchList)
             {

@@ -5,7 +5,7 @@ namespace MetaMystia;
 [MemoryPackable]
 public partial class ExtractAction : NetAction
 {
-    public override ActionType Type => ActionType.COOK;
+    public override ActionType Type => ActionType.EXTRACT;
     public int GridIndex { get; set; }
     public override void OnReceived()
     {

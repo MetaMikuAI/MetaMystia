@@ -350,8 +350,7 @@ public class MpManager
         SendToPeer(packet);
     }
 
-    
-    public void SendCook(int gridIndex, int foodId, int recipeId, int[] modifierIds)
+    public void SendCook(int gridIndex, SellableFood food, int recipeId)
     {
         if (!IsConnected)
         {
@@ -361,9 +360,8 @@ public class MpManager
         NetPacket packet = NetPacket.Create(new CookAction
         {
             GridIndex = gridIndex,
-            FoodId = foodId,
             RecipeId = recipeId,
-            ModifierIds = modifierIds
+            Food = food
         });
         SendToPeer(packet);
     }
@@ -393,6 +391,34 @@ public class MpManager
         {
             GridIndex = gridIndex,
             QTEScore = qteScore
+        });
+        SendToPeer(packet);
+    }
+
+    public void SendStoreFood(SellableFood food)
+    {
+        if (!IsConnected)
+        {
+            return;
+        }
+        
+        NetPacket packet = NetPacket.Create(new StoreFoodAction
+        {
+            Food = food
+        });
+        SendToPeer(packet);
+    }
+
+    public void SendExtractFood(SellableFood food)
+    {
+        if (!IsConnected)
+        {
+            return;
+        }
+        
+        NetPacket packet = NetPacket.Create(new ExtractFoodAction
+        {
+            Food = food
         });
         SendToPeer(packet);
     }

@@ -16,7 +16,9 @@ public enum ActionType : ushort
     NIGHTSYNC,
     COOK,
     EXTRACT,
-    QTE
+    QTE,
+    STOREFOOD,
+    EXTRACTFOOD,
 }
 
 [MemoryPackable]
@@ -33,6 +35,8 @@ public enum ActionType : ushort
 [MemoryPackUnion((ushort)ActionType.COOK, typeof(CookAction))]
 [MemoryPackUnion((ushort)ActionType.EXTRACT, typeof(ExtractAction))]
 [MemoryPackUnion((ushort)ActionType.QTE, typeof(QTEAction))]
+[MemoryPackUnion((ushort)ActionType.STOREFOOD, typeof(StoreFoodAction))]
+[MemoryPackUnion((ushort)ActionType.EXTRACTFOOD, typeof(ExtractFoodAction))]
 public abstract partial class NetAction
 {
     public abstract ActionType Type { get; }

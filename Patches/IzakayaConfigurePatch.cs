@@ -1,5 +1,7 @@
 using HarmonyLib;
 using GameData.RunTime.NightSceneUtility;
+using GameData.Core.Collections;
+using System.Security.Principal;
 
 namespace MetaMystia;
 
@@ -72,4 +74,26 @@ public class IzakayaConfigurePatch : PatchBase<IzakayaConfigurePatch>
     {
         Log.LogInfo($"{LOG_TAG} LogOffFromCookers: {index}");
     }
+
+
+    private static bool _skipPatchStoreFood = false;
+    public static void StoreFood_Original(Sellable sellable, int messageSender = -1)
+    {
+        _skipPatchStoreFood = true;
+        IzakayaConfigure.Instance.StoreFood(sellable, messageSender);
+        _skipPatchStoreFood = false;
+    }
+    
+    [HarmonyPatch(nameof(IzakayaConfigure.StoreFood))]
+    [HarmonyPrefix]
+    public static void StoreFood_Prefix(Sellable sellable)
+    {
+        Log.LogWarning(sellable.ToString());
+        if (_skipPatchStoreFood) return;
+        if (!MpManager.Instance.IsConnected) return;
+
+        var food = SellableFood.FromSellable(sellable);
+        MpManager.Instance.SendStoreFood(food);
+    }
+    
 }

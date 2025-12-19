@@ -22,10 +22,9 @@ public class CookControllerPatch : PatchBase<CookControllerPatch>
     {
         // Log.LogDebug($"{LOG_TAG} SetCook_Postfix called for food:\n {thisResult.ToString()}\n\nrecipe:\n {recipe.ToString()}\n\nthisCouldReturnIngredients: {thisCouldReturnIngredients}"); 
         var gridIndex = __instance.GridIndex;
-        var foodId = thisResult.Id;
         var recipeId = recipe.Id;
-        var modifier = thisResult.Modifier;
-        MpManager.Instance.SendCook(gridIndex, foodId, recipeId, modifier);
+        SellableFood food = SellableFood.FromSellable(thisResult);
+        MpManager.Instance.SendCook(gridIndex, food, recipeId);
     }
 
     [HarmonyPatch(nameof(CookController.Extract))]
