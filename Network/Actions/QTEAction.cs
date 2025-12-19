@@ -10,12 +10,13 @@ public partial class QTEAction : NetAction
     public float QTEScore { get; set; }
     public override void OnReceived()
     {
+        LogActionReceived();
         PluginManager.Instance.RunOnMainThread(() =>
         {
             var cookerController = CookManager.GetCookerControllerByIndex(GridIndex);
             if (cookerController == null)
             {
-                Plugin.Instance.Log.LogWarning($"Failed to find CookerController with GridIndex={GridIndex}");
+                Log.LogWarning($"Failed to find CookerController with GridIndex={GridIndex}");
                 return;
             }
             CookControllerPatch.StartCookCountDown_Original(cookerController, QTEScore, false);

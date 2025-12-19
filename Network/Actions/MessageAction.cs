@@ -6,11 +6,13 @@ namespace MetaMystia;
 public partial class MessageAction : NetAction
 {
     public override ActionType Type => ActionType.MESSAGE;
+    
+    [MemoryPackIgnore]
     private const int maxMessageLen = 1024;
     public string Message {get; private set; }
     public override void OnReceived()
     {
-        Plugin.Instance.Log.LogInfo($"Received MESSAGE: {Message}");
+        LogActionReceived();
         PluginManager.Console.AddPeerMessage(Message);
         FloatingTextHelper.ShowFloatingTextOnMainThread(KyoukoManager.GetCharacterComponent(), Message);
     }

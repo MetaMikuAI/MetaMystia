@@ -9,10 +9,10 @@ public partial class ReadyAction : NetAction
     public bool IsReady {get; set; }
     public override void OnReceived()
     {
-        Plugin.Instance.Log.LogInfo($"Received READY: {IsReady}");
+        LogActionReceived();
         if (PluginManager.CurrentGameScene != Common.UI.Scene.DayScene)
         {
-            Plugin.Instance.Log.LogWarning("READY action received outside DayScene, ignoring.");
+            Log.LogWarning("READY action received outside DayScene, ignoring.");
             return;
         }
         KyoukoManager.IsReady = true;
@@ -21,6 +21,6 @@ public partial class ReadyAction : NetAction
             PluginManager.Instance.RunOnMainThread(DaySceneManagerPatch.OnDayOver_Original);
         }
         // else: 00->01: Nope
-        Plugin.Instance.Log.LogInfo("Kyouko is ready");
+        Log.LogInfo("Kyouko is ready");
     }
 }

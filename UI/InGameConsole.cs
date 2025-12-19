@@ -421,19 +421,19 @@ namespace MetaMystia
             switch (subcommand)
             {
                 case "start":
-                    MpManager.Instance.Start();
+                    MpManager.Start();
                     Log("Multiplayer started");
                     break;
                 case "stop":
-                    MpManager.Instance.Stop();
+                    MpManager.Stop();
                     Log("Multiplayer stopped");
                     break;
                 case "restart":
-                    MpManager.Instance.Restart();
+                    MpManager.Restart();
                     Log("Multiplayer restarted");
                     break;
                 case "status":
-                    Log(MpManager.Instance.GetStatus());
+                    Log(MpManager.GetStatus());
                     break;
                 case "id":
                     if (args.Length < 2)
@@ -441,7 +441,7 @@ namespace MetaMystia
                         Log("Usage: mp id <new_id>");
                         break;
                     }
-                    MpManager.Instance.PlayerId = args[1];
+                    MpManager.PlayerId = args[1];
                     Log($"Player ID set to {args[1]}");
                     break;
                 case "connect":
@@ -465,21 +465,21 @@ namespace MetaMystia
                             string portStr = address[(idx + 1)..];
 
                             if (int.TryParse(portStr, out int port))
-                                result = MpManager.Instance.ConnectToPeer(host, port);
+                                result = MpManager.ConnectToPeer(host, port);
                             else
-                                result = MpManager.Instance.ConnectToPeer(address);
+                                result = MpManager.ConnectToPeer(address);
                         }
                         else
                         {
-                            result = MpManager.Instance.ConnectToPeer(address);
+                            result = MpManager.ConnectToPeer(address);
                         }
                     }
                     else
                     {
                         if (int.TryParse(args[2], out int port))
-                            result = MpManager.Instance.ConnectToPeer(address, port);
+                            result = MpManager.ConnectToPeer(address, port);
                         else
-                            result = MpManager.Instance.ConnectToPeer(address);
+                            result = MpManager.ConnectToPeer(address);
                     }
 
                     if (result)
@@ -492,13 +492,13 @@ namespace MetaMystia
                     }
                     break;
                 case "disconnect":
-                    if (!MpManager.Instance.IsConnected)
+                    if (!MpManager.IsConnected)
                     {
                         Log("No active connection");
                     }
                     else
                     {
-                        MpManager.Instance.DisconnectPeer();
+                        MpManager.DisconnectPeer();
                         Log("Disconnected");
                     }
                     break; 
@@ -511,13 +511,13 @@ namespace MetaMystia
 
         private void MessageCommand(string msg)
         {
-            if (!MpManager.Instance.IsConnected)
+            if (!MpManager.IsConnected)
             {
                 Log("No active connection");
             }
             else
             {
-                MpManager.Instance.SendMessage(msg);
+                MpManager.SendMessage(msg);
                 Log($"Sent {msg}");
             }
         }

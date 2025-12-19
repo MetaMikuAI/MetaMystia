@@ -15,7 +15,7 @@ public partial class ConfirmAction : NetAction
         // -> 检查已有选择，不匹配则应强制修改
         // -> 展示「确认」对话
         // -> 对话回调中调用 _OnGuideMapInitialize_b__21_0 以结束
-        Plugin.Instance.Log.LogInfo($"Received CONFIRM: {MapLabel}, {Level}");
+        LogActionReceived();
 
         PluginManager.Instance.RunOnMainThread(() =>
         {

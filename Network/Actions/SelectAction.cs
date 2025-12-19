@@ -11,8 +11,7 @@ public partial class SelectAction : NetAction
     public int Level { get; set; } = 0;
     public override void OnReceived()
     {
-        // 接收 SELECT 包，缓存并展示「提示」对话
-        Plugin.Instance.Log.LogInfo($"Received SELECT: {MapLabel}, {Level}");
+        LogActionReceived();
         PluginManager.Instance.RunOnMainThread(() =>
         {
             KyoukoManager.IzakayaMapLabel = MapLabel;

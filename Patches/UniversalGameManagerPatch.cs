@@ -18,7 +18,7 @@ public class UniversalGameManagerPatch : PatchBase<UniversalGameManagerPatch>
         //     使用携带原有 onFinishCallback 回调的空对话包替代原有对话包实现
 
         // Log.LogInfo($"{LOG_TAG} OpenDialogMenu called with dialogPackage: {dialogPackage?.name}");
-        if (!MpManager.Instance.IsConnected || dialogPackage?.name != "OnTransitionToNight") // dialogPackage 可能为空
+        if (!MpManager.IsConnected || dialogPackage?.name != "OnTransitionToNight") // dialogPackage 可能为空
         {
             return true;
         }

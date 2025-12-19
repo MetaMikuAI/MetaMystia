@@ -14,7 +14,7 @@ public partial class SyncAction : NetAction
     public string MapLabel {get; set; }
     public override void OnReceived()
     {
-        Plugin.Instance.Log.LogInfo($"Received SYNC: {this.ToString()}");
+        LogActionReceived();
         PluginManager.Instance.RunOnMainThread(() =>
             KyoukoManager.SyncFromPeer(MapLabel, IsSprinting,
                 new UnityEngine.Vector2(Vx, Vy), new UnityEngine.Vector2(Px, Py)));

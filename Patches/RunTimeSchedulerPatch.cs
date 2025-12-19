@@ -10,6 +10,6 @@ public class RunTimeSchedulerPatch : PatchBase<RunTimeSchedulerPatch>
     public static void OnEnterDaySceneMap_Postfix(string mapLabel)
     {
         MystiaManager.MapLabel = mapLabel;
-        MpManager.Instance.SendSync();
+        MpManager.SendSync();
     }
 }

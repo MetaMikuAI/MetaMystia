@@ -51,7 +51,7 @@ public class IzakayaSelectorPanelPatch : PatchBase<IzakayaSelectorPanelPatch>
         
         Log.LogInfo($"{LOG_TAG} _OnGuideMapInitialize_b__21_0 called");
 
-        if (!MpManager.Instance.IsConnected)
+        if (!MpManager.IsConnected)
         {
             Log.LogWarning($"{LOG_TAG} Not in multiplayer session, skipping patch");
             return true;
@@ -78,7 +78,7 @@ public class IzakayaSelectorPanelPatch : PatchBase<IzakayaSelectorPanelPatch>
         if (KyoukoManager.IzakayaMapLabel == "" || KyoukoManager.IzakayaLevel == 0)
         {
             Log.LogWarning($"{LOG_TAG} Kyouko has not selected an Izakaya yet -> send SELECT and skip");
-            MpManager.Instance.SendSelectedIzakaya(izakayaMapLabel, izakayaLevel);
+            MpManager.SendSelectedIzakaya(izakayaMapLabel, izakayaLevel);
             Dialog.ShowSelectedDialog(izakayaMapLabel, null);
             return false;
         }
@@ -91,7 +91,7 @@ public class IzakayaSelectorPanelPatch : PatchBase<IzakayaSelectorPanelPatch>
         }
 
         Log.LogWarning($"{LOG_TAG} Selected Izakaya matches Kyouko's selection -> send CONFIRM and show confirmation dialog");
-        MpManager.Instance.SendConfirmedIzakaya(izakayaMapLabel, izakayaLevel);
+        MpManager.SendConfirmedIzakaya(izakayaMapLabel, izakayaLevel);
         
         System.Action closePanelCallback = () => {
             _skipPatchIzakayaSelectionConfirmation = true;

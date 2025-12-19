@@ -41,7 +41,6 @@ public abstract partial class NetAction
 {
     public abstract ActionType Type { get; }
     public abstract void OnReceived();
-
     public override string ToString()
     {
         return System.Text.Json.JsonSerializer.Serialize((object)this,
@@ -51,4 +50,19 @@ public abstract partial class NetAction
                 IncludeFields = true
             });
     }
+
+    protected virtual void LogActionReceived(bool OnlyAction = false)
+    {
+        if (OnlyAction)
+        {
+            Log.LogInfo($"Received {Type}");
+        }
+        else
+        {
+            Log.LogInfo($"Received {Type}: {ToString()}");
+        }
+    }
+
+    [MemoryPackIgnore]
+    protected static BepInEx.Logging.ManualLogSource Log => Plugin.Instance.Log;
 }

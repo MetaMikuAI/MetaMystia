@@ -38,7 +38,7 @@ public class DaySceneManagerPatch : PatchBase<DaySceneManagerPatch>
             return true;
         }
         
-        if (!MpManager.Instance.IsConnected)
+        if (!MpManager.IsConnected)
         {
             Log.LogDebug($"{LOG_TAG} Not in multiplayer session, skipping prefix");
             return true;
@@ -75,7 +75,7 @@ public class DaySceneManagerPatch : PatchBase<DaySceneManagerPatch>
 
 
         MystiaManager.IsReady = true;
-        MpManager.Instance.SendReady();
+        MpManager.SendReady();
         if (KyoukoManager.IsReady)
         {
             Dialog.ShowReadyDialog(true, OnDayOver_Original);
