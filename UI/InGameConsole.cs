@@ -10,19 +10,19 @@ namespace MetaMystia
     public class InGameConsole
     {
         private static BepInEx.Logging.ManualLogSource PluginLog => Plugin.Instance.Log;
-        private bool _isOpen = false;
         public bool IsOpen
         {
-            get => _isOpen;
+            get;
             set
             {
-                if (_isOpen != value)
+                if (field != value)
                 {
-                    _isOpen = value;
+                    field = value;
                     UpdateGameInputState();
                 }
             }
-        }
+        } = false;
+
         private string input = "";
         private Vector2 scrollPosition;
         private List<string> logs = [];
@@ -76,12 +76,12 @@ namespace MetaMystia
             // 3. Toggle EventSystem to block UI navigation (Main Menu AD/JK)
             // We use sendNavigationEvents instead of enabled, because disabling the component
             // makes EventSystem.current return null, preventing us from re-enabling it later.
-            var eventSystem = EventSystem.current;
-            if (eventSystem != null)
-            {
-                eventSystem.sendNavigationEvents = !IsOpen;
-                PluginLog.LogDebug($"Console: EventSystem sendNavigationEvents = {eventSystem.sendNavigationEvents}");
-            }
+            // var eventSystem = EventSystem.current;
+            // if (eventSystem != null)
+            // {
+            //     eventSystem.sendNavigationEvents = !IsOpen;
+            //     PluginLog.LogDebug($"Console: EventSystem sendNavigationEvents = {eventSystem.sendNavigationEvents}");
+            // }
         }
 
         public void Update()
@@ -450,7 +450,7 @@ namespace MetaMystia
                         Log("Usage: mp connect <ip> <port>(optional)");
                         break;
                     }
-                    PluginLog.LogMessage($"args length: {args.Length}, arg[1] {args[1]}" );
+                    // args[0]: connect, args[1]: ip or ip:port, args[2]: port
                     string address = args[1];
 
                     string host;

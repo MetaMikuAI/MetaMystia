@@ -44,7 +44,7 @@ public static class FloatingTextHelper
             UnityEngine.Object.Destroy(activeTextSelf);
         }
         
-        var character = MystiaManager.Instance.GetInputGenerator().Character;
+        var character = MystiaManager.Instance.GetCharacterUnit();
         activeTextSelf = MakeFloatingText(character.transform, text);         
         character.StartCoroutine(FadeAndDestroy(activeTextSelf.GetComponent<TextMeshPro>(), duration));
     }
