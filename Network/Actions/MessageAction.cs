@@ -14,7 +14,7 @@ public partial class MessageAction : NetAction
     {
         LogActionReceived();
         PluginManager.Console.AddPeerMessage(Message);
-        FloatingTextHelper.ShowFloatingTextOnMainThread(KyoukoManager.GetCharacterComponent(), Message);
+        FloatingTextHelper.ShowFloatingTextOnMainThread(KyoukoManager.GetCharacterUnit(), Message);
     }
     private static MessageAction CreateMsgAction(string msg)
     {

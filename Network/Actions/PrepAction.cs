@@ -25,7 +25,8 @@ public partial class PrepAction : NetAction
 
     public override void OnReceived()
     {
-        LogActionReceived(BepInEx.Logging.LogLevel.Info, true, "");
+        LogActionReceived(true);
+        PrepSceneManager.MergeFromPeer(PrepTable);
         
         if (!Ready)
         {
@@ -33,7 +34,6 @@ public partial class PrepAction : NetAction
         }
 
         PrepSceneManager.remotePlayerReady = true;
-        PrepSceneManager.MergeFromPeer(PrepTable);
 
         Log.LogInfo("Remote player is ready in prep scene");
         if (!PrepSceneManager.localPlayerReady)

@@ -27,7 +27,7 @@ public static class FloatingTextHelper
 
         return go;  
     }
-    private static void ShowFloatingText(DayScene.Interactables.Collections.ConditionComponents.CharacterConditionComponent comp, string text, float duration = 5f)
+    private static void ShowFloatingText(Common.CharacterUtility.CharacterControllerUnit comp, string text, float duration = 5f)
     {
         if (activeTextPeer != null)
         {
@@ -78,7 +78,7 @@ public static class FloatingTextHelper
         }
     }
 
-    public static void ShowFloatingTextOnMainThread(DayScene.Interactables.Collections.ConditionComponents.CharacterConditionComponent component, string Message)
+    public static void ShowFloatingTextOnMainThread(Common.CharacterUtility.CharacterControllerUnit component, string Message)
     {
         PluginManager.Instance.RunOnMainThread(() => ShowFloatingText(component, Message));
     }
