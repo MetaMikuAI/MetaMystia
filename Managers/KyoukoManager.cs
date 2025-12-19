@@ -40,7 +40,7 @@ public static class KyoukoManager
 
     public static void OnFixedUpdate()
     {
-        if (!MpManager.Instance.IsConnected)
+        if (!MpManager.IsConnected)
         {
             return;
         }
@@ -254,7 +254,7 @@ public static class KyoukoManager
             GameData.RunTime.DaySceneUtility.RunTimeDayScene.MoveCharacter(KYOUKO_ID, mapLabel, position, 0, out var oldNPCData);
             UpdateInputDirection(inputDirection);
             UpdateSprintState(isSprinting);
-            MpManager.Instance.SendSync();
+            MpManager.SendSync();
         }
         else 
         {

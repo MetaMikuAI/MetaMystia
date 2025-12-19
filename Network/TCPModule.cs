@@ -102,6 +102,7 @@ public class TcpServer(int port)
     private bool running = false;
     private Thread heartbeatThread;
     private const int HeartbeatLoopInterval = 3000;
+    private const int BufferLen = 2048;
 
     public void Start()
     {
@@ -129,7 +130,7 @@ public class TcpServer(int port)
             currentClient = client;
         }
 
-        MpManager.Instance.OnConnected(client, true);
+        MpManager.OnConnected(client, true);
 
         Log.LogMessage("[S] Client connected.");
 
@@ -141,7 +142,7 @@ public class TcpServer(int port)
 
         ThreadPool.QueueUserWorkItem(_ =>
         {
-            byte[] recv = new byte[1024];
+            byte[] recv = new byte[BufferLen];
             try
             {
                 while (running)
@@ -169,7 +170,7 @@ public class TcpServer(int port)
                 lock (lockObj) { currentClient = null; }
                 client.Close();
                 Log.LogMessage($"[S] Client disconnected ");
-                MpManager.Instance.OnDisconnected();
+                MpManager.OnDisconnected();
             }
         });
 
@@ -180,7 +181,7 @@ public class TcpServer(int port)
     {
         while (running && currentClient != null)
         {
-            MpManager.Instance.SendPing();
+            MpManager.SendPing();
             Thread.Sleep(HeartbeatLoopInterval);
         }
     }
@@ -194,7 +195,7 @@ public class TcpServer(int port)
                 Log.LogMessage("[S] Disconnecting current client...");
                 currentClient.Close();
                 currentClient = null;
-                MpManager.Instance.OnDisconnected();
+                MpManager.OnDisconnected();
             }
             else
             {
@@ -307,7 +308,7 @@ public class TcpClientWrapper
         catch
         {
             Log.LogMessage("[C] Disconnected. Reconnecting...");
-            MpManager.Instance.OnDisconnected();
+            MpManager.OnDisconnected();
             running = false;
             Thread.Sleep(2000);
             try
@@ -325,7 +326,7 @@ public class TcpClientWrapper
     {
         while (running)
         {
-            MpManager.Instance.SendPing();
+            MpManager.SendPing();
             Thread.Sleep(HeartbeatLoopInterval);
         }
     }
@@ -357,7 +358,7 @@ public class TcpClientWrapper
     public void Close()
     {
         running = false;
-        MpManager.Instance.OnDisconnected();
+        MpManager.OnDisconnected();
         Log.LogMessage("[C] Disconnected from server.");
         stream?.Close();
         client?.Close();

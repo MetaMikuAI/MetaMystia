@@ -13,7 +13,7 @@ public class CharacterInputPatch : PatchBase<CharacterInputPatch>
     [HarmonyPrefix]
     public static void UpdateInputDirection_Prefix(CharacterControllerInputGeneratorComponent __instance, ref Vector2 inputDirection)
     {
-        if (!MpManager.Instance.IsConnected)
+        if (!MpManager.IsConnected)
         {
             return;
         }
@@ -39,7 +39,7 @@ public class CharacterInputPatch : PatchBase<CharacterInputPatch>
             if (__instance.name == characterCollection["Self"].name)
             {
                 MystiaManager.InputDirection = inputDirection;
-                MpManager.Instance.SendSync();
+                MpManager.SendSync();
             }
         }
         catch (System.Exception e)

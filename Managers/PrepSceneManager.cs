@@ -24,7 +24,7 @@ public static class PrepSceneManager
         localPlayerReady = false;
         remotePlayerReady = false;
 
-        if (!MpManager.Instance.IsConnected)
+        if (!MpManager.IsConnected)
         {
             return;
         }

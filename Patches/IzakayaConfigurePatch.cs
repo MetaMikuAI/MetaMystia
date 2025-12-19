@@ -16,7 +16,7 @@ public class IzakayaConfigurePatch : PatchBase<IzakayaConfigurePatch>
     {
         Log.LogInfo($"{LOG_TAG} RegisterToDailyRecipes: {id}");
         PrepSceneManager.localPrepTable.RecipeAdditions[id] = MpManager.GetSynchronizedTimestampNow;
-        MpManager.Instance.SendPrep(PrepSceneManager.localPrepTable);
+        MpManager.SendPrep(PrepSceneManager.localPrepTable);
     }
     
     [HarmonyPatch(nameof(IzakayaConfigure.RegisterToDailyBeverages))]
@@ -25,7 +25,7 @@ public class IzakayaConfigurePatch : PatchBase<IzakayaConfigurePatch>
     {
         Log.LogInfo($"{LOG_TAG} RegisterToDailyBeverages: {id}");
         PrepSceneManager.localPrepTable.BeverageAdditions[id] = MpManager.GetSynchronizedTimestampNow;
-        MpManager.Instance.SendPrep(PrepSceneManager.localPrepTable);
+        MpManager.SendPrep(PrepSceneManager.localPrepTable);
     }
 
     [HarmonyPatch(nameof(IzakayaConfigure.RegisterToCookers))]
@@ -45,7 +45,7 @@ public class IzakayaConfigurePatch : PatchBase<IzakayaConfigurePatch>
 
         Log.LogInfo($"{LOG_TAG} RegisterToCookers: id={id}, index={index}, ts={timestamp}, checkPlayerHaveCooker={checkPlayerHaveCooker}");
 
-        MpManager.Instance.SendPrep(PrepSceneManager.localPrepTable);
+        MpManager.SendPrep(PrepSceneManager.localPrepTable);
     }
 
     [HarmonyPatch(nameof(IzakayaConfigure.LogoffFromDailyRecipes))]
@@ -54,7 +54,7 @@ public class IzakayaConfigurePatch : PatchBase<IzakayaConfigurePatch>
     {
         Log.LogInfo($"{LOG_TAG} LogoffFromDailyRecipes: {id}");
         PrepSceneManager.localPrepTable.RecipeDeletions[id] = MpManager.GetSynchronizedTimestampNow;
-        MpManager.Instance.SendPrep(PrepSceneManager.localPrepTable);
+        MpManager.SendPrep(PrepSceneManager.localPrepTable);
     }
 
     [HarmonyPatch(nameof(IzakayaConfigure.LogoffFromDailyBeverages))]
@@ -63,7 +63,7 @@ public class IzakayaConfigurePatch : PatchBase<IzakayaConfigurePatch>
     {
         Log.LogInfo($"{LOG_TAG} LogoffFromDailyBeverages: {id}");
         PrepSceneManager.localPrepTable.BeverageDeletions[id] = MpManager.GetSynchronizedTimestampNow;
-        MpManager.Instance.SendPrep(PrepSceneManager.localPrepTable);
+        MpManager.SendPrep(PrepSceneManager.localPrepTable);
     }
 
     [HarmonyPatch(nameof(IzakayaConfigure.LogOffFromCookers))]

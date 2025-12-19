@@ -43,7 +43,7 @@ public class PluginManager : MonoBehaviour
     private void Awake()
     {
         Console = new InGameConsole();
-        // MpManager.Instance.Start();
+        // MpManager.Start();
     }
 
     private void OnGUI()
@@ -54,7 +54,7 @@ public class PluginManager : MonoBehaviour
         {
             var info = new System.Text.StringBuilder();
             info.AppendLine(label);
-            info.AppendLine(MpManager.Instance.GetBriefStatus());
+            info.AppendLine(MpManager.GetBriefStatus());
             GUI.Label(new Rect(10, Screen.height - 50, 600, 50), info.ToString());
         }
     }
@@ -89,11 +89,11 @@ public class PluginManager : MonoBehaviour
         // F2 
         if (Input.GetKeyDown(KeyCode.KeypadMultiply))
         {
-            MpManager.Instance.Start();
+            MpManager.Start();
         }
         if (Input.GetKeyDown(KeyCode.KeypadDivide))
         {
-            MpManager.Instance.ConnectToPeer("metalaptop", 40815); // 这是 MetaMiku 的 PC，测试用
+            MpManager.ConnectToPeer("metalaptop", 40815); // 这是 MetaMiku 的 PC，测试用
         }
     }
 

@@ -39,7 +39,7 @@ public partial class PrepAction : NetAction
         {
             // 如果 Mystia 未准备好，则应通知对方已经 Ready，然后自己直接 Ready
             PrepSceneManager.localPlayerReady = true;
-            MpManager.Instance.SendPrep(PrepSceneManager.localPrepTable, true);
+            MpManager.SendPrep(PrepSceneManager.localPrepTable, true);
         }
         PluginManager.Instance.RunOnMainThread(() =>
         {

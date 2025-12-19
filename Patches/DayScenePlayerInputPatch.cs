@@ -15,7 +15,7 @@ public class DayScenePlayerInputPatch : PatchBase<DayScenePlayerInputPatch>
             return false;
         }
         MystiaManager.IsSprinting = true;
-        MpManager.Instance.SendSync();
+        MpManager.SendSync();
         return true;
     }
 
@@ -24,7 +24,7 @@ public class DayScenePlayerInputPatch : PatchBase<DayScenePlayerInputPatch>
     public static void OnSprintCanceled_Prefix()
     {
         MystiaManager.IsSprinting = false;
-        MpManager.Instance.SendSync();
+        MpManager.SendSync();
     }
 
     [HarmonyPatch(nameof(DayScenePlayerInputGenerator.TryInteract))]

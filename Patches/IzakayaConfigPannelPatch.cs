@@ -21,7 +21,7 @@ public class IzakayaConfigPannelPatch : PatchBase<IzakayaConfigPannelPatch>
     [HarmonyPostfix]
     public static void IzakayaConfigPannel_GoToSpecific_Postfix()
     {
-        if (MpManager.Instance.IsConnected == false)
+        if (MpManager.IsConnected == false)
         {
             Log.LogInfo($"{LOG_TAG} Not in multiplayer session, skipping patch");
             return;
@@ -44,7 +44,7 @@ public class IzakayaConfigPannelPatch : PatchBase<IzakayaConfigPannelPatch>
     [HarmonyPrefix]
     public static bool _SolveDailyCompletion_b__61_7_Prefix()
     {
-        if (!MpManager.Instance.IsConnected)
+        if (!MpManager.IsConnected)
         {
             Log.LogInfo($"{LOG_TAG} Not in multiplayer session, skipping patch");
             return true;
@@ -63,7 +63,7 @@ public class IzakayaConfigPannelPatch : PatchBase<IzakayaConfigPannelPatch>
         if (!PrepSceneManager.localPlayerReady)
         {
             PrepSceneManager.localPlayerReady = true;
-            MpManager.Instance.SendPrep(PrepSceneManager.localPrepTable, true);
+            MpManager.SendPrep(PrepSceneManager.localPrepTable, true);
         }
         Log.LogInfo($"{LOG_TAG} remotePlayerReady: {remotePlayerReady}");
         return remotePlayerReady;

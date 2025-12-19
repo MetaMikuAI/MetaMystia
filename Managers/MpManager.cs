@@ -6,48 +6,26 @@ using BepInEx.Logging;
 
 namespace MetaMystia;
 
-public class MpManager
+public static class MpManager
 {
-    private static MpManager _instance;
-    private static readonly object _lock = new();
     private static ManualLogSource Log => Plugin.Instance.Log;
     private const int TCP_PORT = 40815;
-    private string _playerId = System.Environment.MachineName;
-    public string PlayerId {get => _playerId; set { _playerId = value; Log.LogInfo($"Player ID set to: {value}");}}
-    private TcpServer server = new(TCP_PORT);
-    private TcpClientWrapper client = null;
-    public bool IsHost {get; private set; } = false;
-    public bool IsRunning {get; private set;} = false;
-    public bool IsConnected {get; private set;} = false;
-    public string PeerAddress {get; set;}
-    public string PeerId {get; set;} = "<Unknown>";
-    public long Latency {get; private set;} = 0;
-    private System.Collections.Concurrent.ConcurrentDictionary<int, long> pingSendTimes = new();
+    public static string PlayerId { get; set { field = value; Log.LogInfo($"Player ID set to: {value}"); } } = Environment.MachineName;
+    private static readonly TcpServer server = new(TCP_PORT);
+    private static TcpClientWrapper client = null;
+    private static bool IsHost;
+    public static bool IsRunning { get; private set; }
+    public static bool IsConnected { get; private set; }
+    public static string PeerAddress {get; set;}
+    public static string PeerId {get; set;}
+    public static long Latency {get; private set;} = 0;
+    private static System.Collections.Concurrent.ConcurrentDictionary<int, long> pingSendTimes = new();
     public static long GetTimestampNow => DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
     public static long TimeOffset = 0;
     public static long GetSynchronizedTimestampNow => GetTimestampNow - TimeOffset;
-    private int _pingId = 0;
+    private static int _pingId = 0;
 
-    public static MpManager Instance
-    {
-        get
-        {
-            if (_instance == null)
-            {
-                lock (_lock)
-                {
-                    _instance ??= new MpManager();
-                }
-            }
-            return _instance;
-        }
-    }
-
-    private MpManager()
-    {
-    }
-
-    public void Start()
+    public static void Start()
     {
         if (IsRunning)
         {
@@ -62,7 +40,7 @@ public class MpManager
         server.Start();
     }
 
-    public void Stop()
+    public static void Stop()
     {
         if (!IsRunning)
             return;
@@ -85,28 +63,13 @@ public class MpManager
         Log.LogInfo("MpManager has stopped");
     }
 
-    public void Restart()
+    public static void Restart()
     {
         Stop();
         Start();
     }
 
-    public void ToggleRunning()
-    {
-        if (IsRunning)
-        {
-            Log.LogInfo("Stopping MpManager...");
-            Stop();
-        }
-        else
-        {
-            Log.LogInfo("Attempting to start MpManager...");
-            Start();
-        }
-    }
-
-
-    public bool ConnectToPeer(string peerIp, int port = TCP_PORT)
+    public static bool ConnectToPeer(string peerIp, int port = TCP_PORT)
     {
         if (IsConnected)
         {
@@ -135,20 +98,20 @@ public class MpManager
     }
 
 
-    public void OnConnected(TcpClient client, bool IsHost = false)
+    public static void OnConnected(TcpClient client, bool isHost = false)
     {
         PeerAddress = ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString();
-        Instance.IsConnected = true;
-        Instance.IsHost = IsHost;
+        IsConnected = true;
+        IsHost = isHost;
         SendHello();
         SendSync();
     }
 
-    public void OnDisconnected()
+    public static void OnDisconnected()
     {
         PeerAddress = "<Unknown>";
-        Instance.IsHost = false;
-        Instance.IsConnected = false;
+        IsHost = false;
+        IsConnected = false;
     }
 
     public static void OnAction(NetAction action)
@@ -156,12 +119,12 @@ public class MpManager
         action.OnReceived();
     }
 
-    private void SendToPeer(NetPacket packet)
+    private static void SendToPeer(NetPacket packet)
     {
         SendToPeer(packet, IsHost);
     }
 
-    private void SendToPeer(NetPacket packet, bool asHost)
+    private static void SendToPeer(NetPacket packet, bool asHost)
     {
         var actionType = packet.GetFirstAction().Type;
         if (!IsConnected)
@@ -180,8 +143,8 @@ public class MpManager
             client.Send(packet);
         }
     }
-    
-    public void DisconnectPeer()
+
+    public static void DisconnectPeer()
     {
         if (IsConnected)
         {
@@ -202,7 +165,7 @@ public class MpManager
     /// Peer A <- Pong <- Peer B
     /// Peer A calculates latency
     /// </summary>
-    public void SendPing()
+    public static void SendPing()
     {
         if (!IsConnected) return;
         var t = GetTimestampNow;
@@ -211,23 +174,23 @@ public class MpManager
         SendToPeer(PingAction.CreatePingPacket(id));
     }
 
-    public void SendPong(int id)
+    public static void SendPong(int id)
     {
         SendToPeer(PongAction.CreatePongPacket(id));
     }
 
-    public void UpdateLatency(int id)
+    public static void UpdateLatency(int id)
     {
         if (!pingSendTimes.TryRemove(id, out long t)) return;
         Latency = (GetTimestampNow - t) / 2;
     }
 
-    public void SendHello()
+    public static void SendHello()
     {
         SendToPeer(NetPacket.Create(new HelloAction { PeerId = PlayerId }));
     }
 
-    public void SendSync()
+    public static void SendSync()
     {
         if (!IsConnected)
         {
@@ -237,7 +200,7 @@ public class MpManager
         var inputDirection = MystiaManager.InputDirection;
         var position = MystiaManager.Instance.GetPosition();
 
-        NetPacket packet = null;
+        NetPacket packet;
         if (PluginManager.CurrentGameScene == Common.UI.Scene.WorkScene)
         {
             packet = NetPacket.Create(new NightSyncAction
@@ -267,7 +230,7 @@ public class MpManager
         SendToPeer(packet);
     }
 
-    public void SendReady()
+    public static void SendReady()
     {
         NetPacket packet = NetPacket.Create(new ReadyAction
         {
@@ -276,15 +239,15 @@ public class MpManager
         SendToPeer(packet);
     }
 
-    public void SendMessage(string message)
+    public static void SendMessage(string message)
     {
         FloatingTextHelper.ShowFloatingTextSelfOnMainThread(message);
         SendToPeer(MessageAction.CreateMsgPacket(message));
     }
 
-    public string GetStatus()
+    public static string GetStatus()
     {
-        StringBuilder status = new StringBuilder();
+        StringBuilder status = new();
         status.AppendLine($"Mystia ID: {PlayerId}");
         status.AppendLine($"Local Port: {TCP_PORT}");
         status.AppendLine($"Running: {(IsRunning ? "Yes" : "No")}");
@@ -299,7 +262,7 @@ public class MpManager
         return status.ToString();
     }
 
-    public string GetBriefStatus()
+    public static string GetBriefStatus()
     {
         if (!IsRunning)
         {
@@ -315,7 +278,7 @@ public class MpManager
         }
     }
 
-    public void SendSelectedIzakaya(string mapLabel, int level)
+    public static void SendSelectedIzakaya(string mapLabel, int level)
     {
         NetPacket packet = NetPacket.Create(new SelectAction
         {
@@ -324,7 +287,7 @@ public class MpManager
         });
         SendToPeer(packet);
     }
-    public void SendConfirmedIzakaya(string mapLabel, int level)
+    public static void SendConfirmedIzakaya(string mapLabel, int level)
     {
         NetPacket packet = NetPacket.Create(new ConfirmAction
         {
@@ -334,7 +297,7 @@ public class MpManager
         SendToPeer(packet);
     }
 
-    public void SendPrep(PrepAction.Table prepTable, bool ready = false)
+    public static void SendPrep(PrepAction.Table prepTable, bool ready = false)
     {
         NetPacket packet = NetPacket.Create(new PrepAction
         {
@@ -345,7 +308,7 @@ public class MpManager
     }
 
     
-    public void SendCook(int gridIndex, int foodId, int recipeId, int[] modifierIds)
+    public static void SendCook(int gridIndex, int foodId, int recipeId, int[] modifierIds)
     {
         NetPacket packet = NetPacket.Create(new CookAction
         {
@@ -357,7 +320,7 @@ public class MpManager
         SendToPeer(packet);
     }
 
-    public void SendExtract(int gridIndex)
+    public static void SendExtract(int gridIndex)
     {
         NetPacket packet = NetPacket.Create(new ExtractAction
         {
@@ -366,7 +329,7 @@ public class MpManager
         SendToPeer(packet);
     }
 
-    public void SendQTE(int gridIndex, float qteScore)
+    public static void SendQTE(int gridIndex, float qteScore)
     {
         NetPacket packet = NetPacket.Create(new QTEAction
         {

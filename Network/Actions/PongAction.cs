@@ -11,7 +11,7 @@ public partial class PongAction : NetAction
     public override void OnReceived()
     {
         LogActionReceived();
-        MpManager.Instance.UpdateLatency(Id);
+        MpManager.UpdateLatency(Id);
     }
     public static NetPacket CreatePongPacket(int id)
     {

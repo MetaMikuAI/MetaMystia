@@ -10,6 +10,6 @@ public partial class HelloAction : NetAction
     public override void OnReceived()
     {
         LogActionReceived();
-        MpManager.Instance.PeerId = PeerId;
+        MpManager.PeerId = PeerId;
     }
 }
