@@ -5,7 +5,7 @@ using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using UnityEngine.SceneManagement;
 using System;
-using AsmResolver.DotNet.Signatures;
+using System.Diagnostics;
 using MetaMystia.Debugger;
 using System.Diagnostics;
 
@@ -65,15 +65,27 @@ public class Plugin : BasePlugin
                 typeof(StaffSceneManagerPatch),
                 typeof(UniversalGameManagerPatch),
                 typeof(WorkSceneStoragePannelPatch),
+                typeof(GuestsManagerPatch),
+                typeof(GuestGroupControllerPatch),
             };
             foreach (var patch in patchList)
             {
                 harmony.PatchAll(patch);
                 Log.LogInfo($"Applied {patch.Name}");
             }
+            
+            // ShigureYuki.DebugClassPatcher.PatchAllInnerClass(ref harmony, typeof(ShigureYuki.DebugConsolePatch));
+            
+            // ShigureYuki.DiagnosticUtils.SafeAutoPatch.PatchMethod(harmony, 
+            //     typeof(NightScene.GuestManagementUtility.GuestsManager), 
+            //     nameof(NightScene.GuestManagementUtility.GuestsManager.SpawnNormalGuestGroup), 
+            //     ShigureYuki.DiagnosticUtils.SafeAutoPatch.LogType.None);
+            // ShigureYuki.DiagnosticUtils.SafeAutoPatch.PatchAllMethods(harmony, typeof(GameData.Core.Collections.NightSceneUtility.NormalGuest));
+            // ShigureYuki.DiagnosticUtils.SafeAutoPatch.PatchAllMethods(harmony, typeof(GuestsManager));
+            // ShigureYuki.DiagnosticUtils.SafeAutoPatch.PatchAllMethods(harmony, typeof(NightScene.GuestManagementUtility.GuestGroupController));
         }
-        catch {
-            Log.LogError("FAILED to Apply Hooks!");
+        catch (Exception ex) {
+            Log.LogError($"FAILED to Apply Hooks! {ex.Message}");
         }
     }
 

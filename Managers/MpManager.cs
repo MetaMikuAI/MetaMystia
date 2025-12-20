@@ -8,7 +8,7 @@ namespace MetaMystia;
 
 public static class MpManager
 {
-    public enum Role
+    public enum ROLE
     {
         Host,
         Client,
@@ -21,7 +21,7 @@ public static class MpManager
     public static string PlayerId { get { return _playerId; } set { _playerId = value; Log.LogInfo($"Player ID set to: {value}"); } }
     private static TcpServer server = null;
     private static TcpClientWrapper client = null;
-    private static Role role;
+    public static ROLE Role {get; private set;}
     public static bool IsRunning { get; private set; }
     public static bool IsConnected { get; private set; }
     public static string PeerAddress {get; set;}
@@ -33,7 +33,7 @@ public static class MpManager
     public static long GetSynchronizedTimestampNow => GetTimestampNow - TimeOffset;
     private static int _pingId = 0;
 
-    public static void Start(Role r = Role.Host)
+    public static void Start(ROLE r = ROLE.Host)
     {
         if (IsRunning)
         {
@@ -43,19 +43,19 @@ public static class MpManager
 
         IsRunning = true;
         PeerId = "<Unknown>";
-        role = r;
+        Role = r;
 
         switch (r) 
         {
-            case Role.Host:
+            case ROLE.Host:
                 server = new(TCP_PORT);
                 server.Start();
                 Log.LogInfo("Starting MpManager as host");
                 break;
-            case Role.Client:
+            case ROLE.Client:
                 Log.LogInfo("Starting MpManager as client");
                 break;
-            case Role.Both:
+            case ROLE.Both:
                 server.Start();
                 Log.LogInfo("Starting MpManager as both host and client");
                 break;
@@ -87,7 +87,7 @@ public static class MpManager
     public static void Restart()
     {
         Stop();
-        Start(role);
+        Start(Role);
     }
 
     public static bool ConnectToPeer(string peerIp, int port = TCP_PORT)
@@ -100,7 +100,7 @@ public static class MpManager
 
         if (!IsRunning)
         {
-            Start(Role.Client);
+            Start(ROLE.Client);
         }
         try
         {
@@ -144,8 +144,8 @@ public static class MpManager
     {
         if (IsConnected)
         {
-            packet.GetFirstAction().LogActionSend(true, role == Role.Host ? "[S] " : "[C] ");
-            if (role == Role.Host)
+            packet.GetFirstAction().LogActionSend(true, Role == ROLE.Host ? "[S] " : "[C] ");
+            if (Role == ROLE.Host)
             {
                 server.Send(packet);
             }
@@ -160,7 +160,7 @@ public static class MpManager
     {
         if (IsConnected)
         {
-            if (role == Role.Host)
+            if (Role == ROLE.Host)
             {
                 server.DisconnectClient();
             } 
@@ -282,7 +282,7 @@ public static class MpManager
         }
         if (IsConnected)
         {
-            return $"Multiplayer: [{(role == Role.Host ? "S" : "C")}] Connected to {PeerId} ({PeerAddress}), ping: {Latency} ms";
+            return $"Multiplayer: [{(Role == ROLE.Host ? "S" : "C")}] Connected to {PeerId} ({PeerAddress}), ping: {Latency} ms";
         }
         else
         {
@@ -364,6 +364,58 @@ public static class MpManager
         NetPacket packet = NetPacket.Create(new ExtractFoodAction
         {
             Food = food
+        });
+        SendToPeer(packet);
+    }
+
+    public static void SendGuestSpawn(int guest, bool isSpecial, string uuid)
+    {
+        NetPacket packet = NetPacket.Create(new GuestSpawnAction
+        {
+            GuestId = guest,
+            IsSpecial = isSpecial,
+            UUID = uuid
+        });
+        SendToPeer(packet);
+    }
+
+    public static void SendGuestSeated(string guestUniqId, int deskId, bool firstSpawn)
+    {
+        NetPacket packet = NetPacket.Create(new GuestSeatedAction
+        {
+            GuestUniqId = guestUniqId,
+            DeskId = deskId,
+            FirstSpawn = firstSpawn
+        });
+        SendToPeer(packet);
+    }
+
+    public static void SendGuestGenNormalOrder(string guestUniqId, int requestFoodId, int requestBevId, int deskCode, bool notShowInUI, bool isFree, string message)
+    {
+        NetPacket packet = NetPacket.Create(new GuestGenNormalOrderAction
+        {
+            GuestUniqId = guestUniqId,
+            RequestFoodId = requestFoodId,
+            RequestBevId = requestBevId,
+            DeskCode = deskCode,
+            NotShowInUI = notShowInUI,
+            IsFree = isFree,
+            Message = message
+        });
+        SendToPeer(packet);
+    }
+
+    public static void SendGuestGenSPOrder(string guestUniqId, int requestFoodTag, int requestBevTag, int deskCode, bool notShowInUI, bool isFree, string message)
+    {
+        NetPacket packet = NetPacket.Create(new GuestGenSPOrderAction
+        {
+            GuestUniqId = guestUniqId,
+            RequestFoodTag = requestFoodTag,
+            RequestBevTag = requestBevTag,
+            DeskCode = deskCode,
+            NotShowInUI = notShowInUI,
+            IsFree = isFree,
+            Message = message
         });
         SendToPeer(packet);
     }

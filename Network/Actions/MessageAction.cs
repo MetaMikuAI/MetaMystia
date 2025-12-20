@@ -15,6 +15,7 @@ public partial class MessageAction : NetAction
         LogActionReceived();
         PluginManager.Console.AddPeerMessage(Message);
         FloatingTextHelper.ShowFloatingTextOnMainThread(KyoukoManager.GetCharacterUnit(), Message);
+        PluginManager.Instance.RunOnMainThread(() => Notify.Show($"响子: {Message}"));
     }
     private static MessageAction CreateMsgAction(string msg)
     {

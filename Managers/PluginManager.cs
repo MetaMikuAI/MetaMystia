@@ -93,7 +93,7 @@ public class PluginManager : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.KeypadDivide))
         {
-            MpManager.ConnectToPeer("metalaptop", 40815); // 这是 MetaMiku 的 PC，测试用
+            MpManager.ConnectToPeer("TX_VOLCANO", 40815); // 这是 MetaMiku 的 PC，测试用
         }
     }
 

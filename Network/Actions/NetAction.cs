@@ -19,6 +19,11 @@ public enum ActionType : ushort
     QTE,
     STOREFOOD,
     EXTRACTFOOD,
+    GUEST_SPAWN,
+    GUEST_SEATED,
+    GUEST_LEAVE,
+    GUEST_GEN_NORMAL_ORDER,
+    GUEST_GEN_SPECIAL_ORDER,
 }
 
 [MemoryPackable]
@@ -37,6 +42,11 @@ public enum ActionType : ushort
 [MemoryPackUnion((ushort)ActionType.QTE, typeof(QTEAction))]
 [MemoryPackUnion((ushort)ActionType.STOREFOOD, typeof(StoreFoodAction))]
 [MemoryPackUnion((ushort)ActionType.EXTRACTFOOD, typeof(ExtractFoodAction))]
+[MemoryPackUnion((ushort)ActionType.GUEST_SPAWN, typeof(GuestSpawnAction))]
+[MemoryPackUnion((ushort)ActionType.GUEST_SEATED, typeof(GuestSeatedAction))]
+[MemoryPackUnion((ushort)ActionType.GUEST_LEAVE, typeof(GuestLeaveAction))]
+[MemoryPackUnion((ushort)ActionType.GUEST_GEN_NORMAL_ORDER, typeof(GuestGenNormalOrderAction))]
+[MemoryPackUnion((ushort)ActionType.GUEST_GEN_SPECIAL_ORDER, typeof(GuestGenSPOrderAction))]
 public abstract partial class NetAction
 {
     public abstract ActionType Type { get; }

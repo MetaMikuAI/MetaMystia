@@ -99,10 +99,10 @@ public class TcpServer(int port)
     private TcpListener listener = new TcpListener(IPAddress.Any, port);
     private TcpClient currentClient = null;
     private object lockObj = new();
-    private bool running = false;
+    private volatile bool running = false;
     private Thread heartbeatThread;
     private const int HeartbeatLoopInterval = 3000;
-    private const int BufferLen = 2048;
+    private const int BufferLen = 4096;
 
     public void Start()
     {
@@ -242,7 +242,7 @@ public class TcpClientWrapper
     private PacketBuffer buffer = new PacketBuffer();
     private Thread recvThread;
     private Thread heartbeatThread;
-    private bool running = false;
+    private volatile bool running = false;
     private const int MaxRetryTimes = 1;
     private const int HeartbeatLoopInterval = 3000;
     private object sendLock = new();
