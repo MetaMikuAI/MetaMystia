@@ -6,12 +6,15 @@ using Il2CppInterop.Runtime.Injection;
 using UnityEngine.SceneManagement;
 using System;
 using AsmResolver.DotNet.Signatures;
+using MetaMystia.Debugger;
+using System.Diagnostics;
 
 namespace MetaMystia;
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
 public class Plugin : BasePlugin
 {
     public static Plugin Instance;
+    public static WebDebugger Debugger;
 
     public Action<Scene, LoadSceneMode> LoadAction;
 
@@ -24,6 +27,10 @@ public class Plugin : BasePlugin
     {
         System.Console.OutputEncoding = System.Text.Encoding.UTF8;
         Log.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
+
+
+        Debugger = new WebDebugger();
+        Debugger.Start();
 
         try {
             ClassInjector.RegisterTypeInIl2Cpp<PluginManager>();
