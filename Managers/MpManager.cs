@@ -17,7 +17,8 @@ public static class MpManager
 
     private static ManualLogSource Log => Plugin.Instance.Log;
     private const int TCP_PORT = 40815;
-    public static string PlayerId { get; set { field = value; Log.LogInfo($"Player ID set to: {value}"); } } = Environment.MachineName;
+    private static string _playerId = Environment.MachineName;
+    public static string PlayerId { get { return _playerId; } set { _playerId = value; Log.LogInfo($"Player ID set to: {value}"); } }
     private static TcpServer server = null;
     private static TcpClientWrapper client = null;
     private static Role role;

@@ -8,8 +8,171 @@ using UnityEngine;
 
 namespace MetaMystia.Debugger
 {
+    public class InspectionResult
+    {
+        public string Path { get; set; }
+        public string Type { get; set; }
+        public string Value { get; set; }
+        public string Address { get; set; }
+        public bool IsExpandable { get; set; }
+        public List<MemberInfoDTO> Members { get; set; }
+        public string Error { get; set; }
+    }
+
+    public class MemberInfoDTO
+    {
+        public string Name { get; set; }
+        public string Type { get; set; }
+        public string Value { get; set; }
+        public string Address { get; set; }
+        public bool IsExpandable { get; set; }
+    }
+
     public static class ReflectionEvaluator
     {
+        public static InspectionResult Inspect(string expression)
+        {
+            var result = new InspectionResult { Path = expression };
+            try
+            {
+                object obj = Evaluate(expression);
+                if (obj == null)
+                {
+                    result.Value = "null";
+                    result.Type = "null";
+                    result.IsExpandable = false;
+                    return result;
+                }
+
+                Type typeToInspect;
+                object instanceToInspect;
+
+                if (obj is Type t)
+                {
+                    typeToInspect = t;
+                    instanceToInspect = null;
+                    result.Type = t.Name;
+                    result.Value = t.FullName;
+                    result.Address = ""; 
+                    result.IsExpandable = true;
+                }
+                else
+                {
+                    typeToInspect = obj.GetType();
+                    instanceToInspect = obj;
+                    result.Type = typeToInspect.Name;
+                    result.Value = obj.ToString();
+                    result.Address = GetAddress(obj);
+                    result.IsExpandable = !IsPrimitive(typeToInspect);
+                }
+                
+                if (result.IsExpandable)
+                {
+                    result.Members = GetMembers(typeToInspect, instanceToInspect);
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Error = ex.Message;
+            }
+            return result;
+        }
+
+        private static string GetAddress(object obj)
+        {
+            if (obj == null) return "";
+            try
+            {
+                // Try to get Pointer property (common in Il2CppInterop)
+                var prop = obj.GetType().GetProperty("Pointer");
+                if (prop != null && prop.PropertyType == typeof(IntPtr))
+                {
+                    IntPtr ptr = (IntPtr)prop.GetValue(obj);
+                    return "0x" + ptr.ToString("X");
+                }
+            }
+            catch { }
+            return "";
+        }
+
+        private static bool IsPrimitive(Type t)
+        {
+            return t.IsPrimitive || t == typeof(string) || t == typeof(decimal) || t.IsEnum;
+        }
+
+        private static List<MemberInfoDTO> GetMembers(Type type, object instance)
+        {
+            var members = new List<MemberInfoDTO>();
+            
+            // 1. Collections
+            if (instance != null && instance is IEnumerable enumerable && !(instance is string))
+            {
+                int index = 0;
+                foreach (var item in enumerable)
+                {
+                    if (index > 100) break; // Limit
+                    members.Add(new MemberInfoDTO
+                    {
+                        Name = $"[{index}]",
+                        Type = item?.GetType().Name ?? "null",
+                        Value = item?.ToString() ?? "null",
+                        Address = GetAddress(item),
+                        IsExpandable = item != null && !IsPrimitive(item.GetType())
+                    });
+                    index++;
+                }
+            }
+
+            BindingFlags flags = BindingFlags.Public;
+            if (instance == null) flags |= BindingFlags.Static;
+            else flags |= BindingFlags.Instance;
+
+            // 2. Properties
+            foreach (var prop in type.GetProperties(flags))
+            {
+                if (prop.GetIndexParameters().Length > 0) continue; // Skip indexers
+                try
+                {
+                    object val = prop.GetValue(instance);
+                    members.Add(new MemberInfoDTO
+                    {
+                        Name = prop.Name,
+                        Type = prop.PropertyType.Name,
+                        Value = val?.ToString() ?? "null",
+                        Address = GetAddress(val),
+                        IsExpandable = val != null && !IsPrimitive(val.GetType())
+                    });
+                }
+                catch (Exception e)
+                {
+                    members.Add(new MemberInfoDTO { Name = prop.Name, Value = $"<Error: {e.Message}>" });
+                }
+            }
+
+            // 3. Fields
+            foreach (var field in type.GetFields(flags))
+            {
+                try
+                {
+                    object val = field.GetValue(instance);
+                    members.Add(new MemberInfoDTO
+                    {
+                        Name = field.Name,
+                        Type = field.FieldType.Name,
+                        Value = val?.ToString() ?? "null",
+                        Address = GetAddress(val),
+                        IsExpandable = val != null && !IsPrimitive(val.GetType())
+                    });
+                }
+                catch (Exception e)
+                {
+                    members.Add(new MemberInfoDTO { Name = field.Name, Value = $"<Error: {e.Message}>" });
+                }
+            }
+
+            return members;
+        }
+
         public static object Evaluate(string expression)
         {
             if (string.IsNullOrWhiteSpace(expression)) return null;

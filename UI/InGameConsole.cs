@@ -10,18 +10,19 @@ namespace MetaMystia
     public class InGameConsole
     {
         private static BepInEx.Logging.ManualLogSource PluginLog => Plugin.Instance.Log;
+        private bool _isOpen = false;
         public bool IsOpen
         {
-            get;
+            get { return _isOpen; }
             set
             {
-                if (field != value)
+                if (_isOpen != value)
                 {
-                    field = value;
+                    _isOpen = value;
                     UpdateGameInputState();
                 }
             }
-        } = false;
+        }
 
         private string input = "";
         private Vector2 scrollPosition;
