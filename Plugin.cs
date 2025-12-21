@@ -14,7 +14,7 @@ namespace MetaMystia;
 public class Plugin : BasePlugin
 {
     public static Plugin Instance;
-    public static WebDebugger Debugger;
+    public static WebDebugger Debugger = null;
 
     public Action<Scene, LoadSceneMode> LoadAction;
 
@@ -27,10 +27,6 @@ public class Plugin : BasePlugin
     {
         System.Console.OutputEncoding = System.Text.Encoding.UTF8;
         Log.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
-
-        // 延迟加载 WebDebugger
-        Debugger = new WebDebugger();
-        _ = StartWebDebuggerAsync(10000); // 10 秒延迟启动
 
         try {
             ClassInjector.RegisterTypeInIl2Cpp<PluginManager>();
@@ -89,6 +85,16 @@ public class Plugin : BasePlugin
         }
     }
 
+    public static void StartWebDebuggerIfNotStarted()
+    {
+        if (Debugger == null)
+        {
+            Instance.Log.LogInfo("Starting Web Debugger...");
+            Debugger = new WebDebugger();
+            Debugger.Start();
+        }
+    }
+
     class BootstrapPatch
     {
         [HarmonyPostfix]
@@ -106,23 +112,6 @@ public class Plugin : BasePlugin
                     Plugin.Instance.Log.LogMessage($"ERROR Bootstrapping Trainer: {e.Message}");
                 }
             }
-        }
-    }
-
-    /// <summary>
-    /// 异步延迟启动 WebDebugger
-    /// </summary>
-    private async Task StartWebDebuggerAsync(int delayMilliseconds)
-    {
-        try
-        {
-            await Task.Delay(delayMilliseconds);
-            Debugger.Start();
-            Log.LogInfo($"Web Debugger started after {delayMilliseconds}ms delay");
-        }
-        catch (Exception ex)
-        {
-            Log.LogError($"Failed to start Web Debugger: {ex.Message}");
         }
     }
 }

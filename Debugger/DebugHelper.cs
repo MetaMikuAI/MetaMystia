@@ -9,7 +9,15 @@ namespace MetaMystia.Debugger
         {
             try
             {
-                long addr = Convert.ToInt64(address.Replace("0x", ""), 16);
+                long addr;
+                if (address.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+                {
+                    addr = Convert.ToInt64(address.Substring(2), 16);
+                }
+                else
+                {
+                    addr = Convert.ToInt64(address, 10);
+                }
                 IntPtr ptr = new IntPtr(addr);
                 
                 Type type = null;

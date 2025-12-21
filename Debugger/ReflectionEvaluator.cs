@@ -68,6 +68,30 @@ namespace MetaMystia.Debugger
             return result;
         }
 
+        public static object GetSceneHierarchy()
+        {
+            var scenesData = new List<object>();
+            
+            for (int i = 0; i < UnityEngine.SceneManagement.SceneManager.sceneCount; i++)
+            {
+                var scene = UnityEngine.SceneManagement.SceneManager.GetSceneAt(i);
+                if (!scene.IsValid()) continue;
+                
+                var rootObjects = scene.GetRootGameObjects();
+                var objects = new List<object>();
+                foreach (var obj in rootObjects)
+                {
+                    objects.Add(new { 
+                        name = obj.name, 
+                        address = GetAddress(obj),
+                        hasChildren = obj.transform.childCount > 0
+                    });
+                }
+                scenesData.Add(new { name = scene.name, path = scene.path, objects = objects, isLoaded = scene.isLoaded });
+            }
+            return scenesData;
+        }
+
         public static void SelectResource(int index)
         {
             if (index >= 0 && index < FoundResources.Count)

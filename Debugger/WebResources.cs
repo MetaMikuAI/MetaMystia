@@ -46,7 +46,7 @@ namespace MetaMystia.Debugger
         .collapsed .panel-content { display: none; }
         .panel.fullscreen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1000; border-radius: 0; margin: 0; }
         .panel.fullscreen .panel-content { height: calc(100vh - 50px); display: block !important; overflow: auto; }
-        .panel.fullscreen #console-output, .panel.fullscreen #thread-list, .panel.fullscreen #watch-list { max-height: none !important; height: auto; }
+        .panel.fullscreen #console-output, .panel.fullscreen #thread-list, .panel.fullscreen #watch-list, .panel.fullscreen #scene-list { max-height: none !important; height: auto; }
         
         input[type=""text""] { width: 100%; padding: 8px; font-size: 14px; background: #3c3c3c; color: #cccccc; border: 1px solid #3e3e42; box-sizing: border-box; }
         button { background: #0e639c; color: white; border: none; padding: 8px 15px; cursor: pointer; margin-top: 5px; }
@@ -91,6 +91,26 @@ namespace MetaMystia.Debugger
             </div>
             <div class=""panel-content"">
                 <div id=""process-info"" style=""font-family: Consolas, monospace; color: #4ec9b0;"">Loading...</div>
+            </div>
+        </div>
+
+        <!-- Scene Hierarchy Panel -->
+        <div class=""panel collapsed"" id=""panel-scene"">
+            <div class=""panel-header"">
+                <div class=""title-group"" onclick=""togglePanel('panel-scene')"">
+                    <h2>Scene Hierarchy</h2>
+                </div>
+                <button class=""icon-btn"" onclick=""toggleFullscreen('panel-scene')"" title=""Toggle Fullscreen"">⛶</button>
+            </div>
+            <div class=""panel-content"">
+                <div style=""margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;"">
+                    <div style=""display:flex; align-items:center; gap:5px;"">
+                        <label><input type=""checkbox"" id=""scene-auto-refresh"" onchange=""toggleSceneAutoRefresh()"" checked> Auto Refresh</label>
+                        <input type=""number"" id=""scene-refresh-interval"" value=""2000"" style=""width: 60px;"" onchange=""resetSceneTimer()""> ms
+                    </div>
+                    <button onclick=""refreshSceneHierarchy()"" style=""font-size: 12px;"">Refresh Now</button>
+                </div>
+                <div id=""scene-list"" style=""margin-top: 10px; max-height: 400px; overflow-y: auto;""></div>
             </div>
         </div>
 
@@ -668,12 +688,121 @@ namespace MetaMystia.Debugger
             input.focus();
         }
 
+        // --- Scene Hierarchy Logic ---
+        let sceneRefreshTimer = null;
+
+        function toggleSceneAutoRefresh() {
+            const cb = document.getElementById('scene-auto-refresh');
+            if (cb.checked) {
+                resetSceneTimer();
+            } else {
+                if (sceneRefreshTimer) clearInterval(sceneRefreshTimer);
+            }
+        }
+
+        function resetSceneTimer() {
+            if (sceneRefreshTimer) clearInterval(sceneRefreshTimer);
+            const cb = document.getElementById('scene-auto-refresh');
+            if (!cb.checked) return;
+
+            const intervalInput = document.getElementById('scene-refresh-interval');
+            let interval = parseInt(intervalInput.value) || 2000;
+            if (interval < 500) interval = 500; // Minimum limit
+
+            sceneRefreshTimer = setInterval(refreshSceneHierarchy, interval);
+        }
+
+        async function refreshSceneHierarchy() {
+            const listDiv = document.getElementById('scene-list');
+            // Don't clear content if auto-refreshing to avoid flicker, just update
+            if (!sceneRefreshTimer && listDiv.innerHTML === '') listDiv.innerHTML = 'Loading...';
+            
+            try {
+                const response = await fetch('/scene-hierarchy?token=' + token);
+                if (response.ok) {
+                    const scenes = await response.json();
+                    
+                    // Simple diff check could be added here, but for now we rebuild
+                    // To preserve state (expanded nodes), we would need a more complex logic
+                    // For now, let's just rebuild.
+                    
+                    listDiv.innerHTML = '';
+                    scenes.forEach(scene => {
+                        const sceneDiv = document.createElement('div');
+                        sceneDiv.style.marginBottom = '10px';
+                        
+                        const header = document.createElement('div');
+                        header.style.fontWeight = 'bold';
+                        header.style.color = '#569cd6';
+                        header.textContent = `${scene.name} (${scene.path}) [${scene.isLoaded ? 'Loaded' : 'Unloaded'}]`;
+                        sceneDiv.appendChild(header);
+                        
+                        if (scene.objects && scene.objects.length > 0) {
+                            const objList = document.createElement('div');
+                            objList.style.marginLeft = '20px';
+                            scene.objects.forEach(obj => {
+                                const div = document.createElement('div');
+                                div.className = 'tree-item';
+                                
+                                const btn = document.createElement('button');
+                                btn.className = 'icon-btn';
+                                btn.textContent = '✎';
+                                btn.title = 'Send to Console';
+                                btn.style.marginRight = '5px';
+                                btn.onclick = function() {
+                                    const expr = '$debug.FromAddress(""UnityEngine.GameObject"", ""' + obj.address + '"")';
+                                    const input = document.getElementById('expr');
+                                    input.value = expr;
+                                    input.focus();
+                                };
+                                
+                                const nameSpan = document.createElement('span');
+                                nameSpan.className = 'name';
+                                nameSpan.textContent = obj.name;
+                                nameSpan.style.color = '#ce9178';
+                                
+                                const addrSpan = document.createElement('span');
+                                addrSpan.className = 'address';
+                                addrSpan.textContent = '[' + obj.address + ']';
+                                
+                                div.appendChild(btn);
+                                div.appendChild(nameSpan);
+                                div.appendChild(addrSpan);
+                                
+                                if (obj.hasChildren) {
+                                     const childSpan = document.createElement('span');
+                                     childSpan.style.color = '#808080';
+                                     childSpan.textContent = ' (has children)';
+                                     div.appendChild(childSpan);
+                                }
+                                
+                                objList.appendChild(div);
+                            });
+                            sceneDiv.appendChild(objList);
+                        } else {
+                            const empty = document.createElement('div');
+                            empty.style.marginLeft = '20px';
+                            empty.style.color = '#808080';
+                            empty.textContent = '(No root objects)';
+                            sceneDiv.appendChild(empty);
+                        }
+                        listDiv.appendChild(sceneDiv);
+                    });
+                } else {
+                    listDiv.textContent = 'Error fetching scenes';
+                }
+            } catch (e) {
+                listDiv.textContent = 'Error: ' + e;
+            }
+        }
+
         // Init
         renderWatches();
         refreshWatch();
         refreshThreads();
         toggleAutoRefresh();
         toggleThreadAutoRefresh();
+        toggleSceneAutoRefresh();
     </script>
 </body>
 </html>";

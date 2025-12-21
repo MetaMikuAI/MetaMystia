@@ -15,5 +15,6 @@ public class MainSceneManagerPatch : PatchBase<MainSceneManagerPatch>
     {
         PluginManager.CurrentGameScene = Scene.MainScene;
         Log.LogInfo($"{LOG_TAG} CurrentGameStage switched to MainScene");
+        Plugin.StartWebDebuggerIfNotStarted();
     }
 }

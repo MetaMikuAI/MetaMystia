@@ -127,6 +127,36 @@ namespace MetaMystia.Debugger
                         response.OutputStream.Write(buffer, 0, buffer.Length);
                     }
                 }
+                else if (request.Url.AbsolutePath == "/scene-hierarchy")
+                {
+                    object result = null;
+                    if (PluginManager.Instance != null)
+                    {
+                        var tcs = new TaskCompletionSource<object>();
+                        PluginManager.Instance.RunOnMainThread(() => 
+                        {
+                            try
+                            {
+                                tcs.SetResult(ReflectionEvaluator.GetSceneHierarchy());
+                            }
+                            catch (Exception ex)
+                            {
+                                tcs.SetResult(new { error = ex.ToString() });
+                            }
+                        });
+                        result = await tcs.Task;
+                    }
+                    else
+                    {
+                        result = new { error = "PluginManager not initialized" };
+                    }
+                    
+                    string json = System.Text.Json.JsonSerializer.Serialize(result);
+                    byte[] buffer = Encoding.UTF8.GetBytes(json);
+                    response.ContentType = "application/json";
+                    response.ContentLength64 = buffer.Length;
+                    response.OutputStream.Write(buffer, 0, buffer.Length);
+                }
                 else if (request.Url.AbsolutePath == "/threads")
                 {
                     var threads = new List<object>();
