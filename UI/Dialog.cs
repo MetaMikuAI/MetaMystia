@@ -186,6 +186,11 @@ public static class Dialog
     public static void ShowTestDialog(System.Action onFinishCallback = null) 
     {
         var dialogList = new CustomDialogList();
+        dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 2, Position.Right, "test 1");
+        dialogList.AddDialog(14, SpeakerIdentity.Identity.Special, 13, Position.Left, "……");
+        dialogList.AddDialog(10000, SpeakerIdentity.Identity.Special, 0, Position.Left, "Special 10000 0");
+        dialogList.AddDialog(10001, SpeakerIdentity.Identity.Special, 0, Position.Right, "Special 10001 0");
+        dialogList.AddDialog(10002, SpeakerIdentity.Identity.Special, 0, Position.Right, "Special 10002 0");
         dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 2, Position.Right, "你为什么上来就粉评啊，夜雀食堂不是这样的啊！");
         dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 2, Position.Right, "你应该先慢慢跟我提要求，我猜一猜你的喜好，再偶尔来点绿评暗示我你还不够满意，还嘲讽我「您完全没有文化底蕴是吗」");
         dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 7, Position.Right, "最后我饭团加好料的时候开始提新的要求，我继续加料说「怎么口味这么刁」，然后给你满足你4个喜好tag的食物和酒水你才正式开启奖励符卡啊！");

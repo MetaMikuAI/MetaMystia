@@ -17,6 +17,7 @@ public class Plugin : BasePlugin
     public static WebDebugger Debugger = null;
 
     public Action<Scene, LoadSceneMode> LoadAction;
+    public static bool FirstEnterMain = true;
 
     public Plugin()
     {
@@ -48,9 +49,11 @@ public class Plugin : BasePlugin
                 typeof(CharacterControllerUnitPatch),
                 typeof(CharacterInputPatch),
                 typeof(CookControllerPatch),
+                typeof(DataBaseCharacterPatch),
                 typeof(DaySceneManagerPatch),
                 typeof(DaySceneMapProfilePatch),
                 typeof(DayScenePlayerInputPatch),
+                typeof(DialogPannelPatch),
                 typeof(IzakayaConfigPannelPatch),
                 typeof(IzakayaConfigurePatch),
                 typeof(IzakayaSelectorPanelPatch),
@@ -85,14 +88,24 @@ public class Plugin : BasePlugin
         }
     }
 
-    public static void StartWebDebuggerIfNotStarted()
+    public static void EnterMainScene()
     {
+        if (!FirstEnterMain)
+        {
+            return;
+        }
+        
+        FirstEnterMain = false;
+        Instance.Log.LogInfo("First time entering Main Scene.");
+        
         if (Debugger == null)
         {
-            Instance.Log.LogInfo("Starting Web Debugger...");
             Debugger = new WebDebugger();
             Debugger.Start();
         }
+        
+        ResourceExManager.Initialize();
+        ResourceExManager.InjectCharacters();
     }
 
     class BootstrapPatch

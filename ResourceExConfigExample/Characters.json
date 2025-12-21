@@ -1,0 +1,46 @@
+{
+  "characters": [
+    {
+      "id": 10000,
+      "name": "秋静叶",
+      "label": "AkiSizuha",
+      "descriptions": [
+          "红叶之神",
+          "八百万之神",
+          "掌管红叶程度的能力"
+    ],
+    "type": "Special",
+      "portraits": [
+        { "pid": 0, "path": "assets/AkiSizuha_0.png" }
+      ]
+    },
+    {
+      "id": 10001,
+      "name": "秋穰子",
+      "label": "AkiMinoriko",
+      "descriptions": [
+        "丰收之神",
+        "八百万之神",
+        "掌管丰收程度的能力"
+      ],
+      "type": "Special",
+      "portraits": [
+        { "pid": 0, "path": "assets/AkiMinoriko_0.png" }
+      ]
+    },
+    {
+      "id": 10002,
+      "name": "八云蓝",
+      "label": "YakumoRan",
+      "descriptions": [
+        "使役式神程度的能力",
+        "",
+        ""
+      ],
+      "type": "Special",
+      "portraits": [
+        { "pid": 0, "path": "assets/YakumoRan_0.png" }
+      ]
+    }
+  ]
+}

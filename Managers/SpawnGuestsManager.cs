@@ -68,7 +68,6 @@ public static class SpawnGuestsManager
             action,
             GuestGroupController.LeaveType.Move
         );
-        //GuestsManager.instance.AllGuestInDeskController;
         instance.guestIconManager.Add(normalGuestsController);
         eventManager.AddServedGuest(normalGuestsController.guestInstances.Length, false);
         GuestsManager.Instance.PostInitializeGuestGroup(normalGuestsController, -1, false, false);

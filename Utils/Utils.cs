@@ -1,5 +1,8 @@
 using System.Linq;
 using BepInEx.Logging;
+using System.IO;
+using UnityEngine;
+
 namespace MetaMystia;
 
 public static class Utils
@@ -55,6 +58,25 @@ public static class Utils
         //     Log.LogInfo($"{LOG_TAG} \t at {method.Name}");
         // }
         return stack.GetFrames().Any(frame => frame.GetMethod().Name.Contains(funcName));
+    }
+
+
+    
+    public static Sprite GetArtWork(string filePath)
+    {
+        if (!File.Exists(filePath)) return null;
+
+        var texture2D = new Texture2D(2, 2);
+        texture2D.filterMode = FilterMode.Point; 
+        
+        byte[] fileData = File.ReadAllBytes(filePath);
+        ImageConversion.LoadImage(texture2D, fileData);
+        
+        var sprite = Sprite.Create(texture2D, new Rect(0f, 0f, texture2D.width, texture2D.height),
+            new Vector2(0.5f, 0.5f), 100f);
+            
+        sprite.name = Path.GetFileNameWithoutExtension(filePath);
+        return sprite;
     }
 };
 
