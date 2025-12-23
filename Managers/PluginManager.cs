@@ -86,13 +86,19 @@ public class PluginManager : MonoBehaviour
             Log.LogMessage($"{LOG_TAG} Toggled text visibility: " + isTextVisible);
         }
 
+
+        if (Input.GetKeyDown(KeyCode.KeypadDivide))
+        {
+            // _ = MpManager.ConnectToPeerAsync("456580DC-029A-4f0e-bc3d-f288c06f2016", 40815); // 这是 sandbox，测试用
+            _ = MpManager.ConnectToPeerAsync("192.168.1.39", 40815); // 这是 sandbox，测试用
+        }
         if (Input.GetKeyDown(KeyCode.KeypadMultiply))
         {
             MpManager.Start();
         }
-        if (Input.GetKeyDown(KeyCode.KeypadDivide))
+        if (Input.GetKeyDown(KeyCode.KeypadMinus))
         {
-            MpManager.ConnectToPeer("TX_VOLCANO", 40815); // 这是 MetaMiku 的 PC，测试用
+            MpManager.Stop();
         }
     }
 
@@ -118,6 +124,7 @@ public class PluginManager : MonoBehaviour
 
     private void FixedUpdate()
     {
+        SgrYuki.Utils.CommandScheduler.Tick();
         lock (_conditionalActions)
         {
             for (int i = _conditionalActions.Count - 1; i >= 0; i--)

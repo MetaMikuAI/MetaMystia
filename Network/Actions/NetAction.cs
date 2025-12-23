@@ -21,9 +21,10 @@ public enum ActionType : ushort
     EXTRACTFOOD,
     GUEST_SPAWN,
     GUEST_SEATED,
-    GUEST_LEAVE,
     GUEST_GEN_NORMAL_ORDER,
     GUEST_GEN_SPECIAL_ORDER,
+    GUEST_SERVE,
+    GUEST_LEAVE,
 }
 
 [MemoryPackable]
@@ -44,9 +45,11 @@ public enum ActionType : ushort
 [MemoryPackUnion((ushort)ActionType.EXTRACTFOOD, typeof(ExtractFoodAction))]
 [MemoryPackUnion((ushort)ActionType.GUEST_SPAWN, typeof(GuestSpawnAction))]
 [MemoryPackUnion((ushort)ActionType.GUEST_SEATED, typeof(GuestSeatedAction))]
-[MemoryPackUnion((ushort)ActionType.GUEST_LEAVE, typeof(GuestLeaveAction))]
 [MemoryPackUnion((ushort)ActionType.GUEST_GEN_NORMAL_ORDER, typeof(GuestGenNormalOrderAction))]
 [MemoryPackUnion((ushort)ActionType.GUEST_GEN_SPECIAL_ORDER, typeof(GuestGenSPOrderAction))]
+[MemoryPackUnion((ushort)ActionType.GUEST_SERVE, typeof(GuestServeAction))]
+[MemoryPackUnion((ushort)ActionType.GUEST_LEAVE, typeof(GuestLeaveAction))]
+
 public abstract partial class NetAction
 {
     public abstract ActionType Type { get; }
@@ -83,13 +86,13 @@ public abstract partial class NetAction
         }
     }
 
-    protected void LogActionReceived(BepInEx.Logging.LogLevel logLevel, bool onlyAction, string prefix)
+    protected void LogActionReceived(BepInEx.Logging.LogLevel logLevel, bool onlyAction = false, string prefix = "")
     {
         string logStr = $"{prefix}Received {Type}{(onlyAction ? "" : $": {ToString()}")}";
         LogAction(logLevel, onlyAction, logStr);
     }
 
-    protected void LogActionSend(BepInEx.Logging.LogLevel logLevel, bool onlyAction, string prefix)
+    protected void LogActionSend(BepInEx.Logging.LogLevel logLevel, bool onlyAction = false, string prefix = "")
     {
         string logStr = $"{prefix}Send {Type}{(onlyAction ? "" : $": {ToString()}")}";
         LogAction(logLevel, onlyAction, logStr);
@@ -107,4 +110,11 @@ public abstract partial class NetAction
 
     [MemoryPackIgnore]
     protected static BepInEx.Logging.ManualLogSource Log => Plugin.Instance.Log;
+
+    public static void RegisterAllFormatter()
+    {
+        NetAction.RegisterFormatter();
+        GuestServeAction.RegisterFormatter();
+        GuestLeaveAction.RegisterFormatter();
+    }
 }

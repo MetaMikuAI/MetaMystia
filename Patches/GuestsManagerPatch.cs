@@ -3,73 +3,62 @@ using GameData.Core.Collections.NightSceneUtility;
 using NightScene.GuestManagementUtility;
 
 using MetaMystia;
+using SgrYuki.Utils;
 
 [HarmonyPatch(typeof(NightScene.GuestManagementUtility.GuestsManager))] 
 public class GuestsManagerPatch : PatchBase<GuestsManagerPatch>
 {
-    public static readonly System.Threading.AsyncLocal<string> GuestSpawnUUID = new();
-
+    // public static readonly System.Threading.AsyncLocal<bool> PassGuestSpawn = new();
 
     [HarmonyPatch(nameof(GuestsManager.PostInitializeGuestGroup))]
     [HarmonyPrefix]    
-    public static bool PostInitializeGuestGroup_Prefix(object __instance, GuestGroupController initializedController)
+    public static bool PostInitializeGuestGroup_Prefix(GuestGroupController initializedController)
     {
-        bool isNormalGuest = Utils.CheckStacktraceContains("NightScene.GuestManagementUtility.GuestsManager::SpawnNormalGuestGroup");
+        const int PatientSecs = 60;
+        // Log.LogInfo($"{LOG_TAG} PostInitializeGuestGroup_Prefix called");
+        bool isNormalGuest = FunctionUtil.CheckStacktraceContains("NightScene.GuestManagementUtility.GuestsManager::SpawnNormalGuestGroup");
 
-        if(MpManager.IsConnected)
+        // Sync host's guest spawn here because GuestsManager::SpawnNormalGuestGroup/0 does not return guest controller
+        if (MpManager.IsConnected)
         {
-            if(MpManager.Role == MpManager.ROLE.Client)
-            {
-                if (string.IsNullOrEmpty(GuestSpawnUUID.Value))
-                {
-                    //Log.LogInfo($"{LOG_TAG} PostInitializeGuestGroup_Prefix prevented");  
-                    return false;
-                } 
-                else
-                {
-                    GuestManager.StoreGuest(initializedController, GuestSpawnUUID.Value);
-                    Log.LogInfo($"{LOG_TAG} PostInitializeGuestGroup_Prefix passed");   
-                    return true;
-                }
-            } 
-            else
-            {
-                string uuid = GuestManager.StoreGuest(initializedController);
-                var array = initializedController.GetAllGuests().TryCast<Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<GuestBase>>();
+            if (MpManager.Role == MpManager.ROLE.Host){
+                string uuid = NightGuestManager.StoreGuest(initializedController);
+
+                var array = initializedController.GetAllGuests().ToIl2CppReferenceArray();
                 if (array != null)
                 {
-                    // discard the second guest(if any)
                     if (isNormalGuest)
                     {
-                        MpManager.SendGuestSpawn(array[0].id, false, uuid);
+                        var profile0 = array[0].OnGetVisual(array[0].id);
+                        if (array.Length > 1)
+                        {
+                            MpManager.SendGuestSpawn(array[0].id, false, uuid, profile0.bgColor, profile0.textColor, array[1].id);
+                        }
+                        else
+                        {
+                            MpManager.SendGuestSpawn(array[0].id, false, uuid, profile0.bgColor, profile0.textColor);
+                        }
                     }
                     else
                     {
                         MpManager.SendGuestSpawn(array[0].id, true, uuid);
                     }
-                    // foreach (var guest in array)
-                    // {
-                    //     if (isNormalGuest)
-                    //     {
-                    //         MpManager.SendGuestSpawn(guest.id, false, uuid);
-                    //     } 
-                    //     else
-                    //     {
-                    //         MpManager.SendGuestSpawn(guest.id, true, uuid);
-                    //     }
-                    // }
                 }
             }
+            initializedController.AddPatient(PatientSecs);
+            // initializedController.MaxPatient *= 2;
+            // initializedController.CurrentPatient *= 2;
+            // Log.LogWarning($"{LOG_TAG} MaxPatient {initializedController.MaxPatient/2} -> {initializedController.MaxPatient}, CurrentPatient {initializedController.CurrentPatient/2} -> {initializedController.CurrentPatient}");
         }
         return true;
     }
 
     [HarmonyPatch(nameof(GuestsManager.SpawnNormalGuestGroup), [])]
     [HarmonyPrefix]    
-    public static bool SpawnNormalGuestGroup_Prefix(GuestsManager __instance)
+    public static bool SpawnNormalGuestGroup_Prefix()
     {
-        Log.LogInfo($"{LOG_TAG} SpawnNormalGuestGroup_Prefix called\n");
-        return true;
+        // Log.LogInfo($"{LOG_TAG} SpawnNormalGuestGroup_Prefix called");
+        return !MpManager.IsConnectedClient;
     }
 
 
@@ -95,14 +84,61 @@ public class GuestsManagerPatch : PatchBase<GuestsManagerPatch>
         typeof(bool),
     ])]
     [HarmonyPrefix]    
-    public static bool SpawnNormalGuestGroup_WithArg_Prefix(GuestsManager __instance, Il2CppSystem.Collections.Generic.IEnumerable<NormalGuest> normalGuests, Il2CppSystem.Nullable<UnityEngine.Vector3> overrideSpawnPosition, GuestGroupController.LeaveType leaveType, int targetDeskCode, bool shouldFade, ref NormalGuestsController __result)
+    public static bool SpawnNormalGuestGroup_WithArg_Prefix(GuestsManager __instance, 
+        Il2CppSystem.Collections.Generic.IEnumerable<NormalGuest> normalGuests, 
+        Il2CppSystem.Nullable<UnityEngine.Vector3> overrideSpawnPosition, 
+        GuestGroupController.LeaveType leaveType, 
+        int targetDeskCode, 
+        bool shouldFade, 
+        ref NormalGuestsController __result)
     {   
-        if(overrideSpawnPosition == null)
+        Log.LogInfo($"{LOG_TAG} SpawnNormalGuestGroup_WithArg_Prefix called");
+        overrideSpawnPosition ??= new Il2CppSystem.Nullable<UnityEngine.Vector3>();
+        if (MpManager.IsConnectedClient)
         {
-            Log.LogInfo($"{LOG_TAG} SpawnNormalGuestGroup_WithArg_Prefix overrideSpawnPosition is null");
-            overrideSpawnPosition = new Il2CppSystem.Nullable<UnityEngine.Vector3>();
+            return false;
         }
         __result = SpawnNormalGuestGroup_WithArg_Original(__instance, normalGuests, overrideSpawnPosition, leaveType, targetDeskCode, shouldFade);
+        return false;
+    }
+
+    [HarmonyPatch(nameof(GuestsManager.SpawnSpecialGuestGroup))]
+    [HarmonyReversePatch]    
+    public static SpecialGuestsController SpawnSpecialGuestGroup_Original(GuestsManager __instance, 
+        int id, 
+        SpecialGuestsController.GuestSpawnType guestSpawnType,
+        Il2CppSystem.Nullable<UnityEngine.Vector3> overrideSpawnPosition = null, 
+        Il2CppSystem.Action<GuestGroupController> onGuestLeave = null, 
+        GuestGroupController.LeaveType leaveType = GuestGroupController.LeaveType.Move, 
+        bool recordIzakaya = true, 
+        int targetDeskCode = -1, 
+        bool tryToJumpQueue = false, 
+        Il2CppSystem.Action<Common.CharacterUtility.AStarInputGeneratorComponent> postProcessCharacterCallback = null, 
+        bool shouldFade = true)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    [HarmonyPatch(nameof(GuestsManager.SpawnSpecialGuestGroup))]
+    [HarmonyPrefix]    
+    public static bool SpawnSpecialGuestGroup_Prefix(GuestsManager __instance, ref SpecialGuestsController __result,
+        int id, 
+        SpecialGuestsController.GuestSpawnType guestSpawnType,
+        ref Il2CppSystem.Nullable<UnityEngine.Vector3> overrideSpawnPosition, 
+        Il2CppSystem.Action<GuestGroupController> onGuestLeave, 
+        GuestGroupController.LeaveType leaveType, 
+        bool recordIzakaya, 
+        int targetDeskCode, 
+        bool tryToJumpQueue, 
+        Il2CppSystem.Action<Common.CharacterUtility.AStarInputGeneratorComponent> postProcessCharacterCallback, 
+        bool shouldFade)
+    {
+        overrideSpawnPosition ??= new Il2CppSystem.Nullable<UnityEngine.Vector3>();
+        if (MpManager.IsConnectedClient)
+        {
+            return false;
+        }
+        __result = SpawnSpecialGuestGroup_Original(__instance, id, guestSpawnType, overrideSpawnPosition, onGuestLeave, leaveType, recordIzakaya, targetDeskCode, tryToJumpQueue, postProcessCharacterCallback, shouldFade);
         return false;
     }
 
@@ -117,33 +153,34 @@ public class GuestsManagerPatch : PatchBase<GuestsManagerPatch>
     [HarmonyPrefix]    
     public static bool TrySendToSeat_Prefix(GuestsManager __instance, GuestGroupController toTry, bool firstSpawn, ref int targetDeskCode, bool shouldOrder)
     {
-        Log.LogInfo($"{LOG_TAG} TrySendToSeat_Prefix called, desk code = {toTry.DeskCode}, targetDeskCode = {targetDeskCode}");
-
-        if(MpManager.IsConnected)
+        if (MpManager.IsConnected)
         {
             if(MpManager.Role == MpManager.ROLE.Client)
             {
-                //Log.LogInfo($"{LOG_TAG} TrySendToSeat_Prefix prevented");  
+                Log.LogDebug($"{LOG_TAG} TrySendToSeat prevented");
                 return false;
             }
             else
             {
-                var seatableDeskCodes = new System.Collections.Generic.List<int>();
-                var e = __instance.TrueAvailableDesks.GetEnumerator();
-                while (e.MoveNext())
-                {
-                    var kv = e.Current;
-                    if (kv.Value >= toTry.GuestCount)
-                        seatableDeskCodes.Add(kv.Key);
-                }
+                var seatableDeskCodes = __instance.TrueAvailableDesks.FilterKey(value => value >= toTry.GuestCount);
                 if (seatableDeskCodes.Count == 0) return false;
-                targetDeskCode = seatableDeskCodes[UnityEngine.Random.Range(0, seatableDeskCodes.Count)];
-                Log.LogInfo($"{LOG_TAG} TrySendToSeat_Prefix called, desk code modified to = {targetDeskCode}");
+                targetDeskCode = seatableDeskCodes.GetRandomOne();
+                Log.LogDebug($"{LOG_TAG} TrySendToSeat_Prefix called, desk code modified to = {targetDeskCode}");
 
-                MpManager.SendGuestSeated(GuestManager.GetGuestUUID(toTry), targetDeskCode, firstSpawn);
+                var guuid = NightGuestManager.GetGuestUUID(toTry);
+                NightGuestManager.SetGuestStatus(guuid, NightGuestManager.Status.Seated);
+                NightGuestManager.SetGuestDeskcode(guuid, targetDeskCode);
+                MpManager.SendGuestSeated(NightGuestManager.GetGuestUUID(toTry), targetDeskCode, firstSpawn);
             }
         }
         return true;
+    }
+
+    [HarmonyPatch(nameof(GuestsManager.LeaveFromDesk))]
+    [HarmonyReversePatch]    
+    public static void LeaveFromDesk_Original(GuestsManager __instance, GuestGroupController toLeave, GuestGroupController.LeaveType leaveType, Il2CppSystem.Action leaveAction, bool triggerLeaveBuff)
+    {
+        throw new System.NotImplementedException();
     }
 
     [HarmonyPatch(nameof(GuestsManager.LeaveFromDesk))]
@@ -151,54 +188,155 @@ public class GuestsManagerPatch : PatchBase<GuestsManagerPatch>
     public static bool LeaveFromDesk_Prefix(GuestsManager __instance, GuestGroupController toLeave)
     {
         Log.LogInfo($"{LOG_TAG} LeaveFromDesk_Prefix called");
-
-        // if(MpManager.IsConnected)
-        // {
-        //     if(MpManager.Role == MpManager.ROLE.Host)
-        //     {
-        //         MpManager.SendGuestSeated(GuestManager.GetGuestUUID(toTry), targetDeskCode, firstSpawn);
-        //     }
-        // }
+        if (MpManager.IsConnectedClient)
+        {
+            return NightGuestManager.CheckStatus(NightGuestManager.GetGuestUUID(toLeave), NightGuestManager.Status.Left);
+        }
+        else if (MpManager.IsConnectedHost)
+        {
+            var uuid = NightGuestManager.GetGuestUUID(toLeave);
+            if (NightGuestManager.CheckStatus(uuid, NightGuestManager.Status.Left))
+            {
+                return true;
+            }
+            NightGuestManager.SetGuestStatus(uuid, NightGuestManager.Status.Left);
+            MpManager.SendGuestLeave(uuid, GuestLeaveAction.LeaveType.Other);
+        }
         return true;
     }
 
     [HarmonyPatch(nameof(GuestsManager.PayAndLeave))]
-    [HarmonyPrefix]    
-    public static bool PayAndLeave_Prefix(GuestsManager __instance)
+    [HarmonyReversePatch]    
+    public static void PayAndLeave_Original(GuestsManager __instance, GuestGroupController toPayAndLeave, bool includeTip)
     {
-        Log.LogInfo($"{LOG_TAG} PayAndLeave_Prefix called\n");
+        throw new System.NotImplementedException();
+    }
+
+    [HarmonyPatch(nameof(GuestsManager.PayAndLeave))]
+    [HarmonyPrefix]    
+    public static bool PayAndLeave_Prefix(GuestsManager __instance, GuestGroupController toPayAndLeave, bool includeTip)
+    {
+        Log.LogInfo($"{LOG_TAG} PayAndLeave_Prefix called");
+        if (MpManager.IsConnectedClient)
+        {
+            return NightGuestManager.CheckStatus(NightGuestManager.GetGuestUUID(toPayAndLeave), NightGuestManager.Status.Left);
+        }
+        else if (MpManager.IsConnectedHost)
+        {
+            NightGuestManager.SetGuestStatus(NightGuestManager.GetGuestUUID(toPayAndLeave), NightGuestManager.Status.Left);
+            MpManager.SendGuestLeave(NightGuestManager.GetGuestUUID(toPayAndLeave), GuestLeaveAction.LeaveType.PayAndLeave);
+        }
         return true;
     }
 
     [HarmonyPatch(nameof(GuestsManager.ExBadLeave))]
+    [HarmonyReversePatch]    
+    public static void ExBadLeave_Original(GuestsManager __instance, GuestGroupController toExBadLeave)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    [HarmonyPatch(nameof(GuestsManager.ExBadLeave))]
     [HarmonyPrefix]    
-    public static bool ExBadLeave_Prefix(GuestsManager __instance)
+    public static bool ExBadLeave_Prefix(GuestsManager __instance, GuestGroupController toExBadLeave)
     {   
-        Log.LogInfo($"{LOG_TAG} ExBadLeave_Prefix called\n");
+        Log.LogInfo($"{LOG_TAG} ExBadLeave_Prefix called");
+        if (MpManager.IsConnectedClient)
+        {
+            return NightGuestManager.CheckStatus(NightGuestManager.GetGuestUUID(toExBadLeave), NightGuestManager.Status.Left);
+        }
+        else if (MpManager.IsConnectedHost)
+        {
+            NightGuestManager.SetGuestStatus(NightGuestManager.GetGuestUUID(toExBadLeave), NightGuestManager.Status.Left);
+            MpManager.SendGuestLeave(NightGuestManager.GetGuestUUID(toExBadLeave), GuestLeaveAction.LeaveType.ExBadLeave);
+        }
         return true;
     }
 
     [HarmonyPatch(nameof(GuestsManager.RepellAndLeavePay))]
-    [HarmonyPrefix]    
-    public static bool RepellAndLeavePay_Prefix(GuestsManager __instance)
+    [HarmonyReversePatch]    
+    public static void RepellAndLeavePay_Original(GuestsManager __instance, GuestGroupController toRepell, GuestGroupController.LeaveType leaveType, bool triggerBuff)
     {
-        Log.LogInfo($"{LOG_TAG} RepellAndLeavePay_Prefix called\n");
+        throw new System.NotImplementedException();
+    }
+
+    [HarmonyPatch(nameof(GuestsManager.RepellAndLeavePay))]
+    [HarmonyPrefix]    
+    public static bool RepellAndLeavePay_Prefix(GuestsManager __instance, GuestGroupController toRepell)
+    {
+        Log.LogInfo($"{LOG_TAG} RepellAndLeavePay_Prefix called");
+        if (MpManager.IsConnected)
+        {
+            NightGuestManager.SetGuestStatus(NightGuestManager.GetGuestUUID(toRepell), NightGuestManager.Status.Left);
+            MpManager.SendGuestLeave(NightGuestManager.GetGuestUUID(toRepell), GuestLeaveAction.LeaveType.RepellAndLeavePay);
+        }
         return true;
     }
 
     [HarmonyPatch(nameof(GuestsManager.RepellAndLeaveNoPay))]
-    [HarmonyPrefix]    
-    public static bool RepellAndLeaveNoPay_Prefix(GuestsManager __instance)
+    [HarmonyReversePatch]    
+    public static void RepellAndLeaveNoPay_Original(GuestsManager __instance, GuestGroupController toRepell, GuestGroupController.LeaveType leaveType, bool triggerBuff)
     {
-        Log.LogInfo($"{LOG_TAG} RepellAndLeaveNoPay_Prefix called\n");
+        throw new System.NotImplementedException();
+    }
+
+    [HarmonyPatch(nameof(GuestsManager.RepellAndLeaveNoPay))]
+    [HarmonyPrefix]    
+    public static bool RepellAndLeaveNoPay_Prefix(GuestsManager __instance, GuestGroupController toRepell)
+    {
+        Log.LogInfo($"{LOG_TAG} RepellAndLeaveNoPay_Prefix called");
+        if (MpManager.IsConnected)
+        {
+            NightGuestManager.SetGuestStatus(NightGuestManager.GetGuestUUID(toRepell), NightGuestManager.Status.Left);
+            MpManager.SendGuestLeave(NightGuestManager.GetGuestUUID(toRepell), GuestLeaveAction.LeaveType.RepellAndLeaveNoPay);
+        }
         return true;
+    }
+
+    [HarmonyPatch(nameof(GuestsManager.PlayerRepell))]
+    [HarmonyReversePatch]    
+    public static void PlayerRepell_Original(GuestsManager __instance, int deskCode)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    [HarmonyPatch(nameof(GuestsManager.PlayerRepell))]
+    [HarmonyPrefix]    
+    public static bool PlayerRepelly_Prefix(GuestsManager __instance, int deskCode)
+    {
+        Log.LogInfo($"{LOG_TAG} PlayerRepelly_Prefix called");
+        if (MpManager.IsConnected)
+        {
+            var toRepell = GuestsManager.instance.GetInDeskGuest(deskCode);
+            NightGuestManager.SetGuestStatus(NightGuestManager.GetGuestUUID(toRepell), NightGuestManager.Status.Left);
+            MpManager.SendGuestLeave(NightGuestManager.GetGuestUUID(toRepell), GuestLeaveAction.LeaveType.PlayerRepell);
+        }
+        return true;
+    }
+
+
+
+    [HarmonyPatch(nameof(GuestsManager.PatientDepletedLeave))]
+    [HarmonyReversePatch]    
+    public static void PatientDepletedLeave_Original(GuestsManager __instance, GuestGroupController toPatientDepletedLeave)
+    {
+        throw new System.NotImplementedException();
     }
 
     [HarmonyPatch(nameof(GuestsManager.PatientDepletedLeave))]
     [HarmonyPrefix]    
-    public static bool PatientDepletedLeave_Prefix(GuestsManager __instance)
+    public static bool PatientDepletedLeave_Prefix(GuestsManager __instance, GuestGroupController toPatientDepletedLeave)
     {
-        Log.LogInfo($"{LOG_TAG} PatientDepletedLeave_Prefix called\n");
+        Log.LogInfo($"{LOG_TAG} PatientDepletedLeave_Prefix called");
+        if (MpManager.IsConnectedClient)
+        {
+            return NightGuestManager.CheckStatus(NightGuestManager.GetGuestUUID(toPatientDepletedLeave), NightGuestManager.Status.Left);
+        }
+        else if (MpManager.IsConnectedHost)
+        {
+            NightGuestManager.SetGuestStatus(NightGuestManager.GetGuestUUID(toPatientDepletedLeave), NightGuestManager.Status.Left);
+            MpManager.SendGuestLeave(NightGuestManager.GetGuestUUID(toPatientDepletedLeave), GuestLeaveAction.LeaveType.PatientDepletedLeave);
+        }
         return true;
     }
 
@@ -214,7 +352,7 @@ public class GuestsManagerPatch : PatchBase<GuestsManagerPatch>
     [HarmonyPrefix]    
     public static bool GuestPay_Prefix(GuestsManager __instance)
     {
-        Log.LogInfo($"{LOG_TAG} GuestPay_Prefix called\n");
+        Log.LogInfo($"{LOG_TAG} GuestPay_Prefix called");
         return true;
     }
 
@@ -227,11 +365,13 @@ public class GuestsManagerPatch : PatchBase<GuestsManagerPatch>
     }
 
     [HarmonyPatch(nameof(GuestsManager.EvaluateOrder))]
-    [HarmonyPrefix]    
-    public static bool EvaluateOrder_Prefix(GuestsManager __instance, GuestGroupController toEvaluate, bool isTriggerByPartner)
+    [HarmonyPostfix]    
+    public static void EvaluateOrder_Postfix(GuestsManager __instance, GuestGroupController toEvaluate, bool isTriggerByPartner)
     {
-        Log.LogInfo(System.Environment.StackTrace);
-        return true;
+        Log.LogInfo($"{LOG_TAG} EvaluateOrder_Postfix called");
+        var uuid = NightGuestManager.GetGuestUUID(toEvaluate);
+        NightGuestManager.ResetGuestOrderServed(uuid);
+        NightGuestManager.SetGuestStatus(uuid, NightGuestManager.Status.OrderEvaluated);
     }
 
     [HarmonyPatch(nameof(GuestsManager.GenerateOrderSession))]
@@ -246,174 +386,28 @@ public class GuestsManagerPatch : PatchBase<GuestsManagerPatch>
     public static bool GenerateOrderSession_Prefix(GuestsManager __instance, GuestGroupController guestGroup, bool doContinue)
     {
         
-        Log.LogInfo($"{LOG_TAG} GenerateOrderSession called\n");
-        if (MpManager.IsConnected)
+        // Log.LogInfo($"{LOG_TAG} GenerateOrderSession called");
+        if (MpManager.IsConnectedClient)
         {
-            if (MpManager.Role == MpManager.ROLE.Client)
+            Log.LogInfo($"{LOG_TAG} GenerateOrderSession prevented");
+            var uuid = NightGuestManager.GetGuestUUID(guestGroup);
+            if (NightGuestManager.CheckStatusIn(uuid, [NightGuestManager.Status.Seated, NightGuestManager.Status.OrderEvaluated]))
             {
-                Log.LogInfo($"{LOG_TAG} GenerateOrderSession prevented\n");
-                return false;
+                NightGuestManager.SetGuestStatus(uuid, NightGuestManager.Status.PendingOrder);
             }
+            return false;
         }
         return true;
     }
-
-
-
-    // [HarmonyPatch(nameof(GuestsManager.Register))]
-    // [HarmonyReversePatch]    
-    // public static void Register_Original(object __instance, Il2CppSystem.Collections.Generic.Dictionary<int, GuestGroupController> collection, GuestGroupController data)
-    // {
-    //     throw new System.NotImplementedException();
-    // }
-
-    // static Il2CppSystem.Collections.Generic.Dictionary<int, GuestGroupController> collection = new();
-    // public static void Register_Original_Wrapper(GuestGroupController data)
-    // {
-    //     Log.LogInfo($"{LOG_TAG} Register_Original called, desk code = {data.DeskCode}");
-    //     Register_Original(GuestsManager.instance, collection, data);
-    // }
-
-    // [HarmonyPatch(nameof(GuestsManager.Register))]
-    // [HarmonyPrefix]    
-    // public static bool Register_Prefix(object __instance, Il2CppSystem.Collections.Generic.Dictionary<int, GuestGroupController> collection, ref GuestGroupController data)
-    // {
-    //     Log.LogInfo($"{LOG_TAG} Register_Prefix called, desk code = {data.DeskCode}");
-
-    //     if(MpManager.IsConnected)
-    //     {
-    //         if(MpManager.Role == MpManager.ROLE.Host)
-    //         {
-    //             MpManager.SendGuestSeated(GuestManager.GetGuestUUID(data), data.DeskCode, true);
-    //         } 
-    //         else
-    //         {
-    //             return false;
-    //         }
-    //     }
-        
-    //     // foreach(var i in collection)
-    //     // {
-    //     //     ShigureYuki.DiagnosticUtils.LogAllProperties(i);
-    //     // }
-    //     return true;
-    // }
-
-    // [HarmonyPatch(nameof(GuestsManager.SpawnGuest))]
-    // [HarmonyPrefix]    
-    // public static bool SpawnGuest_Prefix(object __instance, ref GuestGroupController toTry)
-    // {
-    //     Log.LogInfo($"{LOG_TAG} SpawnGuest_Prefix called, desk code = {toTry.DeskCode}");
-        
-    //     // foreach(var i in collection)
-    //     // {
-    //     //     ShigureYuki.DiagnosticUtils.LogAllProperties(i);
-    //     // }
-    //     return true;
-    // }
 }
 
-
-[HarmonyPatch]
-public class GuestGroupControllerPatch : PatchBase<GuestGroupControllerPatch>
+[HarmonyPatch(typeof(Common.TimelineExtestion.GameTimeManager))]
+public class GameTimeManagerPatch : PatchBase<GameTimeManagerPatch>
 {
-    [HarmonyPatch(typeof(GuestsManager.__c__DisplayClass171_0), nameof(GuestsManager.__c__DisplayClass171_0.Method_Internal_OrderGenerationResult_GuestGroupController_byref_OrderBase_0))]
+    [HarmonyPatch(nameof(Common.TimelineExtestion.GameTimeManager.SetGameTimeMode))]
     [HarmonyPrefix]
-    public static void GenerateOrderInternalPrefix(GuestGroupController toGenerate, GuestsManager.OrderBase orderData)
+    public static void SetGameTimeModePatch(Common.TimelineExtestion.GameTimeManager __instance, ref Common.TimelineExtestion.GameTimeManager.TimeMode mode)
     {
-        Log.LogInfo($"{LOG_TAG} GenerateOrderInternalPrefix called, orderData {orderData} \n");
+        mode = Common.TimelineExtestion.GameTimeManager.TimeMode.Resume;
     }
-
-
-    [HarmonyPatch(typeof(GuestGroupController), nameof(GuestGroupController.GenerateOrder))]
-    [HarmonyPrefix]
-    public static bool GenerateOrderPrefix(GuestGroupController __instance, bool isFreeOrder, ref string orderGenerationMessage, ref GuestsManager.OrderBase generatedOrder)
-    {
-        Log.LogInfo($"{LOG_TAG} GenerateOrderPrefix called");
-        if(MpManager.IsConnected)
-        {
-            if (MpManager.Role == MpManager.ROLE.Client)
-            {
-                if (GuestManager.orders.TryDequeue(out var item))
-                {
-                    (generatedOrder, orderGenerationMessage) = item;
-                } 
-                else
-                {
-                    Log.LogError($"{LOG_TAG} dequeue failed! ");
-                }
-                
-                return false;
-            }
-        }
-        return true;
-    }
-
-    [HarmonyPatch(typeof(GuestGroupController), nameof(GuestGroupController.GenerateOrder))]
-    [HarmonyPostfix]
-    public static void GenerateOrderPostfix(GuestGroupController __instance, bool isFreeOrder, ref string orderGenerationMessage, ref GuestsManager.OrderBase generatedOrder)
-    {
-        Log.LogInfo($"{LOG_TAG} GenerateOrderPostfix called, isFreeOrder {isFreeOrder}, orderGenerationMessage {orderGenerationMessage}\n");
-        if(MpManager.IsConnected)
-        {
-            if(MpManager.Role == MpManager.ROLE.Host)
-            {
-                if (generatedOrder.Type == GuestsManager.OrderBase.OrderType.Normal)
-                {
-                    Log.LogWarning($"{LOG_TAG} orderData NormalOrder");
-                    MpManager.SendGuestGenNormalOrder(GuestManager.GetGuestUUID(__instance), generatedOrder.foodRequest, generatedOrder.beverageRequest, generatedOrder.DeskCode, generatedOrder.NotShowInUI, generatedOrder.FreeOrder, orderGenerationMessage);
-                    
-                } 
-                else if (generatedOrder.Type == GuestsManager.OrderBase.OrderType.Special)
-                {
-                    Log.LogWarning($"{LOG_TAG} orderData SpecialOrder");
-                    MpManager.SendGuestGenSPOrder(GuestManager.GetGuestUUID(__instance), generatedOrder.foodRequest, generatedOrder.beverageRequest, generatedOrder.DeskCode, generatedOrder.NotShowInUI, generatedOrder.FreeOrder, orderGenerationMessage);
-                } 
-                else
-                {
-                    Log.LogError($"{LOG_TAG} orderData wrong type!");
-                }
-            } 
-        }
-    }
-
-    // [HarmonyPatch(typeof(GuestGroupController), nameof(GuestGroupController.PushToOrder))]
-    // [HarmonyReversePatch]    
-    // public static void PushToOrder_Original(GuestGroupController __instance, GuestsManager.OrderBase orderData)
-    // {
-    //     throw new System.NotImplementedException();
-    // }
-
-    // [HarmonyPatch(typeof(GuestGroupController), nameof(GuestGroupController.PushToOrder))]
-    // [HarmonyPrefix]
-    // public static bool PushToOrderPrefix(GuestGroupController __instance, ref GuestsManager.OrderBase orderData)
-    // {
-    //     Log.LogInfo($"{LOG_TAG} PushToOrderPrefix called \n");
-    //     if(MpManager.IsConnected)
-    //     {
-    //         if(MpManager.Role == MpManager.ROLE.Host)
-    //         {
-    //             if (orderData is GuestsManager.NormalOrder no)
-    //             {
-    //                 Log.LogWarning($"{LOG_TAG} orderData NormalOrder");
-    //                 MpManager.SendGuestGenNormalOrder(GuestManager.GetGuestUUID(__instance), no.foodRequest, no.beverageRequest, no.DeskCode, no.NotShowInUI, no.FreeOrder);
-
-    //             } 
-    //             else if (orderData is GuestsManager.SpecialOrder so)
-    //             {
-    //                 Log.LogWarning($"{LOG_TAG} orderData SpecialOrder");
-    //                 MpManager.SendGuestGenSPOrder(GuestManager.GetGuestUUID(__instance), so.RequestFoodTag, so.RequestBeverageTag, so.DeskCode, so.NotShowInUI, so.FreeOrder);
-    //             } 
-    //             else
-    //             {
-    //                 Log.LogError($"{LOG_TAG} orderData wrong type!");
-    //             }
-    //         } 
-    //         else
-    //         {
-    //             return false;
-    //         }
-    //     }
-    //     return true;
-    // }
 }

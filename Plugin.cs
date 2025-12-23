@@ -5,9 +5,7 @@ using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using UnityEngine.SceneManagement;
 using System;
-using System.Diagnostics;
 using MetaMystia.Debugger;
-using System.Threading.Tasks;
 
 namespace MetaMystia;
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
@@ -18,6 +16,7 @@ public class Plugin : BasePlugin
 
     public Action<Scene, LoadSceneMode> LoadAction;
     public static bool FirstEnterMain = true;
+    public const bool EnableWebConsole = true;
 
     public Plugin()
     {
@@ -66,6 +65,9 @@ public class Plugin : BasePlugin
                 typeof(WorkSceneStoragePannelPatch),
                 typeof(GuestsManagerPatch),
                 typeof(GuestGroupControllerPatch),
+                typeof(WorkSceneServePannelPatch),
+                typeof(NormalGuestPatch),
+                typeof(GameTimeManagerPatch),
                 typeof(RunTimeAlbumPatch),
             };
             foreach (var patch in patchList)
@@ -75,14 +77,8 @@ public class Plugin : BasePlugin
             }
             
             // ShigureYuki.DebugClassPatcher.PatchAllInnerClass(ref harmony, typeof(ShigureYuki.DebugConsolePatch));
-            
-            // ShigureYuki.DiagnosticUtils.SafeAutoPatch.PatchMethod(harmony, 
-            //     typeof(NightScene.GuestManagementUtility.GuestsManager), 
-            //     nameof(NightScene.GuestManagementUtility.GuestsManager.SpawnNormalGuestGroup), 
-            //     ShigureYuki.DiagnosticUtils.SafeAutoPatch.LogType.None);
-            // ShigureYuki.DiagnosticUtils.SafeAutoPatch.PatchAllMethods(harmony, typeof(GameData.Core.Collections.NightSceneUtility.NormalGuest));
-            // ShigureYuki.DiagnosticUtils.SafeAutoPatch.PatchAllMethods(harmony, typeof(GuestsManager));
-            // ShigureYuki.DiagnosticUtils.SafeAutoPatch.PatchAllMethods(harmony, typeof(NightScene.GuestManagementUtility.GuestGroupController));
+            NetAction.RegisterAllFormatter();
+
         }
         catch (Exception ex) {
             Log.LogError($"FAILED to Apply Hooks! {ex.Message}");
@@ -99,7 +95,7 @@ public class Plugin : BasePlugin
         FirstEnterMain = false;
         Instance.Log.LogInfo("First time entering Main Scene.");
         
-        if (Debugger == null)
+        if (Debugger == null && EnableWebConsole)
         {
             Debugger = new WebDebugger();
             Debugger.Start();
