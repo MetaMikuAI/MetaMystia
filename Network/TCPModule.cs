@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Threading;
 using MemoryPack;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MetaMystia;
 
@@ -11,7 +12,7 @@ namespace MetaMystia;
 [MemoryPackable]
 public partial class NetPacket
 {
-    public List<NetAction> Actions { get; set; } = [];
+    public NetAction[] Actions { get; set; } = [];
 
     public byte[] ToBytesWithLength()
     {
@@ -29,18 +30,16 @@ public partial class NetPacket
 
     public NetAction GetFirstAction()
     {
-        if (Actions.Count > 0)
+        if (Actions.Length > 0)
         {
             return Actions[0];
         }
         throw new Exception("No action in this packet!");
     }
 
-    public static NetPacket Create(NetAction netAction)
+    public NetPacket(NetAction[] Actions)
     {
-        NetPacket packet = new() { };
-        packet.Actions.Add(netAction);
-        return packet;
+        this.Actions = Actions;
     }
 }
 
@@ -93,68 +92,158 @@ public class PacketBuffer
 }
 
 // ---------------- TCP Server ----------------
-public class TcpServer(int port)
+public sealed class TcpServer : IDisposable
 {
     private static BepInEx.Logging.ManualLogSource Log => Plugin.Instance.Log;
-    private TcpListener listener = new TcpListener(IPAddress.Any, port);
-    private TcpClient currentClient = null;
-    private object lockObj = new();
-    private volatile bool running = false;
+
+    private readonly TcpListener listener;
+    private TcpClient currentClient;
+
+    private readonly object lockObj = new();
+
+    private volatile bool running;
     private Thread heartbeatThread;
+
     private const int HeartbeatLoopInterval = 3000;
     private const int BufferLen = 4096;
+    public string GetRealConnectedIp => ((IPEndPoint)currentClient.Client.RemoteEndPoint).Address.ToString();
+
+    public TcpServer(int port)
+    {
+        listener = new TcpListener(IPAddress.Any, port);
+    }
+
+    // =========================
+    // 生命周期
+    // =========================
 
     public void Start()
     {
+        lock (lockObj)
+        {
+            if (running) return;
+            running = true;
+        }
+
         listener.Start();
-        running = true;
-        Log.LogMessage("[S] Server started...");
-        listener.BeginAcceptTcpClient(AcceptCallback, null);
+        Log.LogMessage("[S] Server started.");
+
+        BeginAccept();
+    }
+
+    public void Stop()
+    {
+        lock (lockObj)
+        {
+            if (!running) return;
+            running = false;
+        }
+
+        try { listener.Stop(); } catch { }
+
+        CloseClientInternal();
+
+        Log.LogMessage("[S] Server stopped.");
+    }
+
+    public void Dispose()
+    {
+        Stop();
+    }
+
+    // =========================
+    // Accept
+    // =========================
+
+    private void BeginAccept()
+    {
+        try
+        {
+            listener.BeginAcceptTcpClient(AcceptCallback, null);
+        }
+        catch (ObjectDisposedException)
+        {
+            // 正常 Stop
+        }
     }
 
     private void AcceptCallback(IAsyncResult ar)
     {
-        if (!running) return; // 已经停止
-        TcpClient client = listener.EndAcceptTcpClient(ar);
+        TcpClient client;
+
+        try
+        {
+            client = listener.EndAcceptTcpClient(ar);
+        }
+        catch (ObjectDisposedException)
+        {
+            return;
+        }
+        catch (Exception ex)
+        {
+            Log.LogWarning($"[S] Accept failed: {ex.Message}");
+            return;
+        }
+
+        bool accepted = false;
 
         lock (lockObj)
         {
-            if (currentClient != null)
+            if (!running)
             {
-                Log.LogMessage("[S] Rejecting new connection: already have a client.");
                 client.Close();
-                listener.BeginAcceptTcpClient(AcceptCallback, null);
                 return;
             }
 
-            currentClient = client;
+            if (currentClient == null)
+            {
+                currentClient = client;
+                accepted = true;
+            }
         }
 
-        MpManager.OnConnected(client);
+        if (!accepted)
+        {
+            Log.LogMessage("[S] Rejecting connection: already have a client.");
+            client.Close();
+            BeginAccept();
+            return;
+        }
 
         Log.LogMessage("[S] Client connected.");
+        MpManager.OnConnected(GetRealConnectedIp);
 
-        heartbeatThread = new Thread(HeartbeatLoop) { IsBackground = true };
-        heartbeatThread.Start();
+        StartHeartbeat();
+        StartReceiveLoop(client);
 
-        var buffer = new PacketBuffer();
-        var stream = client.GetStream();
+        BeginAccept();
+    }
 
+    // =========================
+    // 接收循环
+    // =========================
+
+    private void StartReceiveLoop(TcpClient client)
+    {
         ThreadPool.QueueUserWorkItem(_ =>
         {
-            byte[] recv = new byte[BufferLen];
+            var buffer = new PacketBuffer();
+            var recv = new byte[BufferLen];
+
             try
             {
-                while (running)
+                while (IsClientAlive(client))
                 {
-                    int bytesRead = stream.Read(recv, 0, recv.Length);
-                    if (bytesRead == 0) break;
+                    var stream = client.GetStream();
+                    int read = stream.Read(recv, 0, recv.Length);
+                    if (read == 0)
+                        break;
 
-                    buffer.Write(recv, 0, bytesRead);
-                    var packets = buffer.ExtractPackets();
-                    foreach (var p in packets)
+                    buffer.Write(recv, 0, read);
+
+                    foreach (var packet in buffer.ExtractPackets())
                     {
-                        foreach (var action in p.Actions)
+                        foreach (var action in packet.Actions)
                         {
                             MpManager.OnAction(action);
                         }
@@ -163,179 +252,387 @@ public class TcpServer(int port)
             }
             catch (Exception ex)
             {
-                if (running) Log.LogWarning($"[S] Client disconnected : {ex.Message}");
+                if (running)
+                    Log.LogWarning($"[S] Receive error: {ex.Message}");
             }
             finally
             {
-                lock (lockObj) { currentClient = null; }
-                client.Close();
-                Log.LogMessage($"[S] Client disconnected ");
-                MpManager.OnDisconnected();
+                HandleClientDisconnected(client);
             }
         });
-
-        if (running) listener.BeginAcceptTcpClient(AcceptCallback, null);
     }
 
-    private void HeartbeatLoop()
+    // =========================
+    // 心跳
+    // =========================
+
+    private void StartHeartbeat()
     {
-        while (running && currentClient != null)
+        heartbeatThread = new Thread(() =>
         {
-            MpManager.SendPing();
-            Thread.Sleep(HeartbeatLoopInterval);
-        }
+            while (true)
+            {
+                TcpClient client;
+
+                lock (lockObj)
+                {
+                    if (!running)
+                        break;
+
+                    client = currentClient;
+                }
+
+                if (client == null)
+                    break;
+
+                try
+                {
+                    MpManager.SendPing();
+                }
+                catch
+                {
+                    // SendPing 内部失败会由接收线程清理
+                }
+
+                Thread.Sleep(HeartbeatLoopInterval);
+            }
+
+            Log.LogMessage("[S] Heartbeat thread terminated.");
+        })
+        {
+            IsBackground = true
+        };
+
+        heartbeatThread.Start();
     }
 
-    public void DisconnectClient()
-    {
-        lock (lockObj)
-        {
-            if (currentClient != null)
-            {
-                Log.LogMessage("[S] Disconnecting current client...");
-                currentClient.Close();
-                currentClient = null;
-                MpManager.OnDisconnected();
-            }
-            else
-            {
-                Log.LogMessage("[S] No client to disconnect.");
-            }
-        }
-    }
+    // =========================
+    // 发送
+    // =========================
 
     public void Send(NetPacket packet)
     {
+        TcpClient client;
+
         lock (lockObj)
         {
-            if (currentClient == null || !running) return;
-            try
+            if (!running || currentClient == null)
             {
-                TcpClientWrapper.Send(currentClient, packet);
+                Log.LogWarning($"[S] Send failed: not running or currentClient is null");
+                return;
             }
-            catch (Exception ex)
+
+            client = currentClient;
+        }
+
+        try
+        {
+            var stream = client.GetStream();
+            byte[] data = packet.ToBytesWithLength();
+            stream.Write(data, 0, data.Length);
+        }
+        catch (Exception ex)
+        {
+            Log.LogWarning($"[S] Send failed: {ex.Message}, {ex.StackTrace}");
+            CloseClientInternal();
+        }
+    }
+
+    // =========================
+    // 断开处理（唯一出口）
+    // =========================
+
+    public void DisconnectClient() => CloseClientInternal();
+
+    private void HandleClientDisconnected(TcpClient client)
+    {
+        bool shouldNotify = false;
+
+        lock (lockObj)
+        {
+            if (currentClient == client)
             {
-                Log.LogWarning($"[S] Send failed: {ex.Message}");
-                DisconnectClient();
+                currentClient = null;
+                shouldNotify = true;
+            }
+        }
+
+        try { client.Close(); } catch { }
+
+        if (shouldNotify)
+        {
+            Log.LogMessage("[S] Client disconnected.");
+            MpManager.OnDisconnected();
+        }
+    }
+
+    private void CloseClientInternal()
+    {
+        TcpClient client = null;
+
+        lock (lockObj)
+        {
+            client = currentClient;
+            currentClient = null;
+        }
+
+        if (client != null)
+        {
+            try { client.Close(); } catch { }
+            Log.LogMessage("[S] Client disconnected.");
+            MpManager.OnDisconnected();
+        }
+    }
+
+    // =========================
+    // 工具
+    // =========================
+
+    private bool IsClientAlive(TcpClient client)
+    {
+        lock (lockObj)
+        {
+            return running && currentClient == client;
+        }
+    }
+
+    public bool HasAliveClient
+    {
+        get
+        {
+            lock (lockObj)
+            {
+                if (!running || currentClient == null)
+                    return false;
+
+                return IsTcpClientAlive_NoLock(currentClient);
             }
         }
     }
-    
-    public void Stop()
+
+    private bool IsTcpClientAlive_NoLock(TcpClient client)
     {
-        running = false;
-        listener.Stop();
+        try
+        {
+            var socket = client.Client;
 
-        DisconnectClient();
+            // 已关闭
+            if (socket == null || !socket.Connected)
+                return false;
 
-        Log.LogMessage("[S] Server stopped.");
+            // 对端已关闭连接（FIN）
+            if (socket.Poll(0, SelectMode.SelectRead) && socket.Available == 0)
+                return false;
+
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 }
+
 // ===================== TCP Client with Heartbeat & Auto-Reconnect =====================
-public class TcpClientWrapper
+public sealed class TcpClientWrapper : IDisposable
 {
     private static BepInEx.Logging.ManualLogSource Log => Plugin.Instance.Log;
-    private string host;
-    private int port;
-    public TcpClient client {get; private set;}
+
+    private readonly string host;
+    private readonly int port;
+
+    private TcpClient client;
     private NetworkStream stream;
     private PacketBuffer buffer = new PacketBuffer();
-    private Thread recvThread;
-    private Thread heartbeatThread;
-    private volatile bool running = false;
-    private const int MaxRetryTimes = 1;
-    private const int HeartbeatLoopInterval = 3000;
-    private object sendLock = new();
+
+    private Task receiveTask;
+    private Task heartbeatTask;
+
+    private CancellationTokenSource cts;
+    private readonly object sendLock = new();
+
+    private int closed = 0;
+    private int connected = 0;
+
+    private const int BufferLen = 4096;
+    private const int ConnectTimeoutMs = 10000;
+    private const int HeartbeatIntervalMs = 3000;
+    private const int ReconnectDelayMs = 3000;
+
+    public bool IsConnected => Volatile.Read(ref connected) == 1;
+
+    public string GetRealConnectedIp => ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString();
 
     public TcpClientWrapper(string host, int port)
     {
         this.host = host;
         this.port = port;
-        Connect();
     }
 
-    private void Connect()
+    // =========================
+    // 生命周期入口
+    // =========================
+
+    public async Task StartAsync(CancellationToken token = default)
     {
-        var retryTimes = 0;
-        while (retryTimes < MaxRetryTimes)
-        {
-            try
-            {
-                client = new TcpClient();
-                client.Connect(host, port);
-                stream = client.GetStream();
-                running = true;
-
-                recvThread = new Thread(ReceiveLoop) { IsBackground = true };
-                recvThread.Start();
-
-                heartbeatThread = new Thread(HeartbeatLoop) { IsBackground = true };
-                heartbeatThread.Start();
-
-                Log.LogMessage("[C] Connected to server.");
-
-                return;
-            }
-            catch (Exception ex)
-            {
-                Log.LogWarning($"[C] Connection failed, reason: {ex.Message},  {ex.StackTrace}");
-                retryTimes++;
-            }
-        }
-        throw new Exception($"Failed to connect to server after {retryTimes} attempt(s)");
+        EnsureNotDisposed();
+        await ConnectInternalAsync(token);
     }
 
-    private void ReceiveLoop()
+    public void Dispose()
     {
-        byte[] recv = new byte[1024];
+        Close();
+    }
+
+    // =========================
+    // 连接 / 重连
+    // =========================
+
+    private async Task ConnectInternalAsync(CancellationToken token)
+    {
+        CloseInternal(resetClosedFlag: false);
+
+        Log.LogMessage("[C] Connecting...");
+
+        var tcp = new TcpClient();
+
         try
         {
-            while (running)
+            using var timeoutCts =
+                CancellationTokenSource.CreateLinkedTokenSource(token);
+
+            timeoutCts.CancelAfter(ConnectTimeoutMs);
+
+            await tcp.ConnectAsync(host, port)
+                     .WaitAsync(timeoutCts.Token);
+
+            client = tcp;
+            stream = client.GetStream();
+            buffer = new PacketBuffer();
+
+            cts = new CancellationTokenSource();
+            var loopToken = cts.Token;
+
+            receiveTask = Task.Run(() => ReceiveLoopAsync(loopToken), loopToken);
+            heartbeatTask = Task.Run(() => HeartbeatLoopAsync(loopToken), loopToken);
+
+            Volatile.Write(ref connected, 1);
+            Log.LogMessage("[C] Connected.");
+        }
+        catch
+        {
+            tcp.Dispose();
+            throw;
+        }
+    }
+
+    private async Task ScheduleReconnectAsync()
+    {
+        if (Volatile.Read(ref closed) == 1)
+            return;
+
+        if (Interlocked.CompareExchange(ref connected, 0, 1) != 1)
+            return;
+
+        CloseInternal(resetClosedFlag: false);
+
+        Log.LogWarning("[C] Disconnected. Reconnecting...");
+        try
+        {
+            await Task.Delay(ReconnectDelayMs, cts.Token);
+            await ConnectInternalAsync(CancellationToken.None);
+        }
+        catch (Exception ex)
+        {
+            Log.LogError($"[C] Reconnect failed: {ex.Message}");
+        }
+    }
+
+    // =========================
+    // 接收循环
+    // =========================
+
+    private async Task ReceiveLoopAsync(CancellationToken token)
+    {
+        byte[] recv = new byte[BufferLen];
+
+        try
+        {
+            while (!token.IsCancellationRequested)
             {
-                int bytesRead = stream.Read(recv, 0, recv.Length);
-                if (bytesRead == 0) throw new Exception("Server disconnected.");
-                buffer.Write(recv, 0, bytesRead);
+                int read = await stream!.ReadAsync(recv, 0, recv.Length, token);
+                if (read == 0)
+                    throw new SocketException();
+
+                buffer.Write(recv, 0, read);
+
                 var packets = buffer.ExtractPackets();
-                foreach (var p in packets)
+                foreach (var packet in packets)
                 {
-                    foreach (var action in p.Actions)
+                    foreach (var action in packet.Actions)
                     {
                         MpManager.OnAction(action);
                     }
                 }
             }
         }
-        catch
+        catch (OperationCanceledException)
         {
-            if (!MpManager.IsRunning) return;
-
-            Log.LogMessage("[C] Disconnected. Reconnecting...");
-            MpManager.OnDisconnected();
-            running = false;
-            Thread.Sleep(2000);
-            try
-            {
-                Connect();
-            }
-            catch (Exception ex)
-            {
-                Log.LogError($"[C] {ex.Message}: {ex.StackTrace}");
-            }
+            // 正常退出
+        }
+        catch (Exception ex)
+        {
+            Log.LogWarning($"[C] ReceiveLoop error: {ex.Message}");
+            await ScheduleReconnectAsync();
+        }
+        finally
+        {
+            Log.LogWarning("[C] ReceiveLoop terminated.");
         }
     }
 
-    private void HeartbeatLoop()
+    // =========================
+    // 心跳循环
+    // =========================
+
+    private async Task HeartbeatLoopAsync(CancellationToken token)
     {
-        while (running)
+        try
         {
-            MpManager.SendPing();
-            Thread.Sleep(HeartbeatLoopInterval);
+            while (!token.IsCancellationRequested)
+            {
+                try
+                {
+                    MpManager.SendPing();
+                }
+                catch (Exception ex)
+                {
+                    Log.LogWarning($"[C] Heartbeat failed: {ex.Message}");
+                    await ScheduleReconnectAsync();
+                    return;
+                }
+
+                await Task.Delay(HeartbeatIntervalMs, token);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        finally
+        {
+            Log.LogWarning("[C] HeartbeatLoop terminated.");
         }
     }
+
+    // =========================
+    // 发送
+    // =========================
 
     public void Send(NetPacket packet)
     {
-        if (!running) return;
+        if (!IsConnected || stream == null)
+            return;
+
         lock (sendLock)
         {
             try
@@ -343,26 +640,47 @@ public class TcpClientWrapper
                 byte[] data = packet.ToBytesWithLength();
                 stream.Write(data, 0, data.Length);
             }
-            catch
+            catch (Exception ex)
             {
-                running = false;
+                Log.LogWarning($"[C] Send failed: {packet.GetFirstAction()}, reason {ex.Message}, {ex.StackTrace}");
+                _ = ScheduleReconnectAsync();
             }
         }
     }
 
-    public static void Send(TcpClient client, NetPacket packet)
-    {
-        var stream = client.GetStream();
-        byte[] data = packet.ToBytesWithLength();
-        stream.Write(data, 0, data.Length);
-    }
+    // =========================
+    // 关闭
+    // =========================
 
     public void Close()
     {
-        running = false;
+        if (Interlocked.Exchange(ref closed, 1) == 1)
+            return;
+
+        CloseInternal(resetClosedFlag: false);
         MpManager.OnDisconnected();
-        Log.LogMessage("[C] Disconnected from server.");
-        stream?.Close();
-        client?.Close();
+        Log.LogMessage("[C] Closed.");
+    }
+
+    private void CloseInternal(bool resetClosedFlag)
+    {
+        Volatile.Write(ref connected, 0);
+
+        try { cts?.Cancel(); } catch { }
+
+        try { stream?.Dispose(); } catch { }
+        try { client?.Dispose(); } catch { }
+
+        stream = null;
+        client = null;
+
+        if (resetClosedFlag)
+            Interlocked.Exchange(ref closed, 0);
+    }
+
+    private void EnsureNotDisposed()
+    {
+        if (Volatile.Read(ref closed) == 1)
+            throw new ObjectDisposedException(nameof(TcpClientWrapper));
     }
 }

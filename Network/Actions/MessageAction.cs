@@ -30,6 +30,6 @@ public partial class MessageAction : NetAction
     }
     public static NetPacket CreateMsgPacket(string msg)
     {
-        return NetPacket.Create(CreateMsgAction(msg));
+        return new NetPacket([CreateMsgAction(msg)]);
     }
 }

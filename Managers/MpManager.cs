@@ -1,7 +1,6 @@
 using System;
-using System.Net;
-using System.Net.Sockets;
 using System.Text;
+using System.Threading.Tasks;
 using BepInEx.Logging;
 
 namespace MetaMystia;
@@ -23,7 +22,7 @@ public static class MpManager
     private static TcpClientWrapper client = null;
     public static ROLE Role {get; private set;}
     public static bool IsRunning { get; private set; }
-    public static bool IsConnected { get; private set; }
+    public static bool IsConnected => (Role == ROLE.Host ? server?.HasAliveClient : client?.IsConnected)?? false;
     public static string PeerAddress {get; set;}
     public static string PeerId {get; set;}
     public static long Latency {get; private set;} = 0;
@@ -32,6 +31,9 @@ public static class MpManager
     public static long TimeOffset = 0;
     public static long GetSynchronizedTimestampNow => GetTimestampNow - TimeOffset;
     private static int _pingId = 0;
+
+    public static bool IsConnectedClient => IsConnected && Role == ROLE.Client;
+    public static bool IsConnectedHost => IsConnected && Role == ROLE.Host;
 
     public static void Start(ROLE r = ROLE.Host)
     {
@@ -90,23 +92,25 @@ public static class MpManager
         Start(Role);
     }
 
-    public static bool ConnectToPeer(string peerIp, int port = TCP_PORT)
+    public static async Task<bool> ConnectToPeerAsync(string peerIp, int port = TCP_PORT)
     {
+        if (!IsRunning)
+        {
+            Start(ROLE.Client);
+        }
+
         if (IsConnected)
         {
             Log.LogWarning("[C] Already connected to a peer. Please disconnect first.");
             return false;
         }
 
-        if (!IsRunning)
-        {
-            Start(ROLE.Client);
-        }
         try
         {
             Log.LogInfo($"[C] Connecting to {peerIp}:{port}...");
             client = new(peerIp, port);
-            OnConnected(client.client);
+            await client.StartAsync();
+            OnConnected(client.GetRealConnectedIp);
             Log.LogMessage($"[C] Successfully connected to peer {peerIp}:{port}");
 
             return true;
@@ -119,20 +123,19 @@ public static class MpManager
     }
 
 
-    public static void OnConnected(TcpClient client)
+    public static void OnConnected(string ip)
     {
-        PeerAddress = ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString();
-        IsConnected = true;
+        // PeerAddress = ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString();
+        PeerAddress = ip;
         SendHello();
         SendSync();
     }
+    
 
     public static void OnDisconnected()
     {
         PeerAddress = "<Unknown>";
         PeerId = "<Unknown>";
-
-        IsConnected = false;
     }
 
     public static void OnAction(NetAction action)
@@ -199,7 +202,7 @@ public static class MpManager
 
     public static void SendHello()
     {
-        SendToPeer(NetPacket.Create(new HelloAction { PeerId = PlayerId }));
+        SendToPeer(new NetPacket([new HelloAction { PeerId = PlayerId }]));
     }
 
     public static void SendSync()
@@ -215,20 +218,20 @@ public static class MpManager
         NetPacket packet;
         if (PluginManager.CurrentGameScene == Common.UI.Scene.WorkScene)
         {
-            packet = NetPacket.Create(new NightSyncAction
+            packet = new NetPacket([new NightSyncAction
             {
                 Vx = inputDirection.x,
                 Vy = inputDirection.y,
                 Px = position.x,
                 Py = position.y
-            });
+            }]);
         }
         else
         {
             var mapLabel = MystiaManager.MapLabel;
             var isSprinting = MystiaManager.IsSprinting;
 
-            packet = NetPacket.Create(new SyncAction
+            packet = new NetPacket([new SyncAction
             {
                 IsSprinting = isSprinting,
                 Vx = inputDirection.x,
@@ -236,7 +239,7 @@ public static class MpManager
                 MapLabel = mapLabel,
                 Px = position.x,
                 Py = position.y
-            });
+            }]);
         }
 
         SendToPeer(packet);
@@ -244,16 +247,17 @@ public static class MpManager
 
     public static void SendReady()
     {
-        NetPacket packet = NetPacket.Create(new ReadyAction
+        NetPacket packet = new NetPacket([new ReadyAction
         {
             IsReady = true
-        });
+        }]);
         SendToPeer(packet);
     }
 
     public static void SendMessage(string message)
     {
         FloatingTextHelper.ShowFloatingTextSelfOnMainThread(message);
+        PluginManager.Instance.RunOnMainThread(() => Notify.Show($"你: {message}"));
         SendToPeer(MessageAction.CreateMsgPacket(message));
     }
 
@@ -292,131 +296,151 @@ public static class MpManager
 
     public static void SendSelectedIzakaya(string mapLabel, int level)
     {
-        NetPacket packet = NetPacket.Create(new SelectAction
+        NetPacket packet = new NetPacket([new SelectAction
         {
             MapLabel = mapLabel,
             Level = level
-        });
+        }]);
         SendToPeer(packet);
     }
     public static void SendConfirmedIzakaya(string mapLabel, int level)
     {
-        NetPacket packet = NetPacket.Create(new ConfirmAction
+        NetPacket packet = new NetPacket([new ConfirmAction
         {
             MapLabel = mapLabel,
             Level = level
-        });
+        }]);
         SendToPeer(packet);
     }
 
     public static void SendPrep(PrepAction.Table prepTable, bool ready = false)
     {
-        NetPacket packet = NetPacket.Create(new PrepAction
+        NetPacket packet = new NetPacket([new PrepAction
         {
             PrepTable = prepTable,
             Ready = ready
-        });
+        }]);
         SendToPeer(packet);
     }
 
     
     public static void SendCook(int gridIndex, SellableFood food, int recipeId)
     {
-        NetPacket packet = NetPacket.Create(new CookAction
+        NetPacket packet = new NetPacket([new CookAction
         {
             GridIndex = gridIndex,
             RecipeId = recipeId,
             Food = food
-        });
+        }]);
         SendToPeer(packet);
     }
 
     public static void SendExtract(int gridIndex)
     {
-        NetPacket packet = NetPacket.Create(new ExtractAction
+        NetPacket packet = new NetPacket([new ExtractAction
         {
             GridIndex = gridIndex
-        });
+        }]);
         SendToPeer(packet);
     }
 
     public static void SendQTE(int gridIndex, float qteScore)
     {
-        NetPacket packet = NetPacket.Create(new QTEAction
+        NetPacket packet = new NetPacket([new QTEAction
         {
             GridIndex = gridIndex,
             QTEScore = qteScore
-        });
+        }]);
         SendToPeer(packet);
     }
     
     public static void SendStoreFood(SellableFood food)
     {
-        NetPacket packet = NetPacket.Create(new StoreFoodAction
+        NetPacket packet = new NetPacket([new StoreFoodAction
         {
             Food = food
-        });
+        }]);
         SendToPeer(packet);
     }
 
     public static void SendExtractFood(SellableFood food)
     {
-        NetPacket packet = NetPacket.Create(new ExtractFoodAction
+        NetPacket packet = new NetPacket([new ExtractFoodAction
         {
             Food = food
-        });
+        }]);
         SendToPeer(packet);
     }
 
-    public static void SendGuestSpawn(int guest, bool isSpecial, string uuid)
+    public static void SendGuestSpawn(int guest, bool isSpecial, string uuid, 
+        UnityEngine.Color? bgColor = null, UnityEngine.Color? textColor = null, int? guest2 = null)
     {
-        NetPacket packet = NetPacket.Create(new GuestSpawnAction
+        NetPacket packet = new NetPacket([new GuestSpawnAction
         {
             GuestId = guest,
             IsSpecial = isSpecial,
-            UUID = uuid
-        });
+            UUID = uuid,
+            BGColor = bgColor,
+            TextColor = textColor,
+            GuestId2 = guest2
+        }]);
         SendToPeer(packet);
     }
 
     public static void SendGuestSeated(string guestUniqId, int deskId, bool firstSpawn)
     {
-        NetPacket packet = NetPacket.Create(new GuestSeatedAction
+        NetPacket packet = new NetPacket([new GuestSeatedAction
         {
             GuestUniqId = guestUniqId,
             DeskId = deskId,
             FirstSpawn = firstSpawn
-        });
+        }]);
         SendToPeer(packet);
     }
 
     public static void SendGuestGenNormalOrder(string guestUniqId, int requestFoodId, int requestBevId, int deskCode, bool notShowInUI, bool isFree, string message)
     {
-        NetPacket packet = NetPacket.Create(new GuestGenNormalOrderAction
+        var order = new GuestOrder(requestFoodId, requestBevId, deskCode, notShowInUI, isFree);
+        NetPacket packet = new NetPacket([new GuestGenNormalOrderAction
         {
             GuestUniqId = guestUniqId,
-            RequestFoodId = requestFoodId,
-            RequestBevId = requestBevId,
-            DeskCode = deskCode,
-            NotShowInUI = notShowInUI,
-            IsFree = isFree,
+            Order = order,
             Message = message
-        });
+        }]);
         SendToPeer(packet);
     }
 
     public static void SendGuestGenSPOrder(string guestUniqId, int requestFoodTag, int requestBevTag, int deskCode, bool notShowInUI, bool isFree, string message)
     {
-        NetPacket packet = NetPacket.Create(new GuestGenSPOrderAction
+        var order = new GuestOrder(requestFoodTag, requestBevTag, deskCode, notShowInUI, isFree);
+        NetPacket packet = new NetPacket([new GuestGenSPOrderAction
         {
             GuestUniqId = guestUniqId,
-            RequestFoodTag = requestFoodTag,
-            RequestBevTag = requestBevTag,
-            DeskCode = deskCode,
-            NotShowInUI = notShowInUI,
-            IsFree = isFree,
+            Order = order,
             Message = message
-        });
+        }]);
+        SendToPeer(packet);
+    }
+
+    public static void SendGuestServe(string guestUniqId, SellableFood food, int beverageId, GuestServeAction.ServeType type)
+    {
+        NetPacket packet = new NetPacket([new GuestServeAction
+        {
+            GuestUniqId = guestUniqId,
+            Food = food,
+            BeverageId = beverageId,
+            FoodType = type
+        }]);
+        SendToPeer(packet);
+    }
+
+    public static void SendGuestLeave(string guest, GuestLeaveAction.LeaveType leaveType)
+    {
+        NetPacket packet = new NetPacket([new GuestLeaveAction
+        {
+            GuestUniqId = guest,
+            LType = leaveType
+        }]);
         SendToPeer(packet);
     }
 }

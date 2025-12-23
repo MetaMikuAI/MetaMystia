@@ -22,10 +22,10 @@ public partial class PingAction : NetAction
     }
     public static NetPacket CreatePingPacket(int id)
     {
-        return NetPacket.Create(new PingAction
+        return new NetPacket([new PingAction
         {
             Id = id,
             Timestamp = MpManager.GetTimestampNow
-        });
+        }]);
     }
 }

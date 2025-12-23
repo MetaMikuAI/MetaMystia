@@ -20,6 +20,6 @@ public partial class PongAction : NetAction
     }
     public static NetPacket CreatePongPacket(int id)
     {
-        return NetPacket.Create(new PongAction { Id = id });
+        return new NetPacket([new PongAction { Id = id }]);
     }
 }

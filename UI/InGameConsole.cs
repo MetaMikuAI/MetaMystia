@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Common.CharacterUtility;
 using Common.UI;
 using Il2CppInterop.Runtime;
+using System.Threading.Tasks;
 
 namespace MetaMystia
 {
@@ -304,7 +305,7 @@ namespace MetaMystia
                         SetCommand(args);
                         break;
                     case "mp":
-                        MultiplayerCommand(args);
+                        _ = MultiplayerCommand(args);
                         break;
                     case "call":
                         CallCommand(args);
@@ -407,7 +408,7 @@ namespace MetaMystia
             }
         }
 
-        private void MultiplayerCommand(string[] args)
+        private async Task MultiplayerCommand(string[] args)
         {
             const string subcommandHelp = "Subcommands: start, stop, restart, status, id, connect, disconnect";
             if (args.Length == 0)
@@ -466,21 +467,21 @@ namespace MetaMystia
                             string portStr = address[(idx + 1)..];
 
                             if (int.TryParse(portStr, out int port))
-                                result = MpManager.ConnectToPeer(host, port);
+                                result = await MpManager.ConnectToPeerAsync(host, port);
                             else
-                                result = MpManager.ConnectToPeer(address);
+                                result = await MpManager.ConnectToPeerAsync(address);
                         }
                         else
                         {
-                            result = MpManager.ConnectToPeer(address);
+                            result = await MpManager.ConnectToPeerAsync(address);
                         }
                     }
                     else
                     {
                         if (int.TryParse(args[2], out int port))
-                            result = MpManager.ConnectToPeer(address, port);
+                            result = await MpManager.ConnectToPeerAsync(address, port);
                         else
-                            result = MpManager.ConnectToPeer(address);
+                            result = await MpManager.ConnectToPeerAsync(address);
                     }
 
                     if (result)
