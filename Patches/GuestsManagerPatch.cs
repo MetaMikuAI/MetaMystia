@@ -2,11 +2,12 @@ using HarmonyLib;
 using GameData.Core.Collections.NightSceneUtility;
 using NightScene.GuestManagementUtility;
 
-using MetaMystia;
+namespace MetaMystia;
 using SgrYuki.Utils;
 
 [HarmonyPatch(typeof(NightScene.GuestManagementUtility.GuestsManager))] 
-public class GuestsManagerPatch : PatchBase<GuestsManagerPatch>
+[AutoLog]
+public partial class GuestsManagerPatch
 {
     // public static readonly System.Threading.AsyncLocal<bool> PassGuestSpawn = new();
 
@@ -15,7 +16,7 @@ public class GuestsManagerPatch : PatchBase<GuestsManagerPatch>
     public static bool PostInitializeGuestGroup_Prefix(GuestGroupController initializedController)
     {
         const int PatientSecs = 60;
-        // Log.LogInfo($"{LOG_TAG} PostInitializeGuestGroup_Prefix called");
+        // Log.LogInfo($"PostInitializeGuestGroup_Prefix called");
         bool isNormalGuest = FunctionUtil.CheckStacktraceContains("NightScene.GuestManagementUtility.GuestsManager::SpawnNormalGuestGroup");
 
         // Sync host's guest spawn here because GuestsManager::SpawnNormalGuestGroup/0 does not return guest controller
@@ -48,7 +49,7 @@ public class GuestsManagerPatch : PatchBase<GuestsManagerPatch>
             initializedController.AddPatient(PatientSecs);
             // initializedController.MaxPatient *= 2;
             // initializedController.CurrentPatient *= 2;
-            // Log.LogWarning($"{LOG_TAG} MaxPatient {initializedController.MaxPatient/2} -> {initializedController.MaxPatient}, CurrentPatient {initializedController.CurrentPatient/2} -> {initializedController.CurrentPatient}");
+            // Log.LogWarning($"MaxPatient {initializedController.MaxPatient/2} -> {initializedController.MaxPatient}, CurrentPatient {initializedController.CurrentPatient/2} -> {initializedController.CurrentPatient}");
         }
         return true;
     }
@@ -57,7 +58,7 @@ public class GuestsManagerPatch : PatchBase<GuestsManagerPatch>
     [HarmonyPrefix]    
     public static bool SpawnNormalGuestGroup_Prefix()
     {
-        // Log.LogInfo($"{LOG_TAG} SpawnNormalGuestGroup_Prefix called");
+        // Log.LogInfo($"SpawnNormalGuestGroup_Prefix called");
         return !MpManager.IsConnectedClient;
     }
 
@@ -92,7 +93,7 @@ public class GuestsManagerPatch : PatchBase<GuestsManagerPatch>
         bool shouldFade, 
         ref NormalGuestsController __result)
     {   
-        Log.LogInfo($"{LOG_TAG} SpawnNormalGuestGroup_WithArg_Prefix called");
+        Log.LogInfo($"SpawnNormalGuestGroup_WithArg_Prefix called");
         overrideSpawnPosition ??= new Il2CppSystem.Nullable<UnityEngine.Vector3>();
         if (MpManager.IsConnectedClient)
         {
@@ -157,7 +158,7 @@ public class GuestsManagerPatch : PatchBase<GuestsManagerPatch>
         {
             if(MpManager.Role == MpManager.ROLE.Client)
             {
-                Log.LogDebug($"{LOG_TAG} TrySendToSeat prevented");
+                Log.LogDebug($"TrySendToSeat prevented");
                 return false;
             }
             else
@@ -165,7 +166,7 @@ public class GuestsManagerPatch : PatchBase<GuestsManagerPatch>
                 var seatableDeskCodes = __instance.TrueAvailableDesks.FilterKey(value => value >= toTry.GuestCount);
                 if (seatableDeskCodes.Count == 0) return false;
                 targetDeskCode = seatableDeskCodes.GetRandomOne();
-                Log.LogDebug($"{LOG_TAG} TrySendToSeat_Prefix called, desk code modified to = {targetDeskCode}");
+                Log.LogDebug($"TrySendToSeat_Prefix called, desk code modified to = {targetDeskCode}");
 
                 var guuid = NightGuestManager.GetGuestUUID(toTry);
                 NightGuestManager.SetGuestStatus(guuid, NightGuestManager.Status.Seated);
@@ -187,7 +188,7 @@ public class GuestsManagerPatch : PatchBase<GuestsManagerPatch>
     [HarmonyPrefix]    
     public static bool LeaveFromDesk_Prefix(GuestsManager __instance, GuestGroupController toLeave)
     {
-        Log.LogInfo($"{LOG_TAG} LeaveFromDesk_Prefix called");
+        Log.LogInfo($"LeaveFromDesk_Prefix called");
         if (MpManager.IsConnectedClient)
         {
             return NightGuestManager.CheckStatus(NightGuestManager.GetGuestUUID(toLeave), NightGuestManager.Status.Left);
@@ -216,7 +217,7 @@ public class GuestsManagerPatch : PatchBase<GuestsManagerPatch>
     [HarmonyPrefix]    
     public static bool PayAndLeave_Prefix(GuestsManager __instance, GuestGroupController toPayAndLeave, bool includeTip)
     {
-        Log.LogInfo($"{LOG_TAG} PayAndLeave_Prefix called");
+        Log.LogInfo($"PayAndLeave_Prefix called");
         if (MpManager.IsConnectedClient)
         {
             return NightGuestManager.CheckStatus(NightGuestManager.GetGuestUUID(toPayAndLeave), NightGuestManager.Status.Left);
@@ -240,7 +241,7 @@ public class GuestsManagerPatch : PatchBase<GuestsManagerPatch>
     [HarmonyPrefix]    
     public static bool ExBadLeave_Prefix(GuestsManager __instance, GuestGroupController toExBadLeave)
     {   
-        Log.LogInfo($"{LOG_TAG} ExBadLeave_Prefix called");
+        Log.LogInfo($"ExBadLeave_Prefix called");
         if (MpManager.IsConnectedClient)
         {
             return NightGuestManager.CheckStatus(NightGuestManager.GetGuestUUID(toExBadLeave), NightGuestManager.Status.Left);
@@ -264,7 +265,7 @@ public class GuestsManagerPatch : PatchBase<GuestsManagerPatch>
     [HarmonyPrefix]    
     public static bool RepellAndLeavePay_Prefix(GuestsManager __instance, GuestGroupController toRepell)
     {
-        Log.LogInfo($"{LOG_TAG} RepellAndLeavePay_Prefix called");
+        Log.LogInfo($"RepellAndLeavePay_Prefix called");
         if (MpManager.IsConnected)
         {
             NightGuestManager.SetGuestStatus(NightGuestManager.GetGuestUUID(toRepell), NightGuestManager.Status.Left);
@@ -284,7 +285,7 @@ public class GuestsManagerPatch : PatchBase<GuestsManagerPatch>
     [HarmonyPrefix]    
     public static bool RepellAndLeaveNoPay_Prefix(GuestsManager __instance, GuestGroupController toRepell)
     {
-        Log.LogInfo($"{LOG_TAG} RepellAndLeaveNoPay_Prefix called");
+        Log.LogInfo($"RepellAndLeaveNoPay_Prefix called");
         if (MpManager.IsConnected)
         {
             NightGuestManager.SetGuestStatus(NightGuestManager.GetGuestUUID(toRepell), NightGuestManager.Status.Left);
@@ -304,7 +305,7 @@ public class GuestsManagerPatch : PatchBase<GuestsManagerPatch>
     [HarmonyPrefix]    
     public static bool PlayerRepelly_Prefix(GuestsManager __instance, int deskCode)
     {
-        Log.LogInfo($"{LOG_TAG} PlayerRepelly_Prefix called");
+        Log.LogInfo($"PlayerRepelly_Prefix called");
         if (MpManager.IsConnected)
         {
             var toRepell = GuestsManager.instance.GetInDeskGuest(deskCode);
@@ -327,7 +328,7 @@ public class GuestsManagerPatch : PatchBase<GuestsManagerPatch>
     [HarmonyPrefix]    
     public static bool PatientDepletedLeave_Prefix(GuestsManager __instance, GuestGroupController toPatientDepletedLeave)
     {
-        Log.LogInfo($"{LOG_TAG} PatientDepletedLeave_Prefix called");
+        Log.LogDebug($"PatientDepletedLeave_Prefix called");
         if (MpManager.IsConnectedClient)
         {
             return NightGuestManager.CheckStatus(NightGuestManager.GetGuestUUID(toPatientDepletedLeave), NightGuestManager.Status.Left);
@@ -344,15 +345,24 @@ public class GuestsManagerPatch : PatchBase<GuestsManagerPatch>
     [HarmonyPrefix]    
     public static bool PayByMood_Prefix(GuestsManager __instance)
     {
-        Log.LogInfo($"{LOG_TAG} PayByMood_Prefix called\n");
+        Log.LogInfo($"PayByMood_Prefix called\n");
         return true;
     }
 
     [HarmonyPatch(nameof(GuestsManager.GuestPay))]
     [HarmonyPrefix]    
-    public static bool GuestPay_Prefix(GuestsManager __instance)
+    public static bool GuestPay_Prefix(GuestsManager __instance, GuestGroupController toPayAndLeave, bool includeTip)
     {
-        Log.LogInfo($"{LOG_TAG} GuestPay_Prefix called");
+        Log.LogInfo($"GuestPay_Prefix called");
+        if (MpManager.IsConnectedHost)
+        {
+            // NightScene_GuestManagementUtility_GuestsManager__GenerateOrderSession
+            if (FunctionUtil.CheckStacktraceContains("GenerateOrderSession"))
+            {
+                NightGuestManager.SetGuestStatus(NightGuestManager.GetGuestUUID(toPayAndLeave), NightGuestManager.Status.Left);
+                MpManager.SendGuestLeave(NightGuestManager.GetGuestUUID(toPayAndLeave), GuestLeaveAction.LeaveType.PayAndLeave);
+            }
+        }
         return true;
     }
 
@@ -360,7 +370,7 @@ public class GuestsManagerPatch : PatchBase<GuestsManagerPatch>
     [HarmonyPrefix]    
     public static bool Eval_Prefix(GuestsManager __instance, int firstMood, int moon, float delay, int amount, bool shouldAddCombo)
     {
-        Log.LogInfo($"{LOG_TAG} Eval_Prefix called firstMood {firstMood}, moon {moon}, delay {delay}, amount {amount}, shouldAddCombo {shouldAddCombo}\n");
+        Log.LogInfo($"Eval_Prefix called firstMood {firstMood}, moon {moon}, delay {delay}, amount {amount}, shouldAddCombo {shouldAddCombo}\n");
         return true;
     }
 
@@ -368,7 +378,7 @@ public class GuestsManagerPatch : PatchBase<GuestsManagerPatch>
     [HarmonyPostfix]    
     public static void EvaluateOrder_Postfix(GuestsManager __instance, GuestGroupController toEvaluate, bool isTriggerByPartner)
     {
-        Log.LogInfo($"{LOG_TAG} EvaluateOrder_Postfix called");
+        Log.LogInfo($"EvaluateOrder_Postfix called");
         var uuid = NightGuestManager.GetGuestUUID(toEvaluate);
         NightGuestManager.ResetGuestOrderServed(uuid);
         NightGuestManager.SetGuestStatus(uuid, NightGuestManager.Status.OrderEvaluated);
@@ -386,10 +396,10 @@ public class GuestsManagerPatch : PatchBase<GuestsManagerPatch>
     public static bool GenerateOrderSession_Prefix(GuestsManager __instance, GuestGroupController guestGroup, bool doContinue)
     {
         
-        // Log.LogInfo($"{LOG_TAG} GenerateOrderSession called");
+        // Log.LogInfo($"GenerateOrderSession called");
         if (MpManager.IsConnectedClient)
         {
-            Log.LogInfo($"{LOG_TAG} GenerateOrderSession prevented");
+            Log.LogInfo($"GenerateOrderSession prevented");
             var uuid = NightGuestManager.GetGuestUUID(guestGroup);
             if (NightGuestManager.CheckStatusIn(uuid, [NightGuestManager.Status.Seated, NightGuestManager.Status.OrderEvaluated]))
             {
@@ -402,7 +412,8 @@ public class GuestsManagerPatch : PatchBase<GuestsManagerPatch>
 }
 
 [HarmonyPatch(typeof(Common.TimelineExtestion.GameTimeManager))]
-public class GameTimeManagerPatch : PatchBase<GameTimeManagerPatch>
+[AutoLog]
+public partial class GameTimeManagerPatch
 {
     [HarmonyPatch(nameof(Common.TimelineExtestion.GameTimeManager.SetGameTimeMode))]
     [HarmonyPrefix]

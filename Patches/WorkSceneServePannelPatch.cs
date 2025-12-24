@@ -1,10 +1,13 @@
 using HarmonyLib;
 
-using MetaMystia;
+namespace MetaMystia;
+using NightScene.UI;
 using NightScene.UI.GuestManagementUtility;
+using SgrYuki.Utils;
 
 [HarmonyPatch(typeof(NightScene.UI.GuestManagementUtility.WorkSceneServePannel))]
-public class WorkSceneServePannelPatch : PatchBase<WorkSceneServePannelPatch>
+[AutoLog]
+public partial class WorkSceneServePannelPatch
 {
     public static WorkSceneServePannel instanceRef = null;
 
@@ -26,25 +29,48 @@ public class WorkSceneServePannelPatch : PatchBase<WorkSceneServePannelPatch>
 
     [HarmonyPatch(nameof(WorkSceneServePannel.OnPanelClose))]
     [HarmonyPrefix]
-    public static void OnPanelClosePrefix(WorkSceneServePannel __instance)
+    public static bool OnPanelClose_Prefix(WorkSceneServePannel __instance)
     {
-        Log.LogInfo($"{LOG_TAG} OnPanelClosePrefix called");
+        if (__instance == null)
+        {
+            return false;
+        }
+        Log.LogInfo($"OnPanelClose_Prefix called");
 
         if(MpManager.IsConnected)
         {
             var order = __instance.operatingOrder;
             var guest = __instance.currentGuestController; 
-            var uuid = NightGuestManager.GetGuestUUID(guest);
 
+            // if this order is evaluated(by peer serving), try return the food/beverage to tray
             if (order == null || guest == null)
             {
-                Log.LogInfo($"{LOG_TAG} order null {order == null}, guest null {guest == null}");
-                return;
+                Log.LogInfo($"order null {order == null}, guest null {guest == null}");
+
+                GameData.Core.Collections.Sellable foodInTray = __instance.willServeFood;
+                GameData.Core.Collections.Sellable beverageIdInTray = __instance.willServeBeverage;
+
+                var trayInstance = DEYU.Singletons.Singleton<GameData.RunTime.NightSceneUtility.IzakayaTray>.Instance;
+                if (trayInstance != null)
+                {
+                    if (foodInTray != null)
+                    {
+                        trayInstance.Receive(foodInTray.Duplicate());
+                    }
+                    if (beverageIdInTray != null)
+                    {
+                        trayInstance.Receive(beverageIdInTray.Duplicate());
+                    }
+                    
+                }
+                return true;
             }
+
+            var uuid = NightGuestManager.GetGuestUUID(guest);
             if(NightGuestManager.GetGuestOrderFullfilled(uuid))
             {
-                Log.LogInfo($"{LOG_TAG} {uuid} GuestOrder Fullfilled !");
-                return;
+                Log.LogInfo($"{uuid} GuestOrder Fullfilled !");
+                return true;
             }
 
             SellableFood food = order.ServFood != null ? SellableFood.FromSellable(order.servFood) : null;
@@ -55,8 +81,8 @@ public class WorkSceneServePannelPatch : PatchBase<WorkSceneServePannelPatch>
 
             if (food == null && beverageId == null)
             {
-                Log.LogInfo($"{LOG_TAG} {uuid} food and beverage are null !");
-                return;
+                Log.LogInfo($"{uuid} food and beverage are null !");
+                return true;
             }
 
             if (NightGuestManager.GetGuestOrderServedFood(uuid))
@@ -99,10 +125,19 @@ public class WorkSceneServePannelPatch : PatchBase<WorkSceneServePannelPatch>
                 }
             }
         
-            Log.LogInfo($"{LOG_TAG} {uuid} served status: food {NightGuestManager.GetGuestOrderServedFood(uuid)}, beverage {NightGuestManager.GetGuestOrderServedBeverage(uuid)}; food {food}, beverage {beverageId}");
+            Log.LogInfo($"{uuid} served status: food {NightGuestManager.GetGuestOrderServedFood(uuid)}, beverage {NightGuestManager.GetGuestOrderServedBeverage(uuid)}; food {food}, beverage {beverageId}");
         }
+        return true;
 
     }
+
+    [HarmonyPatch(nameof(WorkSceneServePannel.InvokeOrderUpdate))]
+    [HarmonyPrefix]
+    public static bool InvokeOrderUpdate_Prefix(WorkSceneServePannel __instance)
+    {
+        return __instance != null && __instance.operatingOrder != null;
+    }
+
 
     [HarmonyPatch(nameof(WorkSceneServePannel.Send))]
     [HarmonyReversePatch]
