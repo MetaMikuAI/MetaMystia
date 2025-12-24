@@ -16,7 +16,7 @@ public class Plugin : BasePlugin
 
     public Action<Scene, LoadSceneMode> LoadAction;
     public static bool FirstEnterMain = true;
-    public const bool EnableWebConsole = true;
+    public const bool EnableWebConsole = false;
 
     public Plugin()
     {
