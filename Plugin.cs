@@ -69,6 +69,7 @@ public class Plugin : BasePlugin
                 typeof(NormalGuestPatch),
                 typeof(GameTimeManagerPatch),
                 typeof(RunTimeAlbumPatch),
+                typeof(ResultSceneManagerPatch)
             };
             foreach (var patch in patchList)
             {

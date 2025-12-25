@@ -259,10 +259,9 @@ public static partial class NightGuestManager
         {
             var item = __instance.guestInstances[i];
 
-            int randNum = deskSeat;
-            if (deskSeat == -1)
+            if (deskSeat == -1 || deskSeat >= seatDir.Count)
             {
-                randNum = UnityEngine.Random.Range(0, seatDir.Count);
+                deskSeat = UnityEngine.Random.Range(0, seatDir.Count);
             }
             var onArrive = () =>
             {
@@ -270,17 +269,17 @@ public static partial class NightGuestManager
                 if (current == 0) onMovementFinishCallback.Invoke();
             };
             
-            var colliderCollections = __instance.tileManager.GetCollider(seatDir[randNum], new Il2CppSystem.Collections.Generic.IReadOnlyList<UnityEngine.Vector3Int>(__instance.tileManager.PasserBorder.Pointer));
+            var colliderCollections = __instance.tileManager.GetCollider(seatDir[deskSeat], new Il2CppSystem.Collections.Generic.IReadOnlyList<UnityEngine.Vector3Int>(__instance.tileManager.PasserBorder.Pointer));
 
             item.SetPath(
-                seatDir[randNum], 
+                seatDir[deskSeat], 
                 colliderCollections,
                 i * 0.2f,
                 onArrive,
-                NightScene.Tiles.TileManager.FindDirection(seatDir[randNum], desk.tablePosition),
+                NightScene.Tiles.TileManager.FindDirection(seatDir[deskSeat], desk.tablePosition),
                 new Il2CppSystem.Nullable<UnityEngine.Vector3>() 
             );
-            seatDir.RemoveAt(randNum);
+            seatDir.RemoveAt(deskSeat);
         }
     }
 

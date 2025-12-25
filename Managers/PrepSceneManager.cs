@@ -310,10 +310,14 @@ public static partial class PrepSceneManager
     }
     public static void UpdateUI()
     {
-        IzakayaConfigPannelPatch.instanceRef?.SolveDailyCompletion();
-        IzakayaConfigPannelPatch.instanceRef?.m_CookerGroup?.UpdateGroupRaw();
-        IzakayaConfigPannelPatch.instanceRef?.m_BeverageGroup?.UpdateGroupRaw();
-        IzakayaConfigPannelPatch.instanceRef?.m_RecipeGroup?.UpdateGroupRaw();
+        if (IzakayaConfigPannelPatch.instanceRef == null)
+        {
+            return;
+        }
+        IzakayaConfigPannelPatch.instanceRef.SolveDailyCompletion();
+        IzakayaConfigPannelPatch.instanceRef.m_CookerGroup?.UpdateGroupRaw();
+        IzakayaConfigPannelPatch.instanceRef.m_BeverageGroup?.UpdateGroupRaw();
+        IzakayaConfigPannelPatch.instanceRef.m_RecipeGroup?.UpdateGroupRaw();
     }
 
     public static void UpdateAll()

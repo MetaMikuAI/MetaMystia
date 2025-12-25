@@ -94,9 +94,9 @@ NightScene 篇
 - [x] DayScene Kyouko 移动缺少 *高度* 变化
 - [ ] A 在 loading 时 B 选择厨具会使 A 进入 Prep 后显示错误的厨具列表
 - [ ] 地图选择界面中不会缺少店铺等级的提示
+
 NightScene 篇已知 bug 或缺陷
-- [ ] 两人同时给同一桌顾客上菜，可能会有问题
-- [ ] 有时上菜未能同步
+- [x] 两人同时给同一桌顾客上菜，可能会有问题
 - [ ] 还请多多测试，bug提交请附带上 (Touhou Mystia Izakaya\BepInEx\LogOutput.log)
 
 

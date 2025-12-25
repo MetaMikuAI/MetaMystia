@@ -11,6 +11,10 @@ public partial class ExtractAction : NetAction
     public override void OnReceived()
     {
         LogActionReceived();
+        if (MpManager.LocalScene == Common.UI.Scene.ResultScene)
+        {
+            return;
+        }
         PluginManager.Instance.RunOnMainThread(() =>
         {
             var cookerController = CookManager.GetCookerControllerByIndex(GridIndex);

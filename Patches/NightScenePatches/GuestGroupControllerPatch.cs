@@ -51,7 +51,7 @@ public partial class GuestGroupControllerPatch
         {
             return;
         }
-        if (MpManager.IsConnectedHost && MpManager.LocalScene == Common.UI.Scene.WorkScene)
+        if (MpManager.IsConnectedHost && MpManager.LocalScene == Common.UI.Scene.WorkScene && generatedOrder != null)
         {
             NightGuestManager.SetGuestStatus(NightGuestManager.GetGuestUUID(__instance), NightGuestManager.Status.OrderGenerated);
             switch (generatedOrder.Type)
