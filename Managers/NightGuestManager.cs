@@ -57,6 +57,7 @@ public static partial class NightGuestManager
     private static ConcurrentDictionary<string, GuestGroupController> guests = new(); 
     private static ConcurrentDictionary<string, Status> guestStatus = new(); 
     private static ConcurrentDictionary<string, int> guestDesks = new(); 
+    private static ConcurrentDictionary<string, int> guestDeskSeats = new(); 
 
     private static ConcurrentDictionary<IntPtr, string> guestIds = new();
     public static ConcurrentQueue<(OrderBase, string)> orders = new();
@@ -76,6 +77,7 @@ public static partial class NightGuestManager
         guestIds.Clear();
         orders.Clear();
         guestDesks.Clear();
+        guestDeskSeats.Clear();
         specialGuestsAppeared.Clear();
         normalGuestProfile.Clear();
         guestOrderFullfilled.Clear();
@@ -139,6 +141,14 @@ public static partial class NightGuestManager
 
     public static void SetGuestDeskcode(string uuid, int desk) {
         guestDesks[uuid] = desk + 1;
+    }
+
+    public static int GetGuestDeskcodeSeat(string uuid) {
+        return guestDeskSeats.GetOrDefault(uuid, -1);
+    }
+
+    public static void SetGuestDeskcodeSeat(string uuid, int seat) {
+        guestDeskSeats[uuid] = seat;
     }
 
     public static void SetGuestOrderServedFood(string uuid)
@@ -248,6 +258,7 @@ public static partial class NightGuestManager
         for (var i = 0; i < __instance.guestInstances.Length; i++)
         {
             var item = __instance.guestInstances[i];
+
             int randNum = deskSeat;
             if (deskSeat == -1)
             {
@@ -258,12 +269,16 @@ public static partial class NightGuestManager
                 var current = --characterInMotion;
                 if (current == 0) onMovementFinishCallback.Invoke();
             };
+            
+            var colliderCollections = __instance.tileManager.GetCollider(seatDir[randNum], new Il2CppSystem.Collections.Generic.IReadOnlyList<UnityEngine.Vector3Int>(__instance.tileManager.PasserBorder.Pointer));
+
             item.SetPath(
                 seatDir[randNum], 
-                __instance.tileManager.GetCollider(seatDir[randNum], new Il2CppSystem.Collections.Generic.IReadOnlyList<UnityEngine.Vector3Int>(__instance.tileManager.PasserBorder.Pointer)),
+                colliderCollections,
                 i * 0.2f,
                 onArrive,
-                NightScene.Tiles.TileManager.FindDirection(seatDir[randNum], desk.tablePosition)
+                NightScene.Tiles.TileManager.FindDirection(seatDir[randNum], desk.tablePosition),
+                new Il2CppSystem.Nullable<UnityEngine.Vector3>() 
             );
             seatDir.RemoveAt(randNum);
         }

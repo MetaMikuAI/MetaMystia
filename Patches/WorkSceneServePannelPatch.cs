@@ -63,7 +63,17 @@ public partial class WorkSceneServePannelPatch
                     }
                     
                 }
-                return true;
+
+                var trayPanel = __instance.m_CurrentTray;
+                trayPanel?.ClosePanel();
+
+                var director = NightScene.NightSceneDirector.Instance;
+                if (director != null && director.CanGotoNextPhase())
+                {
+                    director.OnInteractableExit();
+                }
+                
+                return false;
             }
 
             var uuid = NightGuestManager.GetGuestUUID(guest);

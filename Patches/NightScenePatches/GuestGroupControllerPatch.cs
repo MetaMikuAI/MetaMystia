@@ -3,7 +3,7 @@ using NightScene.GuestManagementUtility;
 
 namespace MetaMystia;
 using NightScene.Tiles;
-
+using SgrYuki.Utils;
 using System.Linq;
 
 [HarmonyPatch]
@@ -23,7 +23,7 @@ public partial class GuestGroupControllerPatch
     public static bool GenerateOrderPrefix(GuestGroupController __instance, bool isFreeOrder, ref string orderGenerationMessage, ref GuestsManager.OrderBase generatedOrder, ref bool __result)
     {
         // Log.LogInfo($"GenerateOrderPrefix called");
-        if (MpManager.IsConnectedClient)
+        if (MpManager.IsConnectedClient && MpManager.LocalScene == Common.UI.Scene.WorkScene)
         {
             if (NightGuestManager.orders.TryDequeue(out var item))
             {
@@ -51,7 +51,7 @@ public partial class GuestGroupControllerPatch
         {
             return;
         }
-        if (MpManager.IsConnectedHost)
+        if (MpManager.IsConnectedHost && MpManager.LocalScene == Common.UI.Scene.WorkScene)
         {
             NightGuestManager.SetGuestStatus(NightGuestManager.GetGuestUUID(__instance), NightGuestManager.Status.OrderGenerated);
             switch (generatedOrder.Type)
@@ -71,12 +71,60 @@ public partial class GuestGroupControllerPatch
         }
     }
 
-    // [HarmonyPatch(typeof(GuestGroupController), nameof(GuestGroupController.MoveToDesk))]
+    [HarmonyPatch(typeof(GuestGroupController), nameof(GuestGroupController.MoveToDesk))]
+    [HarmonyPrefix]
+    public static bool MoveToDesk_Prefix(GuestGroupController __instance, int deskCode, Il2CppSystem.Action onMovementFinishCallback)
+    {
+        if (MpManager.IsConnected && MpManager.LocalScene == Common.UI.Scene.WorkScene)
+        {
+            var uuid = NightGuestManager.GetGuestUUID(__instance);
+            var seat = NightGuestManager.GetGuestDeskcodeSeat(uuid);
+            NightGuestManager.MoveToDesk(__instance, deskCode, onMovementFinishCallback, seat);
+            return false;
+        }
+        return true;
+    }
+
+    // [HarmonyPatch(typeof(Common.UI.ReceivedObjectDisplayerController), nameof(Common.UI.ReceivedObjectDisplayerController.NotifySpecialGuestNewInfo))]
     // [HarmonyPrefix]
-    // public static bool MoveToDesk_Prefix(GuestGroupController __instance, int deskCode, Il2CppSystem.Action onMovementFinishCallback)
+    // public static bool NotifySpecialGuestNewInfo_Prefix(Common.UI.ReceivedObjectDisplayerController __instance)
     // {
-    //     NightGuestManager.MoveToDesk(__instance, deskCode, onMovementFinishCallback);
-    //     return false;
+    //     FunctionUtil.LogStacktrace(Log._inner);
+    //     return true;
     // }
 
+    // [HarmonyPatch(typeof(Common.UI.ReceivedObjectDisplayerController), nameof(Common.UI.ReceivedObjectDisplayerController.NotifySpecialGuestSpawnInNight))]
+    // [HarmonyPrefix]
+    // public static bool NotifySpecialGuestSpawnInNight_Prefix(Common.UI.ReceivedObjectDisplayerController __instance)
+    // {
+    //     FunctionUtil.LogStacktrace(Log._inner);
+    //     return true;
+    // }
+
+    // [HarmonyPatch(typeof(Common.UI.ReceivedObjectDisplayerController), nameof(Common.UI.ReceivedObjectDisplayerController.NotifyIzakayaUpdate))]
+    // [HarmonyPrefix]
+    // public static void NotifyIzakayaUpdate_Prefix()
+    // {
+    //     // FunctionUtil.LogStacktrace(Log._inner);
+    //     // Log.LogMessage($"data {data.Item1}, {data.Item2}");
+    //     // return true;
+    // }
+
+    
+    // [HarmonyPatch(typeof(Common.UI.ReceivedObjectDisplayerController), nameof(Common.UI.ReceivedObjectDisplayerController.NotifyTagUpdate))]
+    // [HarmonyPrefix]
+    // public static bool NotifyTagUpdate_Prefix(Common.UI.ReceivedObjectDisplayerController __instance)
+    // {
+    //     FunctionUtil.LogStacktrace(Log._inner);
+    //     return true;
+    // }
+
+    // [HarmonyPatch(typeof(Common.UI.ReceivedObjectDisplayerController), nameof(Common.UI.ReceivedObjectDisplayerController.NotifyTextMessage))]
+    // [HarmonyPrefix]
+    // public static bool NotifyTextMessage_Prefix(Common.UI.ReceivedObjectDisplayerController __instance, string content)
+    // {
+    //     FunctionUtil.LogStacktrace(Log._inner);
+    //     Log.LogMessage($"content {content}");
+    //     return true;
+    // }
 }
