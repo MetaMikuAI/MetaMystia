@@ -38,4 +38,14 @@ public partial class ConfirmAction : NetAction
             Dialog.ShowConfirmDialog(MapLabel, closePanelCallback);
         });
     }
+
+    public static void Send(string mapLabel, int level)
+    {
+        NetPacket packet = new([new ConfirmAction
+        {
+            MapLabel = mapLabel,
+            Level = level
+        }]);
+        SendToPeer(packet);
+    }
 }

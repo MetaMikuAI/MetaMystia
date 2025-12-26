@@ -19,4 +19,14 @@ public partial class SelectAction : NetAction
             Dialog.ShowInformDialog(MapLabel, MapLevel, null);
         });
     }
+
+    public static void Send(string mapLabel, int level)
+    {
+        NetPacket packet = new([new SelectAction
+        {
+            MapLabel = mapLabel,
+            MapLevel = level
+        }]);
+        SendToPeer(packet);
+    }
 }

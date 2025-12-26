@@ -35,4 +35,15 @@ public partial class CookAction : NetAction
             CookControllerPatch.SetCook_Original(cookerController, food, recipe, false);
         });
     }
+
+    public static void Send(int gridIndex, SellableFood food, int recipeId)
+    {
+        NetPacket packet = new([new CookAction
+        {
+            GridIndex = gridIndex,
+            RecipeId = recipeId,
+            Food = food
+        }]);
+        SendToPeer(packet);
+    }
 }

@@ -82,5 +82,15 @@ public partial class GuestLeaveAction : NetAction
          );
     }
 
+    public static void Send(string guest, LeaveType leaveType)
+    {
+        NetPacket packet = new([new GuestLeaveAction
+        {
+            GuestUniqId = guest,
+            LType = leaveType
+        }]);
+        SendToPeer(packet);
+    }
+
 }
 

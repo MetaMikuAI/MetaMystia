@@ -41,11 +41,21 @@ public partial class PrepAction : NetAction
         {
             // 如果 Mystia 未准备好，则应通知对方已经 Ready，然后自己直接 Ready
             PrepSceneManager.localPlayerReady = true;
-            MpManager.SendPrep(PrepSceneManager.localPrepTable, true);
+            Send(PrepSceneManager.localPrepTable, true);
         }
         PluginManager.Instance.RunOnMainThread(() =>
         {
             IzakayaConfigPannelPatch.instanceRef._SolveDailyCompletion_b__61_7();
         });
+    }
+
+    public static void Send(Table prepTable, bool ready = false)
+    {
+        NetPacket packet = new([new PrepAction
+        {
+            PrepTable = prepTable,
+            Ready = ready
+        }]);
+        SendToPeer(packet);
     }
 }

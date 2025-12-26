@@ -25,7 +25,7 @@ public partial class CookControllerPatch
         var gridIndex = __instance.GridIndex;
         var recipeId = recipe.Id;
         SellableFood food = SellableFood.FromSellable(thisResult);
-        MpManager.SendCook(gridIndex, food, recipeId);
+        CookAction.Send(gridIndex, food, recipeId);
     }
 
     [HarmonyPatch(nameof(CookController.Extract))]
@@ -40,7 +40,7 @@ public partial class CookControllerPatch
     public static void Extract_Prefix(CookController __instance)
     {
         var gridIndex = __instance.GridIndex;
-        MpManager.SendExtract(gridIndex);
+        ExtractAction.Send(gridIndex);
     }
 
 
@@ -56,7 +56,7 @@ public partial class CookControllerPatch
     public static void StartCookCountDown_Prefix(CookController __instance, float qteScore)
     {
         var gridIndex = __instance.GridIndex;
-        MpManager.SendQTE(gridIndex, qteScore);
+        QTEAction.Send(gridIndex, qteScore);
     }
 
 }

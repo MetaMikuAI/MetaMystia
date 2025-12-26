@@ -26,4 +26,13 @@ public partial class ExtractAction : NetAction
             CookControllerPatch.Extract_Original(cookerController, null);
         });
     }
+
+    public static void Send(int gridIndex)
+    {
+        NetPacket packet = new([new ExtractAction
+        {
+            GridIndex = gridIndex
+        }]);
+        SendToPeer(packet);
+    }
 }

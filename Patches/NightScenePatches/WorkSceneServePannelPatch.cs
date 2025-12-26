@@ -100,7 +100,7 @@ public partial class WorkSceneServePannelPatch
                 if (beverageId != null)
                 {
                     // food already served, only allow serving beverage
-                    MpManager.SendGuestServe(NightGuestManager.GetGuestUUID(guest), null, beverageId.Value, GuestServeAction.ServeType.Beverage);
+                    GuestServeAction.Send(NightGuestManager.GetGuestUUID(guest), null, beverageId.Value, GuestServeAction.ServeType.Beverage);
                     NightGuestManager.SetGuestOrderServedBeverage(uuid);
                 }
             }
@@ -109,7 +109,7 @@ public partial class WorkSceneServePannelPatch
                 if (food != null)
                 {
                     // beverage already served, only allow serving food
-                    MpManager.SendGuestServe(NightGuestManager.GetGuestUUID(guest), food, -1, GuestServeAction.ServeType.Food);
+                    GuestServeAction.Send(NightGuestManager.GetGuestUUID(guest), food, -1, GuestServeAction.ServeType.Food);
                     NightGuestManager.SetGuestOrderServedFood(uuid);
                 }
             }
@@ -118,19 +118,19 @@ public partial class WorkSceneServePannelPatch
                 if (beverageId != null && food != null)
                 {
                     // none served, now serving both
-                    MpManager.SendGuestServe(NightGuestManager.GetGuestUUID(guest), food, beverageId.Value, GuestServeAction.ServeType.Both);
+                    GuestServeAction.Send(NightGuestManager.GetGuestUUID(guest), food, beverageId.Value, GuestServeAction.ServeType.Both);
                     NightGuestManager.SetGuestOrderFullfilled(uuid);
                 }
                 else if (beverageId != null)
                 {
                     // none served, now serving beverage
-                    MpManager.SendGuestServe(NightGuestManager.GetGuestUUID(guest), null, beverageId.Value, GuestServeAction.ServeType.Beverage);
+                    GuestServeAction.Send(NightGuestManager.GetGuestUUID(guest), null, beverageId.Value, GuestServeAction.ServeType.Beverage);
                     NightGuestManager.SetGuestOrderServedBeverage(uuid);
                 }
                 else
                 {
                     // none served, now serving food
-                    MpManager.SendGuestServe(NightGuestManager.GetGuestUUID(guest), food, -1, GuestServeAction.ServeType.Food);
+                    GuestServeAction.Send(NightGuestManager.GetGuestUUID(guest), food, -1, GuestServeAction.ServeType.Food);
                     NightGuestManager.SetGuestOrderServedFood(uuid);
                 }
             }

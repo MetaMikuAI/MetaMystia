@@ -18,7 +18,7 @@ public partial class IzakayaConfigurePatch
     {
         Log.LogInfo($"RegisterToDailyRecipes: {id}");
         PrepSceneManager.localPrepTable.RecipeAdditions[id] = MpManager.GetSynchronizedTimestampNow;
-        MpManager.SendPrep(PrepSceneManager.localPrepTable);
+        PrepAction.Send(PrepSceneManager.localPrepTable);
     }
     
     [HarmonyPatch(nameof(IzakayaConfigure.RegisterToDailyBeverages))]
@@ -27,7 +27,7 @@ public partial class IzakayaConfigurePatch
     {
         Log.LogInfo($"RegisterToDailyBeverages: {id}");
         PrepSceneManager.localPrepTable.BeverageAdditions[id] = MpManager.GetSynchronizedTimestampNow;
-        MpManager.SendPrep(PrepSceneManager.localPrepTable);
+        PrepAction.Send(PrepSceneManager.localPrepTable);
     }
 
     [HarmonyPatch(nameof(IzakayaConfigure.RegisterToCookers))]
@@ -47,7 +47,7 @@ public partial class IzakayaConfigurePatch
 
         Log.LogInfo($"RegisterToCookers: id={id}, index={index}, ts={timestamp}, checkPlayerHaveCooker={checkPlayerHaveCooker}");
 
-        MpManager.SendPrep(PrepSceneManager.localPrepTable);
+        PrepAction.Send(PrepSceneManager.localPrepTable);
     }
 
     [HarmonyPatch(nameof(IzakayaConfigure.LogoffFromDailyRecipes))]
@@ -56,7 +56,7 @@ public partial class IzakayaConfigurePatch
     {
         Log.LogInfo($"LogoffFromDailyRecipes: {id}");
         PrepSceneManager.localPrepTable.RecipeDeletions[id] = MpManager.GetSynchronizedTimestampNow;
-        MpManager.SendPrep(PrepSceneManager.localPrepTable);
+        PrepAction.Send(PrepSceneManager.localPrepTable);
     }
 
     [HarmonyPatch(nameof(IzakayaConfigure.LogoffFromDailyBeverages))]
@@ -65,7 +65,7 @@ public partial class IzakayaConfigurePatch
     {
         Log.LogInfo($"LogoffFromDailyBeverages: {id}");
         PrepSceneManager.localPrepTable.BeverageDeletions[id] = MpManager.GetSynchronizedTimestampNow;
-        MpManager.SendPrep(PrepSceneManager.localPrepTable);
+        PrepAction.Send(PrepSceneManager.localPrepTable);
     }
 
     [HarmonyPatch(nameof(IzakayaConfigure.LogOffFromCookers))]
@@ -93,7 +93,7 @@ public partial class IzakayaConfigurePatch
         if (!MpManager.IsConnected) return;
 
         var food = SellableFood.FromSellable(sellable);
-        MpManager.SendStoreFood(food);
+        StoreFoodAction.Send(food);
     }
     
 }

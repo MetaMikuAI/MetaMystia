@@ -45,5 +45,17 @@ public partial class GuestSeatedAction : NetAction
                 NightGuestManager.SetGuestDeskcode(GuestUniqId, guest.DeskCode);
             });
     }
+
+    public static void Send(string guestUniqId, int deskId, bool firstSpawn, int seatId)
+    {
+        NetPacket packet = new([new GuestSeatedAction
+        {
+            GuestUniqId = guestUniqId,
+            DeskId = deskId,
+            FirstSpawn = firstSpawn,
+            SeatId = seatId
+        }]);
+        SendToPeer(packet);
+    }
 }
 

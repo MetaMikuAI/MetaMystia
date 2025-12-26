@@ -1,7 +1,6 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
-using BepInEx.Logging;
 
 namespace MetaMystia;
 
@@ -20,10 +19,10 @@ public static partial class MpManager
     public static string PlayerId { get { return _playerId; } set { _playerId = value; Log.LogInfo($"Player ID set to: {value}"); } }
     private static TcpServer server = null;
     private static TcpClientWrapper client = null;
-    public static ROLE Role {get; private set;}
-    public static string RoleTag => Role == ROLE.Host ? "[S]" : "[C]";
+    private static ROLE Role;
+    private static ROLE GameRole;
     public static bool IsRunning { get; private set; }
-    public static bool IsConnected => (Role == ROLE.Host ? server?.HasAliveClient : client?.IsConnected)?? false;
+    public static bool IsConnected => (IsHost ? server?.HasAliveClient : client?.IsConnected)?? false;
     public static string PeerAddress {get; set;}
     public static string PeerId {get; set;}
     public static long Latency {get; private set;} = 0;
@@ -33,9 +32,19 @@ public static partial class MpManager
     public static long GetSynchronizedTimestampNow => GetTimestampNow - TimeOffset;
     private static int _pingId = 0;
 
-    public static bool IsConnectedClient => IsConnected && Role == ROLE.Client;
-    public static bool IsConnectedHost => IsConnected && Role == ROLE.Host;
+    public static bool IsConnectedClient => IsConnected && IsClient;
+    public static bool IsConnectedHost => IsConnected && IsHost;
+    public static bool IsHost => Role == ROLE.Host;
+    public static bool IsClient => Role == ROLE.Client;
+    public static string RoleTag => IsHost ? "[S]" : "[C]";
+
+    public static bool IsGameRoleHost => GameRole == ROLE.Host;
+    public static bool IsGameRoleClient => GameRole == ROLE.Client;
+
     public static Common.UI.Scene LocalScene => PluginManager.CurrentGameScene;
+
+    public static System.Collections.Generic.List<string> LocalActiveDLCLabel => DLCManager.ActiveDLCLabel;
+    public static System.Collections.Generic.List<string> PeerActiveDLCLabel => DLCManager.PeerActiveDLCLabel;
 
     public static void Start(ROLE r = ROLE.Host)
     {
@@ -48,6 +57,7 @@ public static partial class MpManager
         IsRunning = true;
         PeerId = "<Unknown>";
         Role = r;
+        GameRole = Role;
 
         switch (r) 
         {
@@ -88,6 +98,13 @@ public static partial class MpManager
         Log.LogInfo("MpManager has stopped");
     }
 
+    public static void Initialize()
+    {
+        Log.LogInfo($"MpManager initialized");
+        MystiaManager.Instance.Initialize();
+        KyoukoManager.Initialize();
+    }
+
     public static void Restart()
     {
         Stop();
@@ -124,7 +141,6 @@ public static partial class MpManager
         }
     }
 
-
     public static void OnConnected(string ip)
     {
         // PeerAddress = ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString();
@@ -147,12 +163,12 @@ public static partial class MpManager
         action.OnReceived();
     }
 
-    private static void SendToPeer(NetPacket packet)
+    public static void SendToPeer(NetPacket packet)
     {
         if (IsConnected)
         {
             packet.GetFirstAction().LogActionSend(true);
-            if (Role == ROLE.Host)
+            if (IsHost)
             {
                 server.Send(packet);
             }
@@ -167,7 +183,7 @@ public static partial class MpManager
     {
         if (IsConnected)
         {
-            if (Role == ROLE.Host)
+            if (IsHost)
             {
                 server.DisconnectClient();
             } 
@@ -208,8 +224,15 @@ public static partial class MpManager
     {
         SendToPeer(new NetPacket([new HelloAction { 
             PeerId = PlayerId,
+            PeerActiveDLCLabel = LocalActiveDLCLabel,
             Version = MyPluginInfo.PLUGIN_VERSION,
-            CurrentGameScene = LocalScene
+            CurrentGameScene = LocalScene,
+            PeerDLCBeverages = DLCManager.Beverages,
+            PeerDLCCookers = DLCManager.Cookers,
+            PeerDLCFoods = DLCManager.Foods,
+            PeerDLCNormalGuests = DLCManager.NormalGuests,
+            PeerDLCRecipes = DLCManager.Recipes,
+            PeerDLCSpecialGuests = DLCManager.SpecialGuests,
         }]));
     }
 
@@ -253,21 +276,6 @@ public static partial class MpManager
         SendToPeer(packet);
     }
 
-    public static void SendReady()
-    {
-        NetPacket packet = new NetPacket([new ReadyAction
-        {
-            IsReady = true
-        }]);
-        SendToPeer(packet);
-    }
-
-    public static void SendMessage(string message)
-    {
-        FloatingTextHelper.ShowFloatingTextSelfOnMainThread(message);
-        Notify.ShowOnMainThread($"你: {message}");
-        SendToPeer(MessageAction.CreateMsgPacket(message));
-    }
 
     public static string GetStatus()
     {
@@ -300,155 +308,5 @@ public static partial class MpManager
         {
             return "Multiplayer: On (Not connected)";
         }
-    }
-
-    public static void SendSelectedIzakaya(string mapLabel, int level)
-    {
-        NetPacket packet = new NetPacket([new SelectAction
-        {
-            MapLabel = mapLabel,
-            MapLevel = level
-        }]);
-        SendToPeer(packet);
-    }
-    public static void SendConfirmedIzakaya(string mapLabel, int level)
-    {
-        NetPacket packet = new NetPacket([new ConfirmAction
-        {
-            MapLabel = mapLabel,
-            Level = level
-        }]);
-        SendToPeer(packet);
-    }
-
-    public static void SendPrep(PrepAction.Table prepTable, bool ready = false)
-    {
-        NetPacket packet = new NetPacket([new PrepAction
-        {
-            PrepTable = prepTable,
-            Ready = ready
-        }]);
-        SendToPeer(packet);
-    }
-
-    
-    public static void SendCook(int gridIndex, SellableFood food, int recipeId)
-    {
-        NetPacket packet = new NetPacket([new CookAction
-        {
-            GridIndex = gridIndex,
-            RecipeId = recipeId,
-            Food = food
-        }]);
-        SendToPeer(packet);
-    }
-
-    public static void SendExtract(int gridIndex)
-    {
-        NetPacket packet = new NetPacket([new ExtractAction
-        {
-            GridIndex = gridIndex
-        }]);
-        SendToPeer(packet);
-    }
-
-    public static void SendQTE(int gridIndex, float qteScore)
-    {
-        NetPacket packet = new NetPacket([new QTEAction
-        {
-            GridIndex = gridIndex,
-            QTEScore = qteScore
-        }]);
-        SendToPeer(packet);
-    }
-    
-    public static void SendStoreFood(SellableFood food)
-    {
-        NetPacket packet = new NetPacket([new StoreFoodAction
-        {
-            Food = food
-        }]);
-        SendToPeer(packet);
-    }
-
-    public static void SendExtractFood(SellableFood food)
-    {
-        NetPacket packet = new NetPacket([new ExtractFoodAction
-        {
-            Food = food
-        }]);
-        SendToPeer(packet);
-    }
-
-    public static void SendGuestSpawn(int guest, bool isSpecial, string uuid, int? guest1Visualid = null, int? guest2 = null, int? guest2Visualid = null)
-    {
-        NetPacket packet = new NetPacket([new GuestSpawnAction
-        {
-            GuestId = guest,
-            IsSpecial = isSpecial,
-            UUID = uuid,
-            Guest1Visualid = guest1Visualid,
-            Guest2Visualid = guest2Visualid,
-            GuestId2 = guest2
-        }]);
-        SendToPeer(packet);
-    }
-
-    public static void SendGuestSeated(string guestUniqId, int deskId, bool firstSpawn, int seatId)
-    {
-        NetPacket packet = new NetPacket([new GuestSeatedAction
-        {
-            GuestUniqId = guestUniqId,
-            DeskId = deskId,
-            FirstSpawn = firstSpawn,
-            SeatId = seatId
-        }]);
-        SendToPeer(packet);
-    }
-
-    public static void SendGuestGenNormalOrder(string guestUniqId, int requestFoodId, int requestBevId, int deskCode, bool notShowInUI, bool isFree, string message)
-    {
-        var order = new GuestOrder(requestFoodId, requestBevId, deskCode, notShowInUI, isFree);
-        NetPacket packet = new NetPacket([new GuestGenNormalOrderAction
-        {
-            GuestUniqId = guestUniqId,
-            Order = order,
-            Message = message
-        }]);
-        SendToPeer(packet);
-    }
-
-    public static void SendGuestGenSPOrder(string guestUniqId, int requestFoodTag, int requestBevTag, int deskCode, bool notShowInUI, bool isFree, string message)
-    {
-        var order = new GuestOrder(requestFoodTag, requestBevTag, deskCode, notShowInUI, isFree);
-        NetPacket packet = new NetPacket([new GuestGenSPOrderAction
-        {
-            GuestUniqId = guestUniqId,
-            Order = order,
-            Message = message
-        }]);
-        SendToPeer(packet);
-    }
-
-    public static void SendGuestServe(string guestUniqId, SellableFood food, int beverageId, GuestServeAction.ServeType type)
-    {
-        NetPacket packet = new NetPacket([new GuestServeAction
-        {
-            GuestUniqId = guestUniqId,
-            Food = food,
-            BeverageId = beverageId,
-            FoodType = type
-        }]);
-        SendToPeer(packet);
-    }
-
-    public static void SendGuestLeave(string guest, GuestLeaveAction.LeaveType leaveType)
-    {
-        NetPacket packet = new NetPacket([new GuestLeaveAction
-        {
-            GuestUniqId = guest,
-            LType = leaveType
-        }]);
-        SendToPeer(packet);
     }
 }

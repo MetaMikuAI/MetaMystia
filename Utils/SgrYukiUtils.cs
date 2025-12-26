@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -6,11 +7,37 @@ namespace SgrYuki.Utils;
 
 public static class Extensions
 {
-    public static T GetRandomOne<T>(this System.Collections.Generic.List<T> list)
+    public static T GetRandomOne<T>(this IEnumerable<T> source)
     {
-        return list[UnityEngine.Random.Range(0, list.Count)];
-    }
+        if (source == null)
+            throw new ArgumentNullException(nameof(source));
 
+        // 如果是 IReadOnlyList / List / Array，走 O(1)
+        if (source is IReadOnlyList<T> list)
+        {
+            if (list.Count == 0)
+                throw new InvalidOperationException("Collection is empty.");
+
+            return list[UnityEngine.Random.Range(0, list.Count)];
+        }
+
+        // 否则用水塘抽样
+        T result = default;
+        int count = 0;
+
+        foreach (var item in source)
+        {
+            count++;
+            if (UnityEngine.Random.Range(0, count) == 0)
+                result = item;
+        }
+
+        if (count == 0)
+            throw new InvalidOperationException("Collection is empty.");
+
+        return result;
+    }
+    
     public static Il2CppSystem.Collections.Generic.IEnumerable<T> ToIEnumerable<T>(this Il2CppSystem.Collections.Generic.List<T> list)
     {
         return new Il2CppSystem.Collections.Generic.IEnumerable<T>(list.Pointer);
@@ -121,6 +148,81 @@ public static class Extensions
         }
         return result;
     }
+
+    public static System.Collections.Generic.List<T> ToManagedList<T>(
+            this Il2CppSystem.Collections.Generic.List<T> il2cppList)
+    {
+        if (il2cppList == null)
+            return null;
+
+        var result = new System.Collections.Generic.List<T>(il2cppList.Count);
+        for (int i = 0; i < il2cppList.Count; i++)
+        {
+            result.Add(il2cppList[i]);
+        }
+
+        return result;
+    }
+}
+
+public static class Il2CppEnumerableExtensions
+{
+    /// <summary>
+    /// 是否至少存在一个元素
+    /// </summary>
+    public static bool Any(this Il2CppSystem.Collections.IEnumerable source)
+    {
+        if (source == null)
+            throw new ArgumentNullException(nameof(source));
+
+        var enumerator = source.GetEnumerator();
+        return enumerator.MoveNext();
+    }
+
+    /// <summary>
+    /// 是否存在满足条件的元素
+    /// </summary>
+    public static bool Any(
+        this Il2CppSystem.Collections.IEnumerable source,
+        Func<object, bool> predicate)
+    {
+        if (source == null)
+            throw new ArgumentNullException(nameof(source));
+        if (predicate == null)
+            throw new ArgumentNullException(nameof(predicate));
+
+        var enumerator = source.GetEnumerator();
+        while (enumerator.MoveNext())
+        {
+            if (predicate(enumerator.Current))
+                return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// 是否所有元素都满足条件
+    /// （空集合返回 true，符合 LINQ 语义）
+    /// </summary>
+    public static bool All(
+        this Il2CppSystem.Collections.IEnumerable source,
+        Func<object, bool> predicate)
+    {
+        if (source == null)
+            throw new ArgumentNullException(nameof(source));
+        if (predicate == null)
+            throw new ArgumentNullException(nameof(predicate));
+
+        var enumerator = source.GetEnumerator();
+        while (enumerator.MoveNext())
+        {
+            if (!predicate(enumerator.Current))
+                return false;
+        }
+
+        return true;
+    }
 }
 
 public sealed class LogWrapper
@@ -152,33 +254,89 @@ public sealed class LogWrapper
 }
 
 // Support "foreach" any container that implements [] operator and Count member method
-public readonly struct IndexableWrapper<T>
+public readonly struct IndexableWrapper
 {
-    private readonly T _inner;
-    public IndexableWrapper(T inner) => _inner = inner;
+    private readonly object _inner;
 
-    public Enumerator<T> GetEnumerator() => new Enumerator<T>(_inner);
-
-    public struct Enumerator<TContainer>
+    public IndexableWrapper(object inner)
     {
-        private readonly TContainer _container;
+        _inner = inner ?? throw new ArgumentNullException(nameof(inner));
+    }
+
+    /* =========================
+     * foreach 支持
+     * ========================= */
+
+    public Enumerator GetEnumerator()
+        => new Enumerator(_inner);
+
+    public struct Enumerator
+    {
+        private readonly object _container;
         private int _index;
 
-        public Enumerator(TContainer container)
+        public Enumerator(object container)
         {
             _container = container;
             _index = -1;
         }
 
-        public object Current => ((dynamic)_container)[_index];
+        public readonly object Current => ((dynamic)_container)[_index];
 
         public bool MoveNext()
         {
             return ++_index < ((dynamic)_container).Count();
         }
     }
-}
 
+    /* =========================
+     * Any / All（内建）
+     * ========================= */
+
+    /// <summary>
+    /// 是否至少存在一个元素
+    /// </summary>
+    public bool Any()
+    {
+        var e = GetEnumerator();
+        return e.MoveNext();
+    }
+
+    /// <summary>
+    /// 是否存在满足条件的元素
+    /// </summary>
+    public bool Any(Func<object, bool> predicate)
+    {
+        if (predicate == null)
+            throw new ArgumentNullException(nameof(predicate));
+
+        var e = GetEnumerator();
+        while (e.MoveNext())
+        {
+            if (predicate(e.Current))
+                return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// 是否所有元素都满足条件
+    /// （空集合返回 true，符合 LINQ 语义）
+    /// </summary>
+    public bool All(Func<object, bool> predicate)
+    {
+        if (predicate == null)
+            throw new ArgumentNullException(nameof(predicate));
+
+        var e = GetEnumerator();
+        while (e.MoveNext())
+        {
+            if (!predicate(e.Current))
+                return false;
+        }
+        return true;
+    }
+}
 
 public class ConcurrentHashSet<T>
 {

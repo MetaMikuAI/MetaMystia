@@ -503,7 +503,7 @@ namespace MetaMystia
             }
             else
             {
-                MpManager.SendMessage(msg);
+                MessageAction.Send(msg);
                 Log($"Sent {msg}");
             }
         }

@@ -94,7 +94,7 @@ public partial class GuestServeAction : NetAction
                 {
                     Log.LogWarning($"handing GUEST_SERVE: begin evaluate order for {GuestUniqId}");
                     GuestsManager.instance.EvaluateOrder(guest, false);
-                    guest.AddPatient(PatientRecoverSecs);
+                    guest.SetPatient(Math.Min(guest.CurrentPatient + PatientRecoverSecs, guest.MaxPatient));
                 }
                 else
                 {
@@ -105,7 +105,18 @@ public partial class GuestServeAction : NetAction
                 // NightGuestManager.SetGuestStatus(GuestUniqId, NightGuestManager.Status.OrderEvaluated); 
             }
         );
+    }
 
+    public static void Send(string guestUniqId, SellableFood food, int beverageId, ServeType type)
+    {
+        NetPacket packet = new([new GuestServeAction
+        {
+            GuestUniqId = guestUniqId,
+            Food = food,
+            BeverageId = beverageId,
+            FoodType = type
+        }]);
+        SendToPeer(packet);
     }
 }
 

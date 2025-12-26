@@ -86,6 +86,15 @@ public partial class PluginManager : MonoBehaviour
             Log.LogMessage($"Toggled text visibility: " + isTextVisible);
         }
 
+        if (Input.GetKeyDown(KeyCode.F10))
+        {
+            DLCManager.Initialize();
+        }          
+        if (Input.GetKeyDown(KeyCode.F11))
+        {
+            Plugin.Debugger??= new Debugger.WebDebugger();
+            Plugin.Debugger?.Start();
+        }
 
         if (Input.GetKeyDown(KeyCode.KeypadDivide))
         {

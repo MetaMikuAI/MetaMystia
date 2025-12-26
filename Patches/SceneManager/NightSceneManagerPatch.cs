@@ -23,8 +23,7 @@ public partial class NightSceneManagerPatch
             return;
         }
         NightGuestManager.Clear();
-        MystiaManager.Instance.Initialize();
-        KyoukoManager.Initialize();
+        MpManager.Initialize();
 
         CommandScheduler.Enqueue(
             executeWhen: () => Common.SceneDirector.instance.characterCollection.ContainsKey("Self"),

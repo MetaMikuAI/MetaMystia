@@ -41,7 +41,8 @@ public partial class GuestGenSPOrderAction : NetAction
                 {
                     GuestsManagerPatch.GenerateOrderSession_Original(GuestsManager.instance, guest, true);
                     const int PatientSecs = 30;
-                    guest.AddPatient(PatientSecs);
+                    guest.SetPatient(Math.Min(guest.CurrentPatient + PatientSecs, guest.MaxPatient));
+
 
                     NightGuestManager.ResetGuestOrderServed(GuestUniqId);
                     NightGuestManager.SetGuestStatus(GuestUniqId, NightGuestManager.Status.OrderGenerated);
@@ -52,6 +53,18 @@ public partial class GuestGenSPOrderAction : NetAction
                 }
             }
          );
+    }
+
+    public static void Send(string guestUniqId, int requestFoodTag, int requestBevTag, int deskCode, bool notShowInUI, bool isFree, string message)
+    {
+        var order = new GuestOrder(requestFoodTag, requestBevTag, deskCode, notShowInUI, isFree);
+        NetPacket packet = new([new GuestGenSPOrderAction
+        {
+            GuestUniqId = guestUniqId,
+            Order = order,
+            Message = message
+        }]);
+        SendToPeer(packet);
     }
 }
 

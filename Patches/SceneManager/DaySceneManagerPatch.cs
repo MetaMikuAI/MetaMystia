@@ -1,5 +1,6 @@
 using HarmonyLib;
 using Common.UI;
+using SgrYuki.Utils;
 
 namespace MetaMystia;
 
@@ -13,8 +14,7 @@ public partial class DaySceneManagerPatch
     public static void Awake_Postfix()
     {
         PluginManager.CurrentGameScene = Scene.DayScene;
-        MystiaManager.Instance.Initialize();
-        KyoukoManager.Initialize();
+        MpManager.Initialize();
         Log.LogInfo($"CurrentGameStage switched to DayScene");
     }
 
@@ -23,6 +23,10 @@ public partial class DaySceneManagerPatch
     public static void OnDayOver_Original()
     {
         _skipPatchOnDayOver = true;
+        if (MpManager.IsGameRoleClient)
+        {
+            GuestInviteAction.Send(GameData.RunTime.Common.StatusTracker.Instance?.InvitedGuests.ToManagedList());
+        }
         DayScene.SceneManager.Instance.OnDayOver();
         _skipPatchOnDayOver = false;
     }
@@ -75,7 +79,7 @@ public partial class DaySceneManagerPatch
 
 
         MystiaManager.IsReady = true;
-        MpManager.SendReady();
+        ReadyAction.Send();
         if (KyoukoManager.IsReady)
         {
             Dialog.ShowReadyDialog(true, OnDayOver_Original);

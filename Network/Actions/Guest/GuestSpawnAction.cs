@@ -47,5 +47,19 @@ public partial class GuestSpawnAction : NetAction
             });
     }
 
+    public static void Send(int guest, bool isSpecial, string uuid, int? guest1Visualid = null, int? guest2 = null, int? guest2Visualid = null)
+    {
+        NetPacket packet = new([new GuestSpawnAction
+        {
+            GuestId = guest,
+            IsSpecial = isSpecial,
+            UUID = uuid,
+            Guest1Visualid = guest1Visualid,
+            Guest2Visualid = guest2Visualid,
+            GuestId2 = guest2
+        }]);
+        SendToPeer(packet);
+    }
+
 }
 

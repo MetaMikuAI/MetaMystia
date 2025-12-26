@@ -24,7 +24,6 @@ public static partial class KyoukoManager
 
     private static bool FirstSync = true;
 
-
     public static void Initialize()
     {
         MapLabel = "";

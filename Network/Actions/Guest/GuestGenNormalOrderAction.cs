@@ -42,7 +42,8 @@ public partial class GuestGenNormalOrderAction : NetAction
                 {
                     GuestsManagerPatch.GenerateOrderSession_Original(GuestsManager.instance, guest, true);
                     const int PatientSecs = 30;
-                    guest.AddPatient(PatientSecs);
+
+                    guest.SetPatient(Math.Min(guest.CurrentPatient + PatientSecs, guest.MaxPatient));
 
                     NightGuestManager.ResetGuestOrderServed(GuestUniqId);
                     NightGuestManager.SetGuestStatus(GuestUniqId, NightGuestManager.Status.OrderGenerated);
@@ -52,6 +53,18 @@ public partial class GuestGenNormalOrderAction : NetAction
                     Log.LogError($"error in generating normal order for {GuestUniqId}, reason {ex.Message}, {ex.StackTrace}");
                 }
             });
+    }
+
+    public static void Send(string guestUniqId, int requestFoodId, int requestBevId, int deskCode, bool notShowInUI, bool isFree, string message)
+    {
+        var order = new GuestOrder(requestFoodId, requestBevId, deskCode, notShowInUI, isFree);
+        NetPacket packet = new([new GuestGenNormalOrderAction
+        {
+            GuestUniqId = guestUniqId,
+            Order = order,
+            Message = message
+        }]);
+        SendToPeer(packet);
     }
 
 }

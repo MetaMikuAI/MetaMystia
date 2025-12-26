@@ -18,4 +18,13 @@ public partial class StoreFoodAction : NetAction
             WorkSceneStoragePannelPatch.instanceRef?.m_FoodsGroup.UpdateElements();
         });
     }
+
+    public static void Send(SellableFood food)
+    {
+        NetPacket packet = new([new StoreFoodAction
+        {
+            Food = food
+        }]);
+        SendToPeer(packet);
+    }
 }

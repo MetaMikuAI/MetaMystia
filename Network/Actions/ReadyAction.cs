@@ -24,4 +24,13 @@ public partial class ReadyAction : NetAction
         // else: 00->01: Nope
         Log.LogInfo("Kyouko is ready");
     }
+
+    public static void Send()
+    {
+        NetPacket packet = new([new ReadyAction
+        {
+            IsReady = true
+        }]);
+        SendToPeer(packet);
+    }
 }

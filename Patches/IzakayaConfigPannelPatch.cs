@@ -64,7 +64,7 @@ public partial class IzakayaConfigPannelPatch
         if (!PrepSceneManager.localPlayerReady)
         {
             PrepSceneManager.localPlayerReady = true;
-            MpManager.SendPrep(PrepSceneManager.localPrepTable, true);
+            PrepAction.Send(PrepSceneManager.localPrepTable, true);
         }
         Log.LogInfo($"remotePlayerReady: {remotePlayerReady}");
         return remotePlayerReady;

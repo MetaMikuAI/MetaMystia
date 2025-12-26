@@ -9,6 +9,7 @@ using GameData.Core.Collections.CharacterUtility;
 using GameData.Core.Collections.NightSceneUtility;
 using GameData.Profile;
 using LibCpp2IL;
+using NightScene.EventUtility;
 using NightScene.GuestManagementUtility;
 using SgrYuki.Utils;
 using static NightScene.GuestManagementUtility.GuestsManager;   // OrderBase

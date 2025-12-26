@@ -23,4 +23,14 @@ public partial class QTEAction : NetAction
             CookControllerPatch.StartCookCountDown_Original(cookerController, QTEScore, false);
         });
     }
+
+    public static void Send(int gridIndex, float qteScore)
+    {
+        NetPacket packet = new([new QTEAction
+        {
+            GridIndex = gridIndex,
+            QTEScore = qteScore
+        }]);
+        SendToPeer(packet);
+    }
 }

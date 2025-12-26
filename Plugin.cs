@@ -103,6 +103,8 @@ public class Plugin : BasePlugin
         
         ResourceExManager.Initialize();
         ResourceExManager.InjectCharacters();
+
+        DLCManager.Initialize();
     }
 
     class BootstrapPatch

@@ -33,8 +33,11 @@ public partial class MessageAction : NetAction
             return new MessageAction{Message = msg[..maxMessageLen] };
         }
     }
-    public static NetPacket CreateMsgPacket(string msg)
+
+    public static void Send(string message)
     {
-        return new NetPacket([CreateMsgAction(msg)]);
+        FloatingTextHelper.ShowFloatingTextSelfOnMainThread(message);
+        Notify.ShowOnMainThread($"你: {message}");
+        SendToPeer(new NetPacket([CreateMsgAction(message)]));
     }
 }

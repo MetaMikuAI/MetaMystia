@@ -4,7 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>MetaMystia</AssemblyName>
     <Product>MetaMystia</Product>
-    <Version>0.7.2</Version>
+    <Version>0.8.1</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>preview</LangVersion>
     <RestoreAdditionalProjectSources>
@@ -12,8 +12,8 @@
       https://nuget.bepinex.dev/v3/index.json
     </RestoreAdditionalProjectSources>
     <RootNamespace>MetaMystia</RootNamespace>
-    <!-- <GamePath>D:\SteamLibrary\steamapps\common\Touhou Mystia Izakaya</GamePath> -->
-    <GamePath>E:\Desktop\Touhou Mystia Izakaya</GamePath>
+    <GamePath>D:\SteamLibrary\steamapps\common\Touhou Mystia Izakaya</GamePath>
+    <!-- <GamePath>E:\Desktop\Touhou Mystia Izakaya</GamePath> -->
     <OutputPath>$(GamePath)\BepInEx\plugins</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
@@ -163,6 +163,10 @@
     </Reference>
     <Reference Include="Unity.InputSystem.dll">
       <HintPath>$(GamePath)\BepInEx\interop\Unity.InputSystem.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.ResourceManager">
+      <HintPath>$(GamePath)\BepInEx\interop\Unity.ResourceManager.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.InputModule">

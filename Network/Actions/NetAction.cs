@@ -19,6 +19,7 @@ public enum ActionType : ushort
     QTE,
     STOREFOOD,
     EXTRACTFOOD,
+    GUEST_INVITE,
     GUEST_SPAWN,
     GUEST_SEATED,
     GUEST_GEN_NORMAL_ORDER,
@@ -43,6 +44,7 @@ public enum ActionType : ushort
 [MemoryPackUnion((ushort)ActionType.QTE, typeof(QTEAction))]
 [MemoryPackUnion((ushort)ActionType.STOREFOOD, typeof(StoreFoodAction))]
 [MemoryPackUnion((ushort)ActionType.EXTRACTFOOD, typeof(ExtractFoodAction))]
+[MemoryPackUnion((ushort)ActionType.GUEST_INVITE, typeof(GuestInviteAction))]
 [MemoryPackUnion((ushort)ActionType.GUEST_SPAWN, typeof(GuestSpawnAction))]
 [MemoryPackUnion((ushort)ActionType.GUEST_SEATED, typeof(GuestSeatedAction))]
 [MemoryPackUnion((ushort)ActionType.GUEST_GEN_NORMAL_ORDER, typeof(GuestGenNormalOrderAction))]
@@ -109,6 +111,8 @@ public abstract partial class NetAction
     {
         LogActionSend(BepInEx.Logging.LogLevel.Info, onlyAction, prefix);
     }
+
+    protected static void SendToPeer(NetPacket packet) => MpManager.SendToPeer(packet);
 
     public static void RegisterAllFormatter()
     {

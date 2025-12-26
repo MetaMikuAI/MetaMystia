@@ -58,11 +58,11 @@ public partial class GuestGroupControllerPatch
             {
                 case GuestsManager.OrderBase.OrderType.Normal:
                     Log.LogInfo($"orderData NormalOrder");
-                    MpManager.SendGuestGenNormalOrder(NightGuestManager.GetGuestUUID(__instance), generatedOrder.foodRequest, generatedOrder.beverageRequest, generatedOrder.DeskCode, generatedOrder.NotShowInUI, generatedOrder.FreeOrder, orderGenerationMessage);
+                    GuestGenNormalOrderAction.Send(NightGuestManager.GetGuestUUID(__instance), generatedOrder.foodRequest, generatedOrder.beverageRequest, generatedOrder.DeskCode, generatedOrder.NotShowInUI, generatedOrder.FreeOrder, orderGenerationMessage);
                     break;
                 case GuestsManager.OrderBase.OrderType.Special:
                     Log.LogInfo($"orderData SpecialOrder");
-                    MpManager.SendGuestGenSPOrder(NightGuestManager.GetGuestUUID(__instance), generatedOrder.foodRequest, generatedOrder.beverageRequest, generatedOrder.DeskCode, generatedOrder.NotShowInUI, generatedOrder.FreeOrder, orderGenerationMessage);
+                    GuestGenSPOrderAction.Send(NightGuestManager.GetGuestUUID(__instance), generatedOrder.foodRequest, generatedOrder.beverageRequest, generatedOrder.DeskCode, generatedOrder.NotShowInUI, generatedOrder.FreeOrder, orderGenerationMessage);
                     break;
                 default:
                     Log.LogError($"orderData wrong type!");
