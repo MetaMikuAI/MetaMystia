@@ -12,5 +12,6 @@ public partial class RunTimeSchedulerPatch
     {
         MystiaManager.MapLabel = mapLabel;
         MpManager.SendSync();
+        KyoukoManager.TryAddHeightProcessor();
     }
 }

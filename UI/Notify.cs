@@ -24,12 +24,4 @@ public static partial class Notify
     {
         PluginManager.Instance.RunOnMainThread(() => Show(text));
     }
-
-    public static void ShowOnMainThread(string text)
-    {
-        PluginManager.Instance.RunOnMainThread(() => 
-        {
-            Show(text);
-        });
-    }
 }

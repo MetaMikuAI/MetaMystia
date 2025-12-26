@@ -2,6 +2,7 @@ using BepInEx.Logging;
 using UnityEngine;
 using Common.CharacterUtility;
 using DayScene.Interactables.Collections.ConditionComponents;
+using AsmResolver.DotNet;
 
 namespace MetaMystia;
 
@@ -60,7 +61,7 @@ public static partial class KyoukoManager
         // 实际速度由对端 Kyouko 同步而来
         // 修正速度要保证在「一定时间内」完成位置修正
         // 这里使用较为取巧的方法，使用比较好实现的指数衰减模型（线性还要保存历史数据）
-        currectVelocity = positionOffset / 0.5f / 5f;
+        currectVelocity = positionOffset / 0.5f / 5f * 2f;
         positionOffset -= currectVelocity * Time.fixedDeltaTime * 5f * characterUnit.sprintMultiplier;
 
         // 这样假设位置偏差为 3px, dt = 0.02s
@@ -73,6 +74,8 @@ public static partial class KyoukoManager
 
         // 由于数据可能有误差，实际计算结果会有不同，但是都是指数衰减的趋势，实测观感还好
         // https://www.bilibili.com/video/av115571395922890?p=3
+
+        // 20251226 根据实际情况增加了参数以加快收敛速度
 
         // 每 Fixed Frame 都要根据 actualVelocity + currectVelocity 设置实际速度
         var velocity = actualVelocity + currectVelocity;
@@ -236,7 +239,7 @@ public static partial class KyoukoManager
             GameData.RunTime.DaySceneUtility.RunTimeDayScene.MoveCharacter(KYOUKO_ID, mapLabel, position, 0, out var oldNPCData);
             PluginManager.Instance.RunOnMainThread(() =>
             {
-                AddHeightProcessor();
+                TryAddHeightProcessor();
                 IgnoreCollisionWithSelf();
             });
             FirstSync = false;
@@ -255,6 +258,7 @@ public static partial class KyoukoManager
             Log.LogMessage($"Kyouko map changed from {MapLabel} to {mapLabel}, teleporting to new position");
             MapLabel = mapLabel;
             GameData.RunTime.DaySceneUtility.RunTimeDayScene.MoveCharacter(KYOUKO_ID, mapLabel, position, 0, out var oldNPCData);
+            TryAddHeightProcessor();
             UpdateInputDirection(inputDirection);
             UpdateSprintState(isSprinting);
             MpManager.SendSync();
@@ -288,7 +292,7 @@ public static partial class KyoukoManager
         Log.LogWarning($"Spawned NightKyouko for testing");
         if (enableHeightProcessor)
         {
-            AddHeightProcessor();
+            TryAddHeightProcessor();
         }
         if (ignoreCollisionWithSelf)
         {
@@ -296,7 +300,7 @@ public static partial class KyoukoManager
         }
     }
 
-    public static void AddHeightProcessor()
+    public static void TryAddHeightProcessor()
     {
         var characterUnit = GetCharacterUnit();
         if (characterUnit == null)
@@ -304,12 +308,35 @@ public static partial class KyoukoManager
             Log.LogWarning($"Failed to get CharacterControllerUnit for Kyouko");
             return;
         }
-        var heightProcessor = characterUnit.AddInputProcessor<Common.CharacterUtility.HeightBlendedInputProcessorComponent>();
+
+        HeightBlendedInputProcessorComponent heightProcessor;
+        if (characterUnit.GetComponent<HeightBlendedInputProcessorComponent>() != null)
+        {
+            TryInitHeightMap();
+            Log.LogWarning($"Kyouko already has HeightBlendedInputProcessorComponent");
+            return;
+        }
+
+        heightProcessor = characterUnit.AddInputProcessor<HeightBlendedInputProcessorComponent>();
         
         // var selfUnit = Common.SceneDirector.Instance.characterCollection["Self"];
         // var selfHeightProcessor = selfUnit.gameObject.GetComponent<Common.CharacterUtility.HeightBlendedInputProcessorComponent>();
         // heightProcessor.Initialize(selfHeightProcessor.heightMap);
         
+        TryInitHeightMap();
+
+        Log.LogInfo($"Added HeightBlendedInputProcessorComponent to NightKyouko");
+    }
+
+    private static void TryInitHeightMap()
+    {
+        var heightProcessor = GetCharacterUnit()?.GetComponent<HeightBlendedInputProcessorComponent>();
+        if (heightProcessor == null)
+        {
+            Log.LogWarning($"HeightBlendedInputProcessorComponent of '{KYOUKO_ID}' is null");
+            return;
+        }
+
         switch (MpManager.LocalScene)
         {
             case Common.UI.Scene.DayScene:
@@ -319,11 +346,9 @@ public static partial class KyoukoManager
                 heightProcessor.Initialize(NightScene.MapManager.Instance.height);
                 break;
             default:
-                Log.LogWarning($"AddHeightProcessor called in invalid scene");
+                Log.LogInfo($"TryInitHeightMap called in invalid scene");
                 break;
         }
-
-        Log.LogWarning($"Added HeightBlendedInputProcessorComponent to NightKyouko");
     }
 
     public static void IgnoreCollisionWithSelf()
@@ -338,6 +363,6 @@ public static partial class KyoukoManager
             characterUnit.cl2d,
             Common.SceneDirector.Instance.characterCollection["Self"].cl2d,
             true);
-        Log.LogWarning($"Ignoring collision between NightKyouko and Self");
+        Log.LogInfo($"Ignoring collision between NightKyouko and Self");
     }
 }
