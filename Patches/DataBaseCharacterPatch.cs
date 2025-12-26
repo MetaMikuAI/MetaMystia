@@ -1,6 +1,9 @@
 using HarmonyLib;
 using GameData.Core.Collections.CharacterUtility;
 using GameData.Profile;
+using DEYU.Utils;
+using UnityEngine;
+
 namespace MetaMystia;
 
 
@@ -23,4 +26,22 @@ public partial class DataBaseCharacterPatch
         
         return true;
     }
+
+    [HarmonyPatch(nameof(DataBaseCharacter.RefNormalGuestVisual))]
+    [HarmonyPrefix]
+    public static bool RefNormalGuestVisual_Prefix(ref GuestProfilePair  __result, ref int id)
+    {
+        if(MpManager.IsConnectedClient && NightGuestManager.normalGuestProfilePairIndexQueue.TryDequeue(out int index))
+        {
+            var compacts = DataBaseCharacter.NormalGuestVisual.Get(id);
+            var compact = compacts[index];
+            Log.LogMessage($"RefNormalGuestVisual_Prefix called, get index {index} => {compact.ToString()}");
+            var guestProfilePair = new GuestProfilePair(id, DataBaseCharacter.UnifiedNormalGuestBGColor, DataBaseCharacter.UnifiedNormalGuestTextColor, null, ScriptableObject.CreateInstance<CharacterSkinSets>());
+            guestProfilePair.CharacterPixel.Initialize(compact, null, null);
+            __result = guestProfilePair;
+            return true;
+        }
+        return true;
+    }
+
 }

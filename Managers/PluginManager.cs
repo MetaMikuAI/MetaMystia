@@ -89,8 +89,7 @@ public partial class PluginManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.KeypadDivide))
         {
-            // _ = MpManager.ConnectToPeerAsync("456580DC-029A-4f0e-bc3d-f288c06f2016", 40815); // 这是 sandbox，测试用
-            _ = MpManager.ConnectToPeerAsync("192.168.1.39", 40815); // 这是 sandbox，测试用
+            _ = MpManager.ConnectToPeerAsync("192.168.1.39", 40815); // 这是 SgrYuki 的主机，测试用
         }
         if (Input.GetKeyDown(KeyCode.KeypadMultiply))
         {

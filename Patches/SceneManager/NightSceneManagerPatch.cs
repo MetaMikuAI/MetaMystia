@@ -1,6 +1,7 @@
 using HarmonyLib;
 using Common.UI;
 using NightScene;
+using SgrYuki.Utils;
 
 namespace MetaMystia;
 
@@ -24,11 +25,16 @@ public partial class NightSceneManagerPatch
         NightGuestManager.Clear();
         MystiaManager.Instance.Initialize();
         KyoukoManager.Initialize();
-        PluginManager.Instance.RunOnMainThread(() =>
-        {
-            var position = MystiaManager.Instance.GetPosition();
-            KyoukoManager.SpawnNightKyouko(position, true, true);
-            NightScene.EventUtility.EventManager.Instance.totalCountDown = NightScene.SceneManager.NIGHT_WHOLE_TIME * 2;
-        }, () => Common.SceneDirector.instance.characterCollection.ContainsKey("Self"));
+
+        CommandScheduler.Enqueue(
+            canExecute: () => Common.SceneDirector.instance.characterCollection.ContainsKey("Self"),
+            execute: () =>
+            {
+                var position = MystiaManager.Instance.GetPosition();
+                KyoukoManager.SpawnNightKyouko(position, true, true);
+                NightScene.EventUtility.EventManager.Instance.totalCountDown = NightScene.SceneManager.NIGHT_WHOLE_TIME * 2;
+            },
+            timeoutSeconds: 120
+        );
     }
 }

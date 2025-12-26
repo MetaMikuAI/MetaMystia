@@ -17,8 +17,6 @@ public partial class IzakayaSelectorPanelPatch
     public static void OnGuideMapInitialize_Prefix(Common.UI.IzakayaSelectorPanel_New __instance)
     {   
         instanceRef = __instance;
-        KyoukoManager.IzakayaMapLabel = "";
-        KyoukoManager.IzakayaLevel = 0;
         Log.LogInfo($"OnGuideMapInitialize called");
     }
 

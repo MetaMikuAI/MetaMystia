@@ -6,6 +6,6 @@
 /Assembly-CSharp/Assembly-CSharp.csproj
 /DebugImpl/
 /MystiaReverse/
-DebugUtil.cs
+/ForDebug/
 /LogGenerator/bin/
 /LogGenerator/obj/

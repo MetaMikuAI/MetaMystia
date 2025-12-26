@@ -374,16 +374,15 @@ public static partial class MpManager
         SendToPeer(packet);
     }
 
-    public static void SendGuestSpawn(int guest, bool isSpecial, string uuid, 
-        UnityEngine.Color? bgColor = null, UnityEngine.Color? textColor = null, int? guest2 = null)
+    public static void SendGuestSpawn(int guest, bool isSpecial, string uuid, int? guest1Visualid = null, int? guest2 = null, int? guest2Visualid = null)
     {
         NetPacket packet = new NetPacket([new GuestSpawnAction
         {
             GuestId = guest,
             IsSpecial = isSpecial,
             UUID = uuid,
-            BGColor = bgColor,
-            TextColor = textColor,
+            Guest1Visualid = guest1Visualid,
+            Guest2Visualid = guest2Visualid,
             GuestId2 = guest2
         }]);
         SendToPeer(packet);

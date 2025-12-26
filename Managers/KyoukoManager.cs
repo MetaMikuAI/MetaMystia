@@ -32,6 +32,8 @@ public static partial class KyoukoManager
         currectVelocity = Vector2.zero;
         IsReady = false;
         FirstSync = true;
+        IzakayaMapLabel = "";
+        IzakayaLevel = 0;
         Log.LogMessage($"KyoukoManager initialized");
     }
 

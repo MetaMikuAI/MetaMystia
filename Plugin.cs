@@ -66,7 +66,6 @@ public class Plugin : BasePlugin
                 typeof(GuestsManagerPatch),
                 typeof(GuestGroupControllerPatch),
                 typeof(WorkSceneServePannelPatch),
-                typeof(NormalGuestPatch),
                 typeof(GameTimeManagerPatch),
                 typeof(RunTimeAlbumPatch),
                 typeof(ResultSceneManagerPatch)

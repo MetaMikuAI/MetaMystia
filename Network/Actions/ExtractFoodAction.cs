@@ -12,7 +12,7 @@ public partial class ExtractFoodAction : NetAction
         LogActionReceived(true);
         PluginManager.Instance.RunOnMainThread(() =>
         {
-            GameData.RunTime.NightSceneUtility.IzakayaConfigure.Instance.RemoveStoredFood(Food.GetFromLocal());
+            GameData.RunTime.NightSceneUtility.IzakayaConfigure.Instance?.RemoveStoredFood(Food.GetFromLocal());
             WorkSceneStoragePannelPatch.instanceRef?.UpdateFoodField();
             WorkSceneStoragePannelPatch.instanceRef?.m_FoodsGroup.UpdateElements();
         });

@@ -10,13 +10,9 @@ public partial class GuestSpawnAction : NetAction
     public override ActionType Type => ActionType.GUEST_SPAWN;
 
     public int GuestId { get; set; }
+    public int? Guest1Visualid { get; set; }
     public int? GuestId2 { get; set; }
-
-    [System.Text.Json.Serialization.JsonIgnore]
-    public UnityEngine.Color? BGColor { get; set; }
-
-    [System.Text.Json.Serialization.JsonIgnore]
-    public UnityEngine.Color? TextColor { get; set; }
+    public int? Guest2Visualid { get; set; }
 
     public bool IsSpecial { get; set; }
 
@@ -46,7 +42,7 @@ public partial class GuestSpawnAction : NetAction
                 }
                 else
                 {
-                    _ = NightGuestManager.SpawnNormalGuestGroup(GuestId, UUID, BGColor.Value, TextColor.Value, GuestId2);
+                    _ = NightGuestManager.SpawnNormalGuestGroup(GuestId, UUID, Guest1Visualid, GuestId2, Guest2Visualid);
                 }
             });
     }

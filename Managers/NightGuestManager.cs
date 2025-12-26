@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.Serialization;
 using BepInEx.Logging;
+using DEYU.Utils;
+using GameData.Core.Collections.CharacterUtility;
 using GameData.Core.Collections.NightSceneUtility;
 using GameData.Profile;
 using LibCpp2IL;
@@ -63,7 +66,7 @@ public static partial class NightGuestManager
     public static ConcurrentQueue<(OrderBase, string)> orders = new();
 
     private static ConcurrentHashSet<int> specialGuestsAppeared = new();
-    public static ConcurrentDictionary<IntPtr, GuestProfilePair> normalGuestProfile = new(); 
+    public static ConcurrentQueue<int> normalGuestProfilePairIndexQueue = new(); 
 
     private static ConcurrentDictionary<string, (bool, bool)> guestOrderFullfilled = new(); 
 
@@ -74,12 +77,12 @@ public static partial class NightGuestManager
     {
         guests.Clear();
         guestStatus.Clear();
-        guestIds.Clear();
-        orders.Clear();
         guestDesks.Clear();
         guestDeskSeats.Clear();
+        guestIds.Clear();
+        orders.Clear();
         specialGuestsAppeared.Clear();
-        normalGuestProfile.Clear();
+        normalGuestProfilePairIndexQueue.Clear();
         guestOrderFullfilled.Clear();
     }
 
@@ -88,7 +91,7 @@ public static partial class NightGuestManager
         string uuid = Guid.NewGuid().ToString();
         guests[uuid] = guest;
         guestIds[guest.Pointer] = uuid;
-        Log.Message($"stored pointer {guest.Pointer} => {uuid}");
+        Log.Message($"stored guest pointer {guest.Pointer} => {uuid}");
         return uuid;
 
     }
@@ -97,7 +100,7 @@ public static partial class NightGuestManager
     {
         guests[uuid] = guest;
         guestIds[guest.Pointer] = uuid;
-        Log.Message($"stored pointer {guest.Pointer} => {uuid}");
+        Log.Message($"stored guest pointer {guest.Pointer} => {uuid}");
     }
 
     public static string GetGuestUUID(GuestGroupController guest)
@@ -209,22 +212,17 @@ public static partial class NightGuestManager
 
 
 
-    public static NormalGuestsController SpawnNormalGuestGroup(int id, string UUID, UnityEngine.Color bgColor, UnityEngine.Color textColor, int? id2 = null)
+    public static NormalGuestsController SpawnNormalGuestGroup(int id, string UUID, int? idVisual, int? id2 = null, int? id2Visual = null)
     {
         var guests = new Il2CppSystem.Collections.Generic.List<NormalGuest>();
         var guest1 = GameData.Core.Collections.CharacterUtility.DataBaseCharacter.RefNGuest(id);
-
-        GuestProfilePair p = GameData.Core.Collections.CharacterUtility.DataBaseCharacter.RefNormalGuestVisual(guest1.id);
-        p.bgColor = bgColor;
-        p.textColor = textColor;
-        normalGuestProfile[guest1.Pointer] = p;
-
-        Log.Message($"{UUID} stored color {p.bgColor}, {p.textColor}");
-
+        normalGuestProfilePairIndexQueue.Enqueue(idVisual.Value);
         guests.Add(guest1);
+
         if (id2 != null)
         {
             var guest2 = GameData.Core.Collections.CharacterUtility.DataBaseCharacter.RefNGuest(id2.Value);
+            normalGuestProfilePairIndexQueue.Enqueue(id2Visual.Value);
             guests.Add(guest2);
         }
 
@@ -271,7 +269,7 @@ public static partial class NightGuestManager
             
             var colliderCollections = __instance.tileManager.GetCollider(seatDir[deskSeat], new Il2CppSystem.Collections.Generic.IReadOnlyList<UnityEngine.Vector3Int>(__instance.tileManager.PasserBorder.Pointer));
 
-            item.SetPath(
+            item?.SetPath(
                 seatDir[deskSeat], 
                 colliderCollections,
                 i * 0.2f,

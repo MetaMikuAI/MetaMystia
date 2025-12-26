@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -22,6 +20,93 @@ public static class Extensions
         this Il2CppSystem.Collections.Generic.IEnumerable<T> enumerable) where T : Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
     {
         return enumerable.TryCast<Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<T>>();
+    }
+
+    public static Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<T> SortByToString<T>(
+            this Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<T> source)
+            where T : Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
+    {
+        if (source == null)
+            throw new ArgumentNullException(nameof(source));
+
+        int length = source.Length;
+        if (length <= 1)
+            return source; // 0/1 个元素无需排序
+
+        // 拷贝到托管数组
+        T[] managed = new T[length];
+        for (int i = 0; i < length; i++)
+        {
+            managed[i] = source[i];
+        }
+
+        // 排序（注意 null 处理）
+        Array.Sort(managed, (a, b) =>
+        {
+            if (ReferenceEquals(a, b)) return 0;
+            if (a is null) return -1;
+            if (b is null) return 1;
+
+            string sa = a.ToString();
+            string sb = b.ToString();
+
+            return string.Compare(
+                sa, sb,
+                StringComparison.Ordinal
+            );
+        });
+
+        // 构造新的 Il2CppReferenceArray
+        var result = new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<T>(length);
+        for (int i = 0; i < length; i++)
+        {
+            result[i] = managed[i];
+        }
+
+        return result;
+    }
+    
+    public static string DumpElements<T>(
+        this Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<T> array,
+        string separator = ", ")
+        where T : Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
+    {
+        if (array == null)
+            return "<Il2CppReferenceArray: null>";
+
+        int length = array.Length;
+        if (length == 0)
+            return "<Il2CppReferenceArray: empty>";
+
+        var sb = new System.Text.StringBuilder(256);
+
+        sb.Append($"Il2CppReferenceArray<{typeof(T).Name}>[{length}] {{ ");
+
+        for (int i = 0; i < length; i++)
+        {
+            if (i > 0)
+                sb.Append(separator);
+
+            T element = array[i];
+
+            if (element == null)
+            {
+                sb.Append("null");
+                continue;
+            }
+
+            try
+            {
+                sb.Append((element as UnityEngine.Object).ToString());
+            }
+            catch (Exception ex)
+            {
+                sb.Append($"<ToString threw {ex.GetType().Name}>");
+            }
+        }
+
+        sb.Append(" }");
+        return sb.ToString();
     }
 
     public static System.Collections.Generic.List<KeyT> FilterKey<KeyT, ValueT>(
@@ -170,9 +255,9 @@ public static class CommandScheduler
         public float ExpireTime; // unscaled time
     }
 
-    private static readonly ConcurrentQueue<Command> _pending = new ConcurrentQueue<Command>();
+    private static readonly System.Collections.Concurrent.ConcurrentQueue<Command> _pending = new();
 
-    private static readonly Queue<Command> _queue = new Queue<Command>();
+    private static readonly System.Collections.Generic.Queue<Command> _queue = new ();
 
     // ================================
     // Public API 

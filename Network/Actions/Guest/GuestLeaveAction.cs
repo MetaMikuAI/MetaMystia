@@ -5,6 +5,7 @@ using SgrYuki.Utils;
 namespace MetaMystia;
 
 [MemoryPackable]
+[AutoLog]
 public partial class GuestLeaveAction : NetAction
 {
     public override ActionType Type => ActionType.GUEST_LEAVE;
@@ -49,6 +50,10 @@ public partial class GuestLeaveAction : NetAction
                     return;
                 }
                 NightGuestManager.SetGuestStatus(GuestUniqId, NightGuestManager.Status.Left);
+                if (GuestsManager.instance == null)
+                {
+                    Log.LogError($"GuestsManager.instance is null! Action : {ToString()}");
+                }
                 switch (LType)
                 {
                     case LeaveType.PayAndLeave:
