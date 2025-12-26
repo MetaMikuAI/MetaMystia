@@ -95,7 +95,11 @@ public static partial class KyoukoManager
             case Common.UI.Scene.WorkScene:
                 if (!Common.SceneDirector.Instance.characterCollection.ContainsKey(KYOUKO_ID))
                 {
-                    Log.LogWarning($"Character '{KYOUKO_ID}' not found in character collection");
+                    Log.LogWarning($"Character '{KYOUKO_ID}' not found in character collection, try respawn..");
+                    SgrYuki.Utils.CommandScheduler.Enqueue(
+                        canExecute: () => Common.SceneDirector.instance.characterCollection.ContainsKey("Self"),
+                        execute: () => SpawnNightKyouko(MystiaManager.Instance.GetPosition(), true, true)
+                    );
                     return null;
                 }
                 return Common.SceneDirector.Instance.characterCollection[KYOUKO_ID];
