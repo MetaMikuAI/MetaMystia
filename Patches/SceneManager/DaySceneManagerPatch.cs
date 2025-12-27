@@ -1,5 +1,5 @@
-using HarmonyLib;
 using Common.UI;
+using HarmonyLib;
 using SgrYuki.Utils;
 
 namespace MetaMystia;
@@ -26,6 +26,12 @@ public partial class DaySceneManagerPatch
         if (MpManager.IsGameRoleClient)
         {
             GuestInviteAction.Send(GameData.RunTime.Common.StatusTracker.Instance?.InvitedGuests.ToManagedList());
+        }
+        if (DEYU.AdpUISystem.Managers.AdpUIPanelManager.s_ActivePanelTransform.Count > 2)
+        {
+            var top = DEYU.AdpUISystem.Managers.AdpUIPanelManager.s_ActivePanelTransform.Peek();
+            Log.LogWarning($"popped {top.Item1.name}, enabled {top.Item1.isActiveAndEnabled}");
+            GeneralSustainedPannel.CurrentActiveSustainedPannel.CloseActivePannel();
         }
         DayScene.SceneManager.Instance.OnDayOver();
         _skipPatchOnDayOver = false;
