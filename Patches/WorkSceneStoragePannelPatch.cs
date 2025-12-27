@@ -16,7 +16,7 @@ public partial class WorkSceneStoragePannelPatch
     [HarmonyPostfix]
     public static void OnPanelOpen_Postfix(WorkSceneStoragePannel __instance)
     {
-        Plugin.Instance.Log.LogDebug("OnPanelOpen_Postfix called");
+        Log.LogDebug("OnPanelOpen_Postfix called");
         instanceRef = __instance;
     }
 
@@ -24,7 +24,7 @@ public partial class WorkSceneStoragePannelPatch
     [HarmonyPrefix]
     public static void OnPanelClose_Prefix()
     {
-        Plugin.Instance.Log.LogDebug("OnPanelClose_Prefix called");
+        Log.LogDebug("OnPanelClose_Prefix called");
         instanceRef = null;
     }
 
@@ -33,7 +33,7 @@ public partial class WorkSceneStoragePannelPatch
     [HarmonyPrefix]
     public static void OnExtract_Prefix(Sellable toExtract)
     {
-        Plugin.Instance.Log.LogDebug("OnExtract_Prefix called");
+        Log.LogDebug("OnExtract_Prefix called");
         SellableFood food = SellableFood.FromSellable(toExtract);
         ExtractFoodAction.Send(food);
     }

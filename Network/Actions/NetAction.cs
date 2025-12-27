@@ -17,7 +17,8 @@ public enum ActionType : ushort
     COOK,
     EXTRACT,
     QTE,
-    STOREFOOD,
+    STOREFOOD, // 这是往保温箱中存储，仅可以存储 food
+    STORESELLABLE, // 这是往空位存储，可以存储 sellable（food / beverage）
     EXTRACTFOOD,
     GUEST_INVITE,
     GUEST_SPAWN,
@@ -43,6 +44,7 @@ public enum ActionType : ushort
 [MemoryPackUnion((ushort)ActionType.EXTRACT, typeof(ExtractAction))]
 [MemoryPackUnion((ushort)ActionType.QTE, typeof(QTEAction))]
 [MemoryPackUnion((ushort)ActionType.STOREFOOD, typeof(StoreFoodAction))]
+[MemoryPackUnion((ushort)ActionType.STORESELLABLE, typeof(StoreSellableAction))]
 [MemoryPackUnion((ushort)ActionType.EXTRACTFOOD, typeof(ExtractFoodAction))]
 [MemoryPackUnion((ushort)ActionType.GUEST_INVITE, typeof(GuestInviteAction))]
 [MemoryPackUnion((ushort)ActionType.GUEST_SPAWN, typeof(GuestSpawnAction))]

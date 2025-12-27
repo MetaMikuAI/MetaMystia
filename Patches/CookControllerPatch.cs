@@ -43,6 +43,21 @@ public partial class CookControllerPatch
         ExtractAction.Send(gridIndex);
     }
 
+    [HarmonyPatch(nameof(CookController.Store))]
+    [HarmonyReversePatch]
+    public static void Store_Original(CookController __instance, Sellable value)
+    {
+        throw new NotImplementedException("It's a stub");
+    }
+
+    [HarmonyPatch(nameof(CookController.Store))]
+    [HarmonyPrefix]
+    public static void Store_Prefix(CookController __instance, Sellable value)
+    {
+        var gridIndex = __instance.GridIndex;
+        StoreSellableAction.Send(gridIndex, value);
+    }
+
 
     [HarmonyPatch(nameof(CookController.StartCookCountDown))]
     [HarmonyReversePatch]

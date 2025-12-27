@@ -47,8 +47,8 @@ DayScene 篇
 - [x] 禁用 OnDayOver 时 Mystia 的个人 Dialog
 - [x] 解决 Kyouko 无法上下坡的问题
 - [x] 禁用等待 Kyouko 状态下交互
-- [ ] 禁用 Kyouko 交互
-- [ ] 切换到兽道时，Kyouko 会被游戏原逻辑重置，需要 hook 掉
+- [ ] ~~禁用 Kyouko 交互~~
+- [x] 切换到兽道时，Kyouko 会被游戏原逻辑重置，~~需要 hook 掉~~(通过修改 NPC 数据中的 overrideposition 实现) 
 - [ ] 解决剧情冲突问题
 - [ ] 禁用等待 Kyouko 状态下切换地图
 
@@ -78,26 +78,30 @@ NightScene 篇
 - [ ] ~~同步符卡奖励/惩罚~~ (符卡奖励/惩罚来源于订单评估，由于两端上的菜一致，结果将大致相同)
 - [x] 同步做菜取菜
 - [x] 同步保温箱
+- [ ] 同步保温箱(白天)
 - [x] 同步运动状态
 - [x] 移除原有伙伴
 - [ ] 同步 buff
+- [x] 同步 Sellable 暂存
 - [ ] ~~同步时钟~~ (已延长夜晚时间240s -> 480s，同时取消时停)
 
 其他
 - [x] 自定义二人对话
 - [x] 自定义角色立绘扩展
+- [ ] 自定义角色小人
 
 已知 bug 或缺陷
 - [x] InGameConsole 与原有面板 UI 冲突
-- [ ] 对话 UI 与面板 UI 冲突
+- [x] 对话 UI 与面板 UI 冲突
 - [x] InGameConsole 与场景切换冲突
 - [x] DayScene Kyouko 移动缺少 *高度* 变化
 - [ ] A 在 loading 时 B 选择厨具会使 A 进入 Prep 后显示错误的厨具列表
-- [ ] 地图选择界面中不会缺少店铺等级的提示
+- [x] 地图选择界面中不会缺少店铺等级的提示
+- [ ] 不同 DLC 适配
 
 NightScene 篇已知 bug 或缺陷
 - [x] 两人同时给同一桌顾客上菜，可能会有问题
-- [ ] 还请多多测试，bug提交请附带上 (Touhou Mystia Izakaya\BepInEx\LogOutput.log)
+- [ ] 还请多多测试，bug 提交请附带上 (Touhou Mystia Izakaya\BepInEx\LogOutput.log)
 
 
 ## ResouceEx 
