@@ -1,13 +1,11 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
-using System.Collections.Generic;
-using UnityEngine;
 using BepInEx;
-using BepInEx.Logging;
 using Common.DialogUtility;
 using GameData.CoreLanguage.Collections;
-
 using MetaMiku;
+using UnityEngine;
 
 namespace MetaMystia;
 public class CharacterConfig

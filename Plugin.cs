@@ -1,11 +1,11 @@
-﻿using BepInEx;
+﻿using System;
+using BepInEx;
 using BepInEx.Unity.IL2CPP;
-using UnityEngine.UI;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
-using UnityEngine.SceneManagement;
-using System;
 using MetaMystia.Debugger;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace MetaMystia;
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]

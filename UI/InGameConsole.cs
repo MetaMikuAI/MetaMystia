@@ -1,10 +1,9 @@
-using UnityEngine;
-using UnityEngine.EventSystems;
 using System.Collections.Generic;
-using Common.CharacterUtility;
+using System.Threading.Tasks;
 using Common.UI;
 using Il2CppInterop.Runtime;
-using System.Threading.Tasks;
+using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace MetaMystia
 {

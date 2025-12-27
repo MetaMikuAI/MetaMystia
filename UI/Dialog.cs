@@ -1,7 +1,6 @@
-using BepInEx.Logging;
+using Common.DialogUtility;
 using Common.UI;
 using GameData.Profile;
-using Common.DialogUtility;
 
 namespace MetaMystia;
 

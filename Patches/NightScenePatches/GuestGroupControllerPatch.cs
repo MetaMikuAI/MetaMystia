@@ -2,10 +2,6 @@ using HarmonyLib;
 using NightScene.GuestManagementUtility;
 
 namespace MetaMystia;
-using NightScene.Tiles;
-using SgrYuki.Utils;
-using System.Linq;
-
 [HarmonyPatch]
 [AutoLog]
 public partial class GuestGroupControllerPatch

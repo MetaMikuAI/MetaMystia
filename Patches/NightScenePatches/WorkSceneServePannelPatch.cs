@@ -1,10 +1,7 @@
 using HarmonyLib;
+using NightScene.UI.GuestManagementUtility;
 
 namespace MetaMystia;
-using NightScene.UI;
-using NightScene.UI.GuestManagementUtility;
-using SgrYuki.Utils;
-
 [HarmonyPatch(typeof(NightScene.UI.GuestManagementUtility.WorkSceneServePannel))]
 [AutoLog]
 public partial class WorkSceneServePannelPatch
@@ -72,7 +69,6 @@ public partial class WorkSceneServePannelPatch
                 {
                     director.OnInteractableExit();
                 }
-                
                 return false;
             }
 

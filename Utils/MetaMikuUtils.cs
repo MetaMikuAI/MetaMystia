@@ -1,8 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
-using Il2CppInterop.Runtime;
-using Il2CppInterop.Runtime.Runtime;
 using BepInEx.Logging;
+using Il2CppInterop.Runtime;
 
 namespace MetaMiku
 {

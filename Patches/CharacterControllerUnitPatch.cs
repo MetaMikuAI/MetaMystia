@@ -1,7 +1,7 @@
-using HarmonyLib;
-using Common.CharacterUtility;
 using System.Collections.Generic;
 using System.Linq;
+using Common.CharacterUtility;
+using HarmonyLib;
 
 namespace MetaMystia;
 

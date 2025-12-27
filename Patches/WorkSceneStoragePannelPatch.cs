@@ -1,6 +1,6 @@
+using GameData.Core.Collections;
 using HarmonyLib;
 using NightScene.UI.CookingUtility;
-using GameData.Core.Collections;
 
 namespace MetaMystia;
 

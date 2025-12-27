@@ -1,5 +1,5 @@
-using MemoryPack;
 using GameData.Core.Collections;
+using MemoryPack;
 
 namespace MetaMystia;
 

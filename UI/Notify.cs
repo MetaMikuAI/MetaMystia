@@ -1,4 +1,3 @@
-using BepInEx.Logging;
 using Common.UI;
 
 namespace MetaMystia;
