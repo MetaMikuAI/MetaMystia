@@ -15,7 +15,7 @@ public partial class RunTimeAlbumPatch
 
         if (!ResourceExManager.ExistsCharacterConfig(id))
         {
-            Log.LogWarning($"RefSpecialPixel_Prefix: No custom CharacterConfig for id {id}, falling back to original.");
+            Log.LogInfo($"RefSpecialPixel_Prefix: No custom CharacterConfig for id {id}, falling back to original.");
             return true;
         }
 
@@ -35,7 +35,7 @@ public partial class RunTimeAlbumPatch
             return false;
         }
         
-        Log.LogWarning($"RefSpecialPixel_Prefix: Custom CharacterSpriteSetCompact for id {id} not found, falling back to original.");
+        Log.LogInfo($"RefSpecialPixel_Prefix: Custom CharacterSpriteSetCompact for id {id} not found, falling back to original.");
         return true;
     }
 }

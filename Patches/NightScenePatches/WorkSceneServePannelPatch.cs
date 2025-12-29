@@ -12,7 +12,7 @@ public partial class WorkSceneServePannelPatch
     [HarmonyPostfix]
     public static void OnPanelInitialize_Postfix(WorkSceneServePannel __instance)
     {
-        Plugin.Instance.Log.LogInfo("OnPanelInitialize_Postfix called");
+        Log.Debug("OnPanelInitialize_Postfix called");
         instanceRef = __instance;
     }
 
@@ -20,7 +20,7 @@ public partial class WorkSceneServePannelPatch
     [HarmonyPostfix]
     public static void OnPanelDestroyed_Postfix()
     {
-        Plugin.Instance.Log.LogInfo("OnPanelDestroyed_Postfix called");
+        Log.Debug("OnPanelDestroyed_Postfix called");
         instanceRef = null;
     }
 
@@ -34,7 +34,7 @@ public partial class WorkSceneServePannelPatch
         }
         Log.LogInfo($"OnPanelClose_Prefix called");
 
-        if(MpManager.IsConnected)
+        if(MpManager.IsConnected && !MpManager.InStory)
         {
             var order = __instance.operatingOrder;
             var guest = __instance.currentGuestController; 

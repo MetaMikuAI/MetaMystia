@@ -10,8 +10,7 @@ namespace MetaMystia;
 
 
 [HarmonyPatch(typeof(GameData.Profile.CharacterPortrayal))]
-[AutoLog]
-public class CharacterPortrayalPatch
+public partial class CharacterPortrayalPatch
 {
     // public static bool _skipPatch = true;
     // // [HarmonyPatch(nameof(CharacterPortrayal.LoadVisualHandle))]

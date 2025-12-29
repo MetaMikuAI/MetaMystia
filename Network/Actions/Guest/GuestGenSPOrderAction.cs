@@ -30,6 +30,7 @@ public partial class GuestGenSPOrderAction : NetAction
 
         CommandScheduler.Enqueue(
             executeWhen: () => NightGuestManager.CheckStatusInOrThrow(GuestUniqId, [NightGuestManager.Status.PendingOrder, NightGuestManager.Status.OrderEvaluated]),
+            executeInfo: $"Gen SP order: guid {GuestUniqId}, order {Order}",
             execute: () =>
             {
                 var guest = NightGuestManager.GetGuest(GuestUniqId);

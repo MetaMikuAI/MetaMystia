@@ -25,6 +25,25 @@ public static partial class KyoukoManager
 
     private static bool FirstSync = true;
 
+    public static bool GetIgnoreCollision()
+    {
+        var character = GetCharacterUnit();
+        if (character == null)
+        {
+            return true;
+        }
+        var self = Common.SceneDirector.Instance?.characterCollection["Self"];
+        if (self == null)
+        {
+            return true;
+        }
+        if (character.cl2d == null || self.cl2d == null)
+        {
+            return true;
+        }
+        return Physics2D.GetIgnoreCollision(character.cl2d, self.cl2d);
+    }
+
     public static void Initialize()
     {
         MapLabel = "";
@@ -89,7 +108,7 @@ public static partial class KyoukoManager
         {  
             var trackedNPC = RunTimeDayScene.GetTrackedNPC(KYOUKO_ID);
             var position = characterUnit.rb2d.position;
-            trackedNPC.overridePosition.position = new KeyValuePair<float, float>( 
+            trackedNPC?.overridePosition?.position = new KeyValuePair<float, float>( 
                 position.x,
                 position.y
             ); // TODO: 也许有更优雅的方式？
@@ -107,7 +126,8 @@ public static partial class KyoukoManager
                 {
                     Log.LogWarning($"Character '{KYOUKO_ID}' not found in character collection, try respawn..");
                     SgrYuki.Utils.CommandScheduler.Enqueue(
-                        executeWhen: () => Common.SceneDirector.instance.characterCollection.ContainsKey("Self"),
+                        executeWhen: () => MystiaManager.CharacterSpawnedAndInitialized,
+                        executeInfo: $"respawn night kyouko",
                         execute: () => SpawnNightKyouko(MystiaManager.Instance.GetPosition(), true, true)
                     );
                     return null;
@@ -291,9 +311,9 @@ public static partial class KyoukoManager
 
     public static void SpawnNightKyouko(Vector2 position, bool enableHeightProcessor = true, bool ignoreCollisionWithSelf = true)
     {
-        if (Common.SceneDirector.Instance.characterCollection.ContainsKey(KYOUKO_ID))
+        if (Common.SceneDirector.Instance.characterCollection.ContainsKey(KYOUKO_ID) || MpManager.InStory)
         {
-            Log.LogWarning($"NightKyouko already exists, skip spawning");
+            Log.LogWarning($"NightKyouko already exists or in story, skip spawning");
             return;
         }
         Common.SceneDirector.Instance.SpawnCharacter(Common.SceneDirector.Identity.Special, 14, position, KYOUKO_ID);
@@ -302,10 +322,7 @@ public static partial class KyoukoManager
         {
             TryAddHeightProcessor();
         }
-        if (ignoreCollisionWithSelf)
-        {
-            IgnoreCollisionWithSelf();
-        }
+        IgnoreCollisionWithSelf(ignoreCollisionWithSelf);
     }
 
     public static void TryAddHeightProcessor()
@@ -359,7 +376,7 @@ public static partial class KyoukoManager
         }
     }
 
-    public static void IgnoreCollisionWithSelf()
+    public static void IgnoreCollisionWithSelf(bool ignore = true)
     {
         var characterUnit = GetCharacterUnit();
         if (characterUnit == null)
@@ -370,7 +387,7 @@ public static partial class KyoukoManager
         Physics2D.IgnoreCollision(
             characterUnit.cl2d,
             Common.SceneDirector.Instance.characterCollection["Self"].cl2d,
-            true);
-        Log.LogInfo($"Ignoring collision between NightKyouko and Self");
+            ignore);
+        Log.LogInfo($"IgnoreCollisionWithSelf set to {ignore}");
     }
 }

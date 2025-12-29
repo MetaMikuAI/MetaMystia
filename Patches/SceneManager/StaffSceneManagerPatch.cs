@@ -15,5 +15,6 @@ public partial class StaffSceneManagerPatch
     {
         PluginManager.CurrentGameScene = Scene.StaffScene;
         Log.LogInfo($"CurrentGameStage switched to StaffScene");
+        SceneTransitAction.Send(MpManager.LocalScene);
     }
 }

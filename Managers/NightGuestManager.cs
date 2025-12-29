@@ -134,7 +134,8 @@ public static partial class NightGuestManager
         guestStatus[uuid] = value;
     }
 
-    private static int GetGuestDeskcode(string uuid) {
+    // Returns the real desk + 1
+    public static int GetGuestDeskcode(string uuid) {
         return guestDesks.GetOrDefault(uuid, -1);
     }
 

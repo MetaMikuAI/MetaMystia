@@ -32,7 +32,20 @@ public partial class GuestSeatedAction : NetAction
 
 
         CommandScheduler.Enqueue(
-            executeWhen: () => NightGuestManager.CheckStatusOrThrow(GuestUniqId, NightGuestManager.Status.Generated) && GuestsManager.instance.GetInDeskGuest(DeskId) == null,
+            executeWhen: () =>
+            {
+                if (NightGuestManager.CheckStatusOrThrow(GuestUniqId, NightGuestManager.Status.Generated))
+                {
+                    if(GuestsManager.instance.GetInDeskGuest(DeskId) == null)
+                    {
+                        return true;
+                    }
+                    var guestTargetDesk = NightGuestManager.GetGuestUUID(GuestsManager.instance.GetInDeskGuest(DeskId));
+                    return NightGuestManager.GetGuestDeskcodeSeat(guestTargetDesk) != DeskId + 1;
+                }
+                return false;
+            },
+            executeInfo: $"Seated: guid {GuestUniqId}, DeskId {DeskId}, SeatId {SeatId}",
             execute: () =>
             {
                 var guest = NightGuestManager.GetGuest(GuestUniqId);

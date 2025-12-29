@@ -16,6 +16,7 @@ public partial class MainSceneManagerPatch
     {
         PluginManager.CurrentGameScene = Scene.MainScene;
         Log.LogInfo($"CurrentGameStage switched to MainScene");
+        SceneTransitAction.Send(MpManager.LocalScene);
         Plugin.OnEnterMainScene();
     }
 }

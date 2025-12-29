@@ -8,7 +8,7 @@ namespace MetaMystia;
 [AutoLog]
 public partial class StoreSellableAction : NetAction
 {
-    public override ActionType Type => ActionType.STORESELLABLE;
+    public override ActionType Type => ActionType.STORE_SELLABLE;
 
     public enum StoreType
     {

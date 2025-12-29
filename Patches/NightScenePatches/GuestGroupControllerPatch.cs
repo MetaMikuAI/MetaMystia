@@ -19,7 +19,7 @@ public partial class GuestGroupControllerPatch
     public static bool GenerateOrderPrefix(GuestGroupController __instance, bool isFreeOrder, ref string orderGenerationMessage, ref GuestsManager.OrderBase generatedOrder, ref bool __result)
     {
         // Log.LogInfo($"GenerateOrderPrefix called");
-        if (MpManager.IsConnectedClient && MpManager.LocalScene == Common.UI.Scene.WorkScene)
+        if (MpManager.IsConnectedClient && MpManager.LocalScene == Common.UI.Scene.WorkScene && !MpManager.InStory)
         {
             if (NightGuestManager.orders.TryDequeue(out var item))
             {
@@ -42,12 +42,11 @@ public partial class GuestGroupControllerPatch
     [HarmonyPostfix]
     public static void GenerateOrderPostfix(GuestGroupController __instance, bool isFreeOrder, ref string orderGenerationMessage, ref GuestsManager.OrderBase generatedOrder)
     {
-        // Log.LogInfo($"GenerateOrderPostfix called, isFreeOrder {isFreeOrder}, orderGenerationMessage {orderGenerationMessage}\n");
         if (__instance == null)
         {
             return;
         }
-        if (MpManager.IsConnectedHost && MpManager.LocalScene == Common.UI.Scene.WorkScene && generatedOrder != null)
+        if (MpManager.IsConnectedHost && MpManager.LocalScene == Common.UI.Scene.WorkScene && generatedOrder != null && !MpManager.InStory)
         {
             NightGuestManager.SetGuestStatus(NightGuestManager.GetGuestUUID(__instance), NightGuestManager.Status.OrderGenerated);
             switch (generatedOrder.Type)
@@ -71,9 +70,14 @@ public partial class GuestGroupControllerPatch
     [HarmonyPrefix]
     public static bool MoveToDesk_Prefix(GuestGroupController __instance, int deskCode, Il2CppSystem.Action onMovementFinishCallback)
     {
-        if (MpManager.IsConnected && MpManager.LocalScene == Common.UI.Scene.WorkScene)
+        if (MpManager.IsConnected && MpManager.LocalScene == Common.UI.Scene.WorkScene && !MpManager.InStory)
         {
             var uuid = NightGuestManager.GetGuestUUID(__instance);
+            if (uuid == null)
+            {
+                Log.Error($"not found uuid, will use original logic");
+                return true;
+            }
             var seat = NightGuestManager.GetGuestDeskcodeSeat(uuid);
             NightGuestManager.MoveToDesk(__instance, deskCode, onMovementFinishCallback, seat);
             return false;

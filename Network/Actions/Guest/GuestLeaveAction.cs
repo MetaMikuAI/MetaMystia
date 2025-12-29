@@ -42,6 +42,7 @@ public partial class GuestLeaveAction : NetAction
 
         CommandScheduler.Enqueue(
             executeWhen: () => NightGuestManager.CheckStatusGreaterOrThrow(GuestUniqId, NightGuestManager.Status.Generated),
+            executeInfo: $"Leave: guid {GuestUniqId}, type {LType}",
             execute: () =>
             {
                 var guest = NightGuestManager.GetGuest(GuestUniqId);
@@ -53,6 +54,12 @@ public partial class GuestLeaveAction : NetAction
                 if (GuestsManager.instance == null)
                 {
                     Log.LogError($"GuestsManager.instance is null! Action : {ToString()}");
+                    return;
+                }
+                if (guest == null)
+                {
+                    Log.LogError($"guest is null! Action : {ToString()}");
+                    return;
                 }
                 switch (LType)
                 {

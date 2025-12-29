@@ -17,6 +17,7 @@ public partial class NightSceneManagerPatch
     {
         PluginManager.CurrentGameScene = Scene.WorkScene;
         Log.LogInfo($"CurrentGameStage switched to WorkScene");
+        SceneTransitAction.Send(MpManager.LocalScene);
 
         if (!MpManager.IsConnected)
         {
@@ -26,7 +27,8 @@ public partial class NightSceneManagerPatch
         MpManager.Initialize();
 
         CommandScheduler.Enqueue(
-            executeWhen: () => Common.SceneDirector.instance.characterCollection.ContainsKey("Self"),
+            executeWhen: () => MystiaManager.CharacterSpawnedAndInitialized,
+            executeInfo: $"spawn night kyouko and add night time",
             execute: () =>
             {
                 var position = MystiaManager.Instance.GetPosition();

@@ -15,6 +15,7 @@ public partial class DaySceneManagerPatch
     {
         PluginManager.CurrentGameScene = Scene.DayScene;
         MpManager.Initialize();
+        SceneTransitAction.Send(MpManager.LocalScene);
         Log.LogInfo($"CurrentGameStage switched to DayScene");
     }
 
@@ -30,8 +31,11 @@ public partial class DaySceneManagerPatch
         if (DEYU.AdpUISystem.Managers.AdpUIPanelManager.s_ActivePanelTransform.Count > 2)
         {
             var top = DEYU.AdpUISystem.Managers.AdpUIPanelManager.s_ActivePanelTransform.Peek();
-            Log.LogWarning($"popped {top.Item1.name}, enabled {top.Item1.isActiveAndEnabled}");
-            GeneralSustainedPannel.CurrentActiveSustainedPannel.CloseActivePannel();
+            if (top.Item1.name.Contains("NoteBook_MainPannel"))
+            {
+                Log.LogWarning($"popped {top.Item1.name}, enabled {top.Item1.isActiveAndEnabled}");
+                GeneralSustainedPannel.CurrentActiveSustainedPannel.CloseActivePannel();
+            }
         }
         DayScene.SceneManager.Instance.OnDayOver();
         _skipPatchOnDayOver = false;

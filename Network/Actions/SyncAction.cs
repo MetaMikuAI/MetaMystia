@@ -24,7 +24,7 @@ public partial class SyncAction : NetAction
         LogActionReceived(BepInEx.Logging.LogLevel.Debug);
         if (MpManager.LocalScene != Common.UI.Scene.DayScene || MpManager.InStory)
         {
-            Log.LogDebug("skipping on received");
+            Log.Info("skipping on received");
             return;
         }
         PluginManager.Instance.RunOnMainThread(() =>
@@ -35,9 +35,13 @@ public partial class SyncAction : NetAction
     // Also send nightsync
     public static void Send()
     {
-        if (!MpManager.IsConnected || MpManager.InStory || !MpManager.InputAvailable)
+        if (!MpManager.IsConnected)
         {
-            Log.LogWarning("skipping send");
+            return;
+        }
+        if (MpManager.InStory)
+        {
+            Log.Info("skipping send");
             return;
         }
 

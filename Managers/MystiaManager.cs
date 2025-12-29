@@ -16,6 +16,8 @@ public partial class MystiaManager
 
     public static bool IsReady = false;
 
+    public static bool CharacterSpawnedAndInitialized => Common.SceneDirector.instance.characterCollection.ContainsKey("Self");
+
     public static MystiaManager Instance
     {
         get
@@ -82,7 +84,7 @@ public partial class MystiaManager
                 var characterUnit = inputGenerator.Character;
                 return characterUnit;        
             case Common.UI.Scene.WorkScene:
-                if (!Common.SceneDirector.Instance.characterCollection.ContainsKey("Self"))
+                if (!MystiaManager.CharacterSpawnedAndInitialized)
                 {
                     Log.LogWarning($"Character 'Self' not found in character collection");
                     return null;

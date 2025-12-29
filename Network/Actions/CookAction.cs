@@ -14,6 +14,10 @@ public partial class CookAction : NetAction
     public override void OnReceived()
     {
         Log.LogInfo($"Received COOK: CookerIndex={GridIndex}, FoodId={Food.FoodId}, Modifiers=[{string.Join(",", Food.ModifierIds)}]");
+        if (MpManager.InStory)
+        {
+            Log.LogInfo("current in story, will skip receive");
+        }
         PluginManager.Instance.RunOnMainThread(() =>
         {
             var recipe = RecipeId.RefRecipe();
@@ -38,6 +42,10 @@ public partial class CookAction : NetAction
 
     public static void Send(int gridIndex, SellableFood food, int recipeId)
     {
+        if (MpManager.InStory)
+        {
+            Log.LogInfo("current in story, will skip send");
+        }
         NetPacket packet = new([new CookAction
         {
             GridIndex = gridIndex,

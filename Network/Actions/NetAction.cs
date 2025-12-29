@@ -7,6 +7,7 @@ public enum ActionType : ushort
     PING,
     PONG,
     HELLO,
+    SCENE_TRANSIT,
     SYNC,
     READY,
     MESSAGE,
@@ -17,9 +18,9 @@ public enum ActionType : ushort
     COOK,
     EXTRACT,
     QTE,
-    STOREFOOD, // 这是往保温箱中存储，仅可以存储 food
-    STORESELLABLE, // 这是往空位存储，可以存储 sellable（food / beverage）
-    EXTRACTFOOD,
+    STORE_FOOD, // 这是往保温箱中存储，仅可以存储 food
+    STORE_SELLABLE, // 这是往空位存储，可以存储 sellable（food / beverage）
+    EXTRACT_FOOD,
     GUEST_INVITE,
     GUEST_SPAWN,
     GUEST_SEATED,
@@ -27,12 +28,14 @@ public enum ActionType : ushort
     GUEST_GEN_SPECIAL_ORDER,
     GUEST_SERVE,
     GUEST_LEAVE,
+    IZAKAYA_CLOSE
 }
 
 [MemoryPackable]
 [MemoryPackUnion((ushort)ActionType.PING, typeof(PingAction))]
 [MemoryPackUnion((ushort)ActionType.PONG, typeof(PongAction))]
 [MemoryPackUnion((ushort)ActionType.HELLO, typeof(HelloAction))]
+[MemoryPackUnion((ushort)ActionType.SCENE_TRANSIT, typeof(SceneTransitAction))]
 [MemoryPackUnion((ushort)ActionType.SYNC, typeof(SyncAction))]
 [MemoryPackUnion((ushort)ActionType.READY, typeof(ReadyAction))]
 [MemoryPackUnion((ushort)ActionType.MESSAGE, typeof(MessageAction))]
@@ -43,9 +46,9 @@ public enum ActionType : ushort
 [MemoryPackUnion((ushort)ActionType.COOK, typeof(CookAction))]
 [MemoryPackUnion((ushort)ActionType.EXTRACT, typeof(ExtractAction))]
 [MemoryPackUnion((ushort)ActionType.QTE, typeof(QTEAction))]
-[MemoryPackUnion((ushort)ActionType.STOREFOOD, typeof(StoreFoodAction))]
-[MemoryPackUnion((ushort)ActionType.STORESELLABLE, typeof(StoreSellableAction))]
-[MemoryPackUnion((ushort)ActionType.EXTRACTFOOD, typeof(ExtractFoodAction))]
+[MemoryPackUnion((ushort)ActionType.STORE_FOOD, typeof(StoreFoodAction))]
+[MemoryPackUnion((ushort)ActionType.STORE_SELLABLE, typeof(StoreSellableAction))]
+[MemoryPackUnion((ushort)ActionType.EXTRACT_FOOD, typeof(ExtractFoodAction))]
 [MemoryPackUnion((ushort)ActionType.GUEST_INVITE, typeof(GuestInviteAction))]
 [MemoryPackUnion((ushort)ActionType.GUEST_SPAWN, typeof(GuestSpawnAction))]
 [MemoryPackUnion((ushort)ActionType.GUEST_SEATED, typeof(GuestSeatedAction))]
@@ -53,6 +56,7 @@ public enum ActionType : ushort
 [MemoryPackUnion((ushort)ActionType.GUEST_GEN_SPECIAL_ORDER, typeof(GuestGenSPOrderAction))]
 [MemoryPackUnion((ushort)ActionType.GUEST_SERVE, typeof(GuestServeAction))]
 [MemoryPackUnion((ushort)ActionType.GUEST_LEAVE, typeof(GuestLeaveAction))]
+[MemoryPackUnion((ushort)ActionType.IZAKAYA_CLOSE, typeof(IzakayaCloseAction))]
 [AutoLog]
 
 public abstract partial class NetAction

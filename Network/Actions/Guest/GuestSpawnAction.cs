@@ -33,6 +33,7 @@ public partial class GuestSpawnAction : NetAction
 
         CommandScheduler.Enqueue(
             executeWhen: () => true,
+            executeInfo: $"Spawned: guid {UUID}, special {IsSpecial}",
             execute: () =>
             {
                 NightGuestManager.SetGuestStatus(UUID, NightGuestManager.Status.PendingGenerate);

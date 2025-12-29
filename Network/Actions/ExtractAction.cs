@@ -11,6 +11,10 @@ public partial class ExtractAction : NetAction
     public override void OnReceived()
     {
         LogActionReceived();
+        if (MpManager.InStory)
+        {
+            Log.LogInfo("current in story, will skip receive");
+        }
         if (MpManager.LocalScene == Common.UI.Scene.ResultScene)
         {
             return;
@@ -29,6 +33,10 @@ public partial class ExtractAction : NetAction
 
     public static void Send(int gridIndex)
     {
+        if (MpManager.InStory)
+        {
+            Log.LogInfo("current in story, will skip send");
+        }
         NetPacket packet = new([new ExtractAction
         {
             GridIndex = gridIndex

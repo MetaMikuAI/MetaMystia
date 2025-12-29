@@ -15,5 +15,6 @@ public partial class ResultSceneManagerPatch
     {
         PluginManager.CurrentGameScene = Scene.ResultScene;
         Log.LogInfo($"CurrentGameStage switched to ResultScene");
+        SceneTransitAction.Send(MpManager.LocalScene);
     }
 }

@@ -11,32 +11,6 @@ namespace MetaMystia;
 [AutoLog]
 public partial class DataBaseCharacterPatch
 {
-    [HarmonyPatch(nameof(DataBaseCharacter.RefNormalGuestVisual))]
-    [HarmonyPrefix]
-    public static bool RefNormalGuestVisual_Prefix(ref int id, ref GuestProfilePair __result)
-    {
-        if (!MpManager.IsConnected)
-        {
-            return true;
-        }
-
-        // var selectedPixel = DataBaseCharacter.NormalGuestVisual.Get(id, new[] {DataBaseCharacter.FallbackCompactPixel}).RandomSelectOne();
-
-        var CharacterSpriteSetCompacts = DataBaseCharacter.NormalGuestVisual.Get(id, new[] {DataBaseCharacter.FallbackCompactPixel});
-
-        var random = new System.Random();
-        var k = random.Next(0, CharacterSpriteSetCompacts.Length);
-        var selectedPixel = CharacterSpriteSetCompacts[k];
-        // MpManager.SendXXX(k);
-
-        var guestProfilePair = new GuestProfilePair(id, DataBaseCharacter.UnifiedNormalGuestBGColor, DataBaseCharacter.UnifiedNormalGuestTextColor, null, ScriptableObject.CreateInstance<CharacterSkinSets>());
-        guestProfilePair.characterPixel.Initialize(selectedPixel, null, null);
-        __result = guestProfilePair;
-
-        return false;
-    }
-
-
     [HarmonyPatch(nameof(DataBaseCharacter.GetNPCLabel))]
     [HarmonyPrefix]
     public static bool GetNPCLabel_Prefix(ref string __result, SchedulerNode.Character identity)
@@ -59,13 +33,13 @@ public partial class DataBaseCharacterPatch
     {
         if(MpManager.IsConnectedClient && NightGuestManager.normalGuestProfilePairIndexQueue.TryDequeue(out int index))
         {
-            var compacts = DataBaseCharacter.NormalGuestVisual.Get(id);
+            var compacts = DataBaseCharacter.NormalGuestVisual.Get(id, new[] {DataBaseCharacter.FallbackCompactPixel});
             var compact = compacts[index];
             Log.LogMessage($"RefNormalGuestVisual_Prefix called, get index {index} => {compact.ToString()}");
             var guestProfilePair = new GuestProfilePair(id, DataBaseCharacter.UnifiedNormalGuestBGColor, DataBaseCharacter.UnifiedNormalGuestTextColor, null, ScriptableObject.CreateInstance<CharacterSkinSets>());
             guestProfilePair.CharacterPixel.Initialize(compact, null, null);
             __result = guestProfilePair;
-            return true;
+            return false;
         }
         return true;
     }

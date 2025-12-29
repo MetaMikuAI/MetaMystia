@@ -3,6 +3,7 @@ using MemoryPack;
 namespace MetaMystia;
 
 [MemoryPackable]
+[AutoLog]
 public partial class NightSyncAction : NetAction
 {
     public override ActionType Type => ActionType.NIGHTSYNC;
@@ -18,8 +19,9 @@ public partial class NightSyncAction : NetAction
     public override void OnReceived()
     {
         LogActionReceived(BepInEx.Logging.LogLevel.Debug);
-        if (MpManager.LocalScene != Common.UI.Scene.WorkScene)
+        if (MpManager.LocalScene != Common.UI.Scene.WorkScene || MpManager.InStory)
         {
+            Log.Info("skipping on received");
             return;
         }
         PluginManager.Instance.RunOnMainThread(() =>

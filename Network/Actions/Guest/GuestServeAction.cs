@@ -42,6 +42,7 @@ public partial class GuestServeAction : NetAction
 
         CommandScheduler.Enqueue(
             executeWhen: () => NightGuestManager.CheckStatusOrThrow(GuestUniqId, NightGuestManager.Status.OrderGenerated),
+            executeInfo: $"Serve: guid {GuestUniqId}, type {FoodType}, foodid {Food?.FoodId}, beverage {BeverageId}",
             execute: () =>
             {
                 var guest = NightGuestManager.GetGuest(GuestUniqId);

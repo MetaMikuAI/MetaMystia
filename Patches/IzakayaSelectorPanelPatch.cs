@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using GameData.RunTime.Common;
 using HarmonyLib;
 
 namespace MetaMystia;
@@ -62,6 +63,13 @@ public partial class IzakayaSelectorPanelPatch
             Log.LogWarning($"skipPatchIzakayaSelectionConfirmation is true, skipping patch");
             return true;
         }
+        if (MpManager.PeerScene == Common.UI.Scene.IzakayaPrepScene || MpManager.PeerScene == Common.UI.Scene.WorkScene)
+        {
+            Log.Error($"peer already in prep scene, will disconnect");
+            Notify.ShowOnMainThread($"对方已经处于营业或营业准备场景，无法同步营业场馆信息。请在白天重新联机。");
+            MpManager.DisconnectPeer();
+            return true;
+        }
 
         // 参考 Common.UI.IzakayaLevel
         // public enum IzakayaLevel
@@ -102,7 +110,6 @@ public partial class IzakayaSelectorPanelPatch
             instanceRef._OnGuideMapInitialize_b__21_0();
             _skipPatchIzakayaSelectionConfirmation = false;
         };
-
         Dialog.ShowConfirmDialog(izakayaMapLabel, closePanelCallback);
         return false;
     }
