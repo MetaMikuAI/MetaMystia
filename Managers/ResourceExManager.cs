@@ -8,10 +8,18 @@ using GameData.Core.Collections.NightSceneUtility;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using GameData.Core.Collections.CharacterUtility;
 using UnityEngine;
+using HarmonyLib;
+using System.Linq;
+using GameData.Core.Collections.DaySceneUtility.Collections;
 
 using MetaMiku;
 
 namespace MetaMystia;
+
+
+// TODO: 切分文件
+// Optimize & TODO: use Linq
+// IMPORTANT & TODO: 将各个主动注入改为各个 DataBaseXXX Initialize 的 Postfix 注册
 
 
 public class CharacterConfig
@@ -37,6 +45,15 @@ public class GuestConfig
     public List<int> hateFoodTag { get; set; }
     public List<WeightedTagConfig> likeFoodTag { get; set; }
     public List<WeightedTagConfig> likeBevTag { get; set; }
+    public List<SpawnConfig> spawn { get; set; }
+}
+
+public class SpawnConfig
+{
+    public int izakayaId { get; set; }
+    public float relativeProb { get; set; }
+    public bool onlySpawnAfterUnlocking { get; set; }
+    public bool onlySpawnWhenPlaceBeRecorded { get; set; }
 }
 
 public class FoodRequestConfig
@@ -306,6 +323,7 @@ public static partial class ResourceExManager
         }
     }
 
+    public static SpecialGuest specialGuest;
     public static void TryInjectSpecialGuest(CharacterConfig config)
     {
         if (config.guest == null) return;
@@ -339,7 +357,8 @@ public static partial class ResourceExManager
         // Template from ID 0 or first available
         var template = specialGuests[0];
 
-        var specialGuest = new SpecialGuest(
+        // var specialGuest = new SpecialGuest(
+        specialGuest = new SpecialGuest(
             config.id,
             config.label,
             new Vector2Int(config.guest.fundRangeLower, config.guest.fundRangeUpper),
@@ -361,19 +380,18 @@ public static partial class ResourceExManager
         specialGuests[config.id] = specialGuest;
         Log.LogInfo($"Injected Special Guest: {config.name} ({config.id})");
 
+        DataBaseDayPatch.NPCsToRegister.TryAdd(config.label, new NPC(specialGuest));
+        Log.LogInfo($"Prepared Delay Load NPC for Special Guest: {config.name} ({config.id})");
+
         // Food Requests
         if (config.guest.foodRequests != null)
         {
-            var foodRequests = new Il2CppSystem.Collections.Generic.Dictionary<int, string>();
+            var foodRequests = new Dictionary<int, string>();
             foreach (var req in config.guest.foodRequests)
             {
                 foodRequests.Add(req.tagId, req.request);
             }
-
-            if (DataBaseLanguage.SpecialGuestFoodRequest != null)
-            {
-                DataBaseLanguage.SpecialGuestFoodRequest[config.id] = foodRequests;
-            }
+            DataBaseLanguagePatch.FoodRequestsToRegister[config.id] = foodRequests;
         }
     }
 
@@ -416,6 +434,68 @@ public static partial class ResourceExManager
 
         NightSceneLanguage.SpecialConversation[config.id] = arr;
         Log.LogInfo($"Injected Special Guest Conversation: {config.name} ({config.id})");
+    }
+
+    public static void TryInjectAllSpawnConfigs()
+    {
+        Log.LogInfo($"Injecting Spawn Configs from ResourceEx...");
+        foreach (var charConfig in GetAllCharacters())
+        {
+            if (charConfig.guest != null)
+            {
+                TryInjectSpawnConfigs(charConfig);
+            }
+        }
+    }
+
+    public static void TryInjectSpawnConfigs(CharacterConfig config)
+    {
+        if (config.guest == null || config.guest.spawn == null) return;
+
+        foreach (var spawn in config.guest.spawn)
+        {
+            try
+            {
+                if (!GameData.Core.Collections.DataBaseCore.Izakayas.ContainsKey(spawn.izakayaId))
+                {
+                    Log.LogError($"Izakaya with ID {spawn.izakayaId} not found for character {config.id}");
+                    continue;
+                }
+                var izakaya = GameData.Core.Collections.DataBaseCore.Izakayas[spawn.izakayaId];
+                if (izakaya == null)
+                {
+                    Log.LogError($"Izakaya with ID {spawn.izakayaId} is null for character {config.id}");
+                    continue;
+                }
+
+                bool exists = izakaya.SpecialGuestPool != null && izakaya.SpecialGuestPool.Any(group => group.GroupId == config.id);
+
+                if (exists)
+                {
+                    Log.LogInfo($"Spawn config for {config.name} in Izakaya {spawn.izakayaId} already exists. Skipping.");
+                    continue;
+                }
+
+                var newGroup = new GameData.Core.Collections.Izakaya.SpecialGuestGroup(
+                    config.id,
+                    spawn.relativeProb,
+                    spawn.onlySpawnAfterUnlocking,
+                    spawn.onlySpawnWhenPlaceBeRecorded
+                );
+
+                var oldPool = izakaya.SpecialGuestPool;
+                var newPool = new GameData.Core.Collections.Izakaya.SpecialGuestGroup[oldPool.Length + 1];
+                oldPool.CopyTo(newPool, 0);
+                newPool[oldPool.Length] = newGroup;
+                izakaya.SpecialGuestPool = newPool;
+
+                Log.LogInfo($"Injected Spawn Config for {config.name} in Izakaya {spawn.izakayaId}");
+            }
+            catch (System.Exception e)
+            {
+                Log.LogError($"Failed to inject spawn config for {config.name}: {e.Message}");
+            }
+        }
     }
 
     private static Dictionary<int, CharacterSpriteSetCompact> _spriteSetCompacts = new Dictionary<int, CharacterSpriteSetCompact>();

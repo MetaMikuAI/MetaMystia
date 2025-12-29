@@ -19,7 +19,6 @@ public partial class DialogPannelPatch
     //     Log.LogWarning($" with meta.SpeakerID: {meta.ToString()}, line: {line}, speakerName: {speakerName}");
     // }
 
-    // prefix
     [HarmonyPatch(nameof(DialogPannel.GetSpeakerVisual))]
     [HarmonyPrefix]
     public static bool GetSpeakerVisual_Prefix(IAssetHandleArray<UnityEngine.Sprite> playerPortrayalCollection, IReadOnlyDictionary<int, IAssetHandleArray<UnityEngine.Sprite>> specialNPCPortrayalCollectionDictionary, IReadOnlyDictionary<DialogMeta, IAssetHandle<UnityEngine.Sprite>> overrideDialogMetaToSprites, DialogMeta meta, ref UnityEngine.Sprite visual)

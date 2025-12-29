@@ -3,6 +3,7 @@ using GameData.Core.Collections.CharacterUtility;
 using GameData.Profile;
 using UnityEngine;
 using HarmonyLib;
+using Mono.Cecil;
 
 namespace MetaMystia;
 
@@ -11,6 +12,15 @@ namespace MetaMystia;
 [AutoLog]
 public partial class DataBaseCharacterPatch
 {
+    [HarmonyPatch(nameof(DataBaseCharacter.Initialize))]
+    [HarmonyPostfix]
+    public static void Initialize_Postfix()
+    {
+        Log.LogInfo("DataBaseCharacter.Initialize Postfix called.");
+        ResourceExManager.TryInjectAllSpecialGuests();
+        ResourceExManager.TryInjectAllSpawnConfigs();
+    }
+
     [HarmonyPatch(nameof(DataBaseCharacter.GetNPCLabel))]
     [HarmonyPrefix]
     public static bool GetNPCLabel_Prefix(ref string __result, SchedulerNode.Character identity)
@@ -44,4 +54,18 @@ public partial class DataBaseCharacterPatch
         return true;
     }
 
+    [HarmonyPatch(nameof(DataBaseCharacter.RefSpecialGuestVisual))]
+    [HarmonyPostfix]
+    public static void RefSpecialGuestVisual_Prefix(ref GuestProfilePair __result, ref int id)
+    {
+        Log.Debug($"RefSpecialGuestVisual_Prefix called.");
+        Log.Debug($"{__result.bgColor}, {__result.textColor}");
+        if (__result.bgColor == new Color(1f, 0f, 1f, 1f) && __result.textColor == new Color(0f, 1f, 1f, 1f))
+        {
+            // RGBA(1.000, 0.710, 0.655, 1.000), RGBA(0.321, 0.041, 0.041, 1.000)
+            Log.Debug("Detected placeholder colors, replacing with unified special guest colors.");
+            __result.bgColor = DataBaseCharacter.UnifiedNormalGuestBGColor;
+            __result.textColor = DataBaseCharacter.UnifiedNormalGuestTextColor;
+        }
+    }
 }

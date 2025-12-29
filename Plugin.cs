@@ -1,6 +1,7 @@
 ﻿using System;
 using BepInEx;
 using BepInEx.Unity.IL2CPP;
+using GameData.Core.Collections.CharacterUtility;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using MetaMystia.Debugger;
@@ -44,7 +45,12 @@ public class Plugin : BasePlugin
         typeof(RunTimeAlbumPatch),
         typeof(ResultSceneManagerPatch),
         typeof(CharacterPortrayalPatch),
-        typeof(SpecialGuestDescriberPatch)
+        typeof(SpecialGuestDescriberPatch),
+        typeof(SpecialGuestDescriberPatch),
+        typeof(DataBaseDayPatch),
+        typeof(DataBaseCorePatch),
+        typeof(DataBaseLanguagePatch),
+        typeof(NightSceneLanguagePatch),
     ];
 
     public static bool AllPatched => PatchedException == null;
@@ -84,6 +90,8 @@ public class Plugin : BasePlugin
             // ShigureYuki.DebugClassPatcher.PatchAllInnerClass(ref harmony, typeof(ShigureYuki.DebugConsolePatch));
             NetAction.RegisterAllFormatter();
 
+            ResourceExManager.Initialize();
+
         }
         catch (Exception ex) {
             Log.LogFatal($"FAILED to Apply Hooks! {ex.Message}");
@@ -109,9 +117,18 @@ public class Plugin : BasePlugin
         
         DLCManager.Initialize();
         
-        ResourceExManager.Initialize();
         ResourceExManager.TryInjectSpecialPortraits();
         ResourceExManager.PreloadAllImages();
+    }
+    public static void OnEnterDayScene()
+    {
+        // ResourceExManager.TryInjectAllSpecialGuests();
+    }
+
+    public static void OnEnterPrepNightScene()
+    {
+        // ResourceExManager.TryInjectAllSpecialGuests();
+        ResourceExManager.TryInjectAllSpecialGuestEvaluations();
     }
 
     public static void OnEnterWorkScene()
