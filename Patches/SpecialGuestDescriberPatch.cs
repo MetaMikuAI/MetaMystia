@@ -1,24 +1,44 @@
 using HarmonyLib;
 using Common.UI;
 using GameData.Core.Collections.NightSceneUtility;
-
+using Il2CppSystem.Threading;
+using UnityEngine.Playables;
+using UnityEngine;
 namespace MetaMystia;
 
-
+// Hearts to ShigureYuki!
 [HarmonyPatch(typeof(Common.UI.SpecialGuestDescriber))]
 [AutoLog]
 public partial class SpecialGuestDescriberPatch
 {
     [HarmonyPatch(nameof(SpecialGuestDescriber.Describe))]
-    [HarmonyPostfix]
-    public static void Describe_Postfix(SpecialGuestDescriber __instance, SpecialGuest detail)
+    [HarmonyPrefix]
+    public static void Describe_Prefix(SpecialGuest detail, ref CancellationToken cancellationToken)
     {
-        Log.LogWarning($"Describe method called. with special guest ID {detail.Id}");
-        if (ResourceExManager.ExistsCharacterConfig(detail.Id))
+        var src = new CancellationTokenSource();
+        cancellationToken = src.Token;
+        src.Cancel();
+        Log.Info($"cancelled token for special guest ID {detail.Id}");
+    }
+
+    [HarmonyPatch(nameof(SpecialGuestDescriber.Describe))]
+    [HarmonyPostfix]
+    public static void Describe_Postfix(SpecialGuestDescriber __instance, SpecialGuest detail, CancellationToken cancellationToken)
+    {
+        var sprite = ResourceExManager.GetPortraitSprite(detail.Id, 0);
+        var cts = new CancellationTokenSource();
+        if (ResourceExManager.ExistsCharacterConfig(detail.Id) && sprite != null)
         {
-            // __instance.portrayal.sprite = Utils.GetArtWork(@"E:\Desktop\Touhou Mystia Izakaya\ResourceEx\MetaMystia\assets\Daiyousei_0.png", new UnityEngine.Vector2(0.5f, 0.5f));
-            __instance.portrayal.sprite = ResourceExManager.GetPortraitSprite(detail.Id, 0);
-            Log.LogWarning($"Updated portrayal sprite for special guest ID {detail.Id}");
+            var nullTask = DEYU.AssetHandleUtility.AssetHandleHelper.CreateNullHandleTask<UnityEngine.Sprite>();
+            __instance.portrayal.AssignImageSpriteAsync(nullTask, cts.Token);
+            __instance.portrayal.sprite = sprite;
+            Log.Warning($"Updated portrayal sprite for special guest ID {detail.Id}");
+        }
+        else
+        {
+            var nullableToken = new Il2CppSystem.Nullable<CancellationToken>(cts.Token);
+            __instance.portrayal.AssignImageSpriteAsync(detail.CharacterDefaultPortrayal.LoadNotebookVisual(UniversalGameManager.PlatformAssetLifetime, nullableToken), cts.Token);
+            Log.Info($"default portrayal sprite for special guest ID {detail.Id}");
         }
     }
 }

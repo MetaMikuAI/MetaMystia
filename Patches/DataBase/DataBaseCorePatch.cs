@@ -12,5 +12,6 @@ public partial class DataBaseCorePatch
     public static void Initialize_Postfix()
     {
         Log.LogInfo("DataBaseCore.Initialize Postfix called.");
+        ResourceExManager.RegisterAllSpawnConfigs();
     }
 }

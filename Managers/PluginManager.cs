@@ -112,6 +112,10 @@ public partial class PluginManager : MonoBehaviour
         {
             MpManager.Stop();
         }
+        if (Input.GetKeyDown(KeyCode.F1))
+        {
+            // var pair = new GameData.Profile.GuestProfilePair(9000, new Color(1f, 0.5f, 0.5f), new Color(0.5f, 0.5f, 1f), );
+        }
     }
 
     public void RunOnMainThread(Action action)
