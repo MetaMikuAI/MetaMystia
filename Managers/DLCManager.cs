@@ -56,47 +56,61 @@ public static class DLCManager
         foreach (var item in CoreDataPack.BeverageProfile.Asset?.Cast<GameData.Profile.SellableProfile>().sellables) CoreBeverages.Add(item.Id);
         foreach (var item in CoreDataPack.NormalGuestProfile.Asset?.Cast<GameData.Profile.NormalGuestProfile>().normalGuests) CoreNormalGuests.Add(item.Id);
         foreach (var item in CoreDataPack.SpecialGuestProfile.Asset?.Cast<GameData.Profile.SpecialGuestProfile>().specialGuests) CoreSpecialGuests.Add(item.Id);
+
+        ClearPeer();
+    }
+
+    public static void ClearPeer()
+    {
+        PeerRecipes?.Clear();
+        PeerCookers?.Clear();
+        PeerFoods?.Clear();
+        PeerBeverages?.Clear(); 
+        PeerNormalGuests?.Clear();
+        PeerSpecialGuests?.Clear();
+        PeerActiveDLCLabel = [];
     }
 
     private static Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Recipe> GetRecipesFromDLC(GameData.Profile.GameDataProfile.DLCGameDataPack pack)
     {
-        GameData.Profile.RecipeProfile casted;
-        var obj = pack.dlcGameDataPack.RecipeProfile.OperationHandle.Result;
-        casted = obj?.Cast<GameData.Profile.RecipeProfile>();
+        // GameData.Profile.RecipeProfile casted;
+        // var obj = pack.dlcGameDataPack.RecipeProfile.OperationHandle.Result;
+        var obj = pack?.dlcGameDataPack?.RecipeProfile?.Asset;
+        var casted = obj?.Cast<GameData.Profile.RecipeProfile>();
         return casted?.recipes ?? new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Recipe>(0);
     }
 
     private static Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Sellable> GetFoodsFromDLC(GameData.Profile.GameDataProfile.DLCGameDataPack pack)
     {
-        var obj = pack.dlcGameDataPack.FoodProfile.Asset;
+        var obj = pack?.dlcGameDataPack?.FoodProfile?.Asset;
         var casted = obj?.Cast<GameData.Profile.SellableProfile>();
         return casted?.sellables ?? new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Sellable>(0);
     }
 
     private static Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Sellable> GetBeveragesFromDLC(GameData.Profile.GameDataProfile.DLCGameDataPack pack)
     {
-        var obj = pack.dlcGameDataPack.BeverageProfile.Asset;
+        var obj = pack?.dlcGameDataPack?.BeverageProfile?.Asset;
         var casted = obj?.Cast<GameData.Profile.SellableProfile>();
         return casted?.sellables ?? new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Sellable>(0);
     }
 
     private static Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<NormalGuest> GetNormalGuestsFromDLC(GameData.Profile.GameDataProfile.DLCGameDataPack pack)
     {
-        var obj = pack.dlcGameDataPack.NormalGuestProfile.Asset;
+        var obj = pack?.dlcGameDataPack?.NormalGuestProfile?.Asset;
         var casted = obj?.Cast<GameData.Profile.NormalGuestProfile>();
         return casted?.normalGuests ?? new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<NormalGuest>(0);
     }
 
     private static Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<SpecialGuest> GetSpecialGuestsFromDLC(GameData.Profile.GameDataProfile.DLCGameDataPack pack)
     {
-        var obj = pack.dlcGameDataPack.SpecialGuestProfile.Asset;
+        var obj = pack?.dlcGameDataPack?.SpecialGuestProfile?.Asset;
         var casted = obj?.Cast<GameData.Profile.SpecialGuestProfile>();
         return casted?.specialGuests ?? new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<SpecialGuest>(0);
     }
 
     private static Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Cooker> GetCookersFromDLC(GameData.Profile.GameDataProfile.DLCGameDataPack pack)
     {
-        var obj = pack.dlcGameDataPack.CookerProfile.Asset;
+        var obj = pack?.dlcGameDataPack?.CookerProfile?.Asset;
         var casted = obj?.Cast<GameData.Profile.CookerProfile>();
         return casted?.cookers ?? new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Cooker>(0);
     }

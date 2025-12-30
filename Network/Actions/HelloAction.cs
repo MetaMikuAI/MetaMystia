@@ -68,7 +68,7 @@ public partial class HelloAction : NetAction
     {
         SendToPeer(new NetPacket([new HelloAction { 
             PeerId = MpManager.PlayerId,
-            PeerActiveDLCLabel = MpManager.LocalActiveDLCLabel,
+            PeerActiveDLCLabel = MpManager.ActiveDLCLabel,
             Version = MyPluginInfo.PLUGIN_VERSION,
             CurrentGameScene = MpManager.LocalScene,
             GameVersion = MpManager.GameVersion,

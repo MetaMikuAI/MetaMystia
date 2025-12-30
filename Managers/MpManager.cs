@@ -44,7 +44,7 @@ public static partial class MpManager
     public static Common.UI.Scene LocalScene => PluginManager.CurrentGameScene;
     public static Common.UI.Scene PeerScene;
 
-    public static System.Collections.Generic.List<string> LocalActiveDLCLabel => DLCManager.ActiveDLCLabel;
+    public static System.Collections.Generic.List<string> ActiveDLCLabel => DLCManager.ActiveDLCLabel;
     public static System.Collections.Generic.List<string> PeerActiveDLCLabel => DLCManager.PeerActiveDLCLabel;
 
     public static bool InStory => Common.SceneDirector.Instance.playableDirector.state == UnityEngine.Playables.PlayState.Playing || Common.SceneDirector.Instance.playableDirector.state == UnityEngine.Playables.PlayState.Delayed;
@@ -176,7 +176,7 @@ public static partial class MpManager
         PeerAddress = "<Unknown>";
         PeerId = "<Unknown>";
         PeerGameVersion = "";
-        DLCManager.PeerActiveDLCLabel = [];
+        DLCManager.ClearPeer();
         Notify.ShowOnMainThread($"联机系统：连接已断开！");
     }
 
