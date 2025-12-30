@@ -128,6 +128,7 @@ public static partial class NightGuestManager
         return null;
     }
     private static Status GetGuestStatus(string uuid) => guestStatus.GetOrDefault(uuid, Status.Null);
+    public static Status GetGuestStatusForLog(string uuid) => GetGuestStatus(uuid);
 
     public static void SetGuestStatus(string uuid, Status value) {
         Log.Message($"{uuid} Desk [{GetGuestDeskcode(uuid)}] status {GetGuestStatus(uuid)} -> {value}");

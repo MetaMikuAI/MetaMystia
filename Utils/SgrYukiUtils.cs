@@ -254,7 +254,7 @@ public sealed class LogWrapper
     public void LogError(string msg, bool withTag = true) => Error(msg, withTag);
     public void LogFatal(string msg, bool withTag = true) => Fatal(msg, withTag);
 
-    public void LogStacktrace() => FunctionUtil.LogStacktrace(_inner);
+    public void LogStacktrace() => Functional.LogStacktrace(_inner);
 }
 
 // Support "foreach" any container that implements [] operator and Count member method
@@ -365,7 +365,7 @@ public class ConcurrentHashSet<T>
         => _dict.Keys;
 }
 
-public static class FunctionUtil
+public static class Functional
 {
 
     // Note: only available for those functions are patched. Not patched functions will not appear in the stacktrace
@@ -484,18 +484,25 @@ public static partial class CommandScheduler
             }
             catch (MetaMystia.NightGuestManager.GuestInvalidatedException e)
             {
-                Log.LogWarning($"ignore action {cmd.ExecuteInfo} for {e.Message}");
+                Log.Warning($"ignore action {cmd.ExecuteInfo} for {e.Message}");
                 continue;
             }
             catch (Exception e)
             {
-                Log.LogWarning($"Error when checking action {cmd.ExecuteInfo}, condition: {e.Message}");
+                Log.Error($"Error when checking action {cmd.ExecuteInfo}, reason: {e.Message}");
                 continue;
             }
 
             if (canExecute)
             {
-                cmd.Execute();
+                try
+                {
+                    cmd.Execute();
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Error when executing action {cmd.ExecuteInfo}, reason: {e.Message}, stacktrace {e.StackTrace}");
+                }
             }
             else
             {
@@ -505,3 +512,19 @@ public static partial class CommandScheduler
     }
 }
 
+[MetaMystia.AutoLog]
+public static partial class Panel
+{
+    public static void CloseMoreThan2ActivePannels(){
+        string[] PanelToBeClosed = ["NoteBook_MainPannel", "Storage_MainPannel"];
+        if (DEYU.AdpUISystem.Managers.AdpUIPanelManager.s_ActivePanelTransform.Count > 2)
+        {
+            var top = DEYU.AdpUISystem.Managers.AdpUIPanelManager.s_ActivePanelTransform.Peek();
+            if (PanelToBeClosed.Any((panel) => top.Item1.name.Contains(panel)))
+            {
+                Log.LogWarning($"popped {top.Item1.name}, enabled {top.Item1.isActiveAndEnabled}");
+                Common.UI.GeneralSustainedPannel.CurrentActiveSustainedPannel.CloseActivePannel();
+            }
+        }
+    }
+}

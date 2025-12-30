@@ -29,15 +29,7 @@ public partial class DaySceneManagerPatch
         {
             GuestInviteAction.Send(GameData.RunTime.Common.StatusTracker.Instance?.InvitedGuests.ToManagedList());
         }
-        if (DEYU.AdpUISystem.Managers.AdpUIPanelManager.s_ActivePanelTransform.Count > 2)
-        {
-            var top = DEYU.AdpUISystem.Managers.AdpUIPanelManager.s_ActivePanelTransform.Peek();
-            if (top.Item1.name.Contains("NoteBook_MainPannel"))
-            {
-                Log.LogWarning($"popped {top.Item1.name}, enabled {top.Item1.isActiveAndEnabled}");
-                GeneralSustainedPannel.CurrentActiveSustainedPannel.CloseActivePannel();
-            }
-        }
+        SgrYuki.Utils.Panel.CloseMoreThan2ActivePannels();
         DayScene.SceneManager.Instance.OnDayOver();
         _skipPatchOnDayOver = false;
     }

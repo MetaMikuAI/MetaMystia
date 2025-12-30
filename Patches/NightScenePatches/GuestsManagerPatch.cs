@@ -20,7 +20,7 @@ public partial class GuestsManagerPatch
     public static bool PostInitializeGuestGroup_Prefix(GuestGroupController initializedController)
     {
         // Log.LogInfo($"PostInitializeGuestGroup_Prefix called");
-        bool isNormalGuest = FunctionUtil.CheckStacktraceContains("NightScene.GuestManagementUtility.GuestsManager::SpawnNormalGuestGroup");
+        bool isNormalGuest = Functional.CheckStacktraceContains("NightScene.GuestManagementUtility.GuestsManager::SpawnNormalGuestGroup");
 
         // Sync host's guest spawn here because GuestsManager::SpawnNormalGuestGroup/0 does not return guest controller
         if (MpManager.IsConnected && MpManager.LocalScene == Common.UI.Scene.WorkScene && !MpManager.InStory)
@@ -35,7 +35,7 @@ public partial class GuestsManagerPatch
                     {
                         // var profile0 = array[0].OnGetVisual(array[0].id);
                         int normalGuestVisual = 0;
-                        var normalGuestVArrayS = DataBaseCharacter.NormalGuestVisual.Get(array[0].id);
+                        var normalGuestVArrayS = DataBaseCharacter.NormalGuestVisual.Get(array[0].id).SortByToString();
                         // Log.LogMessage(normalGuestVArrayS.DumpElements("\n"));
                         var normalGuestVisualString = array[0].CharacterPixel.ToString();
                         for (int i = 0;i<normalGuestVArrayS.Length;i++)
@@ -51,7 +51,7 @@ public partial class GuestsManagerPatch
                         if (array.Length > 1)
                         {
                             int normalGuest2Visual = 0;
-                            var normalGuest2VArrayS = DataBaseCharacter.NormalGuestVisual.Get(array[1].id);
+                            var normalGuest2VArrayS = DataBaseCharacter.NormalGuestVisual.Get(array[1].id).SortByToString();
                             var normalGuest2VisualString = array[1].CharacterPixel.ToString();
                             for (int i = 0;i<normalGuest2VArrayS.Length;i++)
                             {
@@ -195,7 +195,7 @@ public partial class GuestsManagerPatch
 
         if (MpManager.IsClient && MpManager.LocalScene == Common.UI.Scene.WorkScene )
         {
-            if (FunctionUtil.CheckStacktraceContains("InitializeAsGeneralWorkScene"))
+            if (Functional.CheckStacktraceContains("InitializeAsGeneralWorkScene"))
             {
                 return true;
             }
@@ -270,6 +270,7 @@ public partial class GuestsManagerPatch
                 if (toLeave == null || toLeave.guestInstances == null)
                 {
                     Log.LogError($"toleave null {toLeave != null}, toLeave.guestInstances {toLeave?.guestInstances != null}, will stop executing LeaveFromDesk");
+                    // FIXME: sometimes client not able to close izakaya, error with this function.
                     return false;
                 }
                 return NightGuestManager.CheckStatus(NightGuestManager.GetGuestUUID(toLeave), NightGuestManager.Status.Left);
@@ -460,7 +461,7 @@ public partial class GuestsManagerPatch
         if (MpManager.IsConnectedHost && MpManager.LocalScene == Common.UI.Scene.WorkScene && !MpManager.InStory)
         {
             // NightScene_GuestManagementUtility_GuestsManager__GenerateOrderSession
-            if (FunctionUtil.CheckStacktraceContains("GenerateOrderSession"))
+            if (Functional.CheckStacktraceContains("GenerateOrderSession"))
             {
                 NightGuestManager.SetGuestStatus(NightGuestManager.GetGuestUUID(toPayAndLeave), NightGuestManager.Status.Left);
                 GuestLeaveAction.Send(NightGuestManager.GetGuestUUID(toPayAndLeave), GuestLeaveAction.LeaveType.PayAndLeave);
@@ -501,15 +502,18 @@ public partial class GuestsManagerPatch
     [HarmonyPrefix]    
     public static bool GenerateOrderSession_Prefix(GuestsManager __instance, GuestGroupController guestGroup, bool doContinue)
     {
-        
         // Log.LogInfo($"GenerateOrderSession called");
         if (MpManager.IsConnectedClient && MpManager.LocalScene == Common.UI.Scene.WorkScene && !MpManager.InStory)
         {
-            Log.LogDebug($"GenerateOrderSession prevented");
             var uuid = NightGuestManager.GetGuestUUID(guestGroup);
+            Log.LogDebug($"GenerateOrderSession prevented for {uuid}");
             if (NightGuestManager.CheckStatusIn(uuid, [NightGuestManager.Status.Seated, NightGuestManager.Status.OrderEvaluated]))
             {
                 NightGuestManager.SetGuestStatus(uuid, NightGuestManager.Status.PendingOrder);
+            } 
+            else
+            {
+                Log.Warning($"GenerateOrderSession, failed to set status for {uuid}, status now {NightGuestManager.GetGuestStatusForLog(uuid)}");
             }
             return false;
         }
