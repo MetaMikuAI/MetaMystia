@@ -3,6 +3,7 @@ using Common.UI;
 using GameData.Core.Collections.NightSceneUtility;
 using Il2CppSystem.Threading;
 using UnityEngine.Playables;
+using UnityEngine;
 namespace MetaMystia;
 
 
@@ -10,28 +11,34 @@ namespace MetaMystia;
 [AutoLog]
 public partial class SpecialGuestDescriberPatch
 {
-    // [HarmonyPatch(nameof(SpecialGuestDescriber.Describe))]
-    // [HarmonyPrefix]
-    // public static void Describe_Prefix(ref CancellationToken cancellationToken)
-    // {
-    //     var src = new CancellationTokenSource();
-    //     cancellationToken = src.Token;
-    //     src.Cancel();
-    // }
+    [HarmonyPatch(nameof(SpecialGuestDescriber.Describe))]
+    [HarmonyPrefix]
+    public static void Describe_Prefix(SpecialGuest detail, ref CancellationToken cancellationToken)
+    {
+        var src = new CancellationTokenSource();
+        cancellationToken = src.Token;
+        src.Cancel();
+        Log.Info($"cancelled token for special guest ID {detail.Id}");
+    }
 
     [HarmonyPatch(nameof(SpecialGuestDescriber.Describe))]
     [HarmonyPostfix]
     public static void Describe_Postfix(SpecialGuestDescriber __instance, SpecialGuest detail, CancellationToken cancellationToken)
     {
-        Log.LogWarning($"Describe method called. with special guest ID {detail.Id}");
-        if (ResourceExManager.ExistsCharacterConfig(detail.Id))
+        var sprite = ResourceExManager.GetPortraitSprite(detail.Id, 0);
+        var cts = new CancellationTokenSource();
+        if (ResourceExManager.ExistsCharacterConfig(detail.Id) && sprite != null)
         {
-            var newToken = new CancellationToken();
-            var nullableToken = new Il2CppSystem.Nullable<CancellationToken>(newToken);
-            // __instance.portrayal.AssignImageSpriteAsync(detail.CharacterDefaultPortrayal.LoadNotebookVisual(UniversalGameManager.PlatformAssetLifetime, nullableToken), cancellationToken);
-            __instance.portrayal.sprite = ResourceExManager.GetPortraitSprite(detail.Id, 0);
-            // cancellationToken = new CancellationToken();
-            Log.LogWarning($"Updated portrayal sprite for special guest ID {detail.Id}");
+            var nullTask = DEYU.AssetHandleUtility.AssetHandleHelper.CreateNullHandleTask<UnityEngine.Sprite>();
+            __instance.portrayal.AssignImageSpriteAsync(nullTask, cts.Token);
+            __instance.portrayal.sprite = sprite;
+            Log.Warning($"Updated portrayal sprite for special guest ID {detail.Id}");
+        }
+        else
+        {
+            var nullableToken = new Il2CppSystem.Nullable<CancellationToken>(cts.Token);
+            __instance.portrayal.AssignImageSpriteAsync(detail.CharacterDefaultPortrayal.LoadNotebookVisual(UniversalGameManager.PlatformAssetLifetime, nullableToken), cts.Token);
+            Log.Info($"default portrayal sprite for special guest ID {detail.Id}");
         }
     }
 }
