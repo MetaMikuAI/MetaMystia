@@ -17,13 +17,7 @@ public partial class DataBaseDayPatch
     public static void Initialize_Postfix()
     {
         Log.LogInfo("DataBaseDay.Initialize Postfix called.");
-        foreach (var kvp in NPCsToRegister)
-        {
-            var label = kvp.Key;
-            var npc = kvp.Value;
-            var success = DataBaseDay.allNPCs.TryAdd(label, npc);
-            Log.LogInfo($"Registered NPC for Special Guest: {label} {success}");
-        }
+        ResourceExManager.RegisterNPCs();
     }
 }
 

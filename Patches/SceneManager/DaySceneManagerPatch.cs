@@ -17,7 +17,6 @@ public partial class DaySceneManagerPatch
         MpManager.Initialize();
         SceneTransitAction.Send(MpManager.LocalScene);
         Log.LogInfo($"CurrentGameStage switched to DayScene");
-        Plugin.OnEnterDayScene();
     }
 
 

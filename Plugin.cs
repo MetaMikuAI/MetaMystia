@@ -46,7 +46,6 @@ public class Plugin : BasePlugin
         typeof(ResultSceneManagerPatch),
         typeof(CharacterPortrayalPatch),
         typeof(SpecialGuestDescriberPatch),
-        typeof(SpecialGuestDescriberPatch),
         typeof(DataBaseDayPatch),
         typeof(DataBaseCorePatch),
         typeof(DataBaseLanguagePatch),
@@ -117,24 +116,8 @@ public class Plugin : BasePlugin
         
         DLCManager.Initialize();
         
-        ResourceExManager.TryInjectSpecialPortraits();
+        ResourceExManager.RegisterSpecialPortraits();
         ResourceExManager.PreloadAllImages();
-    }
-    public static void OnEnterDayScene()
-    {
-        // ResourceExManager.TryInjectAllSpecialGuests();
-    }
-
-    public static void OnEnterPrepNightScene()
-    {
-        // ResourceExManager.TryInjectAllSpecialGuests();
-        ResourceExManager.TryInjectAllSpecialGuestEvaluations();
-    }
-
-    public static void OnEnterWorkScene()
-    {
-        ResourceExManager.TryInjectAllSpriteSetCompact(); // TODO: 实际上这里没用
-
     }
 
     class BootstrapPatch
