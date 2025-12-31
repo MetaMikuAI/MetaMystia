@@ -11,9 +11,18 @@ static partial class ResourceExManager
     // TODO: 目前似乎只能支持单个自定义立绘，实际上一个角色是可以有多个，以及多套立绘的
     private static readonly Dictionary<CharacterPortrayal, CharacterConfig> CustomSpecialGuestPortrayalToId = [];
     
-    private static void RegisterSpecialGuestPortrayal(CharacterPortrayal portrayal, CharacterConfig characterConfig) =>
-        //TODO: 处理重复注册的情况
+    private static void RegisterSpecialGuestPortrayal(CharacterPortrayal portrayal, CharacterConfig characterConfig)
+    {
+        if (CustomSpecialGuestPortrayalToId.TryGetValue(portrayal, out var existingConfig))
+        {
+            Log.LogWarning(
+                $"Duplicate registration for portrayal '{portrayal}'. " +
+                $"Existing characterId: {existingConfig?.id}, new characterId: {characterConfig?.id}. " +
+                "Overwriting existing mapping.");
+        }
+
         CustomSpecialGuestPortrayalToId[portrayal] = characterConfig;
+    }
 
     private static readonly Dictionary<CharacterConfig, Sprite[]> LoadedSpritesCache = [];
     
