@@ -7,7 +7,7 @@ using UnityEngine;
 namespace MetaMystia.AssetHandles;
 
 public class SpriteAssetHandle(Sprite asset) : 
-    IAssetHandle<Sprite>(ClassInjector.DerivedConstructorPointer<SpriteAssetHandle>())
+    Il2CppObjectBase(ClassInjector.DerivedConstructorPointer<SpriteAssetHandle>())
 {
     static SpriteAssetHandle()
     {
@@ -17,12 +17,13 @@ public class SpriteAssetHandle(Sprite asset) :
         });
     }
 
-    public override bool IsPersistentAsset => true;
-    public override Sprite Asset => asset!;
+    public static implicit operator IAssetHandle<Sprite>(SpriteAssetHandle handle) => new(handle.Pointer);
+    public bool IsPersistentAsset => true;
+    public Sprite Asset => asset!;
 }
 
-public class SpriteAssetHandleArray(Sprite[] assets)
-    : IAssetHandleArray<Sprite>(ClassInjector.DerivedConstructorPointer<SpriteAssetHandleArray>())
+public class SpriteAssetHandleArray(Sprite[] assets) : 
+    Il2CppObjectBase(ClassInjector.DerivedConstructorPointer<SpriteAssetHandleArray>())
 {
     static SpriteAssetHandleArray()
     {
@@ -32,9 +33,10 @@ public class SpriteAssetHandleArray(Sprite[] assets)
         });
     }
 
-    public override int Count => assets!.Length;
-    public override Sprite this[int index] => assets![index];
-    public override Il2CppArrayBase<Sprite> ToAssetArray()
+    public static implicit operator IAssetHandleArray<Sprite>(SpriteAssetHandleArray handleArray) => new(handleArray.Pointer);
+    public int Count => assets!.Length;
+    public Sprite this[int index] => assets![index];
+    public Il2CppArrayBase<Sprite> ToAssetArray()
     {
         var array = new Il2CppReferenceArray<Sprite>(assets!.Length);
         for (var i = 0; i < assets.Length; i++) array[i] = assets[i];
