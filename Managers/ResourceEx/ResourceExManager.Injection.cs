@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Common.DialogUtility;
 using GameData.CoreLanguage.Collections;
@@ -9,6 +10,7 @@ using GameData.Core.Collections.CharacterUtility;
 using GameData.Core.Collections.DaySceneUtility;
 
 using DEYU.Utils;
+using GameData.Profile;
 using MetaMiku;
 using SgrYuki.Utils;
 using MetaMystia.ResourceEx.Models;
@@ -194,12 +196,23 @@ public static partial class ResourceExManager
 
     private static void RegisterSpecialGuestPair(CharacterConfig config)
     {
+        var dummyPoprtrayalSet = ScriptableObject.CreateInstance<CharacterProtrayalSet>();
+        var dummyPortrayal = ScriptableObject.CreateInstance<GameData.Profile.CharacterPortrayal>();
+        dummyPoprtrayalSet.defaultPortrayal = dummyPortrayal;
+        RegisterSpecialGuestPortrayal(dummyPortrayal, config);
+        
+        var template = DataBaseCharacter.FallbackCompactPixel;
+        
+        var pixelSet = ScriptableObject.CreateInstance<CharacterSkinSets>();
+        pixelSet.defaultSkin = MakePixel(config.characterSpriteSetCompact, config.ModRoot);
+
+        dummyPortrayal.name = $"{config.name}_DummyPortrayal";
         var pair = new GameData.Profile.GuestProfilePair(
             id: config.id,
             bgColor: DataBaseCharacter.UnifiedNormalGuestBGColor,
             textColor: DataBaseCharacter.UnifiedNormalGuestTextColor,
-            characterPortrayal: DataBaseCharacter.SpecialGuestVisual[0].characterPortrayal,
-            characterPixel: DataBaseCharacter.SpecialGuestVisual[0].CharacterPixel
+            characterPortrayal: dummyPoprtrayalSet,
+            characterPixel: pixelSet
         );
         // TODO: 改为 从 ResourceEx 读取配置，而不是后续 hook 修改
         if (DataBaseCharacter.SpecialGuestVisual.TryAdd(config.id, pair))
@@ -209,6 +222,85 @@ public static partial class ResourceExManager
         else
         {
             Log.Warning($"SpecialGuestPair for Special Guest: {config.name} ({config.id}) already exists");
+        }
+        
+        return;
+
+        static CharacterSpriteSetCompact MakePixel(CharacterSpriteSetCompactConfig pixelConfig, string modRoot)
+        {
+            var template = DataBaseCharacter.FallbackCompactPixel;
+
+            var pixel = ScriptableObject.CreateInstance<CharacterSpriteSetCompact>();
+
+            var mainSprites = CopySpriteArray(template.MainSprite);
+            var eyeSprites = CopySpriteArray(template.EyeSprite);
+
+            ApplySprites(mainSprites, pixelConfig.mainSprite, modRoot);
+            ApplySprites(eyeSprites, pixelConfig.eyeSprite, modRoot);
+
+            pixel.Initialize(
+                mainSprites,
+                template.DoNotUseEyeSprite,
+                eyeSprites,
+                template.HasPrebakedShadow,
+                template.AnimationSpeedMultiplier,
+                template.ExtraYOffset,
+                template.IsHina,
+                template.RotatePerTime,
+                template.DoNotHaveStepVFX,
+                template.MoveSpeedMultiplier,
+                template.RemovableTrims,
+                template.TrimSpritesDisplayFront,
+                template.TrimSpritesDisplayBack,
+                template.TrimFrontSpriteFrameSpeed,
+                template.TrimBackSpriteFrameSpeed
+            );
+
+            return pixel;
+            
+            
+            static Il2CppReferenceArray<Sprite> CopySpriteArray(Il2CppReferenceArray<Sprite> source)
+            {
+                if (source == null) return null;
+                var newArray = new Il2CppReferenceArray<Sprite>(source.Length);
+                for (int i = 0; i < source.Length; i++)
+                {
+                    newArray[i] = source[i];
+                }
+                return newArray;
+            }
+
+            static void ApplySprites(Il2CppReferenceArray<Sprite> targetArray, List<string> spritePaths, string modRoot, int pixelOffsetX = 0, int pixelOffsetY = 0)
+            {
+                if (spritePaths == null) return;
+
+                if (targetArray == null)
+                {
+                    Log.LogError($"Target array is null but sprite paths were provided. Cannot apply sprites.");
+                    return;
+                }
+
+                if (spritePaths.Count != targetArray.Length)
+                {
+                    Log.LogError($"Sprite count mismatch! Expected {targetArray.Length}, got {spritePaths.Count}. Refusing to load sprites.");
+                    return;
+                }
+
+                for (int i = 0; i < spritePaths.Count; i++)
+                {
+                    string path = spritePaths[i];
+                    if (string.IsNullOrEmpty(path)) continue;
+
+                    // Use GetSprite with caching, matching the parameters used for SpriteSetCompact
+                    var sprite = GetSprite(path, modRoot, new Vector2(0.5f, 0.0f), 64, 64, pixelOffsetX, pixelOffsetY);
+            
+                    if (sprite != null)
+                    {
+                        targetArray[i] = sprite;
+                    }
+                }
+            }
+
         }
     }
     public static void RegisterNPCs()

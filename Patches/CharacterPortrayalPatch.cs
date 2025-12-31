@@ -1,49 +1,84 @@
+using Cysharp.Threading.Tasks;
+using DEYU.AssetHandleUtility;
+using GameData.Profile;
 using HarmonyLib;
-// using GameData.Profile;
-// using DEYU.AssetHandleUtility;
-// using UnityEngine.AddressableAssets;
-// using UnityEngine;
-// using Cysharp.Threading.Tasks;
-// using Il2CppSystem.Threading;
+using Il2CppSystem.Threading;
+using MetaMystia.AssetHandles;
+using UnityEngine;
 
 namespace MetaMystia;
 
-
+[AutoLog]
 [HarmonyPatch(typeof(GameData.Profile.CharacterPortrayal))]
 public partial class CharacterPortrayalPatch
 {
-    // public static bool _skipPatch = true;
-    // // [HarmonyPatch(nameof(CharacterPortrayal.LoadVisualHandle))]
-    // // [HarmonyPrefix]
-    // // public static bool LoadVisualHandle_Prefix(int index, AssetLifetime assetLifetime, Il2CppSystem.Nullable<CancellationToken> cancellationToken = null, UniTask<IAssetHandle<Sprite>> __result = null)
-    // // {
-    // //     if (_skipPatch)
-    // //     {
-    // //         return true;
-    // //     }
-    // //     Log.LogWarning($"LoadVisualHandle_Prefix called for index: {index}");
-    // //     var testPath = "E:/Desktop/Touhou Mystia Izakaya/ResourceEx/MetaMystia/assets/Daiyousei_0.png";
-    // //     var assetRef = new AssetReferenceT<Sprite>(testPath);
-    // //     __result = AssetHandleHelper.LoadAssetHandleAsync(assetRef, AssetLifetime.Persistent);
-    // //     return false;
-    // // }
-    // [HarmonyPatch(nameof(CharacterPortrayal.LoadNotebookVisual))]
-    // [HarmonyPrefix]
-    // // public static void LoadNotebookVisual_Postfix()
-    // public static bool LoadNotebookVisual_Prefix(CharacterPortrayal __instance, AssetLifetime assetLifetime, ref Il2CppSystem.Nullable<CancellationToken> cancellationToken, ref UniTask<IAssetHandle<Sprite>> __result)
-    // {
-    //     Log.LogWarning($"LoadNotebookVisual_Prefix called");
-    //     // return true;
-    //     if (!PluginManager.test)
-    //     {
-    //         cancellationToken ??= new Il2CppSystem.Nullable<CancellationToken>(CancellationToken.None);
-    //         return true;
-    //     }
-    //     cancellationToken ??= new Il2CppSystem.Nullable<CancellationToken>(CancellationToken.None.);
-    //     Log.LogWarning($"LoadNotebookVisual_Prefix called");
-    //     var testPath = "E:/Desktop/Touhou Mystia Izakaya/ResourceEx/MetaMystia/assets/Daiyousei_0.png";
-    //     var assetRef = new AssetReferenceT<Sprite>(testPath);
-    //     __result = AssetHandleHelper.LoadAssetHandleAsync(assetRef, AssetLifetime.Persistent);
-    //     return false;
-    // }
+    [HarmonyPatch(nameof(CharacterPortrayal.LoadVisualHandle))]
+    [HarmonyPostfix]
+    public static void LoadVisualHandle_Prefix(CharacterPortrayal __instance,
+        ref UniTask<IAssetHandle<Sprite>> __result, int index, AssetLifetime assetLifetime,
+        ref Il2CppSystem.Nullable<CancellationToken> cancellationToken)
+    {
+        if (cancellationToken?.HasValue == true && cancellationToken.Value.IsCancellationRequested) 
+            return;
+        if (!ResourceExManager.TryGetCustomPortrayl(__instance, out var portraits))
+            return;
+        if (index < 0 || index >= portraits.Length)
+            return;
+
+        __result = UniTask.FromResult(CompletedAssetHandle.From(portraits[index]));
+    }
+
+    [HarmonyPatch(nameof(CharacterPortrayal.LoadAllVisualHandles))]
+    [HarmonyPostfix]
+    public static void LoadAllVisualHandles_Prefix(CharacterPortrayal __instance,
+        ref UniTask<IAssetHandleArray<Sprite>> __result, AssetLifetime assetLifetime,
+        ref Il2CppSystem.Nullable<CancellationToken> cancellationToken)
+    {
+        if (cancellationToken?.HasValue == true && cancellationToken.Value.IsCancellationRequested) 
+            return;
+        if (!ResourceExManager.TryGetCustomPortrayl(__instance, out var portraits))
+            return;
+
+        __result = UniTask.FromResult(CompletedAssetHandle.FromArray(portraits));
+    }
+
+    [HarmonyPatch(nameof(CharacterPortrayal.LoadNotebookVisual))]
+    [HarmonyPostfix]
+    public static void LoadNotebookVisual_Prefix(CharacterPortrayal __instance,
+        ref UniTask<IAssetHandle<Sprite>> __result, AssetLifetime assetLifetime,
+        ref Il2CppSystem.Nullable<CancellationToken> cancellationToken)
+    {
+        if (cancellationToken?.HasValue == true && cancellationToken.Value.IsCancellationRequested)
+            return;
+
+        if (!ResourceExManager.TryGetCustomPortrayl(__instance, out var portraits))
+            return;
+
+        var faceInNoteBook = __instance.faceInNoteBook;
+        if (faceInNoteBook < 0 || faceInNoteBook >= portraits.Length)
+            return;
+
+        __result = UniTask.FromResult(CompletedAssetHandle.From(portraits[faceInNoteBook]));
+    }
+
+    [HarmonyPatch(nameof(CharacterPortrayal.LoadSpellPortrayal))]
+    [HarmonyPostfix]
+    public static void LoadSpellPortrayal_Prefix(CharacterPortrayal __instance,
+        ref Il2CppSystem.ValueTuple<UniTask<IAssetHandle<Sprite>>, UniTask<IAssetHandle<Sprite>>> __result)
+    {
+        if (!ResourceExManager.TryGetCustomPortrayl(__instance, out var portraits))
+            return;
+        var positiveSpellCardFace = __instance.positiveSpellCardFace;
+        if (positiveSpellCardFace < 0 || positiveSpellCardFace >= portraits.Length)
+            return;
+
+        var negativeSpellCardFace = __instance.negativeSpellCardFace;
+        if (negativeSpellCardFace < 0 || negativeSpellCardFace >= portraits.Length)
+            return;
+        
+        var positiveTask = UniTask.FromResult(CompletedAssetHandle.From(portraits[positiveSpellCardFace]));
+        var negativeTask = UniTask.FromResult(CompletedAssetHandle.From(portraits[negativeSpellCardFace]));
+
+        __result = Il2CppSystem.ValueTuple.Create(positiveTask, negativeTask);
+    }
 }
