@@ -24,14 +24,14 @@ public class CompletedAssetHandle<T>(T asset)
 {
     static CompletedAssetHandle()
     {
-        ClassInjector.RegisterTypeInIl2Cpp<CompletedAssetHandle<T>>(new RegisterTypeOptions
+        ClassInjector.RegisterTypeInIl2Cpp<CompletedAssetHandle<T>>(new()
         {
             Interfaces = new[]{typeof(IAssetHandle<T>)}
         });
     }
 
     public override bool IsPersistentAsset => true;
-    public override T Asset => asset;
+    public override T Asset => asset!;
 }
 
 public class CompletedAssetHandleArray<T>(T[] assets)
@@ -40,17 +40,17 @@ public class CompletedAssetHandleArray<T>(T[] assets)
 {
     static CompletedAssetHandleArray()
     {
-        ClassInjector.RegisterTypeInIl2Cpp<CompletedAssetHandleArray<T>>(new RegisterTypeOptions
+        ClassInjector.RegisterTypeInIl2Cpp<CompletedAssetHandleArray<T>>(new()
         {
             Interfaces = new[]{typeof(IAssetHandleArray<T>)}
         });
     }
 
-    public override int Count => assets.Length;
-    public override T this[int index] => assets[index];
+    public override int Count => assets!.Length;
+    public override T this[int index] => assets![index];
     public override Il2CppArrayBase<T> ToAssetArray()
     {
-        var array = new Il2CppReferenceArray<T>(assets.Length);
+        var array = new Il2CppReferenceArray<T>(assets!.Length);
         for (var i = 0; i < assets.Length; i++) array[i] = assets[i];
         return array;
     }

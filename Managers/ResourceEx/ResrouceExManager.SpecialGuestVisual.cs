@@ -24,7 +24,7 @@ static partial class ResourceExManager
     /// <param name="portrayalSprite">如果方法返回 <see langword="true"/>，则包含映射到的自定义立绘资源；否则为 <see langword="null"/>。</param>
     /// <returns>如果方法返回 <see langword="true"/>，则表示成功映射到自定义立绘资源；否则为 <see langword="false"/>。</returns>
     /// <remarks> 如果Config中部分立绘提供了无效的路径，则返回数组的对应Index位为null </remarks>
-    public static bool TryGetCustomPortrayl(CharacterPortrayal portrayal, [NotNullWhen(true)] out Sprite[] portrayalSprite)
+    public static bool TryGetCustomPortrayal(CharacterPortrayal portrayal, [NotNullWhen(true)] out Sprite[] portrayalSprite)
     {
         portrayalSprite = null;
         if (!CustomSpecialGuestPortrayalToId.TryGetValue(portrayal, out var config))

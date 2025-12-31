@@ -196,22 +196,20 @@ public static partial class ResourceExManager
 
     private static void RegisterSpecialGuestPair(CharacterConfig config)
     {
-        var dummyPoprtrayalSet = ScriptableObject.CreateInstance<CharacterProtrayalSet>();
-        var dummyPortrayal = ScriptableObject.CreateInstance<GameData.Profile.CharacterPortrayal>();
-        dummyPoprtrayalSet.defaultPortrayal = dummyPortrayal;
+        var dummyPortrayalSet = ScriptableObject.CreateInstance<CharacterProtrayalSet>();
+        var dummyPortrayal = ScriptableObject.CreateInstance<CharacterPortrayal>();
+        dummyPortrayalSet.defaultPortrayal = dummyPortrayal;
         RegisterSpecialGuestPortrayal(dummyPortrayal, config);
-        
-        var template = DataBaseCharacter.FallbackCompactPixel;
         
         var pixelSet = ScriptableObject.CreateInstance<CharacterSkinSets>();
         pixelSet.defaultSkin = MakePixel(config.characterSpriteSetCompact, config.ModRoot);
 
         dummyPortrayal.name = $"{config.name}_DummyPortrayal";
-        var pair = new GameData.Profile.GuestProfilePair(
+        var pair = new GuestProfilePair(
             id: config.id,
             bgColor: DataBaseCharacter.UnifiedNormalGuestBGColor,
             textColor: DataBaseCharacter.UnifiedNormalGuestTextColor,
-            characterPortrayal: dummyPoprtrayalSet,
+            characterPortrayal: dummyPortrayalSet,
             characterPixel: pixelSet
         );
         // TODO: 改为 从 ResourceEx 读取配置，而不是后续 hook 修改
