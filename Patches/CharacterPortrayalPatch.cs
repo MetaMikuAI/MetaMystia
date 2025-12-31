@@ -75,9 +75,17 @@ public partial class CharacterPortrayalPatch
         var negativeSpellCardFace = __instance.negativeSpellCardFace;
         if (negativeSpellCardFace < 0 || negativeSpellCardFace >= portraits.Length)
             return;
+
+        var positiveSprite = portraits[positiveSpellCardFace];
+        if (positiveSprite == null)
+            return;
+
+        var negativeSprite = portraits[negativeSpellCardFace];
+        if (negativeSprite == null)
+            return;
         
-        var positiveTask = UniTask.FromResult<IAssetHandle<Sprite>>(new SpriteAssetHandle(portraits[positiveSpellCardFace]));
-        var negativeTask = UniTask.FromResult<IAssetHandle<Sprite>>(new SpriteAssetHandle(portraits[negativeSpellCardFace]));
+        var positiveTask = UniTask.FromResult<IAssetHandle<Sprite>>(new SpriteAssetHandle(positiveSprite));
+        var negativeTask = UniTask.FromResult<IAssetHandle<Sprite>>(new SpriteAssetHandle(negativeSprite));
 
         __result = Il2CppSystem.ValueTuple.Create(positiveTask, negativeTask);
     }
