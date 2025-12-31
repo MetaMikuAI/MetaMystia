@@ -212,7 +212,6 @@ public static partial class ResourceExManager
             characterPortrayal: dummyPortrayalSet,
             characterPixel: pixelSet
         );
-        // TODO: 改为 从 ResourceEx 读取配置，而不是后续 hook 修改
         if (DataBaseCharacter.SpecialGuestVisual.TryAdd(config.id, pair))
         {
             Log.Info($"Registered SpecialGuestPair for Special Guest: {config.name} ({config.id})");
