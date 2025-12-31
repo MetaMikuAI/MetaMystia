@@ -5,9 +5,18 @@ using UnityEngine;
 
 namespace MetaMystia.AssetHandles;
 
-public class SpriteAssetHandle(Sprite asset) : 
-    Il2CppSystem.Object(ClassInjector.DerivedConstructorPointer<SpriteAssetHandle>())
+public class SpriteAssetHandle : 
+    Il2CppSystem.Object
 {
+    private readonly Sprite _asset;
+
+    public SpriteAssetHandle(Sprite asset) : base(ClassInjector.DerivedConstructorPointer<SpriteAssetHandle>())
+    {
+        _asset = asset;
+    }
+
+    public SpriteAssetHandle() { }
+
     static SpriteAssetHandle()
     {
         ClassInjector.RegisterTypeInIl2Cpp<SpriteAssetHandle>(new()
@@ -16,14 +25,24 @@ public class SpriteAssetHandle(Sprite asset) :
         });
     }
 
+
     public static implicit operator IAssetHandle<Sprite>(SpriteAssetHandle handle) => new(handle.Pointer);
     public bool IsPersistentAsset => true;
-    public Sprite Asset => asset!;
+    public Sprite Asset => _asset!;
 }
 
-public class SpriteAssetHandleArray(Sprite[] assets) : 
-    Il2CppSystem.Object(ClassInjector.DerivedConstructorPointer<SpriteAssetHandleArray>())
+public class SpriteAssetHandleArray : 
+    Il2CppSystem.Object
 {
+    private readonly Sprite[] _assets;
+
+    public SpriteAssetHandleArray(Sprite[] assets) : base(ClassInjector.DerivedConstructorPointer<SpriteAssetHandleArray>())
+    {
+        _assets = assets;
+    }
+
+    public SpriteAssetHandleArray() { }
+
     static SpriteAssetHandleArray()
     {
         ClassInjector.RegisterTypeInIl2Cpp<SpriteAssetHandleArray>(new()
@@ -33,12 +52,12 @@ public class SpriteAssetHandleArray(Sprite[] assets) :
     }
 
     public static implicit operator IAssetHandleArray<Sprite>(SpriteAssetHandleArray handleArray) => new(handleArray.Pointer);
-    public int Count => assets!.Length;
-    public Sprite this[int index] => assets![index];
+    public int Count => _assets!.Length;
+    public Sprite this[int index] => _assets![index];
     public Il2CppArrayBase<Sprite> ToAssetArray()
     {
-        var array = new Il2CppReferenceArray<Sprite>(assets!.Length);
-        for (var i = 0; i < assets.Length; i++) array[i] = assets[i];
+        var array = new Il2CppReferenceArray<Sprite>(_assets!.Length);
+        for (var i = 0; i < _assets.Length; i++) array[i] = _assets[i];
         return array;
     }
 }
