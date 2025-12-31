@@ -1,13 +1,12 @@
 ﻿using DEYU.AssetHandleUtility;
 using Il2CppInterop.Runtime.Injection;
-using Il2CppInterop.Runtime.InteropTypes;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using UnityEngine;
 
 namespace MetaMystia.AssetHandles;
 
 public class SpriteAssetHandle(Sprite asset) : 
-    Il2CppObjectBase(ClassInjector.DerivedConstructorPointer<SpriteAssetHandle>())
+    Il2CppSystem.Object(ClassInjector.DerivedConstructorPointer<SpriteAssetHandle>())
 {
     static SpriteAssetHandle()
     {
@@ -23,7 +22,7 @@ public class SpriteAssetHandle(Sprite asset) :
 }
 
 public class SpriteAssetHandleArray(Sprite[] assets) : 
-    Il2CppObjectBase(ClassInjector.DerivedConstructorPointer<SpriteAssetHandleArray>())
+    Il2CppSystem.Object(ClassInjector.DerivedConstructorPointer<SpriteAssetHandleArray>())
 {
     static SpriteAssetHandleArray()
     {
