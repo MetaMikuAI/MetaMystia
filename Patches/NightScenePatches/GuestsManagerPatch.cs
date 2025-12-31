@@ -513,7 +513,11 @@ public partial class GuestsManagerPatch
             } 
             else
             {
-                Log.Warning($"GenerateOrderSession, failed to set status for {uuid}, status now {NightGuestManager.GetGuestStatusForLog(uuid)}");
+                var nowStatus = NightGuestManager.GetGuestStatusForLog(uuid);
+                if (nowStatus != NightGuestManager.Status.OrderGenerated)
+                {
+                    Log.Warning($"GenerateOrderSession, failed to set status for {uuid}, status now {NightGuestManager.GetGuestStatusForLog(uuid)}");
+                }
             }
             return false;
         }

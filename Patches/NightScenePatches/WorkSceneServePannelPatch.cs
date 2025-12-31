@@ -131,7 +131,7 @@ public partial class WorkSceneServePannelPatch
                 }
             }
         
-            Log.LogInfo($"{uuid} served status: food {NightGuestManager.GetGuestOrderServedFood(uuid)}, beverage {NightGuestManager.GetGuestOrderServedBeverage(uuid)}; food {food}, beverage {beverageId}");
+            Log.LogInfo($"{uuid} served status: food {NightGuestManager.GetGuestOrderServedFood(uuid)}, beverage {NightGuestManager.GetGuestOrderServedBeverage(uuid)}; food {food?.FoodId}, beverage {beverageId}");
         }
         return true;
 

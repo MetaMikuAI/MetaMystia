@@ -194,7 +194,7 @@ public static partial class KyoukoManager
         var rb = GetRigidbody2D();
         if (rb == null)
         {
-            Log.LogWarning($"Failed to get Rigidbody2D for Kyouko");
+            Log.Debug($"Failed to get Rigidbody2D for Kyouko");
             return;
         }
         actualVelocity = inputDirection;
@@ -202,7 +202,7 @@ public static partial class KyoukoManager
         var characterUnit = GetCharacterUnit();
         if (characterUnit == null)
         {
-            Log.LogWarning($"Failed to get CharacterControllerUnit for Kyouko");
+            Log.Debug($"Failed to get CharacterControllerUnit for Kyouko");
             return;
         }
         
@@ -218,7 +218,7 @@ public static partial class KyoukoManager
         var characterUnit = GetCharacterUnit();
         if (characterUnit == null)
         {
-            Log.LogWarning($"Failed to get CharacterControllerUnit for Kyouko");
+            Log.Debug($"Failed to get CharacterControllerUnit for Kyouko");
             return;
         }
         characterUnit.sprintMultiplier = isSprinting ? 1.5f : 1.0f;
@@ -230,7 +230,7 @@ public static partial class KyoukoManager
         var characterUnit = GetCharacterUnit();
         if (characterUnit == null)
         {
-            Log.LogWarning($"Failed to get CharacterControllerUnit for Kyouko");
+            Log.Debug($"Failed to get CharacterControllerUnit for Kyouko");
             return;
         }
         positionOffset = syncPosition - characterUnit.rb2d.position;

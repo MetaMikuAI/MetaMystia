@@ -165,7 +165,9 @@ namespace MetaMystia.Debugger
                         try { state = t.ThreadState.ToString(); } catch { state = "Unknown"; }
                         
                         string priority = "";
+#pragma warning disable CA1416 // 验证平台兼容性
                         try { priority = t.PriorityLevel.ToString(); } catch { priority = "Unknown"; }
+#pragma warning restore CA1416 // 验证平台兼容性
 
                         string waitReason = "";
                         try { if (t.ThreadState == System.Diagnostics.ThreadState.Wait) waitReason = t.WaitReason.ToString(); } catch { }
