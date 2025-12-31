@@ -140,10 +140,8 @@ public static class Extensions
         this Il2CppSystem.Collections.Generic.Dictionary<KeyT, ValueT> dict, Predicate<ValueT> condition)
     {
         var result = new System.Collections.Generic.List<KeyT>();
-        var e = dict.GetEnumerator();
-        while (e.MoveNext())
+        foreach (var kv in dict)
         {
-            var kv = e.Current;
             if (condition(kv.Value)) result.Add(kv.Key);
         }
         return result;

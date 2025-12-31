@@ -123,8 +123,7 @@ public abstract partial class NetAction
 
     public static void RegisterAllFormatter()
     {
-        NetAction.RegisterFormatter();
-        GuestServeAction.RegisterFormatter();
-        GuestLeaveAction.RegisterFormatter();
+        if (!MemoryPackFormatterProvider.IsRegistered<NetAction>()) MemoryPackFormatterProvider.Register(new NetActionFormatter());
+        if (!MemoryPackFormatterProvider.IsRegistered<NetAction[]>()) MemoryPackFormatterProvider.Register(new MemoryPack.Formatters.ArrayFormatter<NetAction>());
     }
 }
