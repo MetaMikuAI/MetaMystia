@@ -12,9 +12,6 @@ namespace MetaMystia;
 [HarmonyPatch(typeof(GameData.Profile.CharacterPortrayal))]
 public partial class CharacterPortrayalPatch
 {
-    private class SpriteAssetHandle(Sprite asset) : CompletedAssetHandle<Sprite>(asset);
-    private class SpriteAssetHandleArray(Sprite[] assets) : CompletedAssetHandleArray<Sprite>(assets);
-    
     [HarmonyPatch(nameof(CharacterPortrayal.LoadVisualHandle))]
     [HarmonyPostfix]
     public static void LoadVisualHandle_PostFix(CharacterPortrayal __instance,
