@@ -69,6 +69,7 @@
             "request": "我们妖精偶尔会去湖畔果树林摘点果子吃。"
           }
         ],
+        "bevRequests": [],
         "hateFoodTag": [
           22,
           24
@@ -299,6 +300,7 @@
             "request": "带点辣味的东西才能刺激本姑娘的味蕾！"
           }
         ],
+        "bevRequests": [],
         "hateFoodTag": [
           7
         ],
@@ -537,82 +539,6 @@
         {
           "pid": 18,
           "path": "assets/_FlandreScarlet_18.png"
-        },
-        {
-          "pid": 19,
-          "path": "assets/_FlandreScarlet_19.png"
-        },
-        {
-          "pid": 20,
-          "path": "assets/_FlandreScarlet_20.png"
-        },
-        {
-          "pid": 21,
-          "path": "assets/_FlandreScarlet_21.png"
-        },
-        {
-          "pid": 22,
-          "path": "assets/_FlandreScarlet_22.png"
-        },
-        {
-          "pid": 23,
-          "path": "assets/_FlandreScarlet_23.png"
-        },
-        {
-          "pid": 24,
-          "path": "assets/_FlandreScarlet_24.png"
-        },
-        {
-          "pid": 25,
-          "path": "assets/_FlandreScarlet_25.png"
-        },
-        {
-          "pid": 26,
-          "path": "assets/_FlandreScarlet_26.png"
-        },
-        {
-          "pid": 27,
-          "path": "assets/_FlandreScarlet_27.png"
-        },
-        {
-          "pid": 28,
-          "path": "assets/_FlandreScarlet_28.png"
-        },
-        {
-          "pid": 29,
-          "path": "assets/_FlandreScarlet_29.png"
-        },
-        {
-          "pid": 30,
-          "path": "assets/_FlandreScarlet_30.png"
-        },
-        {
-          "pid": 31,
-          "path": "assets/_FlandreScarlet_31.png"
-        },
-        {
-          "pid": 32,
-          "path": "assets/_FlandreScarlet_32.png"
-        },
-        {
-          "pid": 33,
-          "path": "assets/_FlandreScarlet_33.png"
-        },
-        {
-          "pid": 34,
-          "path": "assets/_FlandreScarlet_34.png"
-        },
-        {
-          "pid": 35,
-          "path": "assets/_FlandreScarlet_35.png"
-        },
-        {
-          "pid": 36,
-          "path": "assets/_FlandreScarlet_36.png"
-        },
-        {
-          "pid": 37,
-          "path": "assets/_FlandreScarlet_37.png"
         }
       ],
       "guest": {
@@ -665,6 +591,7 @@
             "request": "姐姐从来不让我见到热辣辣的太阳，真好奇，好好奇呀。"
           }
         ],
+        "bevRequests": [],
         "hateFoodTag": [],
         "likeFoodTag": [
           {
@@ -857,6 +784,7 @@
             "request": "穷尽天文的脑力，也不可能明晰整个世界的变数。在某个角落，总会藏着独特的惊喜。"
           }
         ],
+        "bevRequests": [],
         "hateFoodTag": [
           18,
           6

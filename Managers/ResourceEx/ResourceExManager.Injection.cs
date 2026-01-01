@@ -184,6 +184,22 @@ public static partial class ResourceExManager
             config.guest.foodRequests.ToDictionary(req => req.tagId, req => req.request).ToIl2CppDictionary());
         Log.Info($"Injected Food Requests for Special Guest: {config.name} ({config.id})");
     }
+    
+    public static void RegisterAllBevRequests()
+    {
+        Log.Info($"Injecting Food Requests from ResourceEx...");
+        GetAllCharacterConfigs()
+            .Where(c => c.guest != null && c.guest.bevRequests != null)
+            .ToList()
+            .ForEach(RegisterBevRequests);
+    }
+
+    private static void RegisterBevRequests(CharacterConfig config)
+    {
+        DataBaseLanguage.SpecialGuestBevRequest.TryAdd(config.id,
+            config.guest.bevRequests.ToDictionary(req => req.tagId, req => req.request).ToIl2CppDictionary());
+        Log.Info($"Injected Beverage Requests for Special Guest: {config.name} ({config.id})");
+    }
 
     public static void RegisterAllSpecialGuestPairs()
     {

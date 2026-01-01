@@ -21,7 +21,8 @@ public class GuestConfig
     public int fundRangeUpper { get; set; }
     public List<string> evaluation { get; set; }
     public List<string> conversation { get; set; }
-    public List<FoodRequestConfig> foodRequests { get; set; }
+    public List<RequestConfig> foodRequests { get; set; }
+    public List<RequestConfig> bevRequests { get; set; }
     public List<int> hateFoodTag { get; set; }
     public List<WeightedTagConfig> likeFoodTag { get; set; }
     public List<WeightedTagConfig> likeBevTag { get; set; }
@@ -36,7 +37,7 @@ public class SpawnConfig
     public bool onlySpawnWhenPlaceBeRecorded { get; set; }
 }
 
-public class FoodRequestConfig
+public class RequestConfig
 {
     public int tagId { get; set; }
     public string request { get; set; }
