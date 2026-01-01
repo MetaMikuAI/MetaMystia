@@ -784,6 +784,245 @@
       }
     },
     {
+      "id": 9003,
+      "name": "八意永琳",
+      "label": "_YagokoroEirin",
+      "descriptions": [
+        "隐居在竹林深处的谜之存在，似乎总是背着一张很大的弓，总是表现出在思考着什么的样子。",
+        "实际上是个很善良很温和的人啊。明明是“月之头脑”这么大的来头来着……完全感受不到架子呢，不过举手投足之间的高贵风范依然引人侧目就是了。",
+        "永远亭，月亮的子民，不死身……永琳小姐原来身上承担了这样多的责任吗？明明看起来只是一个技术超群的医师的说。可能所谓的“大人物”就是“承担着大责任的人物”吧？使命什么的……对于鸟脑袋来说比天上的月亮还让人摸不清楚啊。\n"
+      ],
+      "type": "Special",
+      "portraits": [
+        {
+          "pid": 0,
+          "path": "assets/_YagokoroEirin_0.png"
+        },
+        {
+          "pid": 1,
+          "path": "assets/_YagokoroEirin_1.png"
+        },
+        {
+          "pid": 2,
+          "path": "assets/_YagokoroEirin_2.png"
+        },
+        {
+          "pid": 3,
+          "path": "assets/_YagokoroEirin_3.png"
+        }
+      ],
+      "guest": {
+        "fundRangeLower": 2000,
+        "fundRangeUpper": 2400,
+        "evaluation": [
+          "……不堪入目。",
+          "只比庸俗之人的作品好一点。",
+          "甚合心意，多谢款待。",
+          "优秀的料理可以治疗心病，受教了。",
+          "如此美味，竟如同神话一般的梦幻。",
+          "你还真是贪心不足啊……",
+          "抱歉，下次我会补上。",
+          "既然需要我离开，那我离开就好。",
+          "无妨。这只是永恒的生命中的一点波澜而已。"
+        ],
+        "conversation": [
+          "今夜的月亮比昨夜的更明亮。",
+          "满月究竟代表祥瑞还是代表灾厄？",
+          "公主想必也会喜欢这里的氛围的。",
+          "人和妖怪原来可以以这种方式达成平衡吗……"
+        ],
+        "foodRequests": [
+          {
+            "tagId": 3,
+            "request": "如果拒绝接触家常些的东西的话，生命就会与现实疏离开来。"
+          },
+          {
+            "tagId": 4001,
+            "request": "微毒的食物很多可以入药，人们总是忘记这一点。"
+          },
+          {
+            "tagId": 5,
+            "request": "传说中的那些故事，在遥远的过去可能真实存在过。"
+          },
+          {
+            "tagId": 25,
+            "request": "即使拥有无限的生命，人的阅历也短于文明的尺度。"
+          },
+          {
+            "tagId": 29,
+            "request": "蝴蝶梦，梦蝴蝶……梦幻如现实，现实如梦幻。"
+          },
+          {
+            "tagId": 30,
+            "request": "穷尽天文的脑力，也不可能明晰整个世界的变数。在某个角落，总会藏着独特的惊喜。"
+          }
+        ],
+        "hateFoodTag": [
+          18,
+          6
+        ],
+        "likeFoodTag": [
+          {
+            "tagId": -20,
+            "weight": 1
+          },
+          {
+            "tagId": 3,
+            "weight": 1
+          },
+          {
+            "tagId": 4001,
+            "weight": 1
+          },
+          {
+            "tagId": 5,
+            "weight": 1
+          },
+          {
+            "tagId": 25,
+            "weight": 1
+          },
+          {
+            "tagId": 29,
+            "weight": 1
+          },
+          {
+            "tagId": 30,
+            "weight": 1
+          }
+        ],
+        "likeBevTag": [
+          {
+            "tagId": 1,
+            "weight": 1
+          },
+          {
+            "tagId": 0,
+            "weight": 1
+          },
+          {
+            "tagId": 6,
+            "weight": 1
+          },
+          {
+            "tagId": 13,
+            "weight": 1
+          },
+          {
+            "tagId": 11,
+            "weight": 1
+          },
+          {
+            "tagId": 3,
+            "weight": 1
+          },
+          {
+            "tagId": 17,
+            "weight": 1
+          }
+        ],
+        "spawn": [
+          {
+            "izakayaId": 16,
+            "relativeProb": 0.1,
+            "onlySpawnAfterUnlocking": false,
+            "onlySpawnWhenPlaceBeRecorded": false
+          },
+          {
+            "izakayaId": 22,
+            "relativeProb": 0.1,
+            "onlySpawnAfterUnlocking": false,
+            "onlySpawnWhenPlaceBeRecorded": false
+          },
+          {
+            "izakayaId": 23,
+            "relativeProb": 0.1,
+            "onlySpawnAfterUnlocking": false,
+            "onlySpawnWhenPlaceBeRecorded": false
+          },
+          {
+            "izakayaId": 14,
+            "relativeProb": 0.15,
+            "onlySpawnAfterUnlocking": false,
+            "onlySpawnWhenPlaceBeRecorded": false
+          },
+          {
+            "izakayaId": 18,
+            "relativeProb": 0.15,
+            "onlySpawnAfterUnlocking": false,
+            "onlySpawnWhenPlaceBeRecorded": false
+          },
+          {
+            "izakayaId": 19,
+            "relativeProb": 0.15,
+            "onlySpawnAfterUnlocking": false,
+            "onlySpawnWhenPlaceBeRecorded": false
+          },
+          {
+            "izakayaId": 15,
+            "relativeProb": 0.1,
+            "onlySpawnAfterUnlocking": false,
+            "onlySpawnWhenPlaceBeRecorded": false
+          },
+          {
+            "izakayaId": 21,
+            "relativeProb": 0.1,
+            "onlySpawnAfterUnlocking": false,
+            "onlySpawnWhenPlaceBeRecorded": false
+          },
+          {
+            "izakayaId": 20,
+            "relativeProb": 0.1,
+            "onlySpawnAfterUnlocking": false,
+            "onlySpawnWhenPlaceBeRecorded": false
+          }
+        ]
+      },
+      "characterSpriteSetCompact": {
+        "name": "_YagokoroEirin",
+        "mainSprite": [
+          "assets/_YagokoroEirin/_YagokoroEirin_Main_0, 0.png",
+          "assets/_YagokoroEirin/_YagokoroEirin_Main_0, 1.png",
+          "assets/_YagokoroEirin/_YagokoroEirin_Main_0, 2.png",
+          "assets/_YagokoroEirin/_YagokoroEirin_Main_1, 0.png",
+          "assets/_YagokoroEirin/_YagokoroEirin_Main_1, 1.png",
+          "assets/_YagokoroEirin/_YagokoroEirin_Main_1, 2.png",
+          "assets/_YagokoroEirin/_YagokoroEirin_Main_2, 0.png",
+          "assets/_YagokoroEirin/_YagokoroEirin_Main_2, 1.png",
+          "assets/_YagokoroEirin/_YagokoroEirin_Main_2, 2.png",
+          "assets/_YagokoroEirin/_YagokoroEirin_Main_3, 0.png",
+          "assets/_YagokoroEirin/_YagokoroEirin_Main_3, 1.png",
+          "assets/_YagokoroEirin/_YagokoroEirin_Main_3, 2.png"
+        ],
+        "eyeSprite": [
+          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_0, 0.png",
+          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_0, 1.png",
+          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_0, 2.png",
+          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_0, 3.png",
+          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_1, 0.png",
+          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_1, 1.png",
+          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_1, 2.png",
+          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_1, 3.png",
+          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_2, 0.png",
+          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_2, 1.png",
+          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_2, 2.png",
+          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_2, 3.png",
+          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_3, 0.png",
+          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_3, 1.png",
+          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_3, 2.png",
+          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_3, 3.png",
+          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_4, 0.png",
+          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_4, 1.png",
+          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_4, 2.png",
+          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_4, 3.png",
+          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_5, 0.png",
+          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_5, 1.png",
+          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_5, 2.png",
+          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_5, 3.png"
+        ]
+      }
+    },
+    {
       "id": 10000,
       "name": "秋静叶",
       "label": "_AkiSizuha",
