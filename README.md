@@ -1,130 +1,113 @@
 # MetaMystia
 
-一次对「东方夜雀食堂」联机 Mod 的制作尝试
+**MetaMystia** 是一个为游戏《[东方夜雀食堂](https://store.steampowered.com/app/1584090/)》开发的**联机 Mod**。它的目标很简单：
 
-## 安装
+> 让原本只能单人游玩的夜雀食堂，真正“热闹”起来。
 
-1. 下载 [BepInEx-Unity.IL2CPP-win-x64](https://builds.bepinex.dev/projects/bepinex_be) 并将其解压到游戏根目录
-2. 下载 [MetaMystia.dll](https://github.com/MetaMikuAI/MetaMystia/releases) 并将其放入 `BepInEx/plugins` 目录
-3. 运行游戏
+通过 MetaMystia，您可以与朋友一同经营食堂、同步行动与操作，共同应对顾客需求，将原本的单机体验扩展为协作式的联机玩法。
 
-## 使用
+📖 **完整说明文档**
+[https://doc.meta-mystia.izakaya.cc/index.html](https://doc.meta-mystia.izakaya.cc/index.html)
 
-游戏内快捷键：
+## 安装与使用
 
-1. 按 `\` 显示左下角控制信息
+请参考用户文档中的安装与使用说明：
 
-游戏内控制台：
+👉 [https://doc.meta-mystia.izakaya.cc/user_guide/how_to_install.html](https://doc.meta-mystia.izakaya.cc/user_guide/how_to_install.html)
 
-游戏内用 `/` 键打开游戏内控制台，按 `Enter` 提交命令，`ESC` 关闭控制台
+## 参与开发
 
-在 InGameConsole 中，你可以使用一些命令，如联机(Multiplayer)相关
+如果您希望了解如何搭建开发环境或参与贡献，请阅读开发者文档：
 
-```
-mp start
-mp stop
-mp connect 1.2.3.4
-mp status
-```
+👉 [https://doc.meta-mystia.izakaya.cc/developer_guide/getting_started.html](https://doc.meta-mystia.izakaya.cc/developer_guide/getting_started.html)
 
-更多命令请 `help` 查看(或者来啃源码)
+## 功能进度（TODO）
 
-## TODO
+以下为当前功能实现与规划情况，按游戏流程划分。
 
+### DayScene（白天场景）
 
-DayScene 篇
+-   [x] 实现基础联机
+-   [x] 实现跨地图同步
+-   [x] 实现较稳定的运动同步
+-   [x] 游戏内 Console
+-   [x] 解决 Kyouko 无物理问题
+-   [x] 提前加载 Kyouko
+-   [x] 同步“结束”
+-   [x] 同步对话（由**余烬特调**提供）
+-   [x] Ping 显示
+-   [x] 连接后立即同步位置
+-   [x] 禁用 OnDayOver 时 Mystia 的个人 Dialog
+-   [x] 解决 Kyouko 无法上下坡的问题
+-   [x] 禁用等待 Kyouko 状态下的交互
+-   [ ] ~~禁用 Kyouko 交互~~
+-   [x] 切换到兽道时 Kyouko 会被原逻辑重置（已通过修改 NPC 数据中的 `overrideposition` 实现）
+-   [ ] 解决剧情冲突问题
+-   [ ] 禁用等待 Kyouko 状态下切换地图
 
-- [x] 实现基础联机 
-- [x] 实现跨地图同步
-- [x] 实现较好的运动同步
-- [x] 游戏内 Console
-- [x] 解决 Kyouko 无物理问题
-- [x] 提前加载 Kyouko
-- [x] 同步"结束"
-- [x] 同步对话(由 余烬特调 提供)
-- [x] ping 显示
-- [x] 连接后立即同步位置
-- [x] 禁用 OnDayOver 时 Mystia 的个人 Dialog
-- [x] 解决 Kyouko 无法上下坡的问题
-- [x] 禁用等待 Kyouko 状态下交互
-- [ ] ~~禁用 Kyouko 交互~~
-- [x] 切换到兽道时，Kyouko 会被游戏原逻辑重置，~~需要 hook 掉~~(通过修改 NPC 数据中的 overrideposition 实现) 
-- [ ] 解决剧情冲突问题
-- [ ] 禁用等待 Kyouko 状态下切换地图
+### 营业准备阶段
 
-营业准备篇
+-   [x] 研究相关 API
+-   [ ] ~~限制仅 Kyouko 伙伴选择（暂不考虑实现）~~
+-   [x] 限制必须选择相同场景与模式
+-   [x] 同步菜单
+-   [x] 同步酒水
+-   [x] 同步厨具
+-   [x] 优化厨具同步逻辑
+-   [x] 同步加载预设（无需额外实现）
+-   [ ] ~~优化同步代码~~
+-   [x] 同步“开始营业”
 
-- [x] 研究相关 API
-- [ ] ~~限制仅 Kyouko 伙伴选择（暂时考虑不实现）~~
-- [x] 限制必须选择相同场景和模式
-- [x] 同步菜单
-- [x] 同步酒水
-- [x] 同步厨具
-- [x] 优化厨具同步逻辑
-- [x] 同步加载预设（无需额外实现） 
-- [ ] ~~优化同步代码~~
-- [x] 同步"开始营业"
+### NightScene（夜晚营业）
 
+-   [x] 同步普通顾客生成
+-   [x] 同步稀有顾客生成
+-   [x] 同步顾客落座
+-   [x] 同步顾客点单
+-   [x] 同步上菜
+-   [ ] ~~同步顾客评价~~
+-   [ ] ~~同步顾客结账~~（结账与评价在两端独立进行，但由于上菜一致，结果基本一致）
+-   [x] 同步顾客离开
+-   [ ] ~~同步符卡奖励、惩罚~~（基于订单评估，逻辑同上）
+-   [x] 同步做菜、取菜
+-   [x] 同步保温箱
+-   [ ] 同步保温箱（白天）
+-   [x] 同步运动状态
+-   [x] 移除原有伙伴
+-   [ ] 同步 Buff
+-   [x] 同步 Sellable 暂存
+-   [ ] ~~同步时钟~~（已将夜晚时间由 240s 延长至 480s，并取消时停）
 
-NightScene 篇
-- [x] 同步普客生成
-- [x] 同步稀客生成
-- [x] 同步顾客落座
-- [x] 同步顾客点单
-- [x] 同步上菜
-- [ ] ~~同步顾客评价~~
-- [ ] ~~同步顾客结账~~ (顾客结账和评价将在两端独立进行，但由于两端上的菜一致，结果将大致相同)
-- [x] 同步顾客离开
-- [ ] ~~同步符卡奖励/惩罚~~ (符卡奖励/惩罚来源于订单评估，由于两端上的菜一致，结果将大致相同)
-- [x] 同步做菜取菜
-- [x] 同步保温箱
-- [ ] 同步保温箱(白天)
-- [x] 同步运动状态
-- [x] 移除原有伙伴
-- [ ] 同步 buff
-- [x] 同步 Sellable 暂存
-- [ ] ~~同步时钟~~ (已延长夜晚时间240s -> 480s，同时取消时停)
+### 其他功能
 
-其他
-- [x] 自定义二人对话
-- [x] 自定义角色立绘扩展
-- [ ] 自定义角色小人
+-   [x] 自定义对话
+-   [x] 自定义角色立绘扩展
+-   [ ] 自定义角色小人
 
-已知 bug 或缺陷
-- [x] InGameConsole 与原有面板 UI 冲突
-- [x] 对话 UI 与面板 UI 冲突
-- [x] InGameConsole 与场景切换冲突
-- [x] DayScene Kyouko 移动缺少 *高度* 变化
-- [ ] A 在 loading 时 B 选择厨具会使 A 进入 Prep 后显示错误的厨具列表
-- [x] 地图选择界面中不会缺少店铺等级的提示
-- [ ] 不同 DLC 适配
+## 已知问题与缺陷
 
-NightScene 篇已知 bug 或缺陷
-- [x] 两人同时给同一桌顾客上菜，可能会有问题
-- [ ] 还请多多测试，bug 提交请附带上 (Touhou Mystia Izakaya\BepInEx\LogOutput.log)
+### 通用问题
 
+-   [x] InGameConsole 与原有面板 UI 冲突
+-   [x] 对话 UI 与面板 UI 冲突
+-   [x] InGameConsole 与场景切换冲突
+-   [x] DayScene 中 Kyouko 移动缺少高度变化
+-   [ ] A 在 Loading 时，B 选择厨具会导致 A 进入 Prep 后显示错误的厨具列表
+-   [x] 地图选择界面中缺少店铺等级提示
+-   [ ] 不同 DLC 的适配问题
 
-## ResouceEx 
+### NightScene 已知问题
 
-参见 ResourceEx 下的 [README.md](https://github.com/MetaMikuAI/MetaMystia/tree/main/ResourceEx) 文件，添加自定义角色立绘和对话包
+-   [x] 两名玩家同时为同一桌顾客上菜可能出现异常
+-   [ ] 仍需大量测试
+        提交 Bug 时请附带日志文件：
+        `Touhou Mystia Izakaya/BepInEx/LogOutput.log`
 
 ## 鸣谢
 
-- 第一原作：ZUN@上海アリス幻樂団
-- 第二原作：东方夜雀食堂 - Touhou Mystia's Izakaya
-
-特别感谢 DEYU 和 kk 等的支持和帮助
-
-## 开发
-
-0. 安装 [.Net 10 SDK](https://dotnet.microsoft.com/zh-cn/download/dotnet/10.0)
-1. 拥有一份[东方夜雀食堂](https://store.steampowered.com/app/1584090)的合法拷贝
-2. 克隆本仓库
-3. 下载最新的 [BepInEx-Unity.IL2CPP-win-x64](https://builds.bepinex.dev/projects/bepinex_be) 并将其解压到游戏根目录
-4. 将游戏的安装目录复制并且填入 [MetaMystia.csproj](./MetaMystia.csproj) 的 `<GamePath>` 标签中
-5. 启动游戏一次，在进入主菜单后关闭游戏，以生成必要的文件
-6. 在支持 .Net Sln 的 IDE 中打开本仓库根目录下的 `MetaMystia.sln`
-7. 编译项目
+-   第一原作：**ZUN@上海アリス幻樂団**
+-   第二原作：**东方夜雀食堂 / Touhou Mystia’s Izakaya**
+-   特别感谢：[**Delsin-Yu**](https://github.com/Delsin-Yu)、[**幽紫 kk**](https://space.bilibili.com/86865890)等人的支持与帮助
 
 ## Star History
 
