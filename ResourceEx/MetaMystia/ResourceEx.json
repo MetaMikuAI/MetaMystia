@@ -3,7 +3,7 @@
     {
       "id": 9000,
       "name": "大妖精",
-      "label": "Daiyousei",
+      "label": "_Daiyousei",
       "descriptions": [
         "生活在雾之湖的连本名都成谜的奇妙妖精，似乎和琪露诺是好朋友，其他的情报就一概不知道了。",
         "其实是个很细心又很热心肠的家伙呢。琪露诺她虽然嘴上说着不在乎啊无所谓啊什么的，但是我能看出来内心深处她对大酱很是依赖呢。",
@@ -13,23 +13,23 @@
       "portraits": [
         {
           "pid": 0,
-          "path": "assets/Daiyousei_0.png"
+          "path": "assets/_Daiyousei_0.png"
         },
         {
           "pid": 1,
-          "path": "assets/Daiyousei_1.png"
+          "path": "assets/_Daiyousei_1.png"
         },
         {
           "pid": 2,
-          "path": "assets/Daiyousei_2.png"
+          "path": "assets/_Daiyousei_2.png"
         },
         {
           "pid": 3,
-          "path": "assets/Daiyousei_3.png"
+          "path": "assets/_Daiyousei_3.png"
         },
         {
           "pid": 4,
-          "path": "assets/Daiyousei_4.png"
+          "path": "assets/_Daiyousei_4.png"
         }
       ],
       "guest": {
@@ -179,53 +179,53 @@
         ]
       },
       "characterSpriteSetCompact": {
-        "name": "Daiyousei",
+        "name": "_Daiyousei",
         "mainSprite": [
-          "assets/Daiyousei/Daiyousei_Main_0, 0.png",
-          "assets/Daiyousei/Daiyousei_Main_0, 1.png",
-          "assets/Daiyousei/Daiyousei_Main_0, 2.png",
-          "assets/Daiyousei/Daiyousei_Main_1, 0.png",
-          "assets/Daiyousei/Daiyousei_Main_1, 1.png",
-          "assets/Daiyousei/Daiyousei_Main_1, 2.png",
-          "assets/Daiyousei/Daiyousei_Main_2, 0.png",
-          "assets/Daiyousei/Daiyousei_Main_2, 1.png",
-          "assets/Daiyousei/Daiyousei_Main_2, 2.png",
-          "assets/Daiyousei/Daiyousei_Main_3, 0.png",
-          "assets/Daiyousei/Daiyousei_Main_3, 1.png",
-          "assets/Daiyousei/Daiyousei_Main_3, 2.png"
+          "assets/_Daiyousei/_Daiyousei_Main_0, 0.png",
+          "assets/_Daiyousei/_Daiyousei_Main_0, 1.png",
+          "assets/_Daiyousei/_Daiyousei_Main_0, 2.png",
+          "assets/_Daiyousei/_Daiyousei_Main_1, 0.png",
+          "assets/_Daiyousei/_Daiyousei_Main_1, 1.png",
+          "assets/_Daiyousei/_Daiyousei_Main_1, 2.png",
+          "assets/_Daiyousei/_Daiyousei_Main_2, 0.png",
+          "assets/_Daiyousei/_Daiyousei_Main_2, 1.png",
+          "assets/_Daiyousei/_Daiyousei_Main_2, 2.png",
+          "assets/_Daiyousei/_Daiyousei_Main_3, 0.png",
+          "assets/_Daiyousei/_Daiyousei_Main_3, 1.png",
+          "assets/_Daiyousei/_Daiyousei_Main_3, 2.png"
         ],
         "eyeSprite": [
-          "assets/Daiyousei/Daiyousei_Eyes_0, 0.png",
-          "assets/Daiyousei/Daiyousei_Eyes_0, 1.png",
-          "assets/Daiyousei/Daiyousei_Eyes_0, 2.png",
-          "assets/Daiyousei/Daiyousei_Eyes_0, 3.png",
-          "assets/Daiyousei/Daiyousei_Eyes_1, 0.png",
-          "assets/Daiyousei/Daiyousei_Eyes_1, 1.png",
-          "assets/Daiyousei/Daiyousei_Eyes_1, 2.png",
-          "assets/Daiyousei/Daiyousei_Eyes_1, 3.png",
-          "assets/Daiyousei/Daiyousei_Eyes_2, 0.png",
-          "assets/Daiyousei/Daiyousei_Eyes_2, 1.png",
-          "assets/Daiyousei/Daiyousei_Eyes_2, 2.png",
-          "assets/Daiyousei/Daiyousei_Eyes_2, 3.png",
-          "assets/Daiyousei/Daiyousei_Eyes_3, 0.png",
-          "assets/Daiyousei/Daiyousei_Eyes_3, 1.png",
-          "assets/Daiyousei/Daiyousei_Eyes_3, 2.png",
-          "assets/Daiyousei/Daiyousei_Eyes_3, 3.png",
-          "assets/Daiyousei/Daiyousei_Eyes_4, 0.png",
-          "assets/Daiyousei/Daiyousei_Eyes_4, 1.png",
-          "assets/Daiyousei/Daiyousei_Eyes_4, 2.png",
-          "assets/Daiyousei/Daiyousei_Eyes_4, 3.png",
-          "assets/Daiyousei/Daiyousei_Eyes_5, 0.png",
-          "assets/Daiyousei/Daiyousei_Eyes_5, 1.png",
-          "assets/Daiyousei/Daiyousei_Eyes_5, 2.png",
-          "assets/Daiyousei/Daiyousei_Eyes_5, 3.png"
+          "assets/_Daiyousei/_Daiyousei_Eyes_0, 0.png",
+          "assets/_Daiyousei/_Daiyousei_Eyes_0, 1.png",
+          "assets/_Daiyousei/_Daiyousei_Eyes_0, 2.png",
+          "assets/_Daiyousei/_Daiyousei_Eyes_0, 3.png",
+          "assets/_Daiyousei/_Daiyousei_Eyes_1, 0.png",
+          "assets/_Daiyousei/_Daiyousei_Eyes_1, 1.png",
+          "assets/_Daiyousei/_Daiyousei_Eyes_1, 2.png",
+          "assets/_Daiyousei/_Daiyousei_Eyes_1, 3.png",
+          "assets/_Daiyousei/_Daiyousei_Eyes_2, 0.png",
+          "assets/_Daiyousei/_Daiyousei_Eyes_2, 1.png",
+          "assets/_Daiyousei/_Daiyousei_Eyes_2, 2.png",
+          "assets/_Daiyousei/_Daiyousei_Eyes_2, 3.png",
+          "assets/_Daiyousei/_Daiyousei_Eyes_3, 0.png",
+          "assets/_Daiyousei/_Daiyousei_Eyes_3, 1.png",
+          "assets/_Daiyousei/_Daiyousei_Eyes_3, 2.png",
+          "assets/_Daiyousei/_Daiyousei_Eyes_3, 3.png",
+          "assets/_Daiyousei/_Daiyousei_Eyes_4, 0.png",
+          "assets/_Daiyousei/_Daiyousei_Eyes_4, 1.png",
+          "assets/_Daiyousei/_Daiyousei_Eyes_4, 2.png",
+          "assets/_Daiyousei/_Daiyousei_Eyes_4, 3.png",
+          "assets/_Daiyousei/_Daiyousei_Eyes_5, 0.png",
+          "assets/_Daiyousei/_Daiyousei_Eyes_5, 1.png",
+          "assets/_Daiyousei/_Daiyousei_Eyes_5, 2.png",
+          "assets/_Daiyousei/_Daiyousei_Eyes_5, 3.png"
         ]
       }
     },
     {
       "id": 9001,
       "name": "小恶魔",
-      "label": "Koakuma",
+      "label": "_Koakuma",
       "descriptions": [
         "满脸写着杂鱼样的恶魔少女，不过似乎一直很用力地强调自己的存在感呢。",
         "是那位名为帕秋莉的魔法使的使魔，不过看起来相比主仆更像是冤家就是了。虽然明面上看起来对自家的主人们不屑一顾，然而内心深处其实很在意红魔馆的大家呢。",
@@ -235,23 +235,23 @@
       "portraits": [
         {
           "pid": 0,
-          "path": "assets/Koakuma_0.png"
+          "path": "assets/_Koakuma_0.png"
         },
         {
           "pid": 1,
-          "path": "assets/Koakuma_1.png"
+          "path": "assets/_Koakuma_1.png"
         },
         {
           "pid": 2,
-          "path": "assets/Koakuma_2.png"
+          "path": "assets/_Koakuma_2.png"
         },
         {
           "pid": 3,
-          "path": "assets/Koakuma_3.png"
+          "path": "assets/_Koakuma_3.png"
         },
         {
           "pid": 4,
-          "path": "assets/Koakuma_4.png"
+          "path": "assets/_Koakuma_4.png"
         }
       ],
       "guest": {
@@ -408,53 +408,53 @@
         ]
       },
       "characterSpriteSetCompact": {
-        "name": "Koakuma",
+        "name": "_Koakuma",
         "mainSprite": [
-          "assets/Koakuma/Koakuma_Main_0, 0.png",
-          "assets/Koakuma/Koakuma_Main_0, 1.png",
-          "assets/Koakuma/Koakuma_Main_0, 2.png",
-          "assets/Koakuma/Koakuma_Main_1, 0.png",
-          "assets/Koakuma/Koakuma_Main_1, 1.png",
-          "assets/Koakuma/Koakuma_Main_1, 2.png",
-          "assets/Koakuma/Koakuma_Main_2, 0.png",
-          "assets/Koakuma/Koakuma_Main_2, 1.png",
-          "assets/Koakuma/Koakuma_Main_2, 2.png",
-          "assets/Koakuma/Koakuma_Main_3, 0.png",
-          "assets/Koakuma/Koakuma_Main_3, 1.png",
-          "assets/Koakuma/Koakuma_Main_3, 2.png"
+          "assets/_Koakuma/_Koakuma_Main_0, 0.png",
+          "assets/_Koakuma/_Koakuma_Main_0, 1.png",
+          "assets/_Koakuma/_Koakuma_Main_0, 2.png",
+          "assets/_Koakuma/_Koakuma_Main_1, 0.png",
+          "assets/_Koakuma/_Koakuma_Main_1, 1.png",
+          "assets/_Koakuma/_Koakuma_Main_1, 2.png",
+          "assets/_Koakuma/_Koakuma_Main_2, 0.png",
+          "assets/_Koakuma/_Koakuma_Main_2, 1.png",
+          "assets/_Koakuma/_Koakuma_Main_2, 2.png",
+          "assets/_Koakuma/_Koakuma_Main_3, 0.png",
+          "assets/_Koakuma/_Koakuma_Main_3, 1.png",
+          "assets/_Koakuma/_Koakuma_Main_3, 2.png"
         ],
         "eyeSprite": [
-          "assets/Koakuma/Koakuma_Eyes_0, 0.png",
-          "assets/Koakuma/Koakuma_Eyes_0, 1.png",
-          "assets/Koakuma/Koakuma_Eyes_0, 2.png",
-          "assets/Koakuma/Koakuma_Eyes_0, 3.png",
-          "assets/Koakuma/Koakuma_Eyes_1, 0.png",
-          "assets/Koakuma/Koakuma_Eyes_1, 1.png",
-          "assets/Koakuma/Koakuma_Eyes_1, 2.png",
-          "assets/Koakuma/Koakuma_Eyes_1, 3.png",
-          "assets/Koakuma/Koakuma_Eyes_2, 0.png",
-          "assets/Koakuma/Koakuma_Eyes_2, 1.png",
-          "assets/Koakuma/Koakuma_Eyes_2, 2.png",
-          "assets/Koakuma/Koakuma_Eyes_2, 3.png",
-          "assets/Koakuma/Koakuma_Eyes_3, 0.png",
-          "assets/Koakuma/Koakuma_Eyes_3, 1.png",
-          "assets/Koakuma/Koakuma_Eyes_3, 2.png",
-          "assets/Koakuma/Koakuma_Eyes_3, 3.png",
-          "assets/Koakuma/Koakuma_Eyes_4, 0.png",
-          "assets/Koakuma/Koakuma_Eyes_4, 1.png",
-          "assets/Koakuma/Koakuma_Eyes_4, 2.png",
-          "assets/Koakuma/Koakuma_Eyes_4, 3.png",
-          "assets/Koakuma/Koakuma_Eyes_5, 0.png",
-          "assets/Koakuma/Koakuma_Eyes_5, 1.png",
-          "assets/Koakuma/Koakuma_Eyes_5, 2.png",
-          "assets/Koakuma/Koakuma_Eyes_5, 3.png"
+          "assets/_Koakuma/_Koakuma_Eyes_0, 0.png",
+          "assets/_Koakuma/_Koakuma_Eyes_0, 1.png",
+          "assets/_Koakuma/_Koakuma_Eyes_0, 2.png",
+          "assets/_Koakuma/_Koakuma_Eyes_0, 3.png",
+          "assets/_Koakuma/_Koakuma_Eyes_1, 0.png",
+          "assets/_Koakuma/_Koakuma_Eyes_1, 1.png",
+          "assets/_Koakuma/_Koakuma_Eyes_1, 2.png",
+          "assets/_Koakuma/_Koakuma_Eyes_1, 3.png",
+          "assets/_Koakuma/_Koakuma_Eyes_2, 0.png",
+          "assets/_Koakuma/_Koakuma_Eyes_2, 1.png",
+          "assets/_Koakuma/_Koakuma_Eyes_2, 2.png",
+          "assets/_Koakuma/_Koakuma_Eyes_2, 3.png",
+          "assets/_Koakuma/_Koakuma_Eyes_3, 0.png",
+          "assets/_Koakuma/_Koakuma_Eyes_3, 1.png",
+          "assets/_Koakuma/_Koakuma_Eyes_3, 2.png",
+          "assets/_Koakuma/_Koakuma_Eyes_3, 3.png",
+          "assets/_Koakuma/_Koakuma_Eyes_4, 0.png",
+          "assets/_Koakuma/_Koakuma_Eyes_4, 1.png",
+          "assets/_Koakuma/_Koakuma_Eyes_4, 2.png",
+          "assets/_Koakuma/_Koakuma_Eyes_4, 3.png",
+          "assets/_Koakuma/_Koakuma_Eyes_5, 0.png",
+          "assets/_Koakuma/_Koakuma_Eyes_5, 1.png",
+          "assets/_Koakuma/_Koakuma_Eyes_5, 2.png",
+          "assets/_Koakuma/_Koakuma_Eyes_5, 3.png"
         ]
       }
     },
     {
       "id": 9002,
       "name": "芙兰朵露 · 斯卡蕾特",
-      "label": "FlandreScarlet",
+      "label": "_FlandreScarlet",
       "descriptions": [
         "传说中非常非常可怕的吸血鬼，妖精客人们一直提醒我要小心……虽然看起来明明是个小孩子嘛。",
         "芙兰朵露小姐的心理….似乎真的就是一个没接触过世界的小孩子呢。到底是因为吸血鬼的长寿天赋导致的心智发育缓慢，还是极少接触外人导致的呢？",
@@ -464,155 +464,155 @@
       "portraits": [
         {
           "pid": 0,
-          "path": "assets/FlandreScarlet_0.png"
+          "path": "assets/_FlandreScarlet_0.png"
         },
         {
           "pid": 1,
-          "path": "assets/FlandreScarlet_1.png"
+          "path": "assets/_FlandreScarlet_1.png"
         },
         {
           "pid": 2,
-          "path": "assets/FlandreScarlet_2.png"
+          "path": "assets/_FlandreScarlet_2.png"
         },
         {
           "pid": 3,
-          "path": "assets/FlandreScarlet_3.png"
+          "path": "assets/_FlandreScarlet_3.png"
         },
         {
           "pid": 4,
-          "path": "assets/FlandreScarlet_4.png"
+          "path": "assets/_FlandreScarlet_4.png"
         },
         {
           "pid": 5,
-          "path": "assets/FlandreScarlet_5.png"
+          "path": "assets/_FlandreScarlet_5.png"
         },
         {
           "pid": 6,
-          "path": "assets/FlandreScarlet_6.png"
+          "path": "assets/_FlandreScarlet_6.png"
         },
         {
           "pid": 7,
-          "path": "assets/FlandreScarlet_7.png"
+          "path": "assets/_FlandreScarlet_7.png"
         },
         {
           "pid": 8,
-          "path": "assets/FlandreScarlet_8.png"
+          "path": "assets/_FlandreScarlet_8.png"
         },
         {
           "pid": 9,
-          "path": "assets/FlandreScarlet_9.png"
+          "path": "assets/_FlandreScarlet_9.png"
         },
         {
           "pid": 10,
-          "path": "assets/FlandreScarlet_10.png"
+          "path": "assets/_FlandreScarlet_10.png"
         },
         {
           "pid": 11,
-          "path": "assets/FlandreScarlet_11.png"
+          "path": "assets/_FlandreScarlet_11.png"
         },
         {
           "pid": 12,
-          "path": "assets/FlandreScarlet_12.png"
+          "path": "assets/_FlandreScarlet_12.png"
         },
         {
           "pid": 13,
-          "path": "assets/FlandreScarlet_13.png"
+          "path": "assets/_FlandreScarlet_13.png"
         },
         {
           "pid": 14,
-          "path": "assets/FlandreScarlet_14.png"
+          "path": "assets/_FlandreScarlet_14.png"
         },
         {
           "pid": 15,
-          "path": "assets/FlandreScarlet_15.png"
+          "path": "assets/_FlandreScarlet_15.png"
         },
         {
           "pid": 16,
-          "path": "assets/FlandreScarlet_16.png"
+          "path": "assets/_FlandreScarlet_16.png"
         },
         {
           "pid": 17,
-          "path": "assets/FlandreScarlet_17.png"
+          "path": "assets/_FlandreScarlet_17.png"
         },
         {
           "pid": 18,
-          "path": "assets/FlandreScarlet_18.png"
+          "path": "assets/_FlandreScarlet_18.png"
         },
         {
           "pid": 19,
-          "path": "assets/FlandreScarlet_19.png"
+          "path": "assets/_FlandreScarlet_19.png"
         },
         {
           "pid": 20,
-          "path": "assets/FlandreScarlet_20.png"
+          "path": "assets/_FlandreScarlet_20.png"
         },
         {
           "pid": 21,
-          "path": "assets/FlandreScarlet_21.png"
+          "path": "assets/_FlandreScarlet_21.png"
         },
         {
           "pid": 22,
-          "path": "assets/FlandreScarlet_22.png"
+          "path": "assets/_FlandreScarlet_22.png"
         },
         {
           "pid": 23,
-          "path": "assets/FlandreScarlet_23.png"
+          "path": "assets/_FlandreScarlet_23.png"
         },
         {
           "pid": 24,
-          "path": "assets/FlandreScarlet_24.png"
+          "path": "assets/_FlandreScarlet_24.png"
         },
         {
           "pid": 25,
-          "path": "assets/FlandreScarlet_25.png"
+          "path": "assets/_FlandreScarlet_25.png"
         },
         {
           "pid": 26,
-          "path": "assets/FlandreScarlet_26.png"
+          "path": "assets/_FlandreScarlet_26.png"
         },
         {
           "pid": 27,
-          "path": "assets/FlandreScarlet_27.png"
+          "path": "assets/_FlandreScarlet_27.png"
         },
         {
           "pid": 28,
-          "path": "assets/FlandreScarlet_28.png"
+          "path": "assets/_FlandreScarlet_28.png"
         },
         {
           "pid": 29,
-          "path": "assets/FlandreScarlet_29.png"
+          "path": "assets/_FlandreScarlet_29.png"
         },
         {
           "pid": 30,
-          "path": "assets/FlandreScarlet_30.png"
+          "path": "assets/_FlandreScarlet_30.png"
         },
         {
           "pid": 31,
-          "path": "assets/FlandreScarlet_31.png"
+          "path": "assets/_FlandreScarlet_31.png"
         },
         {
           "pid": 32,
-          "path": "assets/FlandreScarlet_32.png"
+          "path": "assets/_FlandreScarlet_32.png"
         },
         {
           "pid": 33,
-          "path": "assets/FlandreScarlet_33.png"
+          "path": "assets/_FlandreScarlet_33.png"
         },
         {
           "pid": 34,
-          "path": "assets/FlandreScarlet_34.png"
+          "path": "assets/_FlandreScarlet_34.png"
         },
         {
           "pid": 35,
-          "path": "assets/FlandreScarlet_35.png"
+          "path": "assets/_FlandreScarlet_35.png"
         },
         {
           "pid": 36,
-          "path": "assets/FlandreScarlet_36.png"
+          "path": "assets/_FlandreScarlet_36.png"
         },
         {
           "pid": 37,
-          "path": "assets/FlandreScarlet_37.png"
+          "path": "assets/_FlandreScarlet_37.png"
         }
       ],
       "guest": {
@@ -740,53 +740,53 @@
         ]
       },
       "characterSpriteSetCompact": {
-        "name": "FlandreScarlet",
+        "name": "_FlandreScarlet",
         "mainSprite": [
-          "assets/FlandreScarlet/FlandreScarlet_Main_0, 0.png",
-          "assets/FlandreScarlet/FlandreScarlet_Main_0, 1.png",
-          "assets/FlandreScarlet/FlandreScarlet_Main_0, 2.png",
-          "assets/FlandreScarlet/FlandreScarlet_Main_1, 0.png",
-          "assets/FlandreScarlet/FlandreScarlet_Main_1, 1.png",
-          "assets/FlandreScarlet/FlandreScarlet_Main_1, 2.png",
-          "assets/FlandreScarlet/FlandreScarlet_Main_2, 0.png",
-          "assets/FlandreScarlet/FlandreScarlet_Main_2, 1.png",
-          "assets/FlandreScarlet/FlandreScarlet_Main_2, 2.png",
-          "assets/FlandreScarlet/FlandreScarlet_Main_3, 0.png",
-          "assets/FlandreScarlet/FlandreScarlet_Main_3, 1.png",
-          "assets/FlandreScarlet/FlandreScarlet_Main_3, 2.png"
+          "assets/_FlandreScarlet/_FlandreScarlet_Main_0, 0.png",
+          "assets/_FlandreScarlet/_FlandreScarlet_Main_0, 1.png",
+          "assets/_FlandreScarlet/_FlandreScarlet_Main_0, 2.png",
+          "assets/_FlandreScarlet/_FlandreScarlet_Main_1, 0.png",
+          "assets/_FlandreScarlet/_FlandreScarlet_Main_1, 1.png",
+          "assets/_FlandreScarlet/_FlandreScarlet_Main_1, 2.png",
+          "assets/_FlandreScarlet/_FlandreScarlet_Main_2, 0.png",
+          "assets/_FlandreScarlet/_FlandreScarlet_Main_2, 1.png",
+          "assets/_FlandreScarlet/_FlandreScarlet_Main_2, 2.png",
+          "assets/_FlandreScarlet/_FlandreScarlet_Main_3, 0.png",
+          "assets/_FlandreScarlet/_FlandreScarlet_Main_3, 1.png",
+          "assets/_FlandreScarlet/_FlandreScarlet_Main_3, 2.png"
         ],
         "eyeSprite": [
-          "assets/FlandreScarlet/FlandreScarlet_Eyes_0, 0.png",
-          "assets/FlandreScarlet/FlandreScarlet_Eyes_0, 1.png",
-          "assets/FlandreScarlet/FlandreScarlet_Eyes_0, 2.png",
-          "assets/FlandreScarlet/FlandreScarlet_Eyes_0, 3.png",
-          "assets/FlandreScarlet/FlandreScarlet_Eyes_1, 0.png",
-          "assets/FlandreScarlet/FlandreScarlet_Eyes_1, 1.png",
-          "assets/FlandreScarlet/FlandreScarlet_Eyes_1, 2.png",
-          "assets/FlandreScarlet/FlandreScarlet_Eyes_1, 3.png",
-          "assets/FlandreScarlet/FlandreScarlet_Eyes_2, 0.png",
-          "assets/FlandreScarlet/FlandreScarlet_Eyes_2, 1.png",
-          "assets/FlandreScarlet/FlandreScarlet_Eyes_2, 2.png",
-          "assets/FlandreScarlet/FlandreScarlet_Eyes_2, 3.png",
-          "assets/FlandreScarlet/FlandreScarlet_Eyes_3, 0.png",
-          "assets/FlandreScarlet/FlandreScarlet_Eyes_3, 1.png",
-          "assets/FlandreScarlet/FlandreScarlet_Eyes_3, 2.png",
-          "assets/FlandreScarlet/FlandreScarlet_Eyes_3, 3.png",
-          "assets/FlandreScarlet/FlandreScarlet_Eyes_4, 0.png",
-          "assets/FlandreScarlet/FlandreScarlet_Eyes_4, 1.png",
-          "assets/FlandreScarlet/FlandreScarlet_Eyes_4, 2.png",
-          "assets/FlandreScarlet/FlandreScarlet_Eyes_4, 3.png",
-          "assets/FlandreScarlet/FlandreScarlet_Eyes_5, 0.png",
-          "assets/FlandreScarlet/FlandreScarlet_Eyes_5, 1.png",
-          "assets/FlandreScarlet/FlandreScarlet_Eyes_5, 2.png",
-          "assets/FlandreScarlet/FlandreScarlet_Eyes_5, 3.png"
+          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_0, 0.png",
+          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_0, 1.png",
+          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_0, 2.png",
+          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_0, 3.png",
+          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_1, 0.png",
+          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_1, 1.png",
+          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_1, 2.png",
+          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_1, 3.png",
+          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_2, 0.png",
+          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_2, 1.png",
+          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_2, 2.png",
+          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_2, 3.png",
+          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_3, 0.png",
+          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_3, 1.png",
+          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_3, 2.png",
+          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_3, 3.png",
+          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_4, 0.png",
+          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_4, 1.png",
+          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_4, 2.png",
+          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_4, 3.png",
+          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_5, 0.png",
+          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_5, 1.png",
+          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_5, 2.png",
+          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_5, 3.png"
         ]
       }
     },
     {
       "id": 10000,
       "name": "秋静叶",
-      "label": "AkiSizuha",
+      "label": "_AkiSizuha",
       "descriptions": [
         "红叶之神",
         "八百万之神",
@@ -796,14 +796,14 @@
       "portraits": [
         {
           "pid": 0,
-          "path": "assets/AkiSizuha_0.png"
+          "path": "assets/_AkiSizuha_0.png"
         }
       ]
     },
     {
       "id": 10001,
       "name": "秋穰子",
-      "label": "AkiMinoriko",
+      "label": "_AkiMinoriko",
       "descriptions": [
         "丰收之神",
         "八百万之神",
@@ -813,14 +813,14 @@
       "portraits": [
         {
           "pid": 0,
-          "path": "assets/AkiMinoriko_0.png"
+          "path": "assets/_AkiMinoriko_0.png"
         }
       ]
     },
     {
       "id": 10002,
       "name": "八云蓝",
-      "label": "YakumoRan",
+      "label": "_YakumoRan",
       "descriptions": [
         "使役式神程度的能力",
         "",
@@ -830,7 +830,7 @@
       "portraits": [
         {
           "pid": 0,
-          "path": "assets/YakumoRan_0.png"
+          "path": "assets/_YakumoRan_0.png"
         }
       ]
     }

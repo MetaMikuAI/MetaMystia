@@ -31,10 +31,29 @@ public partial class WorkSceneStoragePannelPatch
     
     [HarmonyPatch(nameof(WorkSceneStoragePannel.Extract))]
     [HarmonyPrefix]
-    public static void OnExtract_Prefix(Sellable toExtract)
+    public static bool OnExtract_Prefix(Sellable toExtract)
     {
-        Log.LogDebug("OnExtract_Prefix called");
-        SellableFood food = SellableFood.FromSellable(toExtract);
-        ExtractFoodAction.Send(food);
+        Log.Warning("OnExtract_Prefix called");
+        if (toExtract.type == Sellable.SellableType.Beverage)
+        {
+            if (MpManager.IsConnected && !DLCManager.PeerBeverageAvailable(toExtract.id))
+            {
+                Log.LogWarning($"Peer does not have beverage {toExtract.id}, cannot extract.");
+                Notify.ShowOnMainThread("对方未装载有此酒水的 DLC！");
+                return false;
+            }
+        }
+        else if (toExtract.type == Sellable.SellableType.Food)
+        {
+            if (MpManager.IsConnected && !DLCManager.PeerFoodAvailable(toExtract.id))
+            {
+                Log.LogWarning($"Peer does not have recipe {toExtract.id}, cannot extract.");
+                Notify.ShowOnMainThread("对方未装载有此食物的 DLC！");
+                return false;
+            }
+            SellableFood food = SellableFood.FromSellable(toExtract);
+            ExtractFoodAction.Send(food);
+        }
+        return true;
     }
 }

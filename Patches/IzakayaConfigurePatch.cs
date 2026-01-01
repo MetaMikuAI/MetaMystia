@@ -14,31 +14,52 @@ public partial class IzakayaConfigurePatch
     
     [HarmonyPatch(nameof(IzakayaConfigure.RegisterToDailyRecipes))]
     [HarmonyPrefix]
-    public static void RegisterToDailyRecipes_Prefix(int id)
+    public static bool RegisterToDailyRecipes_Prefix(int id)
     {
         Log.LogInfo($"RegisterToDailyRecipes: {id}");
+
+        if (MpManager.IsConnected && !DLCManager.PeerRecipeAvailable(id))
+        {
+            Log.LogWarning($"Peer does not have recipe {id}, skipping...");
+            return false;
+        }
+
         PrepSceneManager.localPrepTable.RecipeAdditions[id] = MpManager.GetSynchronizedTimestampNow;
         PrepAction.Send(PrepSceneManager.localPrepTable);
+        return true;
     }
     
     [HarmonyPatch(nameof(IzakayaConfigure.RegisterToDailyBeverages))]
     [HarmonyPrefix]
-    public static void RegisterToDailyBeverages_Prefix(int id)
+    public static bool RegisterToDailyBeverages_Prefix(int id)
     {
         Log.LogInfo($"RegisterToDailyBeverages: {id}");
+        if (MpManager.IsConnected && !DLCManager.PeerBeverageAvailable(id))
+        {
+            Log.LogWarning($"Peer does not have beverage {id}, skipping...");
+            return false;
+        }
+
         PrepSceneManager.localPrepTable.BeverageAdditions[id] = MpManager.GetSynchronizedTimestampNow;
         PrepAction.Send(PrepSceneManager.localPrepTable);
+        return true;
     }
 
     [HarmonyPatch(nameof(IzakayaConfigure.RegisterToCookers))]
     [HarmonyPrefix]
-    public static void RegisterToCookers_Prefix(int id, int index, bool checkPlayerHaveCooker)
+    public static bool RegisterToCookers_Prefix(int id, int index, bool checkPlayerHaveCooker)
     {
         var slots = PrepSceneManager.GetLocalCookerSlots();
         if (index < 0 || index >= slots.Length)
         {
             Log.LogWarning($"RegisterToCookers out of range: id={id}, index={index}, checkPlayerHaveCooker={checkPlayerHaveCooker}");
-            return;
+            return false;
+        }
+
+        if (id != -1 && MpManager.IsConnected && !DLCManager.PeerCookerAvailable(id))
+        {
+            Log.LogWarning($"Peer does not have cooker {id}, skipping...");
+            return false;
         }
 
         long timestamp = MpManager.GetSynchronizedTimestampNow;
@@ -48,6 +69,7 @@ public partial class IzakayaConfigurePatch
         Log.LogInfo($"RegisterToCookers: id={id}, index={index}, ts={timestamp}, checkPlayerHaveCooker={checkPlayerHaveCooker}");
 
         PrepAction.Send(PrepSceneManager.localPrepTable);
+        return true;
     }
 
     [HarmonyPatch(nameof(IzakayaConfigure.LogoffFromDailyRecipes))]

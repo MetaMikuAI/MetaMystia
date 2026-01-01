@@ -35,7 +35,11 @@ public static partial class DLCManager
     public static HashSet<int> PeerBeverages { get; set; } = [];
     public static HashSet<int> PeerNormalGuests { get; set; } = [];
     public static HashSet<int> PeerSpecialGuests { get; set; } = [];
-
+    
+    public static bool PeerRecipeAvailable(int id) => CoreRecipes.Contains(id) || PeerRecipes.Contains(id);
+    public static bool PeerCookerAvailable(int id) => CoreCookers.Contains(id) || PeerCookers.Contains(id); // 注, -1 为空位, 可能需要特判
+    public static bool PeerFoodAvailable(int id) => CoreFoods.Contains(id) || PeerFoods.Contains(id);
+    public static bool PeerBeverageAvailable(int id) => CoreBeverages.Contains(id) || PeerBeverages.Contains(id);
     public static bool PeerNormalGuestAvailable(int id) => CoreNormalGuests.Contains(id) || PeerNormalGuests.Contains(id);
     public static bool PeerSpecialGuestAvailable(int id) => CoreSpecialGuests.Contains(id) || PeerSpecialGuests.Contains(id);
     public static bool SpecialGuestAvailable(int id) => CoreSpecialGuests.Contains(id) || SpecialGuests.Contains(id);

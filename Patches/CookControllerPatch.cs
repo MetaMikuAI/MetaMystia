@@ -11,6 +11,21 @@ public partial class CookControllerPatch
 {
 
     [HarmonyPatch(nameof(CookController.SetCook))]
+    [HarmonyPrefix]
+    public static bool SetCook_Prefix(CookController __instance, Sellable thisResult, Recipe recipe, bool thisCouldReturnIngredients)
+    {
+        // Log.Debug($"SetCook_Prefix called");
+        if (MpManager.IsConnected && (!DLCManager.PeerRecipeAvailable(recipe.Id) || !DLCManager.PeerFoodAvailable(thisResult.id)))
+        {
+            Log.LogWarning($"Peer does not have recipe {recipe.Id}, skipping SetCook.");
+            Notify.ShowOnMainThread("对方未装载有此食谱的 DLC！");
+            return false;
+        }
+        return true;
+    }
+    
+
+    [HarmonyPatch(nameof(CookController.SetCook))]
     [HarmonyReversePatch]
     public static void SetCook_Original(CookController __instance, Sellable thisResult, Recipe recipe, bool thisCouldReturnIngredients)
     {
