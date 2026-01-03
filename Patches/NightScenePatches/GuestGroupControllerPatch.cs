@@ -79,6 +79,7 @@ public partial class GuestGroupControllerPatch
                 return true;
             }
             var seat = NightGuestManager.GetGuestDeskcodeSeat(uuid);
+            Log.Info($"sending {uuid} to desk {deskCode}, seat {seat}");
             NightGuestManager.MoveToDesk(__instance, deskCode, onMovementFinishCallback, seat);
             return false;
         }

@@ -533,10 +533,7 @@ public partial class InGameConsole
                 }
                 else
                 {
-                    // Todo: integrate
-                    // WorkSceneManager.CloseIzakayaIfPossible();
-                    GuestsManagerPatch.TryCloseIzakaya_Original(GuestsManager.Instance);
-                    GuestsManager.Instance?.occupiedDesks.Clear();
+                    NightGuestManager.CloseIzakayaIfPossible();
                     LogToConsole($"called try_close_izakaya");
                 }
                 break;

@@ -66,6 +66,10 @@ public static partial class NightGuestManager
 
     private static ConcurrentDictionary<string, (bool, bool)> guestOrderFullfilled = new(); 
 
+    public static int WorkTimeLeft => NightScene.EventUtility.EventManager.Instance.totalCountDown;
+    public static void ModifyWorkTimeLeft(int time) => NightScene.EventUtility.EventManager.Instance.totalCountDown = time;
+
+
     
     //private static int getGuestControllerHashCode(GuestGroupController controller) => System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(controller);
 
@@ -296,6 +300,13 @@ public static partial class NightGuestManager
     public static bool CheckStatusGreaterOrThrow(string uuid, Status targetStatus)
     {
         return GetGuestStatus(uuid) == Status.Null ? throw new GuestInvalidatedException($"{uuid} invalidated") : GetGuestStatus(uuid) >= targetStatus;
+    }
+
+    public static void CloseIzakayaIfPossible()
+    {
+        GuestsManager.Instance?.TryRepellAllQueuedGuestControllers();
+        GuestsManagerPatch.TryCloseIzakaya_Original(GuestsManager.Instance);
+        GuestsManager.Instance?.occupiedDesks.Clear();
     }
 
     public class GuestInvalidatedException : Exception

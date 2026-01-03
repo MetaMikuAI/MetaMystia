@@ -237,7 +237,7 @@ public static partial class KyoukoManager
 
         if (positionOffset.magnitude > 3.0f) // 偏差距离超过 3 直接传送
         {
-            Log.LogMessage($"Position offset too large ({positionOffset.magnitude}), teleporting Kyouko to sync position");
+            Log.Info($"Position offset too large ({positionOffset.magnitude}), teleporting Kyouko to sync position");
             GameData.RunTime.DaySceneUtility.RunTimeDayScene.MoveCharacter(KYOUKO_ID, MapLabel, syncPosition, 0, out var oldNPCData);
             GetCharacterUnit().rb2d.position = syncPosition;
             positionOffset = Vector2.zero;
