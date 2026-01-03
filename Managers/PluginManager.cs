@@ -20,7 +20,7 @@ public partial class PluginManager : MonoBehaviour
     private readonly ConcurrentQueue<Action> _mainThreadQueue = new ConcurrentQueue<Action>();
     private readonly List<(Action action, Func<bool> condition)> _conditionalActions = new List<(Action, Func<bool>)>();
     public static Scene CurrentGameScene { get; set; } = Scene.MainScene;
-    public static bool test = false;
+    public const bool DEBUG = true;
 
     public PluginManager(IntPtr ptr) : base(ptr)
     {
@@ -90,27 +90,34 @@ public partial class PluginManager : MonoBehaviour
         }
 
 
-        if (Input.GetKeyDown(KeyCode.F10))
+        if (DEBUG)
         {
-            DLCManager.Initialize();
-        }
-        if (Input.GetKeyDown(KeyCode.F11))
-        {
-            Plugin.Debugger??= new Debugger.WebDebugger();
-            Plugin.Debugger?.Start();
-        }
+            if (Input.GetKeyDown(KeyCode.F9))
+            {
+                NightGuestManager.CloseIzakayaIfPossible(); 
+            }
+            if (Input.GetKeyDown(KeyCode.F10))
+            {
+                NightGuestManager.ModifyWorkTimeLeft(3); 
+            }
+            if (Input.GetKeyDown(KeyCode.F11))
+            {
+                Plugin.Debugger??= new Debugger.WebDebugger();
+                Plugin.Debugger?.Start();
+            }
 
-        if (Input.GetKeyDown(KeyCode.KeypadDivide))
-        {
-            _ = MpManager.ConnectToPeerAsync("192.168.1.39", 40815); // 这是 SgrYuki 的主机，测试用
-        }
-        if (Input.GetKeyDown(KeyCode.KeypadMultiply))
-        {
-            MpManager.Start();
-        }
-        if (Input.GetKeyDown(KeyCode.KeypadMinus))
-        {
-            MpManager.Stop();
+            if (Input.GetKeyDown(KeyCode.RightBracket) || Input.GetKeyDown(KeyCode.KeypadDivide))
+            {
+                _ = MpManager.ConnectToPeerAsync("192.168.1.39", 40815); // 这是 SgrYuki 的主机，测试用
+            }
+            if (Input.GetKeyDown(KeyCode.KeypadMultiply))
+            {
+                MpManager.Start();
+            }
+            if (Input.GetKeyDown(KeyCode.KeypadMinus))
+            {
+                MpManager.Stop();
+            }
         }
     }
 
