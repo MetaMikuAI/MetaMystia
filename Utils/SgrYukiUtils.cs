@@ -433,7 +433,7 @@ public static partial class CommandScheduler
 
     private static readonly System.Collections.Generic.Queue<Command> _queue = new ();
 
-    private static void onTimeoutDefault(string text) => Log.LogWarning($"{text} timeout!");
+    private static void onTimeoutDefault(string text) => Log.Error($"{text} timeout!");
 
 
     // ================================
@@ -525,16 +525,80 @@ public static partial class CommandScheduler
 [MetaMystia.AutoLog]
 public static partial class Panel
 {
-    public static void CloseMoreThan2ActivePannels(){
-        string[] PanelToBeClosed = ["NoteBook_MainPannel", "Storage_MainPannel"];
-        if (DEYU.AdpUISystem.Managers.AdpUIPanelManager.s_ActivePanelTransform.Count > 2)
+    /// <summary>
+    /// API Common.UI.GeneralSustainedPannel.CurrentActiveSustainedPannel.CloseActivePannel() 
+    /// Can close:
+    /// DayScene_FastTravelPannel(Clone)
+    /// NoteBook_ProfilePannel(Clone)
+    /// NoteBook_ProfilePannel_Page#1(Clone)
+    /// NoteBook_ProfilePannel_Page#2(Clone)
+    /// NoteBook_ProfilePannel_Page#3(Clone)
+    /// NoteBook_RecipePannel(Clone)
+    /// NoteBook_NewsPannel(Clone)
+    /// NoteBook_MissionPannel(Clone)
+    /// NoteBook_NewsPanelSelector(Clone)
+    /// NoteBook_AlbumPannel(Clone)
+    /// NoteBook_AlbumGuestSubSubPannel(Clone)
+    /// NoteBook_AlbumItemSubPannel(Clone)
+    /// Storage_MainPannel(Clone)
+    /// Storage_OtherPannel(Clone)
+    /// 
+    /// Cannot close and will throw exception, then game will stuck:
+    /// DayScene_FastTravelConfirmPannel(Clone)
+    /// FlattenedFilterPanel(Clone)
+    /// EscMenu_LoadSubPannel(Clone)
+    /// IzakayaDetailPanel(Clone) (not try yet)
+    /// IzakayaConfigRemindSubPanel(Clone)
+    /// IzakayaPresetPannel(Clone)
+    /// IzakayaConfigPannelSubPannel(Clone)
+    /// </summary>
+    public static void CloseActivePanelsBeforeSceneTransit(){
+        string[] PanelToBeClosed = ["NoteBook", "Storage", "DayScene_FastTravelPannel", "EscMenu"];
+        string[] PanelMustBeClosedFirst = ["DayScene_FastTravelConfirmPannel(Clone)", "FlattenedFilterPanel(Clone)", "EscMenu_LoadSubPannel(Clone)", "DialogPannel(Clone)",
+            "IzakayaDetailPanel(Clone)", "IzakayaConfigRemindSubPanel(Clone)", "IzakayaPresetPannel(Clone), IzakayaConfigPannelSubPannel(Clone)"];
+
+        var panelStack = DEYU.AdpUISystem.Managers.AdpUIPanelManager.Instance?.m_PanelStack?.Peek();
+        if (panelStack == null) return;
+        if (PanelMustBeClosedFirst.Any((panel) => panelStack.Peek().ControlledPanel.name.Equals(panel)))
         {
-            var top = DEYU.AdpUISystem.Managers.AdpUIPanelManager.s_ActivePanelTransform.Peek();
-            if (PanelToBeClosed.Any((panel) => top.Item1.name.Contains(panel)))
+            Log.Warning($"Closed panel at first {panelStack.Peek().ControlledPanel.name}");
+            panelStack.Peek()?.ControlledPanel?.ClosePanel();
+        }
+        panelStack = DEYU.AdpUISystem.Managers.AdpUIPanelManager.Instance?.m_PanelStack?.Peek();
+        if (panelStack == null) return;
+        if (PanelToBeClosed.Any((panel) => panelStack.Peek().ControlledPanel.name.Contains(panel)))
+        {
+            Log.Warning($"Closed panel {panelStack.Peek().ControlledPanel.name}");
+            Common.UI.GeneralSustainedPannel.CurrentActiveSustainedPannel.CloseActivePannel();
+        }
+    }
+
+    public static void CloseTargetPannelIfOnTop(string name)
+    {
+        var panel = DEYU.AdpUISystem.Managers.AdpUIPanelManager.Instance?.m_PanelStack?.Peek()?.Peek();
+        if (panel != null && panel.ControlledPanel.name.Equals(name))   // "IzakayaConfigRemindSubPanel(Clone)"
+        {
+            Log.Warning($"Closed panel {name}");
+            panel.ControlledPanel.ClosePanel();
+        }
+    }
+
+    public static void ClosePanelUntil(string name)
+    {
+        while (true)
+        {
+            var panelStack = DEYU.AdpUISystem.Managers.AdpUIPanelManager.Instance?.m_PanelStack?.Peek();
+            if (panelStack == null) return;
+            if (!panelStack.Peek().ControlledPanelName.Equals(name))
             {
-                Log.LogWarning($"popped {top.Item1.name}, enabled {top.Item1.isActiveAndEnabled}");
-                Common.UI.GeneralSustainedPannel.CurrentActiveSustainedPannel.CloseActivePannel();
+                Log.Warning($"Closed {panelStack.Peek().ControlledPanelName}");
+                panelStack.Peek().ControlledPanel.ClosePanel();
+            } 
+            else
+            {
+                return;
             }
         }
+        // var a = GameData.RunTime.DaySceneUtility.RunTimeDayScene.GetAllCollectables();
     }
 }

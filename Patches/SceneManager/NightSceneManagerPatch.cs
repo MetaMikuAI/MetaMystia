@@ -33,7 +33,7 @@ public partial class NightSceneManagerPatch
             {
                 var position = MystiaManager.Instance.GetPosition();
                 KyoukoManager.SpawnNightKyouko(position, true, true);
-                NightScene.EventUtility.EventManager.Instance.totalCountDown = SceneManager.NIGHT_WHOLE_TIME * 2;
+                NightGuestManager.ModifyWorkTimeLeft(SceneManager.NIGHT_WHOLE_TIME * 2);
             },
             timeoutSeconds: 120
         );

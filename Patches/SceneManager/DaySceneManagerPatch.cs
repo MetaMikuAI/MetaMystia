@@ -28,7 +28,7 @@ public partial class DaySceneManagerPatch
         {
             GuestInviteAction.Send(GameData.RunTime.Common.StatusTracker.Instance?.InvitedGuests.ToManagedList());
         }
-        SgrYuki.Utils.Panel.CloseMoreThan2ActivePannels();
+        SgrYuki.Utils.Panel.CloseActivePanelsBeforeSceneTransit();
         DayScene.SceneManager.Instance.OnDayOver();
         _skipPatchOnDayOver = false;
     }

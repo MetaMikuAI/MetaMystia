@@ -45,6 +45,7 @@ public partial class PrepAction : NetAction
         }
         PluginManager.Instance.RunOnMainThread(() =>
         {
+            SgrYuki.Utils.Panel.ClosePanelUntil("IzakayaConfigPannelNew(Clone)");
             IzakayaConfigPannelPatch.instanceRef._SolveDailyCompletion_b__61_7();
         });
     }

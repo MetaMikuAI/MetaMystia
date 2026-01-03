@@ -107,7 +107,7 @@ public partial class IzakayaSelectorPanelPatch
             instanceRef.m_CurrentSelectedSpot = spot;
             instanceRef.m_CurrentSelectedIzakayaLevel = (Common.UI.IzakayaLevel)izakayaLevel;
             _skipPatchIzakayaSelectionConfirmation = true;
-            SgrYuki.Utils.Panel.CloseMoreThan2ActivePannels();
+            SgrYuki.Utils.Panel.CloseActivePanelsBeforeSceneTransit();
             instanceRef._OnGuideMapInitialize_b__21_0();
             _skipPatchIzakayaSelectionConfirmation = false;
         };
