@@ -425,6 +425,7 @@ public static partial class CommandScheduler
         public Func<bool> CanExecute;
         public Action Execute;
         public string ExecuteInfo;
+        public Action BeforeExecute;
         public Action OnTimeout;
         public float ExpireTime; // unscaled time
     }
@@ -443,6 +444,7 @@ public static partial class CommandScheduler
         Func<bool> executeWhen,
         Action execute,
         string executeInfo = "",
+        Action beforeExecute = null,
         float timeoutSeconds = 60f,
         Action onTimeout = null)
     {
@@ -458,6 +460,7 @@ public static partial class CommandScheduler
             CanExecute = executeWhen,
             Execute = execute,
             ExecuteInfo = executeInfo,
+            BeforeExecute = beforeExecute,
             OnTimeout = onTimeout,
             ExpireTime = UnityEngine.Time.unscaledTime + timeoutSeconds
         });
@@ -507,6 +510,7 @@ public static partial class CommandScheduler
             {
                 try
                 {
+                    cmd.BeforeExecute?.Invoke();
                     cmd.Execute();
                 }
                 catch (Exception e)
