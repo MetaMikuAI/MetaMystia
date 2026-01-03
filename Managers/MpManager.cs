@@ -52,6 +52,27 @@ public static partial class MpManager
     public static string GameVersion => Common.LoadingSceneManager.VersionData;
     public static string PeerGameVersion = "";
     
+    public static void SwitchRole(bool stop_existed_server = true)
+    {
+        Log.Message($"Switching role from {Role} to {(IsHost ? "Client" : "Host")}");
+        if (IsHost)
+        {
+            if (stop_existed_server)
+            {
+                server?.Stop();
+                server = null;
+            }
+            Role = ROLE.Client;
+        } 
+        else
+        {
+            client?.Close();
+            server = new(TCP_PORT);
+            server.Start();
+            Role = ROLE.Host;
+        }
+        GameRole = Role;
+    }
 
     public static bool Start(ROLE r = ROLE.Host)
     {
@@ -98,8 +119,9 @@ public static partial class MpManager
         try
         {
             server?.Stop();
+            server = null;
             client?.Close();
-            OnDisconnected();
+            client = null;
         }
         catch (Exception e)
         {
@@ -140,11 +162,11 @@ public static partial class MpManager
 
         try
         {
-            if (stop_existed_server)
+            if (IsHost)
             {
-                server?.Stop();
-                server = null;
+                SwitchRole(stop_existed_server);
             }
+
             Log.LogInfo($"[C] Connecting to {peerIp}:{port}...");
             client = new(peerIp, port);
             await client.StartAsync();
@@ -275,7 +297,7 @@ public static partial class MpManager
         }
         else
         {
-            return "Multiplayer: On (Not connected)";
+            return $"Multiplayer: On (Not connected) as {(Role == ROLE.Host ? "Host" : "Client")}";
         }
     }
 

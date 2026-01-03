@@ -285,6 +285,10 @@ public partial class InGameConsole
                 case "call":
                     CallCommand(args);
                     break;
+                case "debug":
+                    LogToConsole(MpManager.DumpDebugText());
+                    Log.Message(MpManager.DumpDebugText());
+                    break;
                 default:
                     LogToConsole("Unknown command: " + command);
                     HelpCommand();
@@ -297,7 +301,7 @@ public partial class InGameConsole
 
     private void HelpCommand()
     {
-        LogToConsole("Available commands: /help, /clear, /get, /mp, /call");
+        LogToConsole("Available commands: /help, /clear, /get, /mp, /call, /debug");
     }
 
     private void GetCommand(string[] args)
