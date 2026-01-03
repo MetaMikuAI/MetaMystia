@@ -10,8 +10,7 @@ public static partial class MpManager
     public enum ROLE
     {
         Host,
-        Client,
-        Both    // For debug
+        Client
     }
 
     private const int TCP_PORT = 40815;
@@ -58,7 +57,7 @@ public static partial class MpManager
     {
         if (!Plugin.AllPatched)
         {
-            PluginManager.Console.Log($"Cannot start multiplayer, patch failure!\n{DumpDebugText()}");
+            PluginManager.Console.LogToConsole($"Cannot start multiplayer, patch failure!\n{DumpDebugText()}");
             Log.Fatal($"Cannot start multiplayer, patch failure!\n{DumpDebugText()}");
             return false;
         }
@@ -83,10 +82,6 @@ public static partial class MpManager
                 break;
             case ROLE.Client:
                 Log.LogInfo("Starting MpManager as client");
-                break;
-            case ROLE.Both:
-                server.Start();
-                Log.LogInfo("Starting MpManager as both host and client");
                 break;
         }
         return true;
@@ -127,7 +122,7 @@ public static partial class MpManager
         return Start(Role);
     }
 
-    public static async Task<bool> ConnectToPeerAsync(string peerIp, int port = TCP_PORT)
+    public static async Task<bool> ConnectToPeerAsync(string peerIp, int port = TCP_PORT, bool stop_existed_server = true)
     {
         if (!IsRunning)
         {
@@ -145,6 +140,11 @@ public static partial class MpManager
 
         try
         {
+            if (stop_existed_server)
+            {
+                server?.Stop();
+                server = null;
+            }
             Log.LogInfo($"[C] Connecting to {peerIp}:{port}...");
             client = new(peerIp, port);
             await client.StartAsync();
