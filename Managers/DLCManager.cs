@@ -39,7 +39,7 @@ public static partial class DLCManager
     public static bool PeerRecipeAvailable(int id) => CoreRecipes.Contains(id) || PeerRecipes.Contains(id);
     public static bool PeerCookerAvailable(int id) => CoreCookers.Contains(id) || PeerCookers.Contains(id); // 注, -1 为空位, 可能需要特判
     public static bool PeerFoodAvailable(int id) => CoreFoods.Contains(id) || PeerFoods.Contains(id);
-    public static bool PeerBeverageAvailable(int id) => CoreBeverages.Contains(id) || PeerBeverages.Contains(id);
+    public static bool PeerBeverageAvailable(int id) => CoreBeverages.Contains(id) || PeerBeverages.Contains(id); 
     public static bool PeerNormalGuestAvailable(int id) => CoreNormalGuests.Contains(id) || PeerNormalGuests.Contains(id);
     public static bool PeerSpecialGuestAvailable(int id) => CoreSpecialGuests.Contains(id) || PeerSpecialGuests.Contains(id);
     public static bool SpecialGuestAvailable(int id) => CoreSpecialGuests.Contains(id) || SpecialGuests.Contains(id);
@@ -50,6 +50,8 @@ public static partial class DLCManager
         Cookers = GetAllDLCCookers() ?? [];
         Foods = GetAllDLCFoods() ?? [];
         Beverages = GetAllDLCBeverages() ?? [];
+        if (Beverages.Contains(2001)) Beverages.Add(2000);  // 2000(鬼杀) not contained in GetAllDLCBeverages
+
         NormalGuests = GetAllDLCNormalGuests() ?? [];
         SpecialGuests = GetAllDLCSpecialGuests() ?? [];
 
