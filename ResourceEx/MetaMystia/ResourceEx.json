@@ -6,30 +6,31 @@
       "label": "_Daiyousei",
       "descriptions": [
         "生活在雾之湖的连本名都成谜的奇妙妖精，似乎和琪露诺是好朋友，其他的情报就一概不知道了。",
-        "其实是个很细心又很热心肠的家伙呢。琪露诺她虽然嘴上说着不在乎啊无所谓啊什么的，但是我能看出来内心深处她对大酱很是依赖呢。",
-        "妖精们每天的生活想必会很有趣吧？如果从责任和义务这些角度来想。大酱她相比起其她妖精，在这方面可能考虑的多一些，恰好是不至于负累又不会变成笨蛋的平衡点呢。真是让鸟脑袋羡慕的生活态度啊。"
+        "其实是个很细心又很热心肠的家伙呢。琪露诺虽然嘴上说着不在乎啊无所谓啊什么的，但我还是能看出来她内心深处对大酱很是依赖呢。",
+        "妖精们每天的生活想必会很有趣吧？如果从责任和义务这些角度来想，大酱她相比起其她妖精在这方面考虑得可能更多一些，但恰好是不至于负累又不会变成笨蛋的平衡点呢。真是让鸟脑袋都羡慕的生活态度啊。"
       ],
       "type": "Special",
+      "avatar": "assets/Character/9000/Avatar.png",
       "portraits": [
         {
           "pid": 0,
-          "path": "assets/_Daiyousei_0.png"
+          "path": "assets/Character/9000/Portrait/0.png"
         },
         {
           "pid": 1,
-          "path": "assets/_Daiyousei_1.png"
+          "path": "assets/Character/9000/Portrait/1.png"
         },
         {
           "pid": 2,
-          "path": "assets/_Daiyousei_2.png"
+          "path": "assets/Character/9000/Portrait/2.png"
         },
         {
           "pid": 3,
-          "path": "assets/_Daiyousei_3.png"
+          "path": "assets/Character/9000/Portrait/3.png"
         },
         {
           "pid": 4,
-          "path": "assets/_Daiyousei_4.png"
+          "path": "assets/Character/9000/Portrait/4.png"
         }
       ],
       "guest": {
@@ -37,16 +38,21 @@
         "fundRangeUpper": 500,
         "evaluation": [
           "如果只有这样的话……",
-          "呃，一会去找朋友要些果子垫肚子好了。",
+          "呃，一会去找朋友要些果子垫垫肚子好了。",
           "不过，老板娘你一定不止于此对吧。",
           "好吃耶，老板娘你的手艺真好！",
-          "哇塞，下次我一定要带大家来分享！",
+          "哇塞，下次我一定要带大家来一起分享！",
           "喂！这完全就是黑店吧！！",
           "抱歉……我身上只有这些了……",
           "诶诶，老板娘，你干什么？",
           "还是去找朋友们要点果子吃吧……"
         ],
-        "conversation": [],
+        "conversation": [
+          "湖边的果子应该马上就熟透了吧？",
+          "一会和妖精朋友们去哪里玩好呢……",
+          "慧音老师又留了好多作业……好在来之前就写完了。",
+          "要把无限的日子投入到更加无限的乐趣之中去啊。"
+        ],
         "foodRequests": [
           {
             "tagId": 7,
@@ -182,44 +188,44 @@
       "characterSpriteSetCompact": {
         "name": "_Daiyousei",
         "mainSprite": [
-          "assets/_Daiyousei/_Daiyousei_Main_0, 0.png",
-          "assets/_Daiyousei/_Daiyousei_Main_0, 1.png",
-          "assets/_Daiyousei/_Daiyousei_Main_0, 2.png",
-          "assets/_Daiyousei/_Daiyousei_Main_1, 0.png",
-          "assets/_Daiyousei/_Daiyousei_Main_1, 1.png",
-          "assets/_Daiyousei/_Daiyousei_Main_1, 2.png",
-          "assets/_Daiyousei/_Daiyousei_Main_2, 0.png",
-          "assets/_Daiyousei/_Daiyousei_Main_2, 1.png",
-          "assets/_Daiyousei/_Daiyousei_Main_2, 2.png",
-          "assets/_Daiyousei/_Daiyousei_Main_3, 0.png",
-          "assets/_Daiyousei/_Daiyousei_Main_3, 1.png",
-          "assets/_Daiyousei/_Daiyousei_Main_3, 2.png"
+          "assets/Character/9000/Sprite/Main_0, 0.png",
+          "assets/Character/9000/Sprite/Main_0, 1.png",
+          "assets/Character/9000/Sprite/Main_0, 2.png",
+          "assets/Character/9000/Sprite/Main_1, 0.png",
+          "assets/Character/9000/Sprite/Main_1, 1.png",
+          "assets/Character/9000/Sprite/Main_1, 2.png",
+          "assets/Character/9000/Sprite/Main_2, 0.png",
+          "assets/Character/9000/Sprite/Main_2, 1.png",
+          "assets/Character/9000/Sprite/Main_2, 2.png",
+          "assets/Character/9000/Sprite/Main_3, 0.png",
+          "assets/Character/9000/Sprite/Main_3, 1.png",
+          "assets/Character/9000/Sprite/Main_3, 2.png"
         ],
         "eyeSprite": [
-          "assets/_Daiyousei/_Daiyousei_Eyes_0, 0.png",
-          "assets/_Daiyousei/_Daiyousei_Eyes_0, 1.png",
-          "assets/_Daiyousei/_Daiyousei_Eyes_0, 2.png",
-          "assets/_Daiyousei/_Daiyousei_Eyes_0, 3.png",
-          "assets/_Daiyousei/_Daiyousei_Eyes_1, 0.png",
-          "assets/_Daiyousei/_Daiyousei_Eyes_1, 1.png",
-          "assets/_Daiyousei/_Daiyousei_Eyes_1, 2.png",
-          "assets/_Daiyousei/_Daiyousei_Eyes_1, 3.png",
-          "assets/_Daiyousei/_Daiyousei_Eyes_2, 0.png",
-          "assets/_Daiyousei/_Daiyousei_Eyes_2, 1.png",
-          "assets/_Daiyousei/_Daiyousei_Eyes_2, 2.png",
-          "assets/_Daiyousei/_Daiyousei_Eyes_2, 3.png",
-          "assets/_Daiyousei/_Daiyousei_Eyes_3, 0.png",
-          "assets/_Daiyousei/_Daiyousei_Eyes_3, 1.png",
-          "assets/_Daiyousei/_Daiyousei_Eyes_3, 2.png",
-          "assets/_Daiyousei/_Daiyousei_Eyes_3, 3.png",
-          "assets/_Daiyousei/_Daiyousei_Eyes_4, 0.png",
-          "assets/_Daiyousei/_Daiyousei_Eyes_4, 1.png",
-          "assets/_Daiyousei/_Daiyousei_Eyes_4, 2.png",
-          "assets/_Daiyousei/_Daiyousei_Eyes_4, 3.png",
-          "assets/_Daiyousei/_Daiyousei_Eyes_5, 0.png",
-          "assets/_Daiyousei/_Daiyousei_Eyes_5, 1.png",
-          "assets/_Daiyousei/_Daiyousei_Eyes_5, 2.png",
-          "assets/_Daiyousei/_Daiyousei_Eyes_5, 3.png"
+          "assets/Character/9000/Sprite/Eyes_0, 0.png",
+          "assets/Character/9000/Sprite/Eyes_0, 1.png",
+          "assets/Character/9000/Sprite/Eyes_0, 2.png",
+          "assets/Character/9000/Sprite/Eyes_0, 3.png",
+          "assets/Character/9000/Sprite/Eyes_1, 0.png",
+          "assets/Character/9000/Sprite/Eyes_1, 1.png",
+          "assets/Character/9000/Sprite/Eyes_1, 2.png",
+          "assets/Character/9000/Sprite/Eyes_1, 3.png",
+          "assets/Character/9000/Sprite/Eyes_2, 0.png",
+          "assets/Character/9000/Sprite/Eyes_2, 1.png",
+          "assets/Character/9000/Sprite/Eyes_2, 2.png",
+          "assets/Character/9000/Sprite/Eyes_2, 3.png",
+          "assets/Character/9000/Sprite/Eyes_3, 0.png",
+          "assets/Character/9000/Sprite/Eyes_3, 1.png",
+          "assets/Character/9000/Sprite/Eyes_3, 2.png",
+          "assets/Character/9000/Sprite/Eyes_3, 3.png",
+          "assets/Character/9000/Sprite/Eyes_4, 0.png",
+          "assets/Character/9000/Sprite/Eyes_4, 1.png",
+          "assets/Character/9000/Sprite/Eyes_4, 2.png",
+          "assets/Character/9000/Sprite/Eyes_4, 3.png",
+          "assets/Character/9000/Sprite/Eyes_5, 0.png",
+          "assets/Character/9000/Sprite/Eyes_5, 1.png",
+          "assets/Character/9000/Sprite/Eyes_5, 2.png",
+          "assets/Character/9000/Sprite/Eyes_5, 3.png"
         ]
       }
     },
@@ -229,30 +235,31 @@
       "label": "_Koakuma",
       "descriptions": [
         "满脸写着杂鱼样的恶魔少女，不过似乎一直很用力地强调自己的存在感呢。",
-        "是那位名为帕秋莉的魔法使的使魔，不过看起来相比主仆更像是冤家就是了。虽然明面上看起来对自家的主人们不屑一顾，然而内心深处其实很在意红魔馆的大家呢。",
-        "还真是要强的性子啊。能看出来，虽然不愿意承认，但是她非常在乎自己能不能得到肯定和拥有价值。不过我从帕秋莉那里得到的消息是她早就承认小恶魔作为一位助手的能力和水平了，只是在长久的相处之下不知道怎么去开这个口。或许，她只是在因为心里的那点傲气坚持着吧？"
+        "是那位名为帕秋莉的魔法使的使魔，不过相比起主仆，看着更像冤家就是了。虽然明面上看起来对自家的主人们不屑一顾，但内心深处其实很在意红魔馆的大家呢。",
+        "还真是要强的性子啊。能看出来她虽不愿意承认，但还是非常在乎自己能不能得到肯定和拥有价值呢。不过我从帕秋莉那里得到的消息是她早就承认小恶魔作为一位助手的能力和水平了，只是在长久的相处之下不知道怎么去开这个口。或许，她只是在因为心里的那点傲气坚持着吧？"
       ],
       "type": "Special",
+      "avatar": "assets/Character/9001/Avatar.png",
       "portraits": [
         {
           "pid": 0,
-          "path": "assets/_Koakuma_0.png"
+          "path": "assets/Character/9001/Portrait/0.png"
         },
         {
           "pid": 1,
-          "path": "assets/_Koakuma_1.png"
+          "path": "assets/Character/9001/Portrait/1.png"
         },
         {
           "pid": 2,
-          "path": "assets/_Koakuma_2.png"
+          "path": "assets/Character/9001/Portrait/2.png"
         },
         {
           "pid": 3,
-          "path": "assets/_Koakuma_3.png"
+          "path": "assets/Character/9001/Portrait/3.png"
         },
         {
           "pid": 4,
-          "path": "assets/_Koakuma_4.png"
+          "path": "assets/Character/9001/Portrait/4.png"
         }
       ],
       "guest": {
@@ -262,14 +269,19 @@
           "这甚至连图书馆做的饲料都比不上！",
           "这样吗，也就只能比图书馆的伙食好一点了。",
           "一般般。",
-          "偶尔找机会来这么一顿，惬意的很啊。",
+          "偶尔找机会来这么一顿，惬意得很啊。",
           "完美！这才叫完美…适合本姑娘的身份！",
           "好呀你，连本姑娘的钱都敢骗？！",
           "身上就带了这些……嘿嘿……",
           "好不容易找到机会来一次来着……",
           "诶诶？不至于吧！"
         ],
-        "conversation": [],
+        "conversation": [
+          "帕秋莉…她不会突然从哪冒出来吧。",
+          "回去就找个机会实验下最新的超位魔法。",
+          "要怎么在妖精女仆之间建立威信呢…？",
+          "我闻到烧烤和好酒的味道了！"
+        ],
         "foodRequests": [
           {
             "tagId": 0,
@@ -293,7 +305,7 @@
           },
           {
             "tagId": 33,
-            "request": "图书馆严禁烟火，好不容易有了机会，本姑娘可是得尝尝烧烤的滋味。"
+            "request": "图书馆严禁烟火，好不容易有了机会，本姑娘可得尝尝烧烤的滋味。"
           },
           {
             "tagId": 34,
@@ -340,15 +352,15 @@
             "weight": 1
           },
           {
+            "tagId": 4,
+            "weight": 1
+          },
+          {
             "tagId": 14,
             "weight": 1
           },
           {
             "tagId": 19,
-            "weight": 1
-          },
-          {
-            "tagId": 4,
             "weight": 1
           }
         ],
@@ -412,133 +424,134 @@
       "characterSpriteSetCompact": {
         "name": "_Koakuma",
         "mainSprite": [
-          "assets/_Koakuma/_Koakuma_Main_0, 0.png",
-          "assets/_Koakuma/_Koakuma_Main_0, 1.png",
-          "assets/_Koakuma/_Koakuma_Main_0, 2.png",
-          "assets/_Koakuma/_Koakuma_Main_1, 0.png",
-          "assets/_Koakuma/_Koakuma_Main_1, 1.png",
-          "assets/_Koakuma/_Koakuma_Main_1, 2.png",
-          "assets/_Koakuma/_Koakuma_Main_2, 0.png",
-          "assets/_Koakuma/_Koakuma_Main_2, 1.png",
-          "assets/_Koakuma/_Koakuma_Main_2, 2.png",
-          "assets/_Koakuma/_Koakuma_Main_3, 0.png",
-          "assets/_Koakuma/_Koakuma_Main_3, 1.png",
-          "assets/_Koakuma/_Koakuma_Main_3, 2.png"
+          "assets/Character/9001/Sprite/Main_0, 0.png",
+          "assets/Character/9001/Sprite/Main_0, 1.png",
+          "assets/Character/9001/Sprite/Main_0, 2.png",
+          "assets/Character/9001/Sprite/Main_1, 0.png",
+          "assets/Character/9001/Sprite/Main_1, 1.png",
+          "assets/Character/9001/Sprite/Main_1, 2.png",
+          "assets/Character/9001/Sprite/Main_2, 0.png",
+          "assets/Character/9001/Sprite/Main_2, 1.png",
+          "assets/Character/9001/Sprite/Main_2, 2.png",
+          "assets/Character/9001/Sprite/Main_3, 0.png",
+          "assets/Character/9001/Sprite/Main_3, 1.png",
+          "assets/Character/9001/Sprite/Main_3, 2.png"
         ],
         "eyeSprite": [
-          "assets/_Koakuma/_Koakuma_Eyes_0, 0.png",
-          "assets/_Koakuma/_Koakuma_Eyes_0, 1.png",
-          "assets/_Koakuma/_Koakuma_Eyes_0, 2.png",
-          "assets/_Koakuma/_Koakuma_Eyes_0, 3.png",
-          "assets/_Koakuma/_Koakuma_Eyes_1, 0.png",
-          "assets/_Koakuma/_Koakuma_Eyes_1, 1.png",
-          "assets/_Koakuma/_Koakuma_Eyes_1, 2.png",
-          "assets/_Koakuma/_Koakuma_Eyes_1, 3.png",
-          "assets/_Koakuma/_Koakuma_Eyes_2, 0.png",
-          "assets/_Koakuma/_Koakuma_Eyes_2, 1.png",
-          "assets/_Koakuma/_Koakuma_Eyes_2, 2.png",
-          "assets/_Koakuma/_Koakuma_Eyes_2, 3.png",
-          "assets/_Koakuma/_Koakuma_Eyes_3, 0.png",
-          "assets/_Koakuma/_Koakuma_Eyes_3, 1.png",
-          "assets/_Koakuma/_Koakuma_Eyes_3, 2.png",
-          "assets/_Koakuma/_Koakuma_Eyes_3, 3.png",
-          "assets/_Koakuma/_Koakuma_Eyes_4, 0.png",
-          "assets/_Koakuma/_Koakuma_Eyes_4, 1.png",
-          "assets/_Koakuma/_Koakuma_Eyes_4, 2.png",
-          "assets/_Koakuma/_Koakuma_Eyes_4, 3.png",
-          "assets/_Koakuma/_Koakuma_Eyes_5, 0.png",
-          "assets/_Koakuma/_Koakuma_Eyes_5, 1.png",
-          "assets/_Koakuma/_Koakuma_Eyes_5, 2.png",
-          "assets/_Koakuma/_Koakuma_Eyes_5, 3.png"
+          "assets/Character/9001/Sprite/Eyes_0, 0.png",
+          "assets/Character/9001/Sprite/Eyes_0, 1.png",
+          "assets/Character/9001/Sprite/Eyes_0, 2.png",
+          "assets/Character/9001/Sprite/Eyes_0, 3.png",
+          "assets/Character/9001/Sprite/Eyes_1, 0.png",
+          "assets/Character/9001/Sprite/Eyes_1, 1.png",
+          "assets/Character/9001/Sprite/Eyes_1, 2.png",
+          "assets/Character/9001/Sprite/Eyes_1, 3.png",
+          "assets/Character/9001/Sprite/Eyes_2, 0.png",
+          "assets/Character/9001/Sprite/Eyes_2, 1.png",
+          "assets/Character/9001/Sprite/Eyes_2, 2.png",
+          "assets/Character/9001/Sprite/Eyes_2, 3.png",
+          "assets/Character/9001/Sprite/Eyes_3, 0.png",
+          "assets/Character/9001/Sprite/Eyes_3, 1.png",
+          "assets/Character/9001/Sprite/Eyes_3, 2.png",
+          "assets/Character/9001/Sprite/Eyes_3, 3.png",
+          "assets/Character/9001/Sprite/Eyes_4, 0.png",
+          "assets/Character/9001/Sprite/Eyes_4, 1.png",
+          "assets/Character/9001/Sprite/Eyes_4, 2.png",
+          "assets/Character/9001/Sprite/Eyes_4, 3.png",
+          "assets/Character/9001/Sprite/Eyes_5, 0.png",
+          "assets/Character/9001/Sprite/Eyes_5, 1.png",
+          "assets/Character/9001/Sprite/Eyes_5, 2.png",
+          "assets/Character/9001/Sprite/Eyes_5, 3.png"
         ]
       }
     },
     {
       "id": 9002,
-      "name": "芙兰朵露 · 斯卡蕾特",
+      "name": "芙兰朵露",
       "label": "_FlandreScarlet",
       "descriptions": [
         "传说中非常非常可怕的吸血鬼，妖精客人们一直提醒我要小心……虽然看起来明明是个小孩子嘛。",
-        "芙兰朵露小姐的心理….似乎真的就是一个没接触过世界的小孩子呢。到底是因为吸血鬼的长寿天赋导致的心智发育缓慢，还是极少接触外人导致的呢？",
-        "其实我还挺同情芙兰朵露小姐的。她的力量似乎成为了一份不可能挣脱的束缚，即使包括蕾米莉亚小姐在内的所有人本意都是好的，可惜这不是一个能被“爱”或者“友善”改变的命题。不过，就这段时间的相处而言，“伙伴”似乎可以是答案之一哦？至于证明，就交给时间吧。"
+        "芙兰朵露小姐的心理….似乎真的就是一个没接触过世界的小孩子的呢。到底是因为吸血鬼的长寿天赋导致的心智发育缓慢，还是极少接触外人所导致的呢？",
+        "其实我还挺同情芙兰朵露小姐的。她的力量似乎成为了一份不可能挣脱的束缚，即使包括蕾米莉亚小姐在内的所有人的本意都是好的，可惜这不是一个能被“爱”或者“友善”改变的命题。不过，就这段时间的相处而言，“伙伴”似乎可以是答案之一哦？至于证明，就交给时间吧。"
       ],
+      "avatar": "assets/Character/9002/Avatar.png",
       "type": "Special",
       "portraits": [
         {
           "pid": 0,
-          "path": "assets/_FlandreScarlet_0.png"
+          "path": "assets/Character/9002/Portrait/0.png"
         },
         {
           "pid": 1,
-          "path": "assets/_FlandreScarlet_1.png"
+          "path": "assets/Character/9002/Portrait/1.png"
         },
         {
           "pid": 2,
-          "path": "assets/_FlandreScarlet_2.png"
+          "path": "assets/Character/9002/Portrait/2.png"
         },
         {
           "pid": 3,
-          "path": "assets/_FlandreScarlet_3.png"
+          "path": "assets/Character/9002/Portrait/3.png"
         },
         {
           "pid": 4,
-          "path": "assets/_FlandreScarlet_4.png"
+          "path": "assets/Character/9002/Portrait/4.png"
         },
         {
           "pid": 5,
-          "path": "assets/_FlandreScarlet_5.png"
+          "path": "assets/Character/9002/Portrait/5.png"
         },
         {
           "pid": 6,
-          "path": "assets/_FlandreScarlet_6.png"
+          "path": "assets/Character/9002/Portrait/6.png"
         },
         {
           "pid": 7,
-          "path": "assets/_FlandreScarlet_7.png"
+          "path": "assets/Character/9002/Portrait/7.png"
         },
         {
           "pid": 8,
-          "path": "assets/_FlandreScarlet_8.png"
+          "path": "assets/Character/9002/Portrait/8.png"
         },
         {
           "pid": 9,
-          "path": "assets/_FlandreScarlet_9.png"
+          "path": "assets/Character/9002/Portrait/9.png"
         },
         {
           "pid": 10,
-          "path": "assets/_FlandreScarlet_10.png"
+          "path": "assets/Character/9002/Portrait/10.png"
         },
         {
           "pid": 11,
-          "path": "assets/_FlandreScarlet_11.png"
+          "path": "assets/Character/9002/Portrait/11.png"
         },
         {
           "pid": 12,
-          "path": "assets/_FlandreScarlet_12.png"
+          "path": "assets/Character/9002/Portrait/12.png"
         },
         {
           "pid": 13,
-          "path": "assets/_FlandreScarlet_13.png"
+          "path": "assets/Character/9002/Portrait/13.png"
         },
         {
           "pid": 14,
-          "path": "assets/_FlandreScarlet_14.png"
+          "path": "assets/Character/9002/Portrait/14.png"
         },
         {
           "pid": 15,
-          "path": "assets/_FlandreScarlet_15.png"
+          "path": "assets/Character/9002/Portrait/15.png"
         },
         {
           "pid": 16,
-          "path": "assets/_FlandreScarlet_16.png"
+          "path": "assets/Character/9002/Portrait/16.png"
         },
         {
           "pid": 17,
-          "path": "assets/_FlandreScarlet_17.png"
+          "path": "assets/Character/9002/Portrait/17.png"
         },
         {
           "pid": 18,
-          "path": "assets/_FlandreScarlet_18.png"
+          "path": "assets/Character/9002/Portrait/18.png"
         }
       ],
       "guest": {
@@ -595,23 +608,7 @@
         "hateFoodTag": [],
         "likeFoodTag": [
           {
-            "tagId": 27,
-            "weight": 1
-          },
-          {
-            "tagId": 20,
-            "weight": 1
-          },
-          {
             "tagId": 18,
-            "weight": 1
-          },
-          {
-            "tagId": 24,
-            "weight": 1
-          },
-          {
-            "tagId": 34,
             "weight": 1
           },
           {
@@ -619,7 +616,23 @@
             "weight": 1
           },
           {
+            "tagId": 20,
+            "weight": 1
+          },
+          {
             "tagId": 22,
+            "weight": 1
+          },
+          {
+            "tagId": 24,
+            "weight": 1
+          },
+          {
+            "tagId": 27,
+            "weight": 1
+          },
+          {
+            "tagId": 34,
             "weight": 1
           }
         ],
@@ -637,11 +650,11 @@
             "weight": 1
           },
           {
-            "tagId": 14,
+            "tagId": 12,
             "weight": 1
           },
           {
-            "tagId": 12,
+            "tagId": 14,
             "weight": 1
           }
         ],
@@ -663,50 +676,86 @@
             "relativeProb": 0.25,
             "onlySpawnAfterUnlocking": false,
             "onlySpawnWhenPlaceBeRecorded": false
+          },
+          {
+            "izakayaId": 6,
+            "relativeProb": 0.1,
+            "onlySpawnAfterUnlocking": false,
+            "onlySpawnWhenPlaceBeRecorded": false
+          },
+          {
+            "izakayaId": 9,
+            "relativeProb": 0.1,
+            "onlySpawnAfterUnlocking": false,
+            "onlySpawnWhenPlaceBeRecorded": false
+          },
+          {
+            "izakayaId": 7,
+            "relativeProb": 0.15,
+            "onlySpawnAfterUnlocking": false,
+            "onlySpawnWhenPlaceBeRecorded": false
+          },
+          {
+            "izakayaId": 24,
+            "relativeProb": 0.15,
+            "onlySpawnAfterUnlocking": false,
+            "onlySpawnWhenPlaceBeRecorded": false
+          },
+          {
+            "izakayaId": 8,
+            "relativeProb": 0.2,
+            "onlySpawnAfterUnlocking": false,
+            "onlySpawnWhenPlaceBeRecorded": false
+          },
+          {
+            "izakayaId": 25,
+            "relativeProb": 0.2,
+            "onlySpawnAfterUnlocking": false,
+            "onlySpawnWhenPlaceBeRecorded": false
           }
         ]
       },
       "characterSpriteSetCompact": {
         "name": "_FlandreScarlet",
         "mainSprite": [
-          "assets/_FlandreScarlet/_FlandreScarlet_Main_0, 0.png",
-          "assets/_FlandreScarlet/_FlandreScarlet_Main_0, 1.png",
-          "assets/_FlandreScarlet/_FlandreScarlet_Main_0, 2.png",
-          "assets/_FlandreScarlet/_FlandreScarlet_Main_1, 0.png",
-          "assets/_FlandreScarlet/_FlandreScarlet_Main_1, 1.png",
-          "assets/_FlandreScarlet/_FlandreScarlet_Main_1, 2.png",
-          "assets/_FlandreScarlet/_FlandreScarlet_Main_2, 0.png",
-          "assets/_FlandreScarlet/_FlandreScarlet_Main_2, 1.png",
-          "assets/_FlandreScarlet/_FlandreScarlet_Main_2, 2.png",
-          "assets/_FlandreScarlet/_FlandreScarlet_Main_3, 0.png",
-          "assets/_FlandreScarlet/_FlandreScarlet_Main_3, 1.png",
-          "assets/_FlandreScarlet/_FlandreScarlet_Main_3, 2.png"
+          "assets/Character/9002/Sprite/Main_0, 0.png",
+          "assets/Character/9002/Sprite/Main_0, 1.png",
+          "assets/Character/9002/Sprite/Main_0, 2.png",
+          "assets/Character/9002/Sprite/Main_1, 0.png",
+          "assets/Character/9002/Sprite/Main_1, 1.png",
+          "assets/Character/9002/Sprite/Main_1, 2.png",
+          "assets/Character/9002/Sprite/Main_2, 0.png",
+          "assets/Character/9002/Sprite/Main_2, 1.png",
+          "assets/Character/9002/Sprite/Main_2, 2.png",
+          "assets/Character/9002/Sprite/Main_3, 0.png",
+          "assets/Character/9002/Sprite/Main_3, 1.png",
+          "assets/Character/9002/Sprite/Main_3, 2.png"
         ],
         "eyeSprite": [
-          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_0, 0.png",
-          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_0, 1.png",
-          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_0, 2.png",
-          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_0, 3.png",
-          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_1, 0.png",
-          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_1, 1.png",
-          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_1, 2.png",
-          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_1, 3.png",
-          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_2, 0.png",
-          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_2, 1.png",
-          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_2, 2.png",
-          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_2, 3.png",
-          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_3, 0.png",
-          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_3, 1.png",
-          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_3, 2.png",
-          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_3, 3.png",
-          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_4, 0.png",
-          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_4, 1.png",
-          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_4, 2.png",
-          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_4, 3.png",
-          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_5, 0.png",
-          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_5, 1.png",
-          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_5, 2.png",
-          "assets/_FlandreScarlet/_FlandreScarlet_Eyes_5, 3.png"
+          "assets/Character/9002/Sprite/Eyes_0, 0.png",
+          "assets/Character/9002/Sprite/Eyes_0, 1.png",
+          "assets/Character/9002/Sprite/Eyes_0, 2.png",
+          "assets/Character/9002/Sprite/Eyes_0, 3.png",
+          "assets/Character/9002/Sprite/Eyes_1, 0.png",
+          "assets/Character/9002/Sprite/Eyes_1, 1.png",
+          "assets/Character/9002/Sprite/Eyes_1, 2.png",
+          "assets/Character/9002/Sprite/Eyes_1, 3.png",
+          "assets/Character/9002/Sprite/Eyes_2, 0.png",
+          "assets/Character/9002/Sprite/Eyes_2, 1.png",
+          "assets/Character/9002/Sprite/Eyes_2, 2.png",
+          "assets/Character/9002/Sprite/Eyes_2, 3.png",
+          "assets/Character/9002/Sprite/Eyes_3, 0.png",
+          "assets/Character/9002/Sprite/Eyes_3, 1.png",
+          "assets/Character/9002/Sprite/Eyes_3, 2.png",
+          "assets/Character/9002/Sprite/Eyes_3, 3.png",
+          "assets/Character/9002/Sprite/Eyes_4, 0.png",
+          "assets/Character/9002/Sprite/Eyes_4, 1.png",
+          "assets/Character/9002/Sprite/Eyes_4, 2.png",
+          "assets/Character/9002/Sprite/Eyes_4, 3.png",
+          "assets/Character/9002/Sprite/Eyes_5, 0.png",
+          "assets/Character/9002/Sprite/Eyes_5, 1.png",
+          "assets/Character/9002/Sprite/Eyes_5, 2.png",
+          "assets/Character/9002/Sprite/Eyes_5, 3.png"
         ]
       }
     },
@@ -717,25 +766,26 @@
       "descriptions": [
         "隐居在竹林深处的谜之存在，浑身散发着高贵但平和的气质，总是表现出在思考着什么的样子。",
         "实际上是个很善良很温和的人啊。明明是“月之头脑”这么大的来头来着……完全感受不到架子呢，不过举手投足之间的高贵风范依然引人侧目就是了。",
-        "永远亭，月亮的子民，不死身……永琳小姐原来身上承担了这样多的责任吗？明明看起来只是一个技术超群的医师的说。可能所谓的“大人物”就是“承担着大责任的人物”吧？使命什么的……对于鸟脑袋来说比天上的月亮还让人摸不清楚啊。\n"
+        "永远亭，月亮的子民，不死身……永琳小姐原来身上承担了这样多的责任吗？明明看起来只是一个技术超群的医师的说。可能所谓的“大人物”就是“承担着大责任的人物”吧？使命什么的……对于鸟脑袋来说比天上的月亮还让人摸不清楚啊。"
       ],
       "type": "Special",
+      "avatar": "assets/Character/9003/Avatar.png",
       "portraits": [
         {
           "pid": 0,
-          "path": "assets/_YagokoroEirin_0.png"
+          "path": "assets/Character/9003/Portrait/0.png"
         },
         {
           "pid": 1,
-          "path": "assets/_YagokoroEirin_1.png"
+          "path": "assets/Character/9003/Portrait/1.png"
         },
         {
           "pid": 2,
-          "path": "assets/_YagokoroEirin_2.png"
+          "path": "assets/Character/9003/Portrait/2.png"
         },
         {
           "pid": 3,
-          "path": "assets/_YagokoroEirin_3.png"
+          "path": "assets/Character/9003/Portrait/3.png"
         }
       ],
       "guest": {
@@ -755,7 +805,7 @@
         "conversation": [
           "今夜的月亮比昨夜的更明亮。",
           "满月究竟代表祥瑞还是代表灾厄？",
-          "公主想必也会喜欢这里的氛围的。",
+          "公主想必也会喜欢这里的氛围。",
           "人和妖怪原来可以以这种方式达成平衡吗……"
         ],
         "foodRequests": [
@@ -799,10 +849,6 @@
             "weight": 1
           },
           {
-            "tagId": 4001,
-            "weight": 1
-          },
-          {
             "tagId": 5,
             "weight": 1
           },
@@ -817,15 +863,23 @@
           {
             "tagId": 30,
             "weight": 1
+          },
+          {
+            "tagId": 4001,
+            "weight": 1
           }
         ],
         "likeBevTag": [
+          {
+            "tagId": 0,
+            "weight": 1
+          },
           {
             "tagId": 1,
             "weight": 1
           },
           {
-            "tagId": 0,
+            "tagId": 3,
             "weight": 1
           },
           {
@@ -833,15 +887,11 @@
             "weight": 1
           },
           {
-            "tagId": 13,
-            "weight": 1
-          },
-          {
             "tagId": 11,
             "weight": 1
           },
           {
-            "tagId": 3,
+            "tagId": 13,
             "weight": 1
           },
           {
@@ -909,44 +959,44 @@
       "characterSpriteSetCompact": {
         "name": "_YagokoroEirin",
         "mainSprite": [
-          "assets/_YagokoroEirin/_YagokoroEirin_Main_0, 0.png",
-          "assets/_YagokoroEirin/_YagokoroEirin_Main_0, 1.png",
-          "assets/_YagokoroEirin/_YagokoroEirin_Main_0, 2.png",
-          "assets/_YagokoroEirin/_YagokoroEirin_Main_1, 0.png",
-          "assets/_YagokoroEirin/_YagokoroEirin_Main_1, 1.png",
-          "assets/_YagokoroEirin/_YagokoroEirin_Main_1, 2.png",
-          "assets/_YagokoroEirin/_YagokoroEirin_Main_2, 0.png",
-          "assets/_YagokoroEirin/_YagokoroEirin_Main_2, 1.png",
-          "assets/_YagokoroEirin/_YagokoroEirin_Main_2, 2.png",
-          "assets/_YagokoroEirin/_YagokoroEirin_Main_3, 0.png",
-          "assets/_YagokoroEirin/_YagokoroEirin_Main_3, 1.png",
-          "assets/_YagokoroEirin/_YagokoroEirin_Main_3, 2.png"
+          "assets/Character/9003/Sprite/Main_0, 0.png",
+          "assets/Character/9003/Sprite/Main_0, 1.png",
+          "assets/Character/9003/Sprite/Main_0, 2.png",
+          "assets/Character/9003/Sprite/Main_1, 0.png",
+          "assets/Character/9003/Sprite/Main_1, 1.png",
+          "assets/Character/9003/Sprite/Main_1, 2.png",
+          "assets/Character/9003/Sprite/Main_2, 0.png",
+          "assets/Character/9003/Sprite/Main_2, 1.png",
+          "assets/Character/9003/Sprite/Main_2, 2.png",
+          "assets/Character/9003/Sprite/Main_3, 0.png",
+          "assets/Character/9003/Sprite/Main_3, 1.png",
+          "assets/Character/9003/Sprite/Main_3, 2.png"
         ],
         "eyeSprite": [
-          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_0, 0.png",
-          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_0, 1.png",
-          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_0, 2.png",
-          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_0, 3.png",
-          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_1, 0.png",
-          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_1, 1.png",
-          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_1, 2.png",
-          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_1, 3.png",
-          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_2, 0.png",
-          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_2, 1.png",
-          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_2, 2.png",
-          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_2, 3.png",
-          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_3, 0.png",
-          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_3, 1.png",
-          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_3, 2.png",
-          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_3, 3.png",
-          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_4, 0.png",
-          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_4, 1.png",
-          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_4, 2.png",
-          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_4, 3.png",
-          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_5, 0.png",
-          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_5, 1.png",
-          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_5, 2.png",
-          "assets/_YagokoroEirin/_YagokoroEirin_Eyes_5, 3.png"
+          "assets/Character/9003/Sprite/Eyes_0, 0.png",
+          "assets/Character/9003/Sprite/Eyes_0, 1.png",
+          "assets/Character/9003/Sprite/Eyes_0, 2.png",
+          "assets/Character/9003/Sprite/Eyes_0, 3.png",
+          "assets/Character/9003/Sprite/Eyes_1, 0.png",
+          "assets/Character/9003/Sprite/Eyes_1, 1.png",
+          "assets/Character/9003/Sprite/Eyes_1, 2.png",
+          "assets/Character/9003/Sprite/Eyes_1, 3.png",
+          "assets/Character/9003/Sprite/Eyes_2, 0.png",
+          "assets/Character/9003/Sprite/Eyes_2, 1.png",
+          "assets/Character/9003/Sprite/Eyes_2, 2.png",
+          "assets/Character/9003/Sprite/Eyes_2, 3.png",
+          "assets/Character/9003/Sprite/Eyes_3, 0.png",
+          "assets/Character/9003/Sprite/Eyes_3, 1.png",
+          "assets/Character/9003/Sprite/Eyes_3, 2.png",
+          "assets/Character/9003/Sprite/Eyes_3, 3.png",
+          "assets/Character/9003/Sprite/Eyes_4, 0.png",
+          "assets/Character/9003/Sprite/Eyes_4, 1.png",
+          "assets/Character/9003/Sprite/Eyes_4, 2.png",
+          "assets/Character/9003/Sprite/Eyes_4, 3.png",
+          "assets/Character/9003/Sprite/Eyes_5, 0.png",
+          "assets/Character/9003/Sprite/Eyes_5, 1.png",
+          "assets/Character/9003/Sprite/Eyes_5, 2.png",
+          "assets/Character/9003/Sprite/Eyes_5, 3.png"
         ]
       }
     },
@@ -956,26 +1006,27 @@
       "label": "_Shinki",
       "descriptions": [
         "魔界的造物者，某种意义上是所有魔界居民的母亲。性格温柔，深受魔界居民的景仰，对于魔界的管理基本采用了放任模式。虽然是个了不起的人物，但似乎有着天然呆的一面？",
-        "",
-        ""
+        "原本以为这样的大人物会很难交流，结果她却意外地好说话，有时甚至还跟小孩子一样……啊，这种事情果然还是保密吧！听说那个金发女仆是她亲手制作的，真厉害，我开始好奇她的一切了。",
+        "真是太让我震撼了。原来，她不仅是魔界之神，还是一位认真又有耐心的“创作者”，难怪能做出如此精致的“作品”。做菜也好，招待客人也罢，在追求精益求精这方面，我确实该向她学习呢。"
       ],
       "type": "Special",
+      "avatar": "assets/Character/9004/Avatar.png",
       "portraits": [
         {
           "pid": 0,
-          "path": "assets/_Shinki_0.png"
+          "path": "assets/Character/9004/Portrait/0.png"
         },
         {
           "pid": 1,
-          "path": "assets/_Shinki_1.png"
+          "path": "assets/Character/9004/Portrait/1.png"
         },
         {
           "pid": 2,
-          "path": "assets/_Shinki_2.png"
+          "path": "assets/Character/9004/Portrait/2.png"
         },
         {
           "pid": 3,
-          "path": "assets/_Shinki_3.png"
+          "path": "assets/Character/9004/Portrait/3.png"
         }
       ],
       "guest": {
@@ -1148,44 +1199,44 @@
       "characterSpriteSetCompact": {
         "name": "_Shinki",
         "mainSprite": [
-          "assets/_Shinki/_Shinki_Main_0, 0.png",
-          "assets/_Shinki/_Shinki_Main_0, 1.png",
-          "assets/_Shinki/_Shinki_Main_0, 2.png",
-          "assets/_Shinki/_Shinki_Main_1, 0.png",
-          "assets/_Shinki/_Shinki_Main_1, 1.png",
-          "assets/_Shinki/_Shinki_Main_1, 2.png",
-          "assets/_Shinki/_Shinki_Main_2, 0.png",
-          "assets/_Shinki/_Shinki_Main_2, 1.png",
-          "assets/_Shinki/_Shinki_Main_2, 2.png",
-          "assets/_Shinki/_Shinki_Main_3, 0.png",
-          "assets/_Shinki/_Shinki_Main_3, 1.png",
-          "assets/_Shinki/_Shinki_Main_3, 2.png"
+          "assets/Character/9004/Sprite/Main_0, 0.png",
+          "assets/Character/9004/Sprite/Main_0, 1.png",
+          "assets/Character/9004/Sprite/Main_0, 2.png",
+          "assets/Character/9004/Sprite/Main_1, 0.png",
+          "assets/Character/9004/Sprite/Main_1, 1.png",
+          "assets/Character/9004/Sprite/Main_1, 2.png",
+          "assets/Character/9004/Sprite/Main_2, 0.png",
+          "assets/Character/9004/Sprite/Main_2, 1.png",
+          "assets/Character/9004/Sprite/Main_2, 2.png",
+          "assets/Character/9004/Sprite/Main_3, 0.png",
+          "assets/Character/9004/Sprite/Main_3, 1.png",
+          "assets/Character/9004/Sprite/Main_3, 2.png"
         ],
         "eyeSprite": [
-          "assets/_Shinki/_Shinki_Eyes_0, 0.png",
-          "assets/_Shinki/_Shinki_Eyes_0, 1.png",
-          "assets/_Shinki/_Shinki_Eyes_0, 2.png",
-          "assets/_Shinki/_Shinki_Eyes_0, 3.png",
-          "assets/_Shinki/_Shinki_Eyes_1, 0.png",
-          "assets/_Shinki/_Shinki_Eyes_1, 1.png",
-          "assets/_Shinki/_Shinki_Eyes_1, 2.png",
-          "assets/_Shinki/_Shinki_Eyes_1, 3.png",
-          "assets/_Shinki/_Shinki_Eyes_2, 0.png",
-          "assets/_Shinki/_Shinki_Eyes_2, 1.png",
-          "assets/_Shinki/_Shinki_Eyes_2, 2.png",
-          "assets/_Shinki/_Shinki_Eyes_2, 3.png",
-          "assets/_Shinki/_Shinki_Eyes_3, 0.png",
-          "assets/_Shinki/_Shinki_Eyes_3, 1.png",
-          "assets/_Shinki/_Shinki_Eyes_3, 2.png",
-          "assets/_Shinki/_Shinki_Eyes_3, 3.png",
-          "assets/_Shinki/_Shinki_Eyes_4, 0.png",
-          "assets/_Shinki/_Shinki_Eyes_4, 1.png",
-          "assets/_Shinki/_Shinki_Eyes_4, 2.png",
-          "assets/_Shinki/_Shinki_Eyes_4, 3.png",
-          "assets/_Shinki/_Shinki_Eyes_5, 0.png",
-          "assets/_Shinki/_Shinki_Eyes_5, 1.png",
-          "assets/_Shinki/_Shinki_Eyes_5, 2.png",
-          "assets/_Shinki/_Shinki_Eyes_5, 3.png"
+          "assets/Character/9004/Sprite/Eyes_0, 0.png",
+          "assets/Character/9004/Sprite/Eyes_0, 1.png",
+          "assets/Character/9004/Sprite/Eyes_0, 2.png",
+          "assets/Character/9004/Sprite/Eyes_0, 3.png",
+          "assets/Character/9004/Sprite/Eyes_1, 0.png",
+          "assets/Character/9004/Sprite/Eyes_1, 1.png",
+          "assets/Character/9004/Sprite/Eyes_1, 2.png",
+          "assets/Character/9004/Sprite/Eyes_1, 3.png",
+          "assets/Character/9004/Sprite/Eyes_2, 0.png",
+          "assets/Character/9004/Sprite/Eyes_2, 1.png",
+          "assets/Character/9004/Sprite/Eyes_2, 2.png",
+          "assets/Character/9004/Sprite/Eyes_2, 3.png",
+          "assets/Character/9004/Sprite/Eyes_3, 0.png",
+          "assets/Character/9004/Sprite/Eyes_3, 1.png",
+          "assets/Character/9004/Sprite/Eyes_3, 2.png",
+          "assets/Character/9004/Sprite/Eyes_3, 3.png",
+          "assets/Character/9004/Sprite/Eyes_4, 0.png",
+          "assets/Character/9004/Sprite/Eyes_4, 1.png",
+          "assets/Character/9004/Sprite/Eyes_4, 2.png",
+          "assets/Character/9004/Sprite/Eyes_4, 3.png",
+          "assets/Character/9004/Sprite/Eyes_5, 0.png",
+          "assets/Character/9004/Sprite/Eyes_5, 1.png",
+          "assets/Character/9004/Sprite/Eyes_5, 2.png",
+          "assets/Character/9004/Sprite/Eyes_5, 3.png"
         ]
       }
     },
@@ -1199,10 +1250,11 @@
         "掌管红叶程度的能力"
       ],
       "type": "Special",
+      "avatar": "assets/Character/10000/Avatar.png",
       "portraits": [
         {
           "pid": 0,
-          "path": "assets/_AkiSizuha_0.png"
+          "path": "assets/Character/10000/Portrait/0.png"
         }
       ]
     },
@@ -1216,10 +1268,11 @@
         "掌管丰收程度的能力"
       ],
       "type": "Special",
+      "avatar": "assets/Character/10001/Avatar.png",
       "portraits": [
         {
           "pid": 0,
-          "path": "assets/_AkiMinoriko_0.png"
+          "path": "assets/Character/10001/Portrait/0.png"
         }
       ]
     },
@@ -1233,10 +1286,11 @@
         ""
       ],
       "type": "Special",
+      "avatar": "assets/Character/10002/Avatar.png",
       "portraits": [
         {
           "pid": 0,
-          "path": "assets/_YakumoRan_0.png"
+          "path": "assets/Character/10002/Portrait/0.png"
         }
       ]
     }

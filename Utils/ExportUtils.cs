@@ -2,6 +2,7 @@ using GameData.Core.Collections.CharacterUtility;
 using BepInEx;
 using System.IO;
 using UnityEngine;
+using System.Linq;
 
 namespace MetaMystia;
 
@@ -13,6 +14,30 @@ namespace MetaMystia;
 public static partial class ExportUtils
 {
     public static string ExportRoot { get; set; } = Path.Combine(Paths.GameRootPath, "Exports");
+
+    public static void ExportAllFoodSprite(string exportDir)
+    {
+        
+        var allFood = GameData.CoreLanguage.Collections.DataBaseLanguage.Foods;
+        foreach (var kvp in allFood)
+        {
+            Log.Warning($"Food ID: {kvp.Key}, BriefName: {kvp.Value.BriefName}, BriefDescription: {kvp.Value.BriefDescription}");
+            Sprite sprite = kvp.Value.Visual;
+            if (sprite != null)
+            {
+                var filename = $"Food_{kvp.Key}_{kvp.Value.BriefName}.png";
+                var filepath = Path.Combine(exportDir, filename);
+                
+                TrySaveSprite(sprite, filepath);
+                Log.LogInfo($"Exported: {filepath}");
+            }
+            else
+            {
+                Log.LogWarning($"Food ID {kvp.Key} has no sprite.");
+            }
+        }
+    }
+
     public static void ExportAllPortrayals(string exportDir)
     {
         if (!Directory.Exists(exportDir))
@@ -189,5 +214,53 @@ public static partial class ExportUtils
                 UnityEngine.Object.DestroyImmediate(finalTexture);
             }
         }
+    }
+    public static string DumpDataBase()
+    {
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine("{");
+
+        var recipes = GameData.Core.Collections.DataBaseCore.Recipes;
+
+        sb.AppendLine("  \"recipes\": [");
+        foreach (var kvp in recipes)
+        {
+            var recipe = kvp.Value;
+            sb.AppendLine("    {");
+            sb.AppendLine($"      \"id\": {recipe.Id},");
+            sb.AppendLine($"      \"foodId\": {recipe.FoodID},");
+            sb.AppendLine($"      \"ingredients\": [{string.Join(", ", recipe.Ingredients)}],");
+            sb.AppendLine($"      \"baseCookTime\": {recipe.BaseCookTime},");
+            sb.AppendLine($"      \"cookerType\": \"{recipe.CookerType}\"");
+            sb.Append("    }");
+            if (kvp.Key < recipes.Count - 1)
+                sb.AppendLine(",");
+            else
+                sb.AppendLine();
+        }
+        sb.AppendLine("  ]");
+
+
+        var foods = GameData.Core.Collections.DataBaseCore.Foods;
+        sb.AppendLine("  \"foods\": [");
+
+        foreach (var kvp in foods)
+        {
+            var food = kvp.Value;
+            sb.AppendLine("    {");
+            sb.AppendLine($"      \"id\": {food.Id},");
+            sb.AppendLine($"      \"briefName\": \"{food.Text.BriefName}\",");
+            sb.AppendLine($"      \"briefDescription\": \"{food.Text.BriefDescription}\",");
+            sb.AppendLine($"      \"Level\": {food.Level},");
+            sb.AppendLine($"      \"Tags\": [\"{string.Join("\", \"", food.Tags)}\"]");
+            sb.Append("    }");
+            if (kvp.Key < foods.Count - 1)
+                sb.AppendLine(",");
+            else
+                sb.AppendLine();
+        }
+
+        sb.AppendLine("}");
+        return sb.ToString();
     }
 }
