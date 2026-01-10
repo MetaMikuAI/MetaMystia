@@ -13,8 +13,7 @@ public partial class NightSceneLanguagePatch
     public static void Initialize_Postfix()
     {
         Log.LogInfo("NightSceneLanguage.Initialize Postfix called.");
-        ResourceExManager.RegisterAllConversations();
-        ResourceExManager.RegisterAllEvaluations();
+        ResourceExManager.OnNightSceneLanguageInitialized();
     }
 }
 

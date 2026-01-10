@@ -67,6 +67,8 @@ public class ResourceConfig
     public List<CharacterConfig> characters { get; set; }
     public List<DialogPackageConfig> dialogPackages { get; set; }
     public List<IngredientConfig> ingredients { get; set; }
+    public List<RecipeConfig> recipes { get; set; }
+    public List<FoodConfig> foods { get; set; }
 }
 
 public class DialogConfig
@@ -105,9 +107,20 @@ public class RecipeConfig
 {
     public int id { get; set; }
     public int foodId { get; set; }
-    public string cookerType { get; set; }
+    public GameData.Core.Collections.Cooker.CookerType cookerType { get; set; }
     public float cookTime { get; set; }
     public List<int> ingredients { get; set; }
-    
-    // public string name { get; set; }
+}
+
+public class FoodConfig
+{
+    public int id { get; set; }
+    public string name { get; set; }
+    public string description { get; set; }
+    public int level { get; set; }
+    public int baseValue { get; set; }
+    public List<int> tags { get; set; }
+    public List<int> banTags { get; set; }
+    public string spritePath { get; set; }
+    public string ModRoot { get; set; }
 }

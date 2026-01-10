@@ -11,6 +11,16 @@ public static partial class ResourceExManager
     {
         return _dialogPackageConfigs.ContainsKey(name);
     }
+
+    public static CustomDialogList GetDialogPackage(string name)
+    {
+        if (_dialogPackageConfigs.TryGetValue(name, out var pkg))
+        {
+            return pkg;
+        }
+        return null;
+    }
+    
     public static void BuildAllDialogPackages()
     {
         foreach (var kvp in _dialogPackageConfigs)

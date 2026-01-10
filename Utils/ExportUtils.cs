@@ -4,6 +4,8 @@ using System.IO;
 using UnityEngine;
 using System.Linq;
 using Il2CppSystem.Configuration;
+using System.Text.Json;
+using System.Text.Encodings.Web;
 
 namespace MetaMystia;
 
@@ -218,67 +220,129 @@ public static partial class ExportUtils
     }
     public static string DumpDataBase(string exportDir = null)
     {
-        var sb = new System.Text.StringBuilder();
-        sb.AppendLine("{");
-
-        var recipes = GameData.Core.Collections.DataBaseCore.Recipes;
-
-        sb.AppendLine("  \"recipes\": [");
-        foreach (var kvp in recipes)
+        var recipesList = new System.Collections.Generic.List<object>();
+        foreach (var kvp in GameData.Core.Collections.DataBaseCore.Recipes)
         {
             var recipe = kvp.Value;
-            sb.AppendLine("    {");
-            sb.AppendLine($"      \"id\": {recipe.Id},");
-            sb.AppendLine($"      \"foodId\": {recipe.FoodID},");
-            sb.AppendLine($"      \"ingredients\": [{string.Join(", ", recipe.Ingredients)}],");
-            sb.AppendLine($"      \"baseCookTime\": {recipe.BaseCookTime},");
-            sb.AppendLine($"      \"cookerType\": \"{recipe.CookerType}\"");
-            sb.Append("    }");
+            recipesList.Add(new
+            {
+                id = recipe.Id,
+                foodId = recipe.FoodID,
+                ingredients = recipe.Ingredients,
+                baseCookTime = recipe.BaseCookTime,
+                cookerType = recipe.CookerType.ToString()
+            });
         }
-        sb.AppendLine("  ]");
 
-
-        var foods = GameData.Core.Collections.DataBaseCore.Foods;
-        sb.AppendLine("  \"foods\": [");
-
-        foreach (var kvp in foods)
+        var foodsList = new System.Collections.Generic.List<object>();
+        foreach (var kvp in GameData.Core.Collections.DataBaseCore.Foods)
         {
             var food = kvp.Value;
-            sb.AppendLine("    {");
-            sb.AppendLine($"      \"id\": {food.Id},");
-            sb.AppendLine($"      \"briefName\": \"{food.Text.BriefName}\",");
-            sb.AppendLine($"      \"briefDescription\": \"{food.Text.BriefDescription}\",");
-            sb.AppendLine($"      \"Level\": {food.Level}");
-            sb.Append("    }");
+            object tags = null;
+            try { tags = food.Tags; } catch { }
+            
+            foodsList.Add(new
+            {
+                id = food.Id,
+                briefName = food.Text.BriefName,
+                briefDescription = food.Text.BriefDescription,
+                level = food.Level,
+                tags = tags,
+                baseValue = food.BaseValue,
+            });
         }
-        sb.AppendLine("  ],");
 
-        var ingredients = GameData.Core.Collections.DataBaseCore.Ingredients;
-        sb.AppendLine("  \"ingredients\": [");
-        foreach (var kvp in ingredients)
+        var ingredientsList = new System.Collections.Generic.List<object>();
+        foreach (var kvp in GameData.Core.Collections.DataBaseCore.Ingredients)
         {
             var ingredient = kvp.Value;
-            sb.AppendLine("    {");
-            sb.AppendLine($"      \"id\": {ingredient.Id},");
-            sb.AppendLine($"      \"name\": \"{ingredient.Text.BriefName}\",");
-            sb.AppendLine($"      \"description\": \"{ingredient.Text.BriefDescription}\",");
-            sb.AppendLine($"      \"Level\": \"{ingredient.Level}\",");
-            sb.AppendLine($"      \"Prefix\": \"{ingredient.Prefix}\",");
-            sb.AppendLine($"      \"IsFish\": \"{ingredient.IsFish}\",");
-            sb.AppendLine($"      \"IsMeat\": \"{ingredient.IsMeat}\",");
-            sb.AppendLine($"      \"IsVeg\": \"{ingredient.IsVeg}\",");
-            sb.AppendLine($"      \"BaseValue\": \"{ingredient.BaseValue}\",");
-            sb.AppendLine($"      \"tags\": [\"{string.Join("\", \"", ingredient.Tags)}\"]");
-            sb.Append("    }");
+            object tags = null;
+            try { tags = ingredient.Tags; } catch { }
+
+            ingredientsList.Add(new
+            {
+                id = ingredient.Id,
+                name = ingredient.Text.BriefName,
+                description = ingredient.Text.BriefDescription,
+                level = ingredient.Level,
+                prefix = ingredient.Prefix,
+                isFish = ingredient.IsFish,
+                isMeat = ingredient.IsMeat,
+                isVeg = ingredient.IsVeg,
+                baseValue = ingredient.BaseValue,
+                tags = tags
+            });
         }
-        sb.AppendLine("  ]");
+
+        var beverageList = new System.Collections.Generic.List<object>();
+        foreach (var kvp in GameData.Core.Collections.DataBaseCore.Beverages)
+        {
+            var beverage = kvp.Value;
+            object tags = null;
+            try { tags = beverage.Tags; } catch { }
+
+            beverageList.Add(new 
+            {
+                id = beverage.Id,
+                briefName = beverage.Text.BriefName,
+                briefDescription = beverage.Text.BriefDescription,
+                level = beverage.Level,
+                tags = tags,
+                baseValue = beverage.BaseValue,
+            });
+        }
+
+        var foodTagsList = new System.Collections.Generic.List<object>();
+        foreach (var kvp in GameData.CoreLanguage.Collections.DataBaseLanguage.FoodTags)
+        {
+            foodTagsList.Add(new 
+            {
+                id = kvp.Key,
+                name = kvp.Value,
+            });
+        }
+
+        var bevTagsList = new System.Collections.Generic.List<object>();
+        foreach (var kvp in GameData.CoreLanguage.Collections.DataBaseLanguage.BeverageTags)
+        {
+            bevTagsList.Add(new 
+            {
+                id = kvp.Key,
+                name = kvp.Value,
+            });
+        }
 
 
-        sb.AppendLine("}");
-        Log.Warning("Dumped database.");
-        Log.Warning(sb.ToString());
+        var data = new
+        {
+            recipes = recipesList,
+            foods = foodsList,
+            ingredients = ingredientsList,
+            beverages = beverageList,
+            foodTags = foodTagsList,
+            beverageTags = bevTagsList
+        };
 
+        var options = new JsonSerializerOptions
+        {
+            WriteIndented = true,
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        };
 
-        return sb.ToString();
+        string json = JsonSerializer.Serialize(data, options);
+
+        if (!string.IsNullOrEmpty(exportDir))
+        {
+            if (!Directory.Exists(exportDir))
+            {
+                Directory.CreateDirectory(exportDir);
+            }
+            string filePath = Path.Combine(exportDir, "database.json");
+            File.WriteAllText(filePath, json);
+            Log.LogInfo($"Database dumped to {filePath}");
+        }
+
+        Log.LogInfo("Dumped database.");
+        return json;
     }
 }

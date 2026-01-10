@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace MetaMystia;
 
-static partial class ResourceExManager
+public static partial class ResourceExManager
 {
     // TODO: 目前只能支持单套自定义立绘
     private static readonly Dictionary<CharacterPortrayal, CharacterConfig> CustomSpecialGuestPortrayalToConfig = [];
@@ -62,7 +62,7 @@ static partial class ResourceExManager
 
             Log.LogInfo(
                 $"Getting portrait sprite for characterId {config.id}, pid {portraitConfig.pid} from path {portraitConfig.path}");
-            var sprite = GetSprite(portraitConfig.path, config.ModRoot, useCache: false);
+            var sprite = ResourceExManager.GetSprite(portraitConfig.path, config.ModRoot, useCache: false);
             if (sprite != null)
             {
                 portraits[index] = sprite;

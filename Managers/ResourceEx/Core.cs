@@ -16,18 +16,65 @@ public static partial class ResourceExManager
     // Abstracted resource root path
     public static string ResourceRoot { get; set; } = Path.Combine(Paths.GameRootPath, "ResourceEx");
     
-    public static Dictionary<(int id, string type), CharacterConfig> _characterConfigs = new Dictionary<(int id, string type), CharacterConfig>();
+    private static Dictionary<(int id, string type), CharacterConfig> _characterConfigs = new Dictionary<(int id, string type), CharacterConfig>();
     private static Dictionary<string, CustomDialogList> _dialogPackageConfigs = new Dictionary<string, CustomDialogList>();
     private static Dictionary<string, DialogPackage> _builtDialogPackages = new Dictionary<string, DialogPackage>();
 
-    public static Dictionary<int, IngredientConfig> IngredientConfigs = new Dictionary<int, IngredientConfig>();
-
-    public static readonly string DialogPackageNamePrefix = "";
+    private static Dictionary<int, IngredientConfig> IngredientConfigs = new Dictionary<int, IngredientConfig>();
+    private static Dictionary<int, FoodConfig> FoodConfigs = new Dictionary<int, FoodConfig>();
+    private static Dictionary<int, RecipeConfig> RecipeConfigs = new Dictionary<int, RecipeConfig>();
+    private static readonly string DialogPackageNamePrefix = "";
 
     public static void Initialize()
     {
         LoadConfigs();
         PreloadAllImages();
+    }
+
+    public static void OnDataBaseCoreInitialized()
+    {
+        RegisterAllSpawnConfigs();
+        RegisterAllIngredients();
+        RegisterAllRecipes();
+        RegisterAllFoods();
+    }
+    public static void OnDataBaseDayInitialized()
+    {
+        RegisterNPCs();
+    }
+    public static void OnDataBaseLanguageInitialized()
+    {
+        RegisterAllFoodRequests();
+        RegisterAllBevRequests();
+        RegisterSpecialPortraits();
+        RegisterAllIngredientLanguages();
+        RegisterAllFoodLanguages();
+    }
+
+    public static void OnDataBaseCharacterInitialized()
+    {
+        BuildAllDialogPackages();
+        RegisterAllSpecialGuestPairs();
+        RegisterAllSpecialGuests();
+    }
+
+    public static void OnDataBaseAchievementInitialized()
+    {
+        // Currently no actions needed here
+    }
+    public static void OnDataBaseSchedulerInitialized()
+    {
+        // Currently no actions needed here
+    }
+    public static void OnNightSceneLanguageInitialized()
+    {
+        RegisterAllConversations();
+        RegisterAllEvaluations();
+    }
+
+    public static void OnDaySceneLanguageInitialized()
+    {
+        // Currently no actions needed here
     }
 
     private static void LoadConfigs()
@@ -54,7 +101,15 @@ public static partial class ResourceExManager
             try
             {
                 string jsonString = File.ReadAllText(jsonPath);
-                var config = JsonSerializer.Deserialize<ResourceConfig>(jsonString);
+                var options = new JsonSerializerOptions
+                {
+                    ReadCommentHandling = JsonCommentHandling.Skip,
+                    AllowTrailingCommas = true,
+                    PropertyNameCaseInsensitive = true
+                };
+                options.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+
+                var config = JsonSerializer.Deserialize<ResourceConfig>(jsonString, options);
                 
                 if (config?.characters != null)
                 {
@@ -102,6 +157,25 @@ public static partial class ResourceExManager
                         Log.LogInfo($"[{modName}] Loaded config for ingredient {ingredientConfig.id}");
                     }
                 }
+
+                if (config?.foods != null)
+                {
+                    foreach (var foodConfig in config.foods)
+                    {
+                        foodConfig.ModRoot = modDir;
+                        FoodConfigs[foodConfig.id] = foodConfig;
+                        Log.LogInfo($"[{modName}] Loaded config for food {foodConfig.name} ({foodConfig.id})");
+                    }
+                }
+
+                if (config?.recipes != null)
+                {
+                    foreach (var recipeConfig in config.recipes)
+                    {
+                        RecipeConfigs[recipeConfig.id] = recipeConfig;
+                        Log.LogInfo($"[{modName}] Loaded config for recipe {recipeConfig.id}");
+                    }
+                }
             }
             catch (System.Exception e)
             {
@@ -110,31 +184,7 @@ public static partial class ResourceExManager
         }
     }
     
-    public static IEnumerable<CharacterConfig> GetAllCharacterConfigs()
-    {
-        return _characterConfigs.Values;
-    }
     
-    public static CharacterConfig GetCharacterConfig(int id, string type)
-    {
-        if (_characterConfigs.TryGetValue((id, type), out var config))
-        {
-            return config;
-        }
-        return null;
-    }
 
-    public static bool ExistsCharacterConfig(int id, string type = "Special")
-    {
-        return _characterConfigs.ContainsKey((id, type));
-    }
 
-    public static CustomDialogList GetDialogPackage(string name)
-    {
-        if (_dialogPackageConfigs.TryGetValue(name, out var pkg))
-        {
-            return pkg;
-        }
-        return null;
-    }
 }

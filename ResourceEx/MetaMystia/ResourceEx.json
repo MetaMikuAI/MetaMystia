@@ -1641,5 +1641,43 @@
       "tags": [2],
       "spritePath": "assets/Ingredient/11002.png"
     }
+  ],
+  "recipes": [
+    {
+      "id": 11000,
+      "foodId": 11000,
+      "ingredients": [
+        11000, 11001, 11002
+      ],
+      "cookTime": 6,
+      "cookerType": "Pot"
+    },
+    {
+      "id": 11001,
+      "foodId": 11000,
+      "ingredients": [
+        1, 2, 3
+      ],
+      "cookTime": 1,
+      "cookerType": "Grill"
+    }
+  ],
+  "foods": [
+    {
+      "id": 11000,
+      "name": "测试饭团",
+      "description": "图片是苹果，但目前只是测试用的“饭团”。",
+      "level": 4,
+      "baseValue": 114,
+      "tags": [
+        1,
+        2,
+        3
+      ],
+      "banTags": [
+        6
+      ],
+      "spritePath": "assets/Food/11000.png"
+    }
   ]
 }

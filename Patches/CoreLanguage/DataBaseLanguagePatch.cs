@@ -14,9 +14,6 @@ public partial class DataBaseLanguagePatch
     public static void Initialize_Postfix()
     {
         Log.LogInfo("DataBaseLanguage.Initialize Postfix called.");
-        ResourceExManager.RegisterAllFoodRequests();
-        ResourceExManager.RegisterAllBevRequests();
-        ResourceExManager.RegisterSpecialPortraits();
-        ResourceEx.IngredientEx.RegisterAllLanguages();
+        ResourceExManager.OnDataBaseLanguageInitialized();
     }
 }

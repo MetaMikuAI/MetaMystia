@@ -42,7 +42,21 @@ TODO:
 
 public static partial class ResourceExManager
 {
-    public static void RegisterSpecialPortraits()
+    public static IEnumerable<CharacterConfig> GetAllCharacterConfigs()
+    {
+        return _characterConfigs.Values;
+    }
+    
+    public static CharacterConfig GetCharacterConfig(int id, string type)
+    {
+        if (_characterConfigs.TryGetValue((id, type), out var config))
+        {
+            return config;
+        }
+        return null;
+    }
+
+    private static void RegisterSpecialPortraits()
     {
         Log.Info($"Registering Special Portraits from ResourceEx...");
         
@@ -84,7 +98,7 @@ public static partial class ResourceExManager
         }
     }
 
-    public static void RegisterAllSpecialGuests()
+    private static void RegisterAllSpecialGuests()
     {
         Log.Info($"Registering Special Guests from ResourceEx...");
         GetAllCharacterConfigs()
@@ -142,7 +156,7 @@ public static partial class ResourceExManager
         Log.Info($"Registered Special Guest: {config.name} ({config.id})");
     }
 
-    public static void RegisterAllEvaluations()
+    private static void RegisterAllEvaluations()
     {
         Log.Info($"Registering Special Guest Evaluations from ResourceEx...");
         GetAllCharacterConfigs()
@@ -157,7 +171,7 @@ public static partial class ResourceExManager
         Log.Info($"Registered Special Guest Evaluation: {config.name} ({config.id})");
     }
 
-    public static void RegisterAllConversations()
+    private static void RegisterAllConversations()
     {
         Log.Info($"Registering Special Guest Evaluations and Conversations from ResourceEx...");
         GetAllCharacterConfigs()
@@ -166,7 +180,7 @@ public static partial class ResourceExManager
             .ForEach(RegisterConversation);
     }
 
-    public static void RegisterConversation(CharacterConfig config)
+    private static void RegisterConversation(CharacterConfig config)
     {
         if (config.guest == null || config.guest.conversation == null) return;
         NightSceneLanguage.SpecialConversation[config.id] = config.guest.conversation
@@ -176,7 +190,7 @@ public static partial class ResourceExManager
     }
 
 
-    public static void RegisterAllFoodRequests()
+    private static void RegisterAllFoodRequests()
     {
         Log.Info($"Registering Food Requests from ResourceEx...");
         GetAllCharacterConfigs()
@@ -192,7 +206,7 @@ public static partial class ResourceExManager
         Log.Info($"Registered Food Requests for Special Guest: {config.name} ({config.id})");
     }
     
-    public static void RegisterAllBevRequests()
+    private static void RegisterAllBevRequests()
     {
         Log.Info($"Registering Beverage Requests from ResourceEx...");
         GetAllCharacterConfigs()
@@ -208,7 +222,7 @@ public static partial class ResourceExManager
         Log.Info($"Registering Beverage Requests for Special Guest: {config.name} ({config.id})");
     }
 
-    public static void RegisterAllSpecialGuestPairs()
+    private static void RegisterAllSpecialGuestPairs()
     {
         Log.Info($"Registering Special Guest Pairs from ResourceEx...");
         GetAllCharacterConfigs()
@@ -327,7 +341,7 @@ public static partial class ResourceExManager
         }
     }
 
-    public static void RegisterNPCs()
+    private static void RegisterNPCs()
     {
         Log.Info($"Registering NPCs from ResourceEx...");
         GetAllCharacterConfigs()

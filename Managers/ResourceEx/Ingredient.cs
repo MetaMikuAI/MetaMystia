@@ -1,39 +1,36 @@
 using GameData.CoreLanguage;
 using GameData.CoreLanguage.Collections;
-using UnityEngine;
 using GameData.Core.Collections;
 
 using MetaMystia.ResourceEx.Models;
 using System.Linq;
 
-namespace MetaMystia.ResourceEx;
+namespace MetaMystia;
 
-[AutoLog]
-public static partial class IngredientEx
+public static partial class ResourceExManager
 {
-    public static void RegisterAllLanguages()
+    private static void RegisterAllIngredientLanguages()
     {
-        ResourceExManager.IngredientConfigs.Values.ToList().ForEach(RegisterLanguage);
+        IngredientConfigs.Values.ToList().ForEach(RegisterIngredientLanguage);
     }
 
-    private static void RegisterLanguage(IngredientConfig config)
+    private static void RegisterIngredientLanguage(IngredientConfig config)
     {
         var lang = new ObjectLanguageBase(
             name: config.name,
             Description: config.description,
-            ResourceExManager.GetSprite(config.spritePath, config.ModRoot)
+            GetSprite(config.spritePath, config.ModRoot)
         );
-        // var success = DataBaseLanguage.Ingredients.TryAdd(config.id, lang);
-        DataBaseLanguage.Ingredients[config.id] = lang;
+        DataBaseLanguage.Ingredients[config.id] = lang; // Ingredients 是 private 的，不能用 TryAdd
         Log.Warning($"Registered language for ingredient {config.id}: {config.name}");
     }
 
-    public static void RegisterAllObjects()
+    private static void RegisterAllIngredients()
     {
-        ResourceExManager.IngredientConfigs.Values.ToList().ForEach(RegisterObject);
+        IngredientConfigs.Values.ToList().ForEach(RegisterIngredient);
     }
 
-    private static void RegisterObject(IngredientConfig config)
+    private static void RegisterIngredient(IngredientConfig config)
     {
         var ingredient = new Ingredient(
             id: config.id,
@@ -45,6 +42,4 @@ public static partial class IngredientEx
         var success = DataBaseCore.Ingredients.TryAdd(ingredient.Id, ingredient);
         Log.Warning($"Registered ingredient object {config.id}: {config.name}, success={success}");
     }
-
-
 }

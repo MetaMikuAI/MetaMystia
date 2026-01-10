@@ -16,7 +16,7 @@ public partial class DataBaseDayPatch
     public static void Initialize_Postfix()
     {
         Log.LogInfo("DataBaseDay.Initialize Postfix called.");
-        ResourceExManager.RegisterNPCs();
+        ResourceExManager.OnDataBaseDayInitialized();
     }
 }
 

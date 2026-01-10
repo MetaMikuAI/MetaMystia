@@ -126,7 +126,7 @@ public partial class PluginManager : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.F1))
             {
-                ResourceExManager.BuildTestRecipe();
+                
             }
             if (Input.GetKeyDown(KeyCode.F2))
             {
@@ -227,7 +227,7 @@ public partial class PluginManager : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.F8))
             {
-                ExportUtils.DumpDataBase("1");
+                ExportUtils.DumpDataBase("E:/Desktop/");
             }
         }
     }
