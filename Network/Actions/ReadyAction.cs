@@ -17,7 +17,7 @@ public partial class ReadyAction : NetAction
             return;
         }
         KyoukoManager.IsReady = true;
-        if (MystiaManager.IsReady)
+        if (MystiaManager.IsDayOver)
         {
             PluginManager.Instance.RunOnMainThread(DaySceneManagerPatch.OnDayOver_Original);
         }

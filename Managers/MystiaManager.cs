@@ -14,7 +14,7 @@ public partial class MystiaManager
     public static bool IsSprinting { get; set; } = false;
     public static Vector2 InputDirection { get; set; } = Vector2.zero;
 
-    public static bool IsReady = false;
+    public static bool IsDayOver = false;
 
     public static bool CharacterSpawnedAndInitialized => Common.SceneDirector.instance.characterCollection.ContainsKey("Self");
 
@@ -45,7 +45,7 @@ public partial class MystiaManager
         MapLabel = "";
         IsSprinting = false;
         InputDirection = Vector2.zero;
-        IsReady = false;
+        IsDayOver = false;
     }
 
     public DayScene.Input.DayScenePlayerInputGenerator GetInputGenerator(bool forceRefresh = false)

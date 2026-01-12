@@ -36,7 +36,7 @@ public partial class DayScenePlayerInputPatch
         {
             return false;
         }
-        if (MystiaManager.IsReady) 
+        if (MystiaManager.IsDayOver) 
         {
             return false;
         }

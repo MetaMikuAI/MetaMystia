@@ -1,4 +1,5 @@
 using Common.UI;
+using DayScene;
 using HarmonyLib;
 using SgrYuki.Utils;
 
@@ -9,7 +10,7 @@ namespace MetaMystia;
 [AutoLog]
 public partial class DaySceneManagerPatch
 {
-    [HarmonyPatch(nameof(DayScene.SceneManager.Awake))]
+    [HarmonyPatch(nameof(SceneManager.Awake))]
     [HarmonyPostfix]
     public static void Awake_Postfix()
     {
@@ -28,12 +29,12 @@ public partial class DaySceneManagerPatch
         {
             GuestInviteAction.Send(GameData.RunTime.Common.StatusTracker.Instance?.InvitedGuests.ToManagedList());
         }
-        SgrYuki.Utils.Panel.CloseActivePanelsBeforeSceneTransit();
-        DayScene.SceneManager.Instance.OnDayOver();
+        Panel.CloseActivePanelsBeforeSceneTransit();
+        SceneManager.Instance.OnDayOver();
         _skipPatchOnDayOver = false;
     }
 
-    [HarmonyPatch(nameof(DayScene.SceneManager.OnDayOver))]
+    [HarmonyPatch(nameof(SceneManager.OnDayOver))]
     [HarmonyPrefix]
     public static bool OnDayOver_Prefix()
     {
@@ -80,7 +81,7 @@ public partial class DaySceneManagerPatch
         */
 
 
-        MystiaManager.IsReady = true;
+        MystiaManager.IsDayOver = true;
         ReadyAction.Send();
         if (KyoukoManager.IsReady)
         {
@@ -92,5 +93,24 @@ public partial class DaySceneManagerPatch
             Dialog.ShowReadyDialog(false, null);
             return false;
         }
+    }
+
+    [HarmonyPatch(nameof(SceneManager.SwapMap))]
+    [HarmonyPrefix]
+    public static bool SwapMap_Prefix(SceneManager __instance, string targetMapLabel, string targetMarkerName, int travelCount)
+    {
+        Log.Info($"SwapMap_Prefix called, targetMapLabel {targetMapLabel}, targetMarkerName {targetMarkerName}");
+        if (MpManager.IsConnected && MystiaManager.IsDayOver && !MpManager.InStory)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    [HarmonyPatch(nameof(SceneManager.SwapMap))]
+    [HarmonyPostfix]
+    public static void SwapMap_Postfix(SceneManager __instance, string targetMapLabel, string targetMarkerName, int travelCount)
+    {
+        Log.Debug($"SwapMap_Postfix called, targetMapLabel {targetMapLabel}, targetMarkerName {targetMarkerName}");
     }
 }
