@@ -50,8 +50,15 @@ public static partial class DLCManager
         Cookers = GetAllDLCCookers() ?? [];
         Foods = GetAllDLCFoods() ?? [];
         Beverages = GetAllDLCBeverages() ?? [];
-        if (Beverages.Contains(2001)) Beverages.Add(2000);  // 2000(鬼杀) not contained in GetAllDLCBeverages
-
+        
+        // GetAllDLCBeverages: [1000,1001,1003,1004,2001,2002,3000,5000,5001,5002,5003,5004]
+        if (Cookers.Contains(1000)) Beverages.Add(1002);  // 1002(妖精雨露) not contained in GetAllDLCBeverages
+        if (Cookers.Contains(2000)) Beverages.Add(2000);  // 2000(鬼杀) not contained in GetAllDLCBeverages
+        if (Cookers.Contains(3000)) Beverages.Add(3001);  // 3001(麒麟) not contained in GetAllDLCBeverages
+        if (Cookers.Contains(4000)) {
+            Beverages.Add(4000);  // 4000(天地无用) not contained in GetAllDLCBeverages
+            Beverages.Add(4001);  // 4001(伶人醉) not contained in GetAllDLCBeverages
+        }
         NormalGuests = GetAllDLCNormalGuests() ?? [];
         SpecialGuests = GetAllDLCSpecialGuests() ?? [];
 
