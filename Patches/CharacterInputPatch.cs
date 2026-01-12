@@ -24,10 +24,10 @@ public partial class CharacterInputPatch
             return;
         }
 
-        if (PluginManager.Console != null && PluginManager.Console.IsOpen)
-        {
-            inputDirection = Vector2.zero;
-        }
+        // if (PluginManager.Console != null && PluginManager.Console.IsOpen)
+        // {
+        //     inputDirection = Vector2.zero;
+        // }
 
         try
         {

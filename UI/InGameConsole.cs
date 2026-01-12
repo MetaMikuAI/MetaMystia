@@ -128,9 +128,12 @@ public partial class InGameConsole
             {
                 inputsCursor++;
             }
-            input = inputs[^inputsCursor];
-            focusTextField = false;
-            moveCursor = true;
+            if (inputs.Count > 0)
+            {
+                input = inputs[^inputsCursor];
+                focusTextField = false;
+                moveCursor = true;
+            }
             e.Use();
         }
 
