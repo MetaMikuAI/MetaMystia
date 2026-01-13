@@ -107,7 +107,6 @@
 
 -   第一原作：**ZUN@上海アリス幻樂団**
 -   第二原作：**东方夜雀食堂 / Touhou Mystia’s Izakaya**
--   特别感谢：[**Delsin-Yu**](https://github.com/Delsin-Yu)、[**幽紫 kk**](https://space.bilibili.com/86865890)等人的支持与帮助
 
 ## Star History
 
