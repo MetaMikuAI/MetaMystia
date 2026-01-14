@@ -65,9 +65,16 @@ public partial class UniversalGameManagerPatch
 
     [HarmonyPatch(nameof(UniversalGameManager.LoadScene))]
     [HarmonyPrefix]
-    public static void LoadScene_Prefix()
+    public static void LoadScene_Prefix(Scene scene)
     {
-        PluginManager.CurrentGameScene = Scene.LoadScene;
-        Log.LogInfo($"LoadScene called.");
+        if (MpManager.IsConnected)
+        {
+            if (MpManager.LocalScene == Scene.DayScene && scene == Scene.WorkScene)
+            {
+                Notify.ShowOnNextAvailableScene("检测到可能在进行挑战，建议断开连接确保游戏体验!");
+            }
+        }
+        MpManager.OnSceneTransit(Scene.LoadScene);
+        Log.LogInfo($"LoadScene called, scene {scene}");
     }
 }

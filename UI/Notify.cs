@@ -29,4 +29,9 @@ public static partial class Notify
     {
         PluginManager.Instance.RunOnMainThread(() => Show(text));
     }
+
+    public static void ShowOnNextAvailableScene(string text)
+    {
+        SgrYuki.Utils.CommandScheduler.Enqueue(CanNotify, () => Show(text));
+    }
 }

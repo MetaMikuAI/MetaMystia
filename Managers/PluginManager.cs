@@ -24,7 +24,6 @@ public partial class PluginManager : MonoBehaviour
     private bool isTextVisible = true;
     private readonly ConcurrentQueue<Action> _mainThreadQueue = new ConcurrentQueue<Action>();
     private readonly List<(Action action, Func<bool> condition)> _conditionalActions = new List<(Action, Func<bool>)>();
-    public static Scene CurrentGameScene { get; set; } = Scene.MainScene;
     public const bool DEBUG = true;
 
     public PluginManager(IntPtr ptr) : base(ptr)
@@ -267,7 +266,7 @@ public partial class PluginManager : MonoBehaviour
             }
         }
 
-        switch (CurrentGameScene)
+        switch (MpManager.LocalScene)
         {
             case Scene.DayScene:
                 KyoukoManager.OnFixedUpdate();

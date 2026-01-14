@@ -104,7 +104,7 @@ public static partial class KyoukoManager
         }
         SetMoving(true);
         characterUnit.UpdateInputVelocity(velocity);
-        if (PluginManager.CurrentGameScene == Common.UI.Scene.DayScene)
+        if (MpManager.LocalScene == Common.UI.Scene.DayScene)
         {  
             var trackedNPC = RunTimeDayScene.GetTrackedNPC(KYOUKO_ID);
             var position = characterUnit.rb2d.position;

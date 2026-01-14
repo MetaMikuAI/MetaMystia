@@ -14,9 +14,7 @@ public partial class MainSceneManagerPatch
     [HarmonyPostfix]
     public static void MainScene_Awake_Postfix()
     {
-        PluginManager.CurrentGameScene = Scene.MainScene;
-        Log.LogInfo($"CurrentGameStage switched to MainScene");
-        SceneTransitAction.Send(MpManager.LocalScene);
+        MpManager.OnSceneTransit(Scene.MainScene);
         Plugin.OnEnterMainScene();
     }
 }

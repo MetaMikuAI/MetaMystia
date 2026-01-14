@@ -15,9 +15,7 @@ public partial class NightSceneManagerPatch
     [HarmonyPostfix]
     public static void NightScene_Start_Postfix()
     {
-        PluginManager.CurrentGameScene = Scene.WorkScene;
-        Log.LogInfo($"CurrentGameStage switched to WorkScene");
-        SceneTransitAction.Send(MpManager.LocalScene);
+        MpManager.OnSceneTransit(Scene.WorkScene);
 
         if (!MpManager.IsConnected)
         {

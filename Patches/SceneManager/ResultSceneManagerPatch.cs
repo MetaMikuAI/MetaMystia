@@ -13,8 +13,6 @@ public partial class ResultSceneManagerPatch
     [HarmonyPostfix]
     public static void SceneManager_Start_Postfix()
     {
-        PluginManager.CurrentGameScene = Scene.ResultScene;
-        Log.LogInfo($"CurrentGameStage switched to ResultScene");
-        SceneTransitAction.Send(MpManager.LocalScene);
+        MpManager.OnSceneTransit(Scene.ResultScene);
     }
 }

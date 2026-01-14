@@ -14,9 +14,7 @@ public partial class PrepNightSceneManagerPatch
     [HarmonyPostfix]
     public static void PrepNightScene_Start_Postfix()
     {
-        PluginManager.CurrentGameScene = Scene.IzakayaPrepScene;
+        MpManager.OnSceneTransit(Scene.IzakayaPrepScene);
         PrepSceneManager.init();
-        Log.LogInfo($"CurrentGameStage switched to IzakayaPrepScene");
-        SceneTransitAction.Send(MpManager.LocalScene);
     }
 }

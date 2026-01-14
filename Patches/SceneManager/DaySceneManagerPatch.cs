@@ -14,11 +14,8 @@ public partial class DaySceneManagerPatch
     [HarmonyPostfix]
     public static void Awake_Postfix()
     {
-        PluginManager.CurrentGameScene = Scene.DayScene;
+        MpManager.OnSceneTransit(Scene.DayScene);
         MpManager.Initialize();
-        SceneTransitAction.Send(MpManager.LocalScene);
-        Log.LogInfo($"CurrentGameStage switched to DayScene");
-
         ResourceExManager.OnDaySceneAwake();
     }
 

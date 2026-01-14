@@ -40,7 +40,7 @@ public static partial class MpManager
     public static bool IsGameRoleHost => GameRole == ROLE.Host;
     public static bool IsGameRoleClient => GameRole == ROLE.Client;
 
-    public static Common.UI.Scene LocalScene => PluginManager.CurrentGameScene;
+    public static Common.UI.Scene LocalScene {get; private set;} = Common.UI.Scene.EmptyScene;
     public static Common.UI.Scene PeerScene;
 
     public static System.Collections.Generic.List<string> ActiveDLCLabel => DLCManager.ActiveDLCLabel;
@@ -309,5 +309,12 @@ public static partial class MpManager
         sb.AppendLine(GetBriefStatus());
         sb.AppendLine($"DLC: {string.Join(", ", ActiveDLCLabel)}");
         return sb.ToString();
+    }
+
+    public static void OnSceneTransit(Common.UI.Scene newScene)
+    {
+        Log.Message($"LocalScene transit from {LocalScene} -> {newScene}");
+        SceneTransitAction.Send(newScene);
+        LocalScene = newScene;
     }
 }

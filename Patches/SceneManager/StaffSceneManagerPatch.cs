@@ -13,8 +13,6 @@ public partial class StaffSceneManagerPatch
     [HarmonyPostfix]
     public static void StaffScene_Start_Postfix()
     {
-        PluginManager.CurrentGameScene = Scene.StaffScene;
-        Log.LogInfo($"CurrentGameStage switched to StaffScene");
-        SceneTransitAction.Send(MpManager.LocalScene);
+        MpManager.OnSceneTransit(Scene.StaffScene);
     }
 }
