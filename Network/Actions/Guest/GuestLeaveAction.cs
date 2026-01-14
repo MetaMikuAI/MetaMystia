@@ -87,7 +87,8 @@ public partial class GuestLeaveAction : NetAction
                         break;
                 }
                 // Just in case the LeaveFromDesk method fail
-                GuestsManager.instance.occupiedDesks.Remove(deskcode);
+                NightGuestManager.RemoveOccupiedDesk(deskcode);
+                NightGuestManager.RemoveOrder(guest);
             }
          );
     }

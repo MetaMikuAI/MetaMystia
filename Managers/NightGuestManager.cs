@@ -293,6 +293,41 @@ public static partial class NightGuestManager
         }
     }
 
+    public static bool RemoveOccupiedDesk(int deskcode) => GuestsManager.instance.occupiedDesks.Remove(deskcode);
+    public static bool RemoveGuestAndOrder(int deskId)
+    {
+        var guest = GuestsManager.instance.GetInDeskGuest(deskId);
+        if (IsGuestNull(guest))
+        {
+            Log.LogWarning($"deskId {deskId} guest is null");
+            return false;
+        }
+        else
+        {
+            Log.LogWarning($"removing {GetGuestUUID(guest)} out: DeskId {deskId}");
+            RemoveOrder(guest);
+            GuestsManagerPatch.LeaveFromDesk_Original(GuestsManager.instance, guest, GuestGroupController.LeaveType.Move, null, true);
+            GuestsManager.instance.SetGuestOutDesk(guest);
+            return RemoveOccupiedDesk(deskId);
+        }
+    }
+
+    public static void RemoveOrder(GuestGroupController guest)
+    {
+        if (IsGuestNotNull(guest))
+        {
+            if (guest.AllOrdersData.Count > 0)
+            {
+                var prevOrder = guest.PeekOrders();
+                if (prevOrder != null && !prevOrder.IsFullfilled)
+                {
+                    Log.Message($"removed guest {GetGuestUUID(guest)} order");
+                    GuestsManager.instance.RemoveFromOrder(prevOrder);
+                }
+            }
+        }
+    }
+
     public static bool IsGuestNotNull(string uuid) => IsGuestNotNull(GetGuest(uuid));
     public static bool IsGuestNotNull(GuestGroupController guest)
     {

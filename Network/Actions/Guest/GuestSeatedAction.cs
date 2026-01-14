@@ -97,32 +97,7 @@ public partial class GuestSeatedAction : NetAction
             executeInfo: $"Seated: guid {GuestUniqId}, DeskId {DeskId}, SeatId {SeatId}",
             execute: onExecute,
             beforeExecute: beforeExecute,
-            timeoutSeconds: 15,
-            onTimeout: () =>
-            {
-                if (NightGuestManager.IsGuestNotNull(GuestUniqId))
-                {
-                    var prev = GuestsManager.instance.GetInDeskGuest(DeskId);
-                    Log.LogWarning($"Seated time-out for {GuestUniqId}, will force set previous guest {NightGuestManager.GetGuestUUID(prev)} out: DeskId {DeskId}, SeatId {SeatId}");
-                    GuestsManager.instance.SetGuestOutDesk(prev);
-                }
-                else
-                {
-                    Log.LogWarning($"Seated time-out for {GuestUniqId}, guest is null, will re-generate");
-                    CommandScheduler.Enqueue(
-                        executeWhen: () => !MpManager.InStory,
-                        executeInfo: $"Seated-Respawned: guid {GuestUniqId}",
-                        execute: respawn
-                    );
-                    CommandScheduler.Enqueue(
-                        executeWhen: executeWhen,
-                        executeInfo: $"Seated again: guid {GuestUniqId}, DeskId {DeskId}, SeatId {SeatId}",
-                        execute: onExecute,
-                        timeoutSeconds: 15
-                    );
-                }
-                onExecute();
-            }
+            timeoutSeconds: 60
         );
     }
 
