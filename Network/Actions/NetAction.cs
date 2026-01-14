@@ -27,6 +27,7 @@ public enum ActionType : ushort
     GUEST_GEN_NORMAL_ORDER,
     GUEST_GEN_SPECIAL_ORDER,
     GUEST_SERVE,
+    GUEST_PAY,
     GUEST_LEAVE,
     BUFF,
     IZAKAYA_CLOSE
@@ -56,6 +57,7 @@ public enum ActionType : ushort
 [MemoryPackUnion((ushort)ActionType.GUEST_GEN_NORMAL_ORDER, typeof(GuestGenNormalOrderAction))]
 [MemoryPackUnion((ushort)ActionType.GUEST_GEN_SPECIAL_ORDER, typeof(GuestGenSPOrderAction))]
 [MemoryPackUnion((ushort)ActionType.GUEST_SERVE, typeof(GuestServeAction))]
+[MemoryPackUnion((ushort)ActionType.GUEST_PAY, typeof(GuestPayAction))]
 [MemoryPackUnion((ushort)ActionType.GUEST_LEAVE, typeof(GuestLeaveAction))]
 [MemoryPackUnion((ushort)ActionType.BUFF, typeof(BuffAction))]
 [MemoryPackUnion((ushort)ActionType.IZAKAYA_CLOSE, typeof(IzakayaCloseAction))]
