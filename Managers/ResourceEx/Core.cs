@@ -1,7 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using BepInEx;
 using Common.DialogUtility;
 using GameData.Profile;
@@ -16,17 +19,120 @@ public static partial class ResourceExManager
 {
     // Abstracted resource root path
     public static string ResourceRoot { get; set; } = Path.Combine(Paths.GameRootPath, "ResourceEx");
-    
-    private static Dictionary<(int id, string type), CharacterConfig> _characterConfigs = new Dictionary<(int id, string type), CharacterConfig>();
-    private static Dictionary<string, CustomDialogList> _dialogPackageConfigs = new Dictionary<string, CustomDialogList>();
-    private static Dictionary<string, DialogPackage> _builtDialogPackages = new Dictionary<string, DialogPackage>();
 
-    private static Dictionary<int, IngredientConfig> IngredientConfigs = new Dictionary<int, IngredientConfig>();
-    private static Dictionary<int, FoodConfig> FoodConfigs = new Dictionary<int, FoodConfig>();
-    private static Dictionary<int, RecipeConfig> RecipeConfigs = new Dictionary<int, RecipeConfig>();
-    private static List<MissionNodeConfig> MissionNodeConfigs = new List<MissionNodeConfig>();
+    private static readonly Dictionary<(int id, string type), CharacterConfig> _characterConfigs = [];
+    private static readonly Dictionary<string, CustomDialogList> _dialogPackageConfigs = [];
+    private static readonly Dictionary<string, DialogPackage> _builtDialogPackages = [];
+
+    private static readonly Dictionary<int, IngredientConfig> IngredientConfigs = [];
+    private static readonly Dictionary<int, FoodConfig> FoodConfigs = [];
+    private static readonly Dictionary<int, RecipeConfig> RecipeConfigs = [];
+    private static readonly List<MissionNodeConfig> MissionNodeConfigs = [];
 
     private static readonly string DialogPackageNamePrefix = "";
+
+    private class ModPackInfo
+    {
+        public string FullPath { get; set; }
+        public string Prefix { get; set; }
+        public Version Version { get; set; }
+        public string FileName { get; set; }
+        public bool IsCopyFormat { get; set; } // True if format is <prefix> (n).zip
+        public int CopyNumber { get; set; } // The n in <prefix> (n).zip
+    }
+
+    private static ModPackInfo ParseModPackFileName(string filePath)
+    {
+        string fileName = Path.GetFileNameWithoutExtension(filePath);
+
+        // Try Pattern 1: <prefix>-v<major>.<minor>.<patch>
+        var versionMatch = Regex.Match(fileName, @"^(.+?)-v(\d+)\.(\d+)\.(\d+)$", RegexOptions.IgnoreCase);
+
+        if (versionMatch.Success)
+        {
+            try
+            {
+                string prefix = versionMatch.Groups[1].Value;
+                int major = int.Parse(versionMatch.Groups[2].Value);
+                int minor = int.Parse(versionMatch.Groups[3].Value);
+                int patch = int.Parse(versionMatch.Groups[4].Value);
+
+                return new ModPackInfo
+                {
+                    FullPath = filePath,
+                    Prefix = prefix,
+                    Version = new Version(major, minor, patch),
+                    FileName = fileName,
+                    IsCopyFormat = false,
+                    CopyNumber = 0
+                };
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        // Try Pattern 2: <prefix> (n)
+        var copyMatch = Regex.Match(fileName, @"^(.+?)\s*\((\d+)\)$");
+
+        if (copyMatch.Success)
+        {
+            try
+            {
+                string prefix = copyMatch.Groups[1].Value.TrimEnd();
+                int copyNumber = int.Parse(copyMatch.Groups[2].Value);
+
+                return new ModPackInfo
+                {
+                    FullPath = filePath,
+                    Prefix = prefix,
+                    Version = new Version(0, 0, copyNumber), // Use copy number as patch version
+                    FileName = fileName,
+                    IsCopyFormat = true,
+                    CopyNumber = copyNumber
+                };
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        // Try Pattern 3: <prefix> (no version or copy number)
+        // Treat as version 0.0.0
+        return new ModPackInfo
+        {
+            FullPath = filePath,
+            Prefix = fileName,
+            Version = new Version(0, 0, 0),
+            FileName = fileName,
+            IsCopyFormat = false,
+            CopyNumber = 0
+        };
+    }
+
+    private static List<string> GetLatestModPacks(string[] zipFiles)
+    {
+        var modPacks = new List<ModPackInfo>();
+
+        foreach (var zipPath in zipFiles)
+        {
+            var info = ParseModPackFileName(zipPath);
+            if (info != null)
+            {
+                modPacks.Add(info);
+            }
+        }
+
+        // Group by prefix and select the latest version for each prefix
+        var latestPacks = modPacks
+            .GroupBy(m => m.Prefix, StringComparer.OrdinalIgnoreCase)
+            .Select(g => g.OrderByDescending(m => m.Version).First())
+            .ToList();
+
+        return [.. latestPacks.Select(m => m.FullPath)];
+    }
 
     public static void Initialize()
     {
@@ -95,12 +201,14 @@ public static partial class ResourceExManager
             return;
         }
 
-        var zipFiles = Directory.GetFiles(ResourceRoot, "*.zip");
-        foreach (var zipPath in zipFiles)
+        var allZipFiles = Directory.GetFiles(ResourceRoot, "*.zip");
+        var zipFilesToLoad = GetLatestModPacks(allZipFiles);
+
+        foreach (var zipPath in zipFilesToLoad)
         {
             string modName = Path.GetFileNameWithoutExtension(zipPath);
             Log.LogInfo($"Loading mod pack: {modName} from {zipPath}");
-            
+
             try
             {
                 using (ZipArchive archive = ZipFile.OpenRead(zipPath))
@@ -111,7 +219,7 @@ public static partial class ResourceExManager
                     // Find ResourceEx.json
                     foreach (var entry in archive.Entries)
                     {
-                        if (entry.FullName.EndsWith("ResourceEx.json", System.StringComparison.OrdinalIgnoreCase))
+                        if (entry.FullName.EndsWith("ResourceEx.json", StringComparison.OrdinalIgnoreCase))
                         {
                             // Prefer shorter path (root level)
                             if (configEntry == null || entry.FullName.Length < configEntry.FullName.Length)
@@ -128,11 +236,11 @@ public static partial class ResourceExManager
                     }
 
                     string entryName = configEntry.FullName;
-                    if (entryName.EndsWith("ResourceEx.json", System.StringComparison.OrdinalIgnoreCase))
+                    if (entryName.EndsWith("ResourceEx.json", StringComparison.OrdinalIgnoreCase))
                     {
-                        internalPrefix = entryName.Substring(0, entryName.Length - "ResourceEx.json".Length);
+                        internalPrefix = entryName[..^"ResourceEx.json".Length];
                     }
-                    
+
                     Log.LogInfo($"[{modName}] Found config at {configEntry.FullName}, Prefix: '{internalPrefix}'");
 
                     string jsonString;
@@ -153,7 +261,7 @@ public static partial class ResourceExManager
                     var config = JsonSerializer.Deserialize<ResourceConfig>(jsonString, options);
 
                     string modRootInfo = $"{zipPath}|{internalPrefix}";
-                    
+
                     if (config?.characters != null)
                     {
                         foreach (var charConfig in config.characters)
@@ -173,13 +281,13 @@ public static partial class ResourceExManager
                             foreach (var d in pkgConfig.dialogList)
                             {
                                 var speakerType = SpeakerIdentity.Identity.Unknown;
-                                if (!string.IsNullOrEmpty(d.characterType) && System.Enum.TryParse<SpeakerIdentity.Identity>(d.characterType, true, out var st))
+                                if (!string.IsNullOrEmpty(d.characterType) && Enum.TryParse<SpeakerIdentity.Identity>(d.characterType, true, out var st))
                                 {
                                     speakerType = st;
                                 }
 
                                 var position = Position.Left;
-                                if (System.Enum.TryParse<Position>(d.position, out var pos))
+                                if (Enum.TryParse<Position>(d.position, out var pos))
                                 {
                                     position = pos;
                                 }
@@ -190,7 +298,7 @@ public static partial class ResourceExManager
                             Log.LogInfo($"[{modName}] Loaded dialog package: {pkgConfig.name}");
                         }
                     }
-                    
+
                     if (config?.ingredients != null)
                     {
                         foreach (var ingredientConfig in config.ingredients)
@@ -231,14 +339,10 @@ public static partial class ResourceExManager
                     }
                 }
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 Log.LogError($"Failed to load mod {modName}: {e.Message}");
             }
         }
     }
-    
-    
-
-
 }
