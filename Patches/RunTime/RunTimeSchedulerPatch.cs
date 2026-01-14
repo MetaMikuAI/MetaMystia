@@ -6,6 +6,13 @@ namespace MetaMystia;
 [AutoLog]
 public partial class RunTimeSchedulerPatch
 {
+    [HarmonyPatch(nameof(RunTimeScheduler.Initialize))]
+    [HarmonyPostfix]
+    public static void Initialize_Postfix()
+    {
+        Log.Warning("RunTimeScheduler.Initialize Postfix called.");    
+    }
+
     [HarmonyPatch(nameof(RunTimeScheduler.OnEnterDaySceneMap))]
     [HarmonyPostfix]
     public static void OnEnterDaySceneMap_Postfix(string mapLabel)

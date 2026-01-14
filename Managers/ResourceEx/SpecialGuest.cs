@@ -1,17 +1,16 @@
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.InputSystem.Utilities;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
+
 using Common.DialogUtility;
 using GameData.CoreLanguage.Collections;
 using GameData.Core.Collections.NightSceneUtility;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using GameData.Core.Collections.DaySceneUtility.Collections;
-using UnityEngine;
 using GameData.Core.Collections.CharacterUtility;
-using GameData.Core.Collections.DaySceneUtility;
-using UnityEngine.InputSystem.Utilities;
+using GameData.Profile;
 
 using DEYU.Utils;
-using GameData.Profile;
 using MetaMiku;
 using SgrYuki.Utils;
 using MetaMystia.ResourceEx.Models;
@@ -31,6 +30,9 @@ Before MainScene:
 Before NightScene:
     evaluation -> GameData.CoreLanguage.Collections.NightSceneLanguage
     conversation -> GameData.CoreLanguage.Collections.NightSceneLanguage
+
+After DayScene Awake:
+    MoveCharacter
 
 Hook:
     GetPortraitSprite <- DialogPannel.GetSpeakerVisual
@@ -352,21 +354,52 @@ public static partial class ResourceExManager
 
     private static void RegisterNPC(CharacterConfig config)
     {
-        var specialGuests = DataBaseCharacter.SpecialGuest;
-        var specialGuest = specialGuests[config.id];
-        var npc = new NPC(specialGuest);
+        // TODO: 值类型 NPC 由于 il2cppInterop 缺陷无法成功插入
 
-        if (DataBaseDay.allNPCs.TryAdd(config.label, npc))
-        {
-            Log.Info($"Registered NPC for Special Guest: {config.name} ({config.id})");
-        }
-        else
-        {
-            Log.Warning($"NPC with label {config.label} already exists in DataBaseDay.allNPCs");
-        }
+        // var specialGuests = DataBaseCharacter.SpecialGuest;
+        // var specialGuest = specialGuests[config.id];
+        // var npc = new NPC(specialGuest);
+
+        // Important: some loading-time code paths rely on DataBaseCharacter string<->identity mappings.
+        // If we only add to DataBaseDay.allNPCs but do not register the mapping, the game may crash
+        // during early initialization when resolving NPC visuals/identity.
+        // EnsureNpcStringIdentityMapping(config.label, new SchedulerNode.Character(SceneDirector.Identity.Special, config.id));
+
+        // var dict = typeof(DataBaseDay).GetProperty("allNPCs").GetValue(null);
+        // dict.GetType().GetProperty("Item").SetValue(dict, npc, new object[] { config.label });
+        // DataBaseDay.AllMappedNPCsMapping[config.label] = "ResourceEx";
+        // Log.Warning($"Registered NPC for Special Guest: {config.name} ({config.id})");
+        // var npc_ = DataBaseDay.allNPCs[config.label];
+        // Log.Warning($"NPC expected: {npc.identity.characterIdentity} - {npc.identity.characterId}");
+        // Log.Warning($"NPC actual: {npc_.identity.characterIdentity} - {npc_.identity.characterId}");
+
+        // if (DataBaseDay.allNPCs.TryAdd(config.label, npc))
+        // {
+        //     Log.Info($"Registered NPC for Special Guest: {config.name} ({config.id})");
+        // }
+        // else
+        // {
+        //     Log.Warning($"NPC with label {config.label} already exists in DataBaseDay.allNPCs");
+        // }
     }
 
-    public static void RegisterAllSpawnConfigs()
+    private static void InitializeAllDaySpawnConfigs()
+    {
+        GetAllCharacterConfigs()
+            .Where(c => c.guest != null)
+            .ToList()
+            .ForEach(InitializeDaySpawnConfig);
+    }
+
+    private static void InitializeDaySpawnConfig(CharacterConfig config)
+    {
+        // TODO: 实现更合适的白天生成配置
+        GameData.RunTime.DaySceneUtility.RunTimeDayScene.MoveCharacter(config.label, "BeastForest", new Vector2(114, 514), 0, out var oldNPCData);
+        Log.Info($"Initialized Day Scene Spawn Config for Special Guest: {config.name} ({config.id})");
+    }
+
+
+    private static void RegisterAllSpawnConfigs()
     {
         Log.Info($"Registering Spawn Configs from ResourceEx...");
 

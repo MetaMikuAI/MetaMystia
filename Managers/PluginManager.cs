@@ -124,18 +124,6 @@ public partial class PluginManager : MonoBehaviour
                 MpManager.Stop();
             }
 
-            if (Input.GetKeyDown(KeyCode.F1))
-            {
-                
-            }
-            if (Input.GetKeyDown(KeyCode.F2))
-            {
-                if (!GameData.RunTime.Common.RunTimeStorage.Recipes.Contains(9000))
-                {
-                    GameData.RunTime.Common.RunTimeStorage.Recipes.Add(9000);
-                    Log.Warning($"Added test recipe to RunTimeStorage.Recipes");
-                }
-            }
             if (Input.GetKeyDown(KeyCode.F3))
             {
                 // string preNode = "Main_1_BeastForest_008-Event";
@@ -162,7 +150,7 @@ public partial class PluginManager : MonoBehaviour
                         rewardId = "_Daiyousei",
                         rewardType = EventNode.Reward.RewardType.GiveItem,
                         objectType = EventNode.Reward.ObjectType.Recipe,
-                        rewardIntArray = new int[] { 9000 }
+                        rewardIntArray = new int[] { 11000 }
                     }
                 };
                 eventNode.missionType = SchedulerNode.SchedulerType.Kitsuna;
@@ -182,7 +170,7 @@ public partial class PluginManager : MonoBehaviour
                     {
                         rewardType = MissionNode.Reward.RewardType.GiveItem,
                         objectType = MissionNode.Reward.ObjectType.Recipe,
-                        rewardIntArray = new int[] { 9000 }
+                        rewardIntArray = new int[] { 11000 }
                     }
                 };
                 missionNode.finishCondition = new MissionNode.FinishCondition[]
@@ -192,7 +180,7 @@ public partial class PluginManager : MonoBehaviour
                         conditionType = MissionNode.FinishCondition.ConditionType.ServeInWork,
                         sellableType = Sellable.SellableType.Food,
                         label = "_Daiyousei",
-                        amount = 9000,
+                        amount = 11000,
                         // product = new Product(
                         //     productType: Product.ProductType.Food,
                         //     productId: 9000,
@@ -222,12 +210,11 @@ public partial class PluginManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.F5))
             {
                 // 强制触发任务 - 成功 -> missionNode 构造测试成功
-                GameData.RunTime.Common.RunTimeScheduler.StartMission("MetaMystia_Kizuna__Daiyousei_LV1_Upgrade_002_Mission");
-            }
-
-            if (Input.GetKeyDown(KeyCode.F8))
-            {
-                ExportUtils.DumpDataBase("E:/Desktop/");
+                GameData.RunTime.Common.RunTimeScheduler.StartMission("_Kizuna_Daiyousei_LV1_Upgrade_001_Mission");
+                GameData.RunTime.Common.RunTimeScheduler.StartMission("_Kizuna_Koakuma_LV1_Upgrade_001_Mission");
+                GameData.RunTime.Common.RunTimeScheduler.StartMission("_Kizuna_FlandreScarlet_LV1_Upgrade_001_Mission");
+                GameData.RunTime.Common.RunTimeScheduler.StartMission("_Kizuna_YagokoroEirin_LV1_Upgrade_001_Mission");
+                GameData.RunTime.Common.RunTimeScheduler.StartMission("_Kizuna_Shinki_LV1_Upgrade_001_Mission");
             }
         }
     }

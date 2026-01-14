@@ -24,6 +24,8 @@ public static partial class ResourceExManager
     private static Dictionary<int, IngredientConfig> IngredientConfigs = new Dictionary<int, IngredientConfig>();
     private static Dictionary<int, FoodConfig> FoodConfigs = new Dictionary<int, FoodConfig>();
     private static Dictionary<int, RecipeConfig> RecipeConfigs = new Dictionary<int, RecipeConfig>();
+    private static List<MissionNodeConfig> MissionNodeConfigs = new List<MissionNodeConfig>();
+
     private static readonly string DialogPackageNamePrefix = "";
 
     public static void Initialize()
@@ -50,6 +52,7 @@ public static partial class ResourceExManager
         RegisterSpecialPortraits();
         RegisterAllIngredientLanguages();
         RegisterAllFoodLanguages();
+        RegisterAllMissionNodeLanguages();
     }
 
     public static void OnDataBaseCharacterInitialized()
@@ -65,7 +68,7 @@ public static partial class ResourceExManager
     }
     public static void OnDataBaseSchedulerInitialized()
     {
-        // Currently no actions needed here
+        RegisterAllMissionNodes();
     }
     public static void OnNightSceneLanguageInitialized()
     {
@@ -76,6 +79,11 @@ public static partial class ResourceExManager
     public static void OnDaySceneLanguageInitialized()
     {
         // Currently no actions needed here
+    }
+
+    public static void OnDaySceneAwake()
+    {
+        InitializeAllDaySpawnConfigs();
     }
 
     private static void LoadConfigs()
@@ -209,6 +217,16 @@ public static partial class ResourceExManager
                         {
                             RecipeConfigs[recipeConfig.id] = recipeConfig;
                             Log.LogInfo($"[{modName}] Loaded config for recipe {recipeConfig.id}");
+                        }
+                    }
+
+                    if (config?.missionNodes != null)
+                    {
+                        foreach (var missionNodeConfig in config.missionNodes)
+                        {
+                            // missionNodeConfig.ModRoot = modRootInfo;
+                            MissionNodeConfigs.Add(missionNodeConfig);
+                            Log.LogInfo($"[{modName}] Loaded config for mission node {missionNodeConfig.title}");
                         }
                     }
                 }

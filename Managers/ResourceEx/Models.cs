@@ -1,5 +1,9 @@
 using System.Collections.Generic;
 
+using GameData.Profile;
+using GameData.Profile.SchedulerNodeCollection;
+using GameData.Core.Collections;
+
 namespace MetaMystia.ResourceEx.Models;
 
 public class CharacterConfig
@@ -69,6 +73,7 @@ public class ResourceConfig
     public List<IngredientConfig> ingredients { get; set; }
     public List<RecipeConfig> recipes { get; set; }
     public List<FoodConfig> foods { get; set; }
+    public List<MissionNodeConfig> missionNodes { get; set; }
 }
 
 public class DialogConfig
@@ -123,4 +128,33 @@ public class FoodConfig
     public List<int> banTags { get; set; }
     public string spritePath { get; set; }
     public string ModRoot { get; set; }
+}
+
+public class MissionNodeConfig
+{
+    public string title { get; set; }
+    public string description { get; set; }
+    public string label { get; set; }
+    public string debugLabel { get; set; }
+    public SchedulerNode.SchedulerType missionType { get; set; }
+    public string sender { get; set; }
+    public string reciever { get; set; } // ignore typo
+    public List<MissionRewardConfig> rewards { get; set; }
+    public List<MissionFinishConditionConfig> finishConditions { get; set; }
+}
+
+public class MissionRewardConfig
+{
+    public SchedulerNode.Reward.RewardType rewardType { get; set; }
+    public string rewardId { get; set; }
+    public SchedulerNode.Reward.ObjectType? objectType { get; set; }
+    public List<int> rewardIntArray { get; set; }
+}
+
+public class MissionFinishConditionConfig
+{
+    public MissionNode.FinishCondition.ConditionType conditionType { get; set; }
+    public int? amount { get; set; }
+    public Sellable.SellableType? sellableType { get; set; }
+    public string label { get; set; }
 }

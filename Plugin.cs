@@ -48,6 +48,7 @@ public class Plugin : BasePlugin
         typeof(DataBaseCorePatch),
         typeof(DataBaseLanguagePatch),
         typeof(NightSceneLanguagePatch),
+        typeof(DataBaseSchedulerPatch)
     ];
 
     public static bool AllPatched => PatchedException == null;
