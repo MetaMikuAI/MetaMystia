@@ -128,7 +128,7 @@ public static partial class KyoukoManager
                     SgrYuki.Utils.CommandScheduler.Enqueue(
                         executeWhen: () => MystiaManager.CharacterSpawnedAndInitialized,
                         executeInfo: $"respawn night kyouko",
-                        execute: () => SpawnNightKyouko(MystiaManager.Instance.GetPosition(), true, true)
+                        execute: () => SpawnNightKyouko(MystiaManager.GetPosition(), true, true)
                     );
                     return null;
                 }

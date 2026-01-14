@@ -46,7 +46,7 @@ public partial class SyncAction : NetAction
         }
 
         var inputDirection = MystiaManager.InputDirection;
-        var position = MystiaManager.Instance.GetPosition();
+        var position = MystiaManager.GetPosition();
 
         NetPacket packet;
         if (MpManager.LocalScene == Common.UI.Scene.WorkScene)

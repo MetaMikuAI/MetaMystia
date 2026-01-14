@@ -48,7 +48,7 @@ public static class FloatingTextHelper
             UnityEngine.Object.Destroy(activeTextSelf);
         }
 
-        var character = MystiaManager.Instance.GetCharacterUnit();
+        var character = MystiaManager.GetCharacterUnit();
         if (character == null)
         {
             return;

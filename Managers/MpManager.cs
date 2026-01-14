@@ -134,7 +134,7 @@ public static partial class MpManager
     public static void Initialize()
     {
         Log.LogInfo($"MpManager initialized");
-        MystiaManager.Instance.Initialize();
+        MystiaManager.Initialize();
         KyoukoManager.Initialize();
     }
 

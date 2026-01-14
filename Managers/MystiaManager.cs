@@ -1,43 +1,23 @@
+using System;
 using Common.CharacterUtility;
 using UnityEngine;
 
 namespace MetaMystia;
 
 [AutoLog]
-public partial class MystiaManager
+public static partial class MystiaManager
 {
-    private static MystiaManager _instance;
-    private static readonly object _lock = new object();
-    
-    private DayScene.Input.DayScenePlayerInputGenerator _cachedInputGenerator;
+    private static DayScene.Input.DayScenePlayerInputGenerator _cachedInputGenerator;
     public static string MapLabel { get; set; } = "";
     public static bool IsSprinting { get; set; } = false;
     public static Vector2 InputDirection { get; set; } = Vector2.zero;
 
-    public static bool IsDayOver = false;
-
     public static bool CharacterSpawnedAndInitialized => Common.SceneDirector.instance.characterCollection.ContainsKey("Self");
 
-    public static MystiaManager Instance
-    {
-        get
-        {
-            if (_instance == null)
-            {
-                lock (_lock)
-                {
-                    _instance ??= new MystiaManager();
-                }
-            }
-            return _instance;
-        }
-    }
+    public static bool IsDayOver = false;
+    public static bool IsPrepOver = false;
 
-    private MystiaManager()
-    {
-    }
-
-    public void Initialize()
+    public static void Initialize()
     {
         Log.LogInfo($"MystiaManager initialized");
 
@@ -46,9 +26,10 @@ public partial class MystiaManager
         IsSprinting = false;
         InputDirection = Vector2.zero;
         IsDayOver = false;
+        IsPrepOver = false;
     }
 
-    public DayScene.Input.DayScenePlayerInputGenerator GetInputGenerator(bool forceRefresh = false)
+    public static DayScene.Input.DayScenePlayerInputGenerator GetInputGenerator(bool forceRefresh = false)
     {
         if (_cachedInputGenerator == null || forceRefresh)
         {
@@ -69,9 +50,8 @@ public partial class MystiaManager
         return _cachedInputGenerator;
     }
 
-    public CharacterControllerUnit GetCharacterUnit(bool forceRefresh = false)
+    public static CharacterControllerUnit GetCharacterUnit(bool forceRefresh = false)
     {
-        
         switch (MpManager.LocalScene)
         {
             case Common.UI.Scene.DayScene:
@@ -96,7 +76,7 @@ public partial class MystiaManager
         }
     }
 
-    private Rigidbody2D GetRigidbody2D(bool forceRefresh = false)
+    private static Rigidbody2D GetRigidbody2D(bool forceRefresh = false)
     {
         var characterUnit = GetCharacterUnit(forceRefresh);
         if (characterUnit == null)
@@ -108,7 +88,7 @@ public partial class MystiaManager
         return rb;
     }
 
-    public Vector2 GetPosition()
+    public static Vector2 GetPosition()
     {
         var rb = GetRigidbody2D();
         if (rb == null)

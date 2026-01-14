@@ -325,7 +325,7 @@ public partial class InGameConsole
                 LogToConsole($"Current Active Map Label: {MystiaManager.MapLabel}");
                 break;
             case "pos":
-                LogToConsole($"Mystia position: {MystiaManager.Instance.GetPosition()}");
+                LogToConsole($"Mystia position: {MystiaManager.GetPosition()}");
                 break;
             default:
                 LogToConsole($"Unknown field: {field}");

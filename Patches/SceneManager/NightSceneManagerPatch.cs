@@ -31,7 +31,7 @@ public partial class NightSceneManagerPatch
             executeInfo: $"spawn night kyouko and add night time",
             execute: () =>
             {
-                var position = MystiaManager.Instance.GetPosition();
+                var position = MystiaManager.GetPosition();
                 KyoukoManager.SpawnNightKyouko(position, true, true);
                 NightGuestManager.ModifyWorkTimeLeft(SceneManager.NIGHT_WHOLE_TIME * 2);
             },
