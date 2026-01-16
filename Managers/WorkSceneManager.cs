@@ -458,6 +458,7 @@ public static partial class WorkSceneManager
         if (servePanel == null) return;
         var trayPanel = servePanel.m_CurrentTray;
         if (trayPanel == null) return;
+        if (!trayPanel.IsPanelOpened) return;
         trayPanel.ClosePanel();
         var director = NightScene.NightSceneDirector.Instance;
         if (director != null && director.CanGotoNextPhase())
@@ -471,6 +472,7 @@ public static partial class WorkSceneManager
     {
         if (servePanel == null) return;
         if (!servePanel.isActiveAndEnabled) return;
+        if (!servePanel.IsPanelOpened) return;
         WorkSceneServePannelPatch.ManuallyClosePanel = true;
         servePanel.ClosePanel();
         WorkSceneServePannelPatch.ManuallyClosePanel = false;

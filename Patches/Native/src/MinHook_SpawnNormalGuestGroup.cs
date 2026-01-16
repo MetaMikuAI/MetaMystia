@@ -40,6 +40,7 @@ public static partial class MinHook_SpawnNormalGuestGroup
         );
 
         _original = Marshal.GetDelegateForFunctionPointer<SpawnNormalGuestGroupDelegate>(hookManager.OriginalFunction);
+        Log.Info("Installed hook for NightScene.GuestManagementUtility.GuestsManager:SpawnNormalGuestGroup/5");
     }
 
     static IntPtr Hook_SpawnNormalGuestGroup(
@@ -90,7 +91,7 @@ public static partial class MinHook_SpawnNormalGuestGroup
                 IsSpecial = false,
                 LeaveType = (GuestGroupController.LeaveType)leaveType
             };
-            if (overrideSpawnPositionCvt.HasValue && overrideSpawnPositionCvt.Value.sqrMagnitude < 15*15*3) // max: 15*15*3
+            if (overrideSpawnPositionCvt.HasValue && overrideSpawnPositionCvt.Value.sqrMagnitude > 0.25*0.25*3 && overrideSpawnPositionCvt.Value.sqrMagnitude < 15*15*3) // min: 0.25*0.25*3 / max: 15*15*3
             {
                 info.OverrideSpawnPosition = overrideSpawnPositionCvt.Value;
                 Log.Warning($"overrideSpawnPositionCvt, {overrideSpawnPositionCvt.Value}");

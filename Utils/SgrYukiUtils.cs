@@ -487,8 +487,15 @@ public static partial class Panel
             }
             else
             {
-                Log.Warning($"Closed regular panel {TopPanelName}");
-                TopPanel?.ControlledPanel?.ClosePanel();
+                if (TopPanel?.ControlledPanel?.IsPanelOpened is true)
+                {
+                    Log.Warning($"Closed regular panel {TopPanelName}");
+                    TopPanel?.ControlledPanel?.ClosePanel();
+                } 
+                else
+                {
+                    Log.Error($"regular panel {TopPanelName} is not opened!");   
+                }
             }
         }
     }
