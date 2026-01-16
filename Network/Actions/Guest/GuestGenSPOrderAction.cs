@@ -11,7 +11,7 @@ namespace MetaMystia;
 public partial class GuestGenSPOrderAction : NetAction
 {
     public override ActionType Type => ActionType.GUEST_GEN_SPECIAL_ORDER;
-    public string GuestUniqId { get; set; }
+    public string GuestUUID { get; set; }
     public GuestOrder Order { get; set; }
     public string Message { get; set; }
 
@@ -28,44 +28,45 @@ public partial class GuestGenSPOrderAction : NetAction
             return;
         }
 
-        CommandScheduler.Enqueue(
-            executeWhen: () => NightGuestManager.CheckStatusIn(GuestUniqId, [NightGuestManager.Status.PendingOrder, NightGuestManager.Status.OrderEvaluated]) && !MpManager.InStory,
-            executeInfo: $"Gen SP order: guid {GuestUniqId}, order food {Order.RequestFoodIdOrTag}, bev {Order.RequestFoodIdOrTag} ",
+        WorkSceneManager.EnqueueGuestCommand(
+            key: GuestUUID,
+            executeWhen: () => WorkSceneManager.CheckStatusIn(GuestUUID, [WorkSceneManager.Status.PendingOrder, WorkSceneManager.Status.OrderEvaluated]) && !MpManager.InStory,
+            executeInfo: $"Gen SP order: guid {GuestUUID}, order food {Order.RequestFoodIdOrTag}, bev {Order.RequestFoodIdOrTag} ",
             execute: () =>
             {
-                var guest = NightGuestManager.GetGuest(GuestUniqId);
+                var guest = WorkSceneManager.GetGuest(GuestUUID);
                 var array = guest.GetAllGuests().TryCast<Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<GuestBase>>();
                 var SPOrder = Order.ToSpecialOrder(array[0].Pointer);
-                NightGuestManager.orders.Enqueue((SPOrder, Message));
+                WorkSceneManager.orders.Enqueue((SPOrder, Message));
 
                 try
                 {
                     GuestsManagerPatch.GenerateOrderSession_Original(GuestsManager.instance, guest, true);
-                    const int PatientSecs = 30;
-                    guest.SetPatient(Math.Min(guest.CurrentPatient + PatientSecs, guest.MaxPatient));
 
+                    WorkSceneManager.DelayedSafeAddMaxPatient(guest);
 
-                    NightGuestManager.ResetGuestOrderServed(GuestUniqId);
-                    NightGuestManager.SetGuestStatus(GuestUniqId, NightGuestManager.Status.OrderGenerated);
+                    WorkSceneManager.ResetGuestOrderServed(GuestUUID);
+                    WorkSceneManager.SetGuestStatus(GuestUUID, WorkSceneManager.Status.OrderGenerated);
                 }
                 catch (Exception ex)
                 {
-                    Log.Error($"error in generating order for {GuestUniqId}, reason {ex.Message}, {ex.StackTrace}");
+                    Log.Error($"error in generating order for {GuestUUID}, reason {ex.Message}, {ex.StackTrace}");
                 }
-            }
+            },
+            timeoutSeconds: 30
          );
     }
 
-    public static void Send(string guestUniqId, int requestFoodTag, int requestBevTag, int deskCode, bool notShowInUI, bool isFree, string message)
+    public static void Send(string GuestUUID, int requestFoodTag, int requestBevTag, int deskCode, bool notShowInUI, bool isFree, string message)
     {
         var order = new GuestOrder(requestFoodTag, requestBevTag, deskCode, notShowInUI, isFree);
         NetPacket packet = new([new GuestGenSPOrderAction
         {
-            GuestUniqId = guestUniqId,
+            GuestUUID = GuestUUID,
             Order = order,
             Message = message
         }]);
-        SendToPeer(packet);
+        SendToHostOrBroadcast(packet);
     }
 }
 

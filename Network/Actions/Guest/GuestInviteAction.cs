@@ -13,13 +13,16 @@ public partial class GuestInviteAction : NetAction
     public override void OnReceived()
     {
         LogActionReceived();
-        PluginManager.Instance.RunOnMainThread(() =>
+        if (MpManager.IsConnectedHost)
         {
-            foreach (var item in InvitedGuestIDs.Where(item => DLCManager.SpecialGuestAvailable(item)))
+            PluginManager.Instance.RunOnMainThread(() =>
             {
-                GameData.RunTime.Common.StatusTracker.Instance.RecordInvitedGuest(item);
-            }
-        });
+                foreach (var item in InvitedGuestIDs.Where(item => DLCManager.SpecialGuestAvailable(item)))
+                {
+                    StatusTrackerPatch.RecordInvitedGuest_Original(GameData.RunTime.Common.StatusTracker.Instance, item);
+                }
+            });
+        }
     }
 
     public static void Send(List<int> invitedGuestIDs)
@@ -28,6 +31,6 @@ public partial class GuestInviteAction : NetAction
         {
             InvitedGuestIDs = invitedGuestIDs
         }]);
-        SendToPeer(packet);
+        SendToHostOrBroadcast(packet);
     }
 }

@@ -9,78 +9,54 @@ using SgrYuki.Utils;
 
 namespace MetaMystia;
 
-[HarmonyPatch(typeof(NightScene.GuestManagementUtility.GuestsManager))] 
+[HarmonyPatch]
+[AutoLog]
+public partial class NightScene_SceneManager__c__DisplayClass62_0_Patch
+{
+    [HarmonyPatch(typeof(NightScene.SceneManager.__c__DisplayClass62_0), nameof(NightScene.SceneManager.__c__DisplayClass62_0._InitializeAsGeneralWorkScene_b__0))]
+    [HarmonyPrefix]
+    public static void InitializeAsGeneralWorkScene_Prefix()
+    {
+        // This patch is for Reimu Protection spell card
+        Log.Info("_InitializeAsGeneralWorkScene_b__0 called");
+    }
+}
+
+[HarmonyPatch(typeof(NightScene.GuestManagementUtility.GuestsManager))]
 [AutoLog]
 public partial class GuestsManagerPatch
 {
     // public static readonly System.Threading.AsyncLocal<bool> PassGuestSpawn = new();
+    public static volatile bool SpawnNormalGuestGroup_WithArg_Manual_Call = false;
 
-    [HarmonyPatch(nameof(GuestsManager.PostInitializeGuestGroup))]
-    [HarmonyPrefix]    
-    public static bool PostInitializeGuestGroup_Prefix(GuestGroupController initializedController)
+    public static int IndexAt(string uuid, Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<CharacterSpriteSetCompact> arr, CharacterSpriteSetCompact item)
     {
-        // Log.LogInfo($"PostInitializeGuestGroup_Prefix called");
-        bool isNormalGuest = Functional.CheckStacktraceContains("NightScene.GuestManagementUtility.GuestsManager::SpawnNormalGuestGroup");
-
-        // Sync host's guest spawn here because GuestsManager::SpawnNormalGuestGroup/0 does not return guest controller
-        if (MpManager.IsConnected && MpManager.LocalScene == Common.UI.Scene.WorkScene && !MpManager.InStory)
+        int result = 0;
+        var itemString = item.ToString();
+        for (int i = 0; i < arr.Length; i++)
         {
-            if (MpManager.IsHost){
-                string uuid = NightGuestManager.StoreGuest(initializedController);
-
-                var array = initializedController.GetAllGuests().ToIl2CppReferenceArray();
-                if (array != null)
-                {
-                    if (isNormalGuest)
-                    {
-                        // var profile0 = array[0].OnGetVisual(array[0].id);
-                        int normalGuestVisual = 0;
-                        var normalGuestVArrayS = DataBaseCharacter.NormalGuestVisual.Get(array[0].id).SortByToString();
-                        // Log.LogMessage(normalGuestVArrayS.DumpElements("\n"));
-                        var normalGuestVisualString = array[0].CharacterPixel.ToString();
-                        for (int i = 0;i<normalGuestVArrayS.Length;i++)
-                        {
-                            if(normalGuestVisualString.Equals(normalGuestVArrayS[i].ToString()))
-                            {
-                                normalGuestVisual = i;
-                                Log.LogMessage($"{uuid} found 1 at {i}, {normalGuestVisualString} => {normalGuestVArrayS[i].ToString()}");
-                                break;
-                            }
-                        }
-                        
-                        if (array.Length > 1)
-                        {
-                            int normalGuest2Visual = 0;
-                            var normalGuest2VArrayS = DataBaseCharacter.NormalGuestVisual.Get(array[1].id).SortByToString();
-                            var normalGuest2VisualString = array[1].CharacterPixel.ToString();
-                            for (int i = 0;i<normalGuest2VArrayS.Length;i++)
-                            {
-                                if(normalGuest2VisualString.Equals(normalGuest2VArrayS[i].ToString()))
-                                {
-                                    normalGuest2Visual = i; 
-                                    Log.LogMessage($"{uuid} found 2 at {i} {normalGuest2VisualString} => {normalGuest2VArrayS[i].ToString()}");
-                                    break;
-                                }
-                            }
-                            GuestSpawnAction.Send(array[0].id, false, uuid, normalGuestVisual, array[1].id, normalGuest2Visual);
-                        }
-                        else
-                        {
-                            GuestSpawnAction.Send(array[0].id, false, uuid, normalGuestVisual);
-                        }
-                    }
-                    else
-                    {
-                        GuestSpawnAction.Send(array[0].id, true, uuid);
-                    }
-                }
-            } 
+            if (itemString.Equals(arr[i].ToString()))
+            {
+                result = i;
+                Log.LogMessage($"{uuid} found at {i} => {itemString}");
+                break;
+            }
         }
-        return true;
+        return result;
+    }
+    [HarmonyPatch(nameof(GuestsManager.PostInitializeGuestGroup))]
+    [HarmonyPrefix]
+    public static void PostInitializeGuestGroup_Prefix(GuestGroupController initializedController)
+    {
+        if (MpManager.IsConnectedHost && MpManager.LocalScene == Common.UI.Scene.WorkScene)
+        {
+            _ = WorkSceneManager.StoreGuest(initializedController);
+        }
     }
 
+
     [HarmonyPatch(nameof(GuestsManager.SpawnNormalGuestGroup), [])]
-    [HarmonyPrefix]    
+    [HarmonyPrefix]
     public static bool SpawnNormalGuestGroup_Prefix()
     {
         // Log.LogInfo($"SpawnNormalGuestGroup_Prefix called");
@@ -104,8 +80,8 @@ public partial class GuestsManagerPatch
                     var arr = guestGroups.ToArray();
                     if (arr.All((guest) => DLCManager.PeerNormalGuestAvailable(guest.id)))
                     {
-                        _ = SpawnNormalGuestGroup_WithArg_Original(
-                                    GuestsManager.instance, guestGroups, new Il2CppSystem.Nullable<UnityEngine.Vector3>(), GuestGroupController.LeaveType.Move, -1, true);
+                        _ = SpawnNormalGuestGroup_Original_MinHook(
+                                    GuestsManager.instance, guestGroups, new Il2CppSystem.Nullable<UnityEngine.Vector3>(), GuestGroupController.LeaveType.Move, -1, true); 
                         return false;
                     }
                 }
@@ -114,83 +90,51 @@ public partial class GuestsManagerPatch
         return true;
     }
 
-
-    [HarmonyPatch(nameof(GuestsManager.SpawnNormalGuestGroup), [
-        typeof(Il2CppSystem.Collections.Generic.IEnumerable<NormalGuest>),
-        typeof(Il2CppSystem.Nullable<UnityEngine.Vector3>),
-        typeof(GuestGroupController.LeaveType),
-        typeof(int),
-        typeof(bool),
-    ])]
-    [HarmonyReversePatch]    
-    public static NormalGuestsController SpawnNormalGuestGroup_WithArg_Original(GuestsManager __instance, Il2CppSystem.Collections.Generic.IEnumerable<NormalGuest> normalGuests, Il2CppSystem.Nullable<UnityEngine.Vector3> overrideSpawnPosition, GuestGroupController.LeaveType leaveType, int targetDeskCode, bool shouldFade)
+    public static NormalGuestsController SpawnNormalGuestGroup_Original_MinHook(
+        GuestsManager __instance,
+        Il2CppSystem.Collections.Generic.IEnumerable<NormalGuest> normalGuests,
+        Il2CppSystem.Nullable<UnityEngine.Vector3> overrideSpawnPosition = null,
+        GuestGroupController.LeaveType leaveType = GuestGroupController.LeaveType.Move,
+        int targetDeskCode = -1,
+        bool shouldFade = true)
     {
-        throw new System.NotImplementedException();
+        SpawnNormalGuestGroup_WithArg_Manual_Call = true;
+        // calling MinHook_SpawnNormalGuestGroup.Hook_SpawnNormalGuestGroup
+        var res = __instance.SpawnNormalGuestGroup(normalGuests, overrideSpawnPosition, leaveType, targetDeskCode, shouldFade);
+        SpawnNormalGuestGroup_WithArg_Manual_Call = false;
+        return res;
     }
 
-
-    [HarmonyPatch(nameof(GuestsManager.SpawnNormalGuestGroup), [
-        typeof(Il2CppSystem.Collections.Generic.IEnumerable<NormalGuest>),
-        typeof(Il2CppSystem.Nullable<UnityEngine.Vector3>),
-        typeof(GuestGroupController.LeaveType),
-        typeof(int),
-        typeof(bool),
-    ])]
-    [HarmonyPrefix]    
-    public static bool SpawnNormalGuestGroup_WithArg_Prefix(GuestsManager __instance, 
-        Il2CppSystem.Collections.Generic.IEnumerable<NormalGuest> normalGuests, 
-        ref Il2CppSystem.Nullable<UnityEngine.Vector3> overrideSpawnPosition, 
-        GuestGroupController.LeaveType leaveType, 
-        int targetDeskCode, 
-        bool shouldFade, 
-        ref NormalGuestsController __result)
-    {   
-        Log.LogInfo($"SpawnNormalGuestGroup_WithArg_Prefix called, overrideSpawnPosition {(overrideSpawnPosition.hasValue? overrideSpawnPosition.Value.ToString() : "null")}");
-        overrideSpawnPosition ??= new Il2CppSystem.Nullable<UnityEngine.Vector3>();
-        if (MpManager.IsConnected)
-        {
-            if (MpManager.IsClient && MpManager.LocalScene == Common.UI.Scene.WorkScene && !MpManager.InStory)
-            {
-                return false;
-            } 
-            else if (MpManager.IsHost)
-            {
-                __result = SpawnNormalGuestGroup_WithArg_Original(__instance, normalGuests, overrideSpawnPosition, leaveType, targetDeskCode, shouldFade);
-                return false;
-            }
-        }
-        return true;
-    }
 
     [HarmonyPatch(nameof(GuestsManager.SpawnSpecialGuestGroup))]
-    [HarmonyReversePatch]    
-    public static SpecialGuestsController SpawnSpecialGuestGroup_Original(GuestsManager __instance, 
-        int id, 
+    [HarmonyReversePatch]
+    public static SpecialGuestsController SpawnSpecialGuestGroup_Original(GuestsManager __instance,
+        int id,
         SpecialGuestsController.GuestSpawnType guestSpawnType,
-        Il2CppSystem.Nullable<UnityEngine.Vector3> overrideSpawnPosition = null, 
-        Il2CppSystem.Action<GuestGroupController> onGuestLeave = null, 
-        GuestGroupController.LeaveType leaveType = GuestGroupController.LeaveType.Move, 
-        bool recordIzakaya = true, 
-        int targetDeskCode = -1, 
-        bool tryToJumpQueue = false, 
-        Il2CppSystem.Action<Common.CharacterUtility.AStarInputGeneratorComponent> postProcessCharacterCallback = null, 
+        Il2CppSystem.Nullable<UnityEngine.Vector3> overrideSpawnPosition = null,
+        Il2CppSystem.Action<GuestGroupController> onGuestLeave = null,
+        GuestGroupController.LeaveType leaveType = GuestGroupController.LeaveType.Move,
+        bool recordIzakaya = true,
+        int targetDeskCode = -1,
+        bool tryToJumpQueue = false,
+        Il2CppSystem.Action<Common.CharacterUtility.AStarInputGeneratorComponent> postProcessCharacterCallback = null,
         bool shouldFade = true)
     {
         throw new System.NotImplementedException();
     }
 
     [HarmonyPatch(nameof(GuestsManager.SpawnSpecialGuestGroup))]
-    [HarmonyPrefix]    
+    [HarmonyPrefix]
     public static bool SpawnSpecialGuestGroup_Prefix(GuestsManager __instance, ref SpecialGuestsController __result,
-        ref int id, 
+        int id,
         SpecialGuestsController.GuestSpawnType guestSpawnType,
-        ref Il2CppSystem.Nullable<UnityEngine.Vector3> overrideSpawnPosition, 
-        Il2CppSystem.Action<GuestGroupController> onGuestLeave, 
-        GuestGroupController.LeaveType leaveType, 
-        bool recordIzakaya, 
-        int targetDeskCode, 
-        bool tryToJumpQueue, 
-        Il2CppSystem.Action<Common.CharacterUtility.AStarInputGeneratorComponent> postProcessCharacterCallback, 
+        ref Il2CppSystem.Nullable<UnityEngine.Vector3> overrideSpawnPosition,
+        Il2CppSystem.Action<GuestGroupController> onGuestLeave,
+        GuestGroupController.LeaveType leaveType,
+        bool recordIzakaya,
+        int targetDeskCode,
+        bool tryToJumpQueue,
+        Il2CppSystem.Action<Common.CharacterUtility.AStarInputGeneratorComponent> postProcessCharacterCallback,
         bool shouldFade)
     {
         overrideSpawnPosition ??= new Il2CppSystem.Nullable<UnityEngine.Vector3>();
@@ -200,12 +144,13 @@ public partial class GuestsManagerPatch
             return true;
         }
 
-        if (MpManager.IsClient && MpManager.LocalScene == Common.UI.Scene.WorkScene )
+        bool IsReimuSpellCardTriggered = Functional.CheckStacktraceContains("InitializeAsGeneralWorkScene");
+        if (IsReimuSpellCardTriggered)
         {
-            if (Functional.CheckStacktraceContains("InitializeAsGeneralWorkScene"))
-            {
-                return true;
-            }
+            return true;
+        }
+        if (MpManager.IsClient && MpManager.LocalScene == Common.UI.Scene.WorkScene)
+        {
             return false;
         }
 
@@ -216,23 +161,35 @@ public partial class GuestsManagerPatch
             id = newId;
         }
         __result = SpawnSpecialGuestGroup_Original(__instance, id, guestSpawnType, overrideSpawnPosition, onGuestLeave, leaveType, recordIzakaya, targetDeskCode, tryToJumpQueue, postProcessCharacterCallback, shouldFade);
+        var info = new WorkSceneManager.GuestInfo
+        {
+            Id = id,
+            IsSpecial = true,
+            LeaveType = leaveType,
+            OverrideSpawnPosition = overrideSpawnPosition.GetValueOrDefault()
+        };
+        // should be stored in PostInitializeGuestGroup_Prefix, which will be called by SpawnSpecialGuestGroup_Original
+        var uuid = WorkSceneManager.GetGuestUUID(__result);
+        if (uuid == null) return false;
+        GuestSpawnAction.Send(uuid, info);
+        WorkSceneManager.SetGuestStatus(uuid, WorkSceneManager.Status.Generated);
         return false;
     }
 
     [HarmonyPatch(nameof(GuestsManager.TrySendToSeat))]
-    [HarmonyReversePatch]    
+    [HarmonyReversePatch]
     public static bool TrySendToSeat_Original(object __instance, GuestGroupController toTry, bool firstSpawn, int targetDeskCode, bool shouldOrder)
     {
         throw new System.NotImplementedException();
     }
 
     [HarmonyPatch(nameof(GuestsManager.TrySendToSeat))]
-    [HarmonyPrefix]    
+    [HarmonyPrefix]
     public static bool TrySendToSeat_Prefix(GuestsManager __instance, GuestGroupController toTry, bool firstSpawn, ref int targetDeskCode, bool shouldOrder)
     {
         if (MpManager.IsConnected && MpManager.LocalScene == Common.UI.Scene.WorkScene && !MpManager.InStory)
         {
-            if(MpManager.IsClient)
+            if (MpManager.IsClient)
             {
                 Log.LogDebug($"TrySendToSeat prevented");
                 return false;
@@ -244,52 +201,62 @@ public partial class GuestsManagerPatch
                 targetDeskCode = seatableDeskCodes.GetRandomOne();
 
                 var seatRand = UnityEngine.Random.Range(0, 2);
-                var guuid = NightGuestManager.GetGuestUUID(toTry);
+                var guuid = WorkSceneManager.GetGuestUUID(toTry);
 
-                NightGuestManager.SetGuestDeskcodeSeat(guuid, seatRand);
-                NightGuestManager.SetGuestDeskcode(guuid, targetDeskCode);
-                NightGuestManager.SetGuestStatus(guuid, NightGuestManager.Status.Seated);
+                int copiedTargetDeskCode = targetDeskCode;
 
+                WorkSceneManager.SetGuestDeskcodeSeat(guuid, seatRand);
+                WorkSceneManager.SetGuestDeskcode(guuid, copiedTargetDeskCode);
+                // Delay send seated action because SpawnNormalGuestGroup may execute TrySendToSeat first then return
+                CommandScheduler.Enqueue(
+                    executeWhen: () => WorkSceneManager.CheckStatus(guuid, WorkSceneManager.Status.Generated),
+                    executeInfo: $"waiting {guuid} generated",
+                    execute: () =>
+                    {
+                        WorkSceneManager.SetGuestStatus(guuid, WorkSceneManager.Status.Seated);
+                        GuestSeatedAction.Send(guuid, copiedTargetDeskCode, firstSpawn, seatRand);
+                    },
+                    timeoutSeconds: 10);
                 Log.LogDebug($"TrySendToSeat_Prefix called, desk code {targetDeskCode}, seat {seatRand}");
-
-                GuestSeatedAction.Send(NightGuestManager.GetGuestUUID(toTry), targetDeskCode, firstSpawn, seatRand);
+            
             }
         }
         return true;
     }
 
     [HarmonyPatch(nameof(GuestsManager.LeaveFromDesk))]
-    [HarmonyReversePatch]    
+    [HarmonyReversePatch]
     public static void LeaveFromDesk_Original(GuestsManager __instance, GuestGroupController toLeave, GuestGroupController.LeaveType leaveType, Il2CppSystem.Action leaveAction, bool triggerLeaveBuff)
     {
         throw new System.NotImplementedException();
     }
 
     [HarmonyPatch(nameof(GuestsManager.LeaveFromDesk))]
-    [HarmonyPrefix]    
+    [HarmonyPrefix]
     public static bool LeaveFromDesk_Prefix(GuestsManager __instance, GuestGroupController toLeave)
     {
         if (MpManager.IsConnected && MpManager.LocalScene == Common.UI.Scene.WorkScene && !MpManager.InStory)
         {
-            var uuid = NightGuestManager.GetGuestUUID(toLeave);
+            var uuid = WorkSceneManager.GetGuestUUID(toLeave);
+            if (uuid == null) return true;
             Log.LogInfo($"LeaveFromDesk_Prefix called, {uuid} leaving");
 
             if (MpManager.IsClient)
             {
-                if (NightGuestManager.IsGuestNull(toLeave))
+                if (WorkSceneManager.IsGuestNull(toLeave))
                 {
                     Log.LogError($"{uuid} toLeave or its component is null, will stop executing LeaveFromDesk");
                     return false;
                 }
-                return NightGuestManager.CheckStatus(uuid, NightGuestManager.Status.Left);
+                return WorkSceneManager.CheckStatus(uuid, WorkSceneManager.Status.Left);
             }
             else
             {
-                if (NightGuestManager.CheckStatus(uuid, NightGuestManager.Status.Left))
+                if (WorkSceneManager.CheckStatus(uuid, WorkSceneManager.Status.Left))
                 {
                     return true;
                 }
-                NightGuestManager.SetGuestStatus(uuid, NightGuestManager.Status.Left);
+                WorkSceneManager.SetGuestStatus(uuid, WorkSceneManager.Status.Left);
                 GuestLeaveAction.Send(uuid, GuestLeaveAction.LeaveType.Other);
             }
         }
@@ -298,7 +265,7 @@ public partial class GuestsManagerPatch
     }
 
     [HarmonyPatch(nameof(GuestsManager.PayAndLeave))]
-    [HarmonyReversePatch]    
+    [HarmonyReversePatch]
     public static void PayAndLeave_Original(GuestsManager __instance, GuestGroupController toPayAndLeave, bool includeTip)
     {
         throw new System.NotImplementedException();
@@ -311,112 +278,118 @@ public partial class GuestsManagerPatch
         Log.LogInfo($"PayAndLeave_Prefix called");
         if (MpManager.IsConnected && MpManager.LocalScene == Common.UI.Scene.WorkScene && !MpManager.InStory)
         {
+            var uuid = toPayAndLeave.GetGuestUUID();
+            if (uuid == null) return true;
             if (MpManager.IsClient)
             {
-                return NightGuestManager.CheckStatus(NightGuestManager.GetGuestUUID(toPayAndLeave), NightGuestManager.Status.Left);
+                return WorkSceneManager.CheckStatus(WorkSceneManager.GetGuestUUID(toPayAndLeave), WorkSceneManager.Status.Left);
             }
             else
             {
-                NightGuestManager.SetGuestStatus(NightGuestManager.GetGuestUUID(toPayAndLeave), NightGuestManager.Status.Left);
-                GuestLeaveAction.Send(NightGuestManager.GetGuestUUID(toPayAndLeave), GuestLeaveAction.LeaveType.PayAndLeave);
+                WorkSceneManager.SetGuestStatus(uuid, WorkSceneManager.Status.Left);
+                GuestLeaveAction.Send(uuid, GuestLeaveAction.LeaveType.PayAndLeave);
             }
         }
         return true;
     }
 
     [HarmonyPatch(nameof(GuestsManager.ExBadLeave))]
-    [HarmonyReversePatch]    
+    [HarmonyReversePatch]
     public static void ExBadLeave_Original(GuestsManager __instance, GuestGroupController toExBadLeave)
     {
         throw new System.NotImplementedException();
     }
 
     [HarmonyPatch(nameof(GuestsManager.ExBadLeave))]
-    [HarmonyPrefix]    
+    [HarmonyPrefix]
     public static bool ExBadLeave_Prefix(GuestsManager __instance, GuestGroupController toExBadLeave)
     {
         Log.LogInfo($"ExBadLeave_Prefix called");
         if (MpManager.IsConnected && MpManager.LocalScene == Common.UI.Scene.WorkScene && !MpManager.InStory)
         {
+            var uuid = toExBadLeave.GetGuestUUID();
+            if (uuid == null) return true;
             if (MpManager.IsClient)
             {
-                return NightGuestManager.CheckStatus(NightGuestManager.GetGuestUUID(toExBadLeave), NightGuestManager.Status.Left);
+                return WorkSceneManager.CheckStatus(uuid, WorkSceneManager.Status.Left);
             }
             else
             {
-                NightGuestManager.SetGuestStatus(NightGuestManager.GetGuestUUID(toExBadLeave), NightGuestManager.Status.Left);
-                GuestLeaveAction.Send(NightGuestManager.GetGuestUUID(toExBadLeave), GuestLeaveAction.LeaveType.ExBadLeave);
+                WorkSceneManager.SetGuestStatus(uuid, WorkSceneManager.Status.Left);
+                GuestLeaveAction.Send(uuid, GuestLeaveAction.LeaveType.ExBadLeave);
             }
         }
         return true;
     }
 
     [HarmonyPatch(nameof(GuestsManager.RepellAndLeavePay))]
-    [HarmonyReversePatch]    
+    [HarmonyReversePatch]
     public static void RepellAndLeavePay_Original(GuestsManager __instance, GuestGroupController toRepell, GuestGroupController.LeaveType leaveType, bool triggerBuff)
     {
         throw new System.NotImplementedException();
     }
 
     [HarmonyPatch(nameof(GuestsManager.RepellAndLeavePay))]
-    [HarmonyPrefix]    
+    [HarmonyPrefix]
     public static bool RepellAndLeavePay_Prefix(GuestsManager __instance, GuestGroupController toRepell)
     {
         Log.LogInfo($"RepellAndLeavePay_Prefix called");
         if (MpManager.IsConnected && MpManager.LocalScene == Common.UI.Scene.WorkScene && !MpManager.InStory)
         {
-            NightGuestManager.SetGuestStatus(NightGuestManager.GetGuestUUID(toRepell), NightGuestManager.Status.Left);
-            GuestLeaveAction.Send(NightGuestManager.GetGuestUUID(toRepell), GuestLeaveAction.LeaveType.RepellAndLeavePay);
+            var uuid = toRepell.GetGuestUUID();
+            if (uuid == null) return true;
+            WorkSceneManager.SetGuestStatus(uuid, WorkSceneManager.Status.Left);
+            GuestLeaveAction.Send(uuid, GuestLeaveAction.LeaveType.RepelAndLeavePay);
         }
         return true;
     }
 
     [HarmonyPatch(nameof(GuestsManager.RepellAndLeaveNoPay))]
-    [HarmonyReversePatch]    
+    [HarmonyReversePatch]
     public static void RepellAndLeaveNoPay_Original(GuestsManager __instance, GuestGroupController toRepell, GuestGroupController.LeaveType leaveType, bool triggerBuff)
     {
         throw new System.NotImplementedException();
     }
 
     [HarmonyPatch(nameof(GuestsManager.RepellAndLeaveNoPay))]
-    [HarmonyPrefix]    
+    [HarmonyPrefix]
     public static bool RepellAndLeaveNoPay_Prefix(GuestsManager __instance, GuestGroupController toRepell)
     {
         Log.LogInfo($"RepellAndLeaveNoPay_Prefix called");
         if (MpManager.IsConnected && MpManager.LocalScene == Common.UI.Scene.WorkScene && !MpManager.InStory)
         {
-            var uuid = NightGuestManager.GetGuestUUID(toRepell);
-            if (uuid == null)
-            {
-                return true;
-            }
-            NightGuestManager.SetGuestStatus(uuid, NightGuestManager.Status.Left);
-            GuestLeaveAction.Send(uuid, GuestLeaveAction.LeaveType.RepellAndLeaveNoPay);
+            var uuid = toRepell.GetGuestUUID();
+            if (uuid == null) return true;
+            WorkSceneManager.SetGuestStatus(uuid, WorkSceneManager.Status.Left);
+            GuestLeaveAction.Send(uuid, GuestLeaveAction.LeaveType.RepelAndLeaveNoPay);
         }
         return true;
     }
 
     [HarmonyPatch(nameof(GuestsManager.PlayerRepell))]
-    [HarmonyReversePatch]    
+    [HarmonyReversePatch]
     public static void PlayerRepell_Original(GuestsManager __instance, int deskCode)
     {
         throw new System.NotImplementedException();
     }
 
     [HarmonyPatch(nameof(GuestsManager.PlayerRepell))]
-    [HarmonyPrefix]    
+    [HarmonyPrefix]
     public static bool PlayerRepell_Prefix(GuestsManager __instance, int deskCode)
     {
         Log.LogInfo($"PlayerRepell_Prefix called");
         if (MpManager.IsConnected && MpManager.LocalScene == Common.UI.Scene.WorkScene && !MpManager.InStory)
         {
-            var toRepell = GuestsManager.instance.GetInDeskGuest(deskCode);
-            NightGuestManager.SetGuestStatus(NightGuestManager.GetGuestUUID(toRepell), NightGuestManager.Status.Left);
-            GuestLeaveAction.Send(NightGuestManager.GetGuestUUID(toRepell), GuestLeaveAction.LeaveType.PlayerRepell);
+            var toRepell = __instance.GetInDeskGuest(deskCode);
+            var uuid = toRepell.GetGuestUUID();
+            if (uuid == null) return true;
+            WorkSceneManager.SetGuestStatus(uuid, WorkSceneManager.Status.Left);
+            GuestLeaveAction.Send(uuid, GuestLeaveAction.LeaveType.PlayerRepel);
 
-            if (__instance == null || __instance?.GetInDeskGuest(deskCode) == null)
+            if (WorkSceneManager.IsGuestNull(toRepell))
             {
-                Log.LogError($"__instance null {__instance != null}, GetInDeskGuest null {__instance?.GetInDeskGuest(deskCode) != null}, will stop executing PlayerRepell");
+                Log.LogError($"toRepell is null, will stop executing PlayerRepell");
+                WorkSceneManager.RemoveOccupiedDesk(deskCode);
                 return false;
             }
         }
@@ -424,36 +397,37 @@ public partial class GuestsManagerPatch
     }
 
 
-
     [HarmonyPatch(nameof(GuestsManager.PatientDepletedLeave))]
-    [HarmonyReversePatch]    
+    [HarmonyReversePatch]
     public static void PatientDepletedLeave_Original(GuestsManager __instance, GuestGroupController toPatientDepletedLeave)
     {
         throw new System.NotImplementedException();
     }
 
     [HarmonyPatch(nameof(GuestsManager.PatientDepletedLeave))]
-    [HarmonyPrefix]    
+    [HarmonyPrefix]
     public static bool PatientDepletedLeave_Prefix(GuestsManager __instance, GuestGroupController toPatientDepletedLeave)
     {
         Log.LogDebug($"PatientDepletedLeave_Prefix called");
         if (MpManager.IsConnected && MpManager.LocalScene == Common.UI.Scene.WorkScene && !MpManager.InStory)
         {
+            var uuid = toPatientDepletedLeave.GetGuestUUID();
+            if (uuid == null) return true;
             if (MpManager.IsClient)
             {
-                return NightGuestManager.CheckStatus(NightGuestManager.GetGuestUUID(toPatientDepletedLeave), NightGuestManager.Status.Left);
+                return WorkSceneManager.CheckStatus(uuid, WorkSceneManager.Status.Left);
             }
             else
             {
-                NightGuestManager.SetGuestStatus(NightGuestManager.GetGuestUUID(toPatientDepletedLeave), NightGuestManager.Status.Left);
-                GuestLeaveAction.Send(NightGuestManager.GetGuestUUID(toPatientDepletedLeave), GuestLeaveAction.LeaveType.PatientDepletedLeave);
+                WorkSceneManager.SetGuestStatus(uuid, WorkSceneManager.Status.Left);
+                GuestLeaveAction.Send(uuid, GuestLeaveAction.LeaveType.PatientDepletedLeave);
             }
         }
         return true;
     }
 
     [HarmonyPatch(nameof(GuestsManager.PayByMood))]
-    [HarmonyPrefix]    
+    [HarmonyPrefix]
     public static bool PayByMood_Prefix(GuestsManager __instance)
     {
         Log.LogInfo($"PayByMood_Prefix called\n");
@@ -461,24 +435,26 @@ public partial class GuestsManagerPatch
     }
 
     [HarmonyPatch(nameof(GuestsManager.GuestPay))]
-    [HarmonyPrefix]    
+    [HarmonyPrefix]
     public static bool GuestPay_Prefix(GuestsManager __instance, GuestGroupController toPayAndLeave, bool includeTip)
     {
         Log.LogInfo($"GuestPay_Prefix called");
         if (MpManager.IsConnectedHost && MpManager.LocalScene == Common.UI.Scene.WorkScene && !MpManager.InStory)
         {
+            var uuid = toPayAndLeave.GetGuestUUID();
+            if (uuid == null) return true;
             // NightScene_GuestManagementUtility_GuestsManager__GenerateOrderSession
             if (Functional.CheckStacktraceContains("GenerateOrderSession"))
             {
-                NightGuestManager.SetGuestStatus(NightGuestManager.GetGuestUUID(toPayAndLeave), NightGuestManager.Status.Left);
-                GuestLeaveAction.Send(NightGuestManager.GetGuestUUID(toPayAndLeave), GuestLeaveAction.LeaveType.PayAndLeave);
+                WorkSceneManager.SetGuestStatus(uuid, WorkSceneManager.Status.Left);
+                GuestLeaveAction.Send(uuid, GuestLeaveAction.LeaveType.PayAndLeave);
             }
         }
         return true;
     }
 
     [HarmonyPatch(nameof(GuestsManager.Eval))]
-    [HarmonyPrefix]    
+    [HarmonyPrefix]
     public static bool Eval_Prefix(GuestsManager __instance, int firstMood, int moon, float delay, int amount, bool shouldAddCombo)
     {
         Log.LogInfo($"Eval_Prefix called firstMood {firstMood}, moon {moon}, delay {delay}, amount {amount}, shouldAddCombo {shouldAddCombo}\n");
@@ -486,46 +462,50 @@ public partial class GuestsManagerPatch
     }
 
     [HarmonyPatch(nameof(GuestsManager.EvaluateOrder))]
-    [HarmonyPostfix]    
+    [HarmonyPostfix]
     public static void EvaluateOrder_Postfix(GuestsManager __instance, GuestGroupController toEvaluate, bool isTriggerByPartner)
     {
-        Log.LogDebug($"EvaluateOrder_Postfix called");
+        Log.Info($"EvaluateOrder_Postfix called");
         if (MpManager.IsConnected && !MpManager.InStory)
         {
-            var uuid = NightGuestManager.GetGuestUUID(toEvaluate);
-            NightGuestManager.ResetGuestOrderServed(uuid);
-            NightGuestManager.SetGuestStatus(uuid, NightGuestManager.Status.OrderEvaluated);
+            var uuid = WorkSceneManager.GetGuestUUID(toEvaluate);
+            WorkSceneManager.ResetGuestOrderServed(uuid);
+            WorkSceneManager.SetGuestStatus(uuid, WorkSceneManager.Status.OrderEvaluated);
         }
     }
 
+    [HarmonyPatch(nameof(GuestsManager.RemoveFromOrder))]
+    [HarmonyPrefix]
+    public static void RemoveFromOrder_Prefix(GuestsManager __instance, GuestsManager.OrderBase order)
+    {
+        Log.Info($"RemoveFromOrder_Prefix called, order food {order.foodRequest}, bev {order.beverageRequest}");
+    }
+
     [HarmonyPatch(nameof(GuestsManager.GenerateOrderSession))]
-    [HarmonyReversePatch]    
+    [HarmonyReversePatch]
     public static void GenerateOrderSession_Original(GuestsManager __instance, GuestGroupController guestGroup, bool doContinue)
     {
         throw new System.NotImplementedException();
     }
 
     [HarmonyPatch(nameof(GuestsManager.GenerateOrderSession))]
-    [HarmonyPrefix]    
+    [HarmonyPrefix]
     public static bool GenerateOrderSession_Prefix(GuestsManager __instance, GuestGroupController guestGroup, bool doContinue)
     {
-        if (MpManager.IsConnectedClient)
-        {
-            Log.LogInfo($"GenerateOrderSession prefix for {NightGuestManager.GetGuestUUID(guestGroup)}"); 
-        }
         if (MpManager.IsConnectedClient && MpManager.LocalScene == Common.UI.Scene.WorkScene && !MpManager.InStory)
         {
-            var uuid = NightGuestManager.GetGuestUUID(guestGroup);
+            var uuid = WorkSceneManager.GetGuestUUID(guestGroup);
+            if (uuid == null) return true;
             Log.LogInfo($"GenerateOrderSession prevented for {uuid}");
-            if (NightGuestManager.CheckStatusIn(uuid, [NightGuestManager.Status.Seated, NightGuestManager.Status.OrderEvaluated]))
+            if (WorkSceneManager.CheckStatusIn(uuid, [WorkSceneManager.Status.Seated, WorkSceneManager.Status.OrderEvaluated]))
             {
-                NightGuestManager.SetGuestStatus(uuid, NightGuestManager.Status.PendingOrder);
-            } 
+                WorkSceneManager.SetGuestStatus(uuid, WorkSceneManager.Status.PendingOrder);
+            }
             else
             {
-                if (!NightGuestManager.CheckStatus(uuid, NightGuestManager.Status.OrderGenerated))
+                if (!WorkSceneManager.CheckStatus(uuid, WorkSceneManager.Status.OrderGenerated))
                 {
-                    Log.Warning($"GenerateOrderSession, failed to set status for {uuid}, status now {NightGuestManager.GetGuestStatusForLog(uuid)}");
+                    Log.Warning($"GenerateOrderSession, failed to set status for {uuid}, status now {WorkSceneManager.GetGuestStatusForLog(uuid)}");
                 }
             }
             return false;
@@ -534,23 +514,36 @@ public partial class GuestsManagerPatch
     }
 
     [HarmonyPatch(nameof(GuestsManager.GenerateOrderSession))]
-    [HarmonyPostfix]    
+    [HarmonyPostfix]
     public static void GenerateOrderSession_Postfix(GuestsManager __instance, GuestGroupController guestGroup)
     {
-        if (MpManager.IsConnectedClient)
-        {
-            Log.LogInfo($"GenerateOrderSession postfix for {NightGuestManager.GetGuestUUID(guestGroup)}"); 
-        }
         if (MpManager.IsConnectedHost && MpManager.LocalScene == Common.UI.Scene.WorkScene && !MpManager.InStory)
         {
-            const int PatientSecs = 30;
-            guestGroup.SetPatient(System.Math.Min(guestGroup.CurrentPatient + PatientSecs, guestGroup.MaxPatient));
-
+            Log.LogInfo($"GenerateOrderSession postfix for {WorkSceneManager.GetGuestUUID(guestGroup)}");
+            WorkSceneManager.DelayedSafeAddMaxPatient(guestGroup);
         }
     }
 
+    [HarmonyPatch(nameof(GuestsManager.SetNormalManualControlledOrder))]
+    [HarmonyPostfix]
+    public static void SetNormalManualControlledOrder_Postfix(
+        GuestsManager __instance, GuestGroupController manualControlled, int foodId, int bevId, 
+        Il2CppSystem.Action<GuestGroupController.EvaluationResult> onEvaluate, UnityEngine.Sprite hiddenPic)
+    {
+        Log.LogInfo($"SetNormalManualControlledOrder_Postfix postfix called {manualControlled.GetGuestUUID()}, food {foodId}, bev {bevId}");
+    }
+
+    [HarmonyPatch(nameof(GuestsManager.SetSpecialManualControlledOrder))]
+    [HarmonyPostfix]
+    public static void SetSpecialManualControlledOrder_Postfix(
+        GuestsManager __instance, GuestGroupController manualControlled, int foodTag, int bevTag, 
+        Il2CppSystem.Action<GuestGroupController.EvaluationResult> onEvaluate, UnityEngine.Sprite hiddenPic)
+    {
+        Log.LogInfo($"SetSpecialManualControlledOrder_Postfix postfix called {manualControlled.GetGuestUUID()}, food {foodTag}, bev {bevTag}");
+    }
+
     [HarmonyPatch(nameof(GuestsManager.TryCloseIzakaya))]
-    [HarmonyPostfix]    
+    [HarmonyPostfix]
     public static void TryCloseIzakaya_Postfix(GuestsManager __instance)
     {
         Log.LogWarning("TryCloseIzakaya called!");
@@ -558,7 +551,7 @@ public partial class GuestsManagerPatch
     }
 
     [HarmonyPatch(nameof(GuestsManager.TryCloseIzakaya))]
-    [HarmonyReversePatch]    
+    [HarmonyReversePatch]
     public static void TryCloseIzakaya_Original(GuestsManager __instance)
     {
         throw new System.NotImplementedException();

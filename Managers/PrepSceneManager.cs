@@ -320,6 +320,15 @@ public static partial class PrepSceneManager
         IzakayaConfigPannelPatch.instanceRef.m_RecipeGroup?.UpdateGroupRaw();
     }
 
+    public static void ClearGroups()
+    {
+        GameData.RunTime.NightSceneUtility.IzakayaConfigure.Instance.DailyRecipes.Clear();
+        GameData.RunTime.NightSceneUtility.IzakayaConfigure.Instance.DailyBeverages.Clear();
+        // GameData.RunTime.NightSceneUtility.IzakayaConfigure.Instance.CookerConfigure.Clear(); 
+        // System.ExecutionEngineException: Attempting to call method 'UnityEngine.InputSystem.Utilities.ArrayHelpers::Clear<System.Int32>' for which no ahead of time (AOT) code was generated.
+        localPrepTable = new PrepAction.Table();
+    }
+
     public static void UpdateAll()
     {
         PluginManager.Instance.RunOnMainThread(() =>

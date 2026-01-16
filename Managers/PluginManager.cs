@@ -24,7 +24,7 @@ public partial class PluginManager : MonoBehaviour
     private bool isTextVisible = true;
     private readonly ConcurrentQueue<Action> _mainThreadQueue = new ConcurrentQueue<Action>();
     private readonly List<(Action action, Func<bool> condition)> _conditionalActions = new List<(Action, Func<bool>)>();
-    public const bool DEBUG = true;
+    public const bool DEBUG = false;
 
     public PluginManager(IntPtr ptr) : base(ptr)
     {
@@ -98,11 +98,11 @@ public partial class PluginManager : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.F9))
             {
-                NightGuestManager.CloseIzakayaIfPossible(); 
+                WorkSceneManager.CloseIzakayaIfPossible(); 
             }
             if (Input.GetKeyDown(KeyCode.F10))
             {
-                NightGuestManager.ModifyWorkTimeLeft(3); 
+                WorkSceneManager.ModifyWorkTimeLeft(3); 
             }
             if (Input.GetKeyDown(KeyCode.F11))
             {

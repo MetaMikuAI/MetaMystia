@@ -21,7 +21,7 @@ public partial class GuestGroupControllerPatch
         // Log.LogInfo($"GenerateOrderPrefix called");
         if (MpManager.IsConnectedClient && MpManager.LocalScene == Common.UI.Scene.WorkScene && !MpManager.InStory)
         {
-            if (NightGuestManager.orders.TryDequeue(out var item))
+            if (WorkSceneManager.orders.TryDequeue(out var item))
             {
                 (generatedOrder, orderGenerationMessage) = item;
 
@@ -48,16 +48,16 @@ public partial class GuestGroupControllerPatch
         }
         if (MpManager.IsConnectedHost && MpManager.LocalScene == Common.UI.Scene.WorkScene && generatedOrder != null && !MpManager.InStory)
         {
-            NightGuestManager.SetGuestStatus(NightGuestManager.GetGuestUUID(__instance), NightGuestManager.Status.OrderGenerated);
+            WorkSceneManager.SetGuestStatus(WorkSceneManager.GetGuestUUID(__instance), WorkSceneManager.Status.OrderGenerated);
             switch (generatedOrder.Type)
             {
                 case GuestsManager.OrderBase.OrderType.Normal:
                     Log.LogInfo($"orderData NormalOrder");
-                    GuestGenNormalOrderAction.Send(NightGuestManager.GetGuestUUID(__instance), generatedOrder.foodRequest, generatedOrder.beverageRequest, generatedOrder.DeskCode, generatedOrder.NotShowInUI, generatedOrder.FreeOrder, orderGenerationMessage);
+                    GuestGenNormalOrderAction.Send(WorkSceneManager.GetGuestUUID(__instance), generatedOrder.foodRequest, generatedOrder.beverageRequest, generatedOrder.DeskCode, generatedOrder.NotShowInUI, generatedOrder.FreeOrder, orderGenerationMessage);
                     break;
                 case GuestsManager.OrderBase.OrderType.Special:
                     Log.LogInfo($"orderData SpecialOrder");
-                    GuestGenSPOrderAction.Send(NightGuestManager.GetGuestUUID(__instance), generatedOrder.foodRequest, generatedOrder.beverageRequest, generatedOrder.DeskCode, generatedOrder.NotShowInUI, generatedOrder.FreeOrder, orderGenerationMessage);
+                    GuestGenSPOrderAction.Send(WorkSceneManager.GetGuestUUID(__instance), generatedOrder.foodRequest, generatedOrder.beverageRequest, generatedOrder.DeskCode, generatedOrder.NotShowInUI, generatedOrder.FreeOrder, orderGenerationMessage);
                     break;
                 default:
                     Log.LogError($"orderData wrong type!");
@@ -72,60 +72,18 @@ public partial class GuestGroupControllerPatch
     {
         if (MpManager.IsConnected && MpManager.LocalScene == Common.UI.Scene.WorkScene && !MpManager.InStory)
         {
-            var uuid = NightGuestManager.GetGuestUUID(__instance);
+            var uuid = WorkSceneManager.GetGuestUUID(__instance);
             if (uuid == null)
             {
                 Log.Error($"not found uuid, will use original logic");
                 return true;
             }
-            var seat = NightGuestManager.GetGuestDeskcodeSeat(uuid);
+            var seat = WorkSceneManager.GetGuestDeskcodeSeat(uuid);
             Log.Info($"sending {uuid} to desk {deskCode}, seat {seat}");
-            NightGuestManager.MoveToDesk(__instance, deskCode, onMovementFinishCallback, seat);
+            WorkSceneManager.MoveToDesk(__instance, deskCode, onMovementFinishCallback, seat);
             return false;
         }
         return true;
     }
 
-    // [HarmonyPatch(typeof(Common.UI.ReceivedObjectDisplayerController), nameof(Common.UI.ReceivedObjectDisplayerController.NotifySpecialGuestNewInfo))]
-    // [HarmonyPrefix]
-    // public static bool NotifySpecialGuestNewInfo_Prefix(Common.UI.ReceivedObjectDisplayerController __instance)
-    // {
-    //     FunctionUtil.LogStacktrace(Log._inner);
-    //     return true;
-    // }
-
-    // [HarmonyPatch(typeof(Common.UI.ReceivedObjectDisplayerController), nameof(Common.UI.ReceivedObjectDisplayerController.NotifySpecialGuestSpawnInNight))]
-    // [HarmonyPrefix]
-    // public static bool NotifySpecialGuestSpawnInNight_Prefix(Common.UI.ReceivedObjectDisplayerController __instance)
-    // {
-    //     FunctionUtil.LogStacktrace(Log._inner);
-    //     return true;
-    // }
-
-    // [HarmonyPatch(typeof(Common.UI.ReceivedObjectDisplayerController), nameof(Common.UI.ReceivedObjectDisplayerController.NotifyIzakayaUpdate))]
-    // [HarmonyPrefix]
-    // public static void NotifyIzakayaUpdate_Prefix()
-    // {
-    //     // FunctionUtil.LogStacktrace(Log._inner);
-    //     // Log.LogMessage($"data {data.Item1}, {data.Item2}");
-    //     // return true;
-    // }
-
-    
-    // [HarmonyPatch(typeof(Common.UI.ReceivedObjectDisplayerController), nameof(Common.UI.ReceivedObjectDisplayerController.NotifyTagUpdate))]
-    // [HarmonyPrefix]
-    // public static bool NotifyTagUpdate_Prefix(Common.UI.ReceivedObjectDisplayerController __instance)
-    // {
-    //     FunctionUtil.LogStacktrace(Log._inner);
-    //     return true;
-    // }
-
-    // [HarmonyPatch(typeof(Common.UI.ReceivedObjectDisplayerController), nameof(Common.UI.ReceivedObjectDisplayerController.NotifyTextMessage))]
-    // [HarmonyPrefix]
-    // public static bool NotifyTextMessage_Prefix(Common.UI.ReceivedObjectDisplayerController __instance, string content)
-    // {
-    //     FunctionUtil.LogStacktrace(Log._inner);
-    //     Log.LogMessage($"content {content}");
-    //     return true;
-    // }
 }

@@ -14,15 +14,15 @@ public partial class GuestLeaveAction : NetAction
     {
         PayAndLeave,            // Host only
         ExBadLeave,             // Host only
-        RepellAndLeavePay,      // Both ok
-        RepellAndLeaveNoPay,    // Both ok
+        RepelAndLeavePay,      // Both ok
+        RepelAndLeaveNoPay,    // Both ok
         PatientDepletedLeave,   // Host only
-        PlayerRepell,           // Both ok
+        PlayerRepel,           // Both ok
         Other                   // LeaveFromDesk as the last function if all above failed, Host only
         // FIXME: Any other leave method? 
     }
 
-    public string GuestUniqId { get; set; }
+    public string GuestUUID { get; set; }
 
     public LeaveType LType { get; set; }
 
@@ -39,18 +39,18 @@ public partial class GuestLeaveAction : NetAction
             return;
         }
 
-
-        CommandScheduler.Enqueue(
-            executeWhen: () => NightGuestManager.CheckStatusGreaterOrThrow(GuestUniqId, NightGuestManager.Status.Generated) && !MpManager.InStory,
-            executeInfo: $"Leave: guid {GuestUniqId}, type {LType}",
+        WorkSceneManager.EnqueueGuestCommand(
+            key: GuestUUID,
+            executeWhen: () => WorkSceneManager.CheckStatusGreaterOrThrow(GuestUUID, WorkSceneManager.Status.Generated) && !MpManager.InStory,
+            executeInfo: $"Leave: guid {GuestUUID}, type {LType}",
             execute: () =>
             {
-                var guest = NightGuestManager.GetGuest(GuestUniqId);
-                if (NightGuestManager.CheckStatus(GuestUniqId, NightGuestManager.Status.Left))
+                var guest = WorkSceneManager.GetGuest(GuestUUID);
+                if (WorkSceneManager.CheckStatus(GuestUUID, WorkSceneManager.Status.Left))
                 {
                     return;
                 }
-                NightGuestManager.SetGuestStatus(GuestUniqId, NightGuestManager.Status.Left);
+                WorkSceneManager.SetGuestStatus(GuestUUID, WorkSceneManager.Status.Left);
                 if (GuestsManager.instance == null)
                 {
                     Log.LogError($"GuestsManager.instance is null! Action : {ToString()}");
@@ -70,10 +70,10 @@ public partial class GuestLeaveAction : NetAction
                     case LeaveType.ExBadLeave:
                         GuestsManagerPatch.ExBadLeave_Original(GuestsManager.instance, guest);
                         break;
-                    case LeaveType.RepellAndLeavePay:
+                    case LeaveType.RepelAndLeavePay:
                         GuestsManagerPatch.RepellAndLeavePay_Original(GuestsManager.instance, guest, GuestGroupController.LeaveType.Move, true);
                         break;
-                    case LeaveType.RepellAndLeaveNoPay:
+                    case LeaveType.RepelAndLeaveNoPay:
                         GuestsManagerPatch.RepellAndLeaveNoPay_Original(GuestsManager.instance, guest, GuestGroupController.LeaveType.Move, true);
                         break;
                     case LeaveType.PatientDepletedLeave:
@@ -82,14 +82,16 @@ public partial class GuestLeaveAction : NetAction
                     case LeaveType.Other:
                         GuestsManagerPatch.LeaveFromDesk_Original(GuestsManager.instance, guest, GuestGroupController.LeaveType.Move, null, true);
                         break;
-                    case LeaveType.PlayerRepell:
+                    case LeaveType.PlayerRepel:
                         GuestsManagerPatch.PlayerRepell_Original(GuestsManager.instance, guest.DeskCode);
                         break;
                 }
                 // Just in case the LeaveFromDesk method fail
-                NightGuestManager.RemoveOccupiedDesk(deskcode);
-                NightGuestManager.RemoveOrder(guest);
-            }
+                WorkSceneManager.RemoveOccupiedDesk(deskcode);
+                WorkSceneManager.RemoveOrder(guest);
+                GuestsManager.instance?.registeredCharacterArrivedEvents?.Remove(deskcode);
+            },
+            timeoutSeconds: 15
          );
     }
 
@@ -97,11 +99,10 @@ public partial class GuestLeaveAction : NetAction
     {
         NetPacket packet = new([new GuestLeaveAction
         {
-            GuestUniqId = guest,
+            GuestUUID = guest,
             LType = leaveType
         }]);
-        SendToPeer(packet);
+        SendToHostOrBroadcast(packet);
     }
-
 }
 

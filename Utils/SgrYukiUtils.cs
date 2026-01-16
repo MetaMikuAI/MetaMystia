@@ -1,19 +1,18 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
 namespace SgrYuki.Utils;
 
-public static class Extensions
+public static class Il2CppContainerExtensions
 {
-    public static T GetRandomOne<T>(this IEnumerable<T> source)
+    public static T GetRandomOne<T>(this System.Collections.Generic.IEnumerable<T> source)
     {
         if (source == null)
             throw new ArgumentNullException(nameof(source));
 
         // 如果是 IReadOnlyList / List / Array，走 O(1)
-        if (source is IReadOnlyList<T> list)
+        if (source is System.Collections.Generic.IReadOnlyList<T> list)
         {
             if (list.Count == 0)
                 throw new InvalidOperationException("Collection is empty.");
@@ -37,7 +36,7 @@ public static class Extensions
 
         return result;
     }
-    
+
     public static Il2CppSystem.Collections.Generic.IEnumerable<T> ToIEnumerable<T>(this Il2CppSystem.Collections.Generic.List<T> list)
     {
         return new Il2CppSystem.Collections.Generic.IEnumerable<T>(list.Pointer);
@@ -92,6 +91,50 @@ public static class Extensions
 
         return result;
     }
+
+
+    public static System.Collections.Generic.List<KeyT> FilterKey<KeyT, ValueT>(
+        this Il2CppSystem.Collections.Generic.Dictionary<KeyT, ValueT> dict, Predicate<ValueT> condition)
+    {
+        var result = new System.Collections.Generic.List<KeyT>();
+        foreach (var kv in dict)
+        {
+            if (condition(kv.Value)) result.Add(kv.Key);
+        }
+        return result;
+    }
+
+    public static Il2CppSystem.Collections.Generic.Dictionary<TKey, TValue> ToIl2CppDictionary<TKey, TValue>(
+        this System.Collections.Generic.Dictionary<TKey, TValue> dict)
+    {
+        if (dict == null) return null;
+        var result = new Il2CppSystem.Collections.Generic.Dictionary<TKey, TValue>();
+        foreach (var kvp in dict)
+        {
+            result.Add(kvp.Key, kvp.Value);
+        }
+        return result;
+    }
+
+    public static System.Collections.Generic.List<T> ToManagedList<T>(
+            this Il2CppSystem.Collections.Generic.List<T> il2cppList)
+    {
+        if (il2cppList == null)
+            return null;
+
+        var result = new System.Collections.Generic.List<T>(il2cppList.Count);
+        for (int i = 0; i < il2cppList.Count; i++)
+        {
+            result.Add(il2cppList[i]);
+        }
+
+        return result;
+    }
+
+    public static Il2CppSystem.Collections.Generic.List<T> ToIl2CppList<T> (this Il2CppSystem.Collections.Generic.IEnumerable<T> enumerable)
+    {
+        return new Il2CppSystem.Collections.Generic.List<T>(enumerable);
+    }
     
     public static string DumpElements<T>(
         this Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<T> array,
@@ -135,44 +178,17 @@ public static class Extensions
         sb.Append(" }");
         return sb.ToString();
     }
-
-    public static System.Collections.Generic.List<KeyT> FilterKey<KeyT, ValueT>(
-        this Il2CppSystem.Collections.Generic.Dictionary<KeyT, ValueT> dict, Predicate<ValueT> condition)
+    
+    public static Il2CppSystem.Action ToIl2cppAction(this System.Action action)
     {
-        var result = new System.Collections.Generic.List<KeyT>();
-        foreach (var kv in dict)
-        {
-            if (condition(kv.Value)) result.Add(kv.Key);
-        }
-        return result;
+        return Il2CppInterop.Runtime.DelegateSupport.ConvertDelegate<Il2CppSystem.Action>(action);
     }
 
-    public static Il2CppSystem.Collections.Generic.Dictionary<TKey, TValue> ToIl2CppDictionary<TKey, TValue>(
-        this System.Collections.Generic.Dictionary<TKey, TValue> dict)
+    public static Il2CppSystem.Action<T> ToIl2cppAction<T>(this System.Action<T> action)
     {
-        if (dict == null) return null;
-        var result = new Il2CppSystem.Collections.Generic.Dictionary<TKey, TValue>();
-        foreach (var kvp in dict)
-        {
-            result.Add(kvp.Key, kvp.Value);
-        }
-        return result;
+        return Il2CppInterop.Runtime.DelegateSupport.ConvertDelegate<Il2CppSystem.Action<T>>(action);
     }
 
-    public static System.Collections.Generic.List<T> ToManagedList<T>(
-            this Il2CppSystem.Collections.Generic.List<T> il2cppList)
-    {
-        if (il2cppList == null)
-            return null;
-
-        var result = new System.Collections.Generic.List<T>(il2cppList.Count);
-        for (int i = 0; i < il2cppList.Count; i++)
-        {
-            result.Add(il2cppList[i]);
-        }
-
-        return result;
-    }
 }
 
 public static class Il2CppEnumerableExtensions
@@ -418,117 +434,67 @@ public static class Functional
 
 
 [MetaMystia.AutoLog]
-public static partial class CommandScheduler
+public static partial class Panel
 {
-    private sealed class Command
+    public static Il2CppSystem.Collections.Generic.Stack<Il2CppSystem.Collections.Generic.Stack<DEYU.AdpUISystem.PanelCollection.UIPanelImpl>> PanelStack => DEYU.AdpUISystem.Managers.AdpUIPanelManager.Instance?.m_PanelStack;
+    public static Il2CppSystem.Collections.Generic.Stack<DEYU.AdpUISystem.PanelCollection.UIPanelImpl> TopPanelStack => PanelStack != null && PanelStack.Count > 0 ? PanelStack.Peek() : null;
+    public static DEYU.AdpUISystem.PanelCollection.UIPanelImpl TopPanel => TopPanelStack != null && TopPanelStack.Count > 0 ? TopPanelStack.Peek() : null;
+    public static string TopPanelName => TopPanel?.ControlledPanelName;
+    public static Common.DialogUtility.DialogPannel TopPanelAsDialog => TopPanel?.ControlledPanel as Common.DialogUtility.DialogPannel;
+    public static void CloseTopDialogPanel() => TopPanelAsDialog?.InterruptDialog(new UnityEngine.InputSystem.InputAction.CallbackContext());
+
+    private static Il2CppSystem.Action<DEYU.AdpUISystem.PanelCollection.FadeType> _dialog_panel_close_callback;
+
+
+    public static void CloseTopPanel()
     {
-        public Func<bool> CanExecute;
-        public Action Execute;
-        public string ExecuteInfo;
-        public Action BeforeExecute;
-        public Action OnTimeout;
-        public float ExpireTime; // unscaled time
-    }
-
-    private static readonly System.Collections.Concurrent.ConcurrentQueue<Command> _pending = new();
-
-    private static readonly System.Collections.Generic.Queue<Command> _queue = new ();
-
-    private static void onTimeoutDefault(string text) => Log.Error($"{text} timeout!");
-
-
-    // ================================
-    // Public API 
-    // ================================
-    public static void Enqueue(
-        Func<bool> executeWhen,
-        Action execute,
-        string executeInfo = "",
-        Action beforeExecute = null,
-        float timeoutSeconds = 60f,
-        Action onTimeout = null)
-    {
-        if (executeWhen == null)
-            throw new ArgumentNullException(nameof(executeWhen));
-        if (execute == null)
-            throw new ArgumentNullException(nameof(execute));
-
-        onTimeout ??= () => onTimeoutDefault(executeInfo);
-
-        _pending.Enqueue(new Command
+        void OnDialogPanelFadeFinished(DEYU.AdpUISystem.PanelCollection.FadeType _, Common.DialogUtility.DialogPannel currentPanel)
         {
-            CanExecute = executeWhen,
-            Execute = execute,
-            ExecuteInfo = executeInfo,
-            BeforeExecute = beforeExecute,
-            OnTimeout = onTimeout,
-            ExpireTime = UnityEngine.Time.unscaledTime + timeoutSeconds
-        });
-    }
+            if (TopPanelAsDialog != null)
+            {
+                CloseTopDialogPanel();
+                return;
+            }
+            currentPanel.remove_OnPanelOpenCloseFadeFinishCallback(_dialog_panel_close_callback);
+            Log.Warning("All dialog panels closed, callback removed.");
+            CloseActivePanelsBeforeSceneTransit();
+        };
 
-    // ================================
-    // Main-thread tick 
-    // ================================
-    public static void Tick()
-    {
-        // 转移后台提交
-        while (_pending.TryDequeue(out var cmd))
+        void RegisterDialogPanelCloseCallback(Common.DialogUtility.DialogPannel currentPanel)
         {
-            _queue.Enqueue(cmd);
+            System.Action<DEYU.AdpUISystem.PanelCollection.FadeType> managed = _ => OnDialogPanelFadeFinished(_, currentPanel);
+            _dialog_panel_close_callback = Il2CppInterop.Runtime.DelegateSupport.ConvertDelegate<Il2CppSystem.Action<DEYU.AdpUISystem.PanelCollection.FadeType>>(managed);
+            TopPanelAsDialog.add_OnPanelOpenCloseFadeFinishCallback(_dialog_panel_close_callback);
+        };
+
+        if (TopPanelAsDialog != null)
+        {
+            Log.Warning($"Closed dialog panel {TopPanelName}");
+            var currentPanel = TopPanelAsDialog;
+            CloseTopDialogPanel();
+            RegisterDialogPanelCloseCallback(currentPanel);     // Interrupt all dialog panels
         }
-
-        // FIFO 扫描
-        int count = _queue.Count;
-
-        for (int i = 0; i < count; i++)
+        else
         {
-            var cmd = _queue.Dequeue();
-
-            if (UnityEngine.Time.unscaledTime > cmd.ExpireTime)
+            if ("DialogPannel(Clone)".Equals(TopPanelName))
             {
-                cmd.OnTimeout?.Invoke();
-                continue;
+                Log.Error($"TopPanelName is {TopPanelName}, will try convert then close");
+                CloseTopDialogPanel();
             }
-
-            bool canExecute = false;
-            try
+            else if ("WorkSceneSustainedPannel(Clone)".Equals(TopPanelName))
             {
-                canExecute = cmd.CanExecute();
-            }
-            catch (MetaMystia.NightGuestManager.GuestInvalidatedException e)
-            {
-                Log.Warning($"ignore action {cmd.ExecuteInfo} for {e.Message}");
-                continue;
-            }
-            catch (Exception e)
-            {
-                Log.Error($"Error when checking action {cmd.ExecuteInfo}, reason: {e.Message}");
-                continue;
-            }
-
-            if (canExecute)
-            {
-                try
-                {
-                    cmd.BeforeExecute?.Invoke();
-                    cmd.Execute();
-                }
-                catch (Exception e)
-                {
-                    Log.Error($"Error when executing action {cmd.ExecuteInfo}, reason: {e.Message}, stacktrace {e.StackTrace}");
-                }
+                Log.Warning($"Will not close {TopPanelName}");
             }
             else
             {
-                _queue.Enqueue(cmd);
+                Log.Warning($"Closed regular panel {TopPanelName}");
+                TopPanel?.ControlledPanel?.ClosePanel();
             }
         }
     }
-}
 
-[MetaMystia.AutoLog]
-public static partial class Panel
-{
+
+
     /// <summary>
     /// API Common.UI.GeneralSustainedPannel.CurrentActiveSustainedPannel.CloseActivePannel() 
     /// Can close:
@@ -556,53 +522,83 @@ public static partial class Panel
     /// IzakayaPresetPannel(Clone)
     /// IzakayaConfigPannelSubPannel(Clone)
     /// </summary>
-    public static void CloseActivePanelsBeforeSceneTransit(){
+    public static void CloseActivePanelsBeforeSceneTransit()
+    {
         string[] PanelToBeClosed = ["NoteBook", "Storage", "DayScene_FastTravelPannel", "EscMenu"];
-        string[] PanelMustBeClosedFirst = ["DayScene_FastTravelConfirmPannel(Clone)", "FlattenedFilterPanel(Clone)", "EscMenu_LoadSubPannel(Clone)", "DialogPannel(Clone)",
-            "IzakayaDetailPanel(Clone)", "IzakayaConfigRemindSubPanel(Clone)", "IzakayaPresetPannel(Clone), IzakayaConfigPannelSubPannel(Clone)"];
+        string[] PanelMustBeClosedFirst = ["DayScene_FastTravelConfirmPannel(Clone)", "FlattenedFilterPanel(Clone)", "EscMenu_LoadSubPannel(Clone)",
+            "DialogPannel(Clone)",
+            "IzakayaDetailPanel(Clone)", "IzakayaConfigRemindSubPanel(Clone)", "IzakayaPresetPannel(Clone), IzakayaConfigPannelSubPannel(Clone)", 
+            "WorkSceneQTEPannel(Clone)",
+            // "WorkSceneServePannel(Clone)", "WorkSceneTrayPannel(Clone)"
+            ];
 
-        var panelStack = DEYU.AdpUISystem.Managers.AdpUIPanelManager.Instance?.m_PanelStack?.Peek();
-        if (panelStack == null) return;
-        if (PanelMustBeClosedFirst.Any((panel) => panelStack.Peek().ControlledPanel.name.Equals(panel)))
+        if (TopPanel == null) return;
+        var count = TopPanelStack.Count;
+        for (int i = 0; i < 2; i++)
         {
-            Log.Warning($"Closed panel at first {panelStack.Peek().ControlledPanel.name}");
-            panelStack.Peek()?.ControlledPanel?.ClosePanel();
+            if (PanelMustBeClosedFirst.Any((panel) => panel.Equals(TopPanelName)))
+            {
+                CloseTopPanel();
+            }
+            else
+            {
+                break;
+            }
         }
-        panelStack = DEYU.AdpUISystem.Managers.AdpUIPanelManager.Instance?.m_PanelStack?.Peek();
-        if (panelStack == null) return;
-        if (PanelToBeClosed.Any((panel) => panelStack.Peek().ControlledPanel.name.Contains(panel)))
+
+        if (TopPanel == null) return;
+        if (PanelToBeClosed.Any((panel) => TopPanelName.Contains(panel)))
         {
-            Log.Warning($"Closed panel {panelStack.Peek().ControlledPanel.name}");
+            Log.Warning($"Closed panel {TopPanelName} in SustainedPannel");
             Common.UI.GeneralSustainedPannel.CurrentActiveSustainedPannel.CloseActivePannel();
         }
     }
 
     public static void CloseTargetPannelIfOnTop(string name)
     {
-        var panel = DEYU.AdpUISystem.Managers.AdpUIPanelManager.Instance?.m_PanelStack?.Peek()?.Peek();
-        if (panel != null && panel.ControlledPanel.name.Equals(name))   // "IzakayaConfigRemindSubPanel(Clone)"
+        if (name.Equals(TopPanelName))   // "IzakayaConfigRemindSubPanel(Clone)"
         {
-            Log.Warning($"Closed panel {name}");
-            panel.ControlledPanel.ClosePanel();
+            CloseTopPanel();
         }
     }
 
-    public static void ClosePanelUntil(string name)
+    public static void ClosePanelUntil(string name, string[] exclude)
     {
         while (true)
         {
-            var panelStack = DEYU.AdpUISystem.Managers.AdpUIPanelManager.Instance?.m_PanelStack?.Peek();
-            if (panelStack == null) return;
-            if (!panelStack.Peek().ControlledPanelName.Equals(name))
+            if (TopPanel == null) return;
+            if (!name.Equals(TopPanelName) && !exclude.Any((ex) => ex.Equals(name)))
             {
-                Log.Warning($"Closed {panelStack.Peek().ControlledPanelName}");
-                panelStack.Peek().ControlledPanel.ClosePanel();
-            } 
+                CloseTopPanel();
+            }
             else
             {
                 return;
             }
         }
-        // var a = GameData.RunTime.DaySceneUtility.RunTimeDayScene.GetAllCollectables();
+    }
+}
+
+public static class NativeDllExtractor
+{
+    public static string Extract(string resourceName, string fileName)
+    {
+        string targetPath = System.IO.Path.Combine(
+            AppContext.BaseDirectory,
+            fileName
+        );
+
+        if (System.IO.File.Exists(targetPath))
+            return targetPath;
+
+        using var stream =
+            Assembly.GetExecutingAssembly()
+                    .GetManifestResourceStream(resourceName)
+            ?? throw new Exception("Resource not found: " + resourceName);
+
+        using var file = System.IO.File.Create(targetPath);
+        stream.CopyTo(file);
+
+        return targetPath;
     }
 }

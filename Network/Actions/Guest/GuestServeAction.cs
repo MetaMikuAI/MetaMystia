@@ -1,4 +1,3 @@
-using System;
 using GameData.Core.Collections;
 using MemoryPack;
 using NightScene.GuestManagementUtility;
@@ -20,7 +19,7 @@ public partial class GuestServeAction : NetAction
         Both
     }
 
-    public string GuestUniqId { get; set; }
+    public string GuestUUID { get; set; }
     public SellableFood Food { get; set; }
     public int BeverageId { get; set; }
     public ServeType FoodType { get; set; }
@@ -38,45 +37,48 @@ public partial class GuestServeAction : NetAction
             return;
         }
 
-        const int PatientRecoverSecs = 60;
+        // void setPanelOpenContext()
+        // {
+        //     var onOrderEvalAction = new Action(() => GuestsManager.instance.EvaluateOrder(guest, false));
+        //     var recoverPatientAction = new Action<int>(count => guest.AddPatient(count * 15));
+        //     var setFoodVisualAction = new Action<UnityEngine.Sprite>(TileManager.Instance.GuestTables[guest.DeskCode].tableDisplayer.SetFoodVisual);
+        //     var setBeverageVisualAction = new Action<UnityEngine.Sprite>(TileManager.Instance.GuestTables[guest.DeskCode].tableDisplayer.SetBeverageVisual);
+        //     var context = new NightScene.UI.GuestManagementUtility.WorkSceneServePannel.PannelOpenContext
+        //     {
+        //         operatingOrder = order,
+        //         onOrderEvaluate = onOrderEvalAction,
+        //         onRecoverPatient = recoverPatientAction,
+        //         onFoodDelieverStatusUpdated = setFoodVisualAction,
+        //         onBevDelieverStatusUpdated = setBeverageVisualAction,
+        //         currentGuestController = guest
+        //     };
+        //     WorkSceneServePannelPatch.instanceRef?.OpenContext = new Il2CppSystem.Nullable<NightScene.UI.GuestManagementUtility.WorkSceneServePannel.PannelOpenContext>(context);
+        // }
 
-        CommandScheduler.Enqueue(
-            executeWhen: () => NightGuestManager.CheckStatus(GuestUniqId, NightGuestManager.Status.OrderGenerated) && !MpManager.InStory,
-            executeInfo: $"Serve: guid {GuestUniqId}, type {FoodType}, foodid {Food?.FoodId}, beverage {BeverageId}",
+        WorkSceneManager.EnqueueGuestCommand(
+            key: GuestUUID,
+            executeWhen: () => WorkSceneManager.CheckStatus(GuestUUID, WorkSceneManager.Status.OrderGenerated) && !MpManager.InStory,
+            executeInfo: $"Serve: guid {GuestUUID}, type {FoodType}, foodid {Food?.FoodId}, beverage {BeverageId}",
             execute: () =>
             {
-                var guest = NightGuestManager.GetGuest(GuestUniqId);
+                var guest = WorkSceneManager.GetGuest(GuestUUID);
                 var order = guest.PeekOrders();
 
-                var onOrderEvalAction = new Action(() => GuestsManager.instance.EvaluateOrder(guest, false));
-                var recoverPatientAction = new Action<int>(count => guest.AddPatient(count * 15));
-                var setFoodVisualAction = new Action<UnityEngine.Sprite>(TileManager.Instance.GuestTables[guest.DeskCode].tableDisplayer.SetFoodVisual);
-                var setBeverageVisualAction = new Action<UnityEngine.Sprite>(TileManager.Instance.GuestTables[guest.DeskCode].tableDisplayer.SetBeverageVisual);
-
-                var context = new NightScene.UI.GuestManagementUtility.WorkSceneServePannel.PannelOpenContext
-                {
-                    operatingOrder = order,
-                    onOrderEvaluate = onOrderEvalAction,
-                    onRecoverPatient = recoverPatientAction,
-                    onFoodDelieverStatusUpdated = setFoodVisualAction,
-                    onBevDelieverStatusUpdated = setBeverageVisualAction,
-                    currentGuestController = guest
-
-                };
-                WorkSceneServePannelPatch.instanceRef?.OpenContext = new Il2CppSystem.Nullable<NightScene.UI.GuestManagementUtility.WorkSceneServePannel.PannelOpenContext>(context);
-
+                // setPanelOpenContext();
                 switch (FoodType)
                 {
                     case ServeType.Food:
                         var food = Food.ToSellable();
                         order.ServFood = food;
                         TileManager.Instance.GuestTables[guest.DeskCode].tableDisplayer.SetFoodVisual(food.Text.Visual);
+                        WorkSceneManager.SetGuestOrderServedFood(GuestUUID);
                         // WorkSceneServePannelPatch.instanceRef?.UpdateFoodVisualOnDesk();
                         break;
                     case ServeType.Beverage:
                         var beverage = BeverageId.AsNewBeverage();
                         order.ServBeverage = beverage;
                         TileManager.Instance.GuestTables[guest.DeskCode].tableDisplayer.SetBeverageVisual(beverage.Text.Visual);
+                        WorkSceneManager.SetGuestOrderServedBeverage(GuestUUID);
                         // WorkSceneServePannelPatch.instanceRef?.UpdateBevVisualOnDesk();
                         break;
                     default:
@@ -86,38 +88,68 @@ public partial class GuestServeAction : NetAction
                         order.ServBeverage = beverage;
                         TileManager.Instance.GuestTables[guest.DeskCode].tableDisplayer.SetFoodVisual(food.Text.Visual);
                         TileManager.Instance.GuestTables[guest.DeskCode].tableDisplayer.SetBeverageVisual(beverage.Text.Visual);
+                        WorkSceneManager.SetGuestOrderFullfilled(GuestUUID);
                         // WorkSceneServePannelPatch.instanceRef?.UpdateFoodVisualOnDesk();
                         // WorkSceneServePannelPatch.instanceRef?.UpdateBevVisualOnDesk();
-
                         break;
                 }
+
                 if (order.IsFullfilled)
                 {
-                    Log.Message($"begin evaluate order for {GuestUniqId}");
+                    Log.Message($"begin evaluate order for {GuestUUID}");
                     GuestsManager.instance.EvaluateOrder(guest, false);
-                    guest.SetPatient(Math.Min(guest.CurrentPatient + PatientRecoverSecs, guest.MaxPatient));
                 }
                 else
                 {
-                    Log.Message($"not Fullfilled yet for {GuestUniqId}, will not evaluate");
+                    WorkSceneManager.DelayedSafeAddPatient(guest);
+                    Log.Message($"not Fullfilled yet for {GuestUUID}, will not evaluate");
                 }
 
+                // Try close serve panel
+                var servePanel = WorkSceneServePannelPatch.instanceRef;
+                if (servePanel != null && servePanel.isActiveAndEnabled && servePanel.currentGuestController != null)
+                {
+                    var serveGuestUUID = WorkSceneManager.GetGuestUUID(servePanel.currentGuestController);
+                    if (serveGuestUUID == GuestUUID)
+                    {
+                        var operatingOrder = servePanel.operatingOrder;
+                        if (operatingOrder != null)
+                        {
+                            Sellable foodInTray = servePanel.willServeFood;
+                            Sellable beverageIdInTray = servePanel.willServeBeverage;
+                            var trayInstance = DEYU.Singletons.Singleton<GameData.RunTime.NightSceneUtility.IzakayaTray>.Instance;
+                            if (trayInstance != null)
+                            {
+                                if (foodInTray != null)
+                                {
+                                    trayInstance.Receive(foodInTray.Duplicate());
+                                }
+                                if (beverageIdInTray != null)
+                                {
+                                    trayInstance.Receive(beverageIdInTray.Duplicate());
+                                }
+                            }
+                        }
+                        WorkSceneManager.CloseServePanel(servePanel);
+                    }
+                }
                 // already set in EvaluateOrder_Postfix
-                // NightGuestManager.SetGuestStatus(GuestUniqId, NightGuestManager.Status.OrderEvaluated); 
-            }
+                // WorkSceneManager.SetGuestStatus(GuestUUID, WorkSceneManager.Status.OrderEvaluated); 
+            },
+            timeoutSeconds: 10
         );
     }
 
-    public static void Send(string guestUniqId, SellableFood food, int beverageId, ServeType type)
+    public static void Send(string GuestUUID, SellableFood food, int beverageId, ServeType type)
     {
         NetPacket packet = new([new GuestServeAction
         {
-            GuestUniqId = guestUniqId,
+            GuestUUID = GuestUUID,
             Food = food,
             BeverageId = beverageId,
             FoodType = type
         }]);
-        SendToPeer(packet);
+        SendToHostOrBroadcast(packet);
     }
 }
 

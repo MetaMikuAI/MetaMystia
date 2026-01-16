@@ -40,7 +40,7 @@ public partial class DataBaseCharacterPatch
     [HarmonyPrefix]
     public static bool RefNormalGuestVisual_Prefix(ref GuestProfilePair  __result, ref int id)
     {
-        if(MpManager.IsConnectedClient && NightGuestManager.normalGuestProfilePairIndexQueue.TryDequeue(out int index))
+        if(MpManager.IsConnectedClient && WorkSceneManager.normalGuestProfilePairIndexQueue.TryDequeue(out int index))
         {
             var compacts = DataBaseCharacter.NormalGuestVisual.Get(id, new[] {DataBaseCharacter.FallbackCompactPixel});
             var compact = compacts[index];

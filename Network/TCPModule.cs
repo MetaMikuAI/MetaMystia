@@ -41,6 +41,8 @@ public partial class NetPacket
     {
         this.Actions = Actions;
     }
+
+    public static NetPacket FromSingleAction(NetAction action) => new([action]);
 }
 
 // ---------------- PacketBuffer ----------------

@@ -8,7 +8,7 @@ namespace MetaMystia;
 
 [HarmonyPatch(typeof(NightScene.SceneManager))]
 [AutoLog]
-public partial class NightSceneManagerPatch
+public static partial class NightSceneManagerPatch
 {
 
     [HarmonyPatch(nameof(SceneManager.Start))]
@@ -21,7 +21,7 @@ public partial class NightSceneManagerPatch
         {
             return;
         }
-        NightGuestManager.Clear();
+        WorkSceneManager.Clear();
         MpManager.Initialize();
 
         CommandScheduler.Enqueue(
@@ -31,7 +31,14 @@ public partial class NightSceneManagerPatch
             {
                 var position = MystiaManager.GetPosition();
                 KyoukoManager.SpawnNightKyouko(position, true, true);
-                NightGuestManager.ModifyWorkTimeLeft(SceneManager.NIGHT_WHOLE_TIME * 2);
+                CommandScheduler.Enqueue(
+                    executeWhen: () => WorkSceneManager.WorkTimeLeft > 0,
+                    execute: () =>
+                    {
+                        Notify.Show($"你今晚的营业时间为 {WorkSceneManager.WorkTimeLeft / 60} 分钟");
+                    }, 
+                    timeoutSeconds: 120
+                );
             },
             timeoutSeconds: 120
         );

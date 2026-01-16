@@ -1,5 +1,6 @@
 using HarmonyLib;
 using NightScene.UI.GuestManagementUtility;
+using SgrYuki.Utils;
 
 namespace MetaMystia;
 [HarmonyPatch(typeof(NightScene.UI.GuestManagementUtility.WorkSceneServePannel))]
@@ -7,6 +8,7 @@ namespace MetaMystia;
 public partial class WorkSceneServePannelPatch
 {
     public static WorkSceneServePannel instanceRef = null;
+    public static volatile bool ManuallyClosePanel = false;
 
     [HarmonyPatch(nameof(WorkSceneServePannel.OnPanelInitialize))]
     [HarmonyPostfix]
@@ -28,6 +30,7 @@ public partial class WorkSceneServePannelPatch
     [HarmonyPrefix]
     public static bool OnPanelClose_Prefix(WorkSceneServePannel __instance)
     {
+        if (ManuallyClosePanel) return true;
         if (__instance == null)
         {
             return false;
@@ -58,32 +61,28 @@ public partial class WorkSceneServePannelPatch
                     {
                         trayInstance.Receive(beverageIdInTray.Duplicate());
                     }
-                    
                 }
 
-                var trayPanel = __instance.m_CurrentTray;
-                trayPanel?.ClosePanel();
-
-                var director = NightScene.NightSceneDirector.Instance;
-                if (director != null && director.CanGotoNextPhase())
-                {
-                    director.OnInteractableExit();
-                }
+                WorkSceneManager.CloseTrayPanel(__instance);
                 return false;
             }
 
-            var uuid = NightGuestManager.GetGuestUUID(guest);
-            if(NightGuestManager.GetGuestOrderFullfilled(uuid))
+            var uuid = WorkSceneManager.GetGuestUUID(guest);
+            if (uuid == null) return true;
+            if(WorkSceneManager.GetGuestOrderFullfilled(uuid))
             {
                 Log.LogInfo($"{uuid} GuestOrder Fullfilled !");
                 return true;
             }
 
-            SellableFood food = order.ServFood != null ? SellableFood.FromSellable(order.servFood) : null;
-            food ??= order.ServedFoodInAir != null ? SellableFood.FromSellable(order.ServedFoodInAir) : null;
-            food ??= __instance.willServeFood != null ? SellableFood.FromSellable(__instance.willServeFood) : null;
+            // SellableFood food = order.ServFood != null ? SellableFood.FromSellable(order.servFood) : null;
+            // food ??= order.ServedFoodInAir != null ? SellableFood.FromSellable(order.ServedFoodInAir) : null;
+            // food ??= __instance.willServeFood != null ? SellableFood.FromSellable(__instance.willServeFood) : null;
+            // int? beverageId = order.ServBeverage?.id ?? order.ServedBeverageInAir?.id ?? __instance.willServeBeverage?.id;
 
-            int? beverageId = order.ServBeverage?.id ?? order.ServedBeverageInAir?.id ?? __instance.willServeBeverage?.id;
+            SellableFood food = __instance.willServeFood != null ? SellableFood.FromSellable(__instance.willServeFood) : null;
+
+            int? beverageId = __instance.willServeBeverage?.id;
 
             if (food == null && beverageId == null)
             {
@@ -91,47 +90,52 @@ public partial class WorkSceneServePannelPatch
                 return true;
             }
 
-            if (NightGuestManager.GetGuestOrderServedFood(uuid))
+            void LogWarningIfNoServe()
+            {
+                Log.Warning($"{uuid} fail to serve, status: food {WorkSceneManager.GetGuestOrderServedFood(uuid)}, bev {WorkSceneManager.GetGuestOrderServedBeverage(uuid)}; food {food?.FoodId}, bev {beverageId}");
+            }
+
+            if (WorkSceneManager.GetGuestOrderServedFood(uuid))
             {
                 if (beverageId != null)
                 {
                     // food already served, only allow serving beverage
-                    GuestServeAction.Send(NightGuestManager.GetGuestUUID(guest), null, beverageId.Value, GuestServeAction.ServeType.Beverage);
-                    NightGuestManager.SetGuestOrderServedBeverage(uuid);
-                }
+                    GuestServeAction.Send(uuid, null, beverageId.Value, GuestServeAction.ServeType.Beverage);
+                    WorkSceneManager.SetGuestOrderServedBeverage(uuid);
+                } else LogWarningIfNoServe();
             }
-            else if (NightGuestManager.GetGuestOrderServedBeverage(uuid))
+            else if (WorkSceneManager.GetGuestOrderServedBeverage(uuid))
             {
                 if (food != null)
                 {
                     // beverage already served, only allow serving food
-                    GuestServeAction.Send(NightGuestManager.GetGuestUUID(guest), food, -1, GuestServeAction.ServeType.Food);
-                    NightGuestManager.SetGuestOrderServedFood(uuid);
-                }
+                    GuestServeAction.Send(uuid, food, -1, GuestServeAction.ServeType.Food);
+                    WorkSceneManager.SetGuestOrderServedFood(uuid);
+                } else LogWarningIfNoServe();
             }
             else
             {
                 if (beverageId != null && food != null)
                 {
                     // none served, now serving both
-                    GuestServeAction.Send(NightGuestManager.GetGuestUUID(guest), food, beverageId.Value, GuestServeAction.ServeType.Both);
-                    NightGuestManager.SetGuestOrderFullfilled(uuid);
+                    GuestServeAction.Send(uuid, food, beverageId.Value, GuestServeAction.ServeType.Both);
+                    WorkSceneManager.SetGuestOrderFullfilled(uuid);
                 }
                 else if (beverageId != null)
                 {
                     // none served, now serving beverage
-                    GuestServeAction.Send(NightGuestManager.GetGuestUUID(guest), null, beverageId.Value, GuestServeAction.ServeType.Beverage);
-                    NightGuestManager.SetGuestOrderServedBeverage(uuid);
+                    GuestServeAction.Send(uuid, null, beverageId.Value, GuestServeAction.ServeType.Beverage);
+                    WorkSceneManager.SetGuestOrderServedBeverage(uuid);
                 }
                 else
                 {
                     // none served, now serving food
-                    GuestServeAction.Send(NightGuestManager.GetGuestUUID(guest), food, -1, GuestServeAction.ServeType.Food);
-                    NightGuestManager.SetGuestOrderServedFood(uuid);
+                    GuestServeAction.Send(uuid, food, -1, GuestServeAction.ServeType.Food);
+                    WorkSceneManager.SetGuestOrderServedFood(uuid);
                 }
-            }
+            } 
         
-            Log.LogInfo($"{uuid} served status: food {NightGuestManager.GetGuestOrderServedFood(uuid)}, beverage {NightGuestManager.GetGuestOrderServedBeverage(uuid)}; food {food?.FoodId}, beverage {beverageId}");
+            Log.LogInfo($"{uuid} served status: food {WorkSceneManager.GetGuestOrderServedFood(uuid)}, beverage {WorkSceneManager.GetGuestOrderServedBeverage(uuid)}; food {food?.FoodId}, beverage {beverageId}");
         }
         return true;
 
@@ -144,11 +148,24 @@ public partial class WorkSceneServePannelPatch
         return __instance != null && __instance.operatingOrder != null;
     }
 
-
     [HarmonyPatch(nameof(WorkSceneServePannel.Send))]
-    [HarmonyReversePatch]
-    public static void Send_Original(WorkSceneServePannel __instance, GameData.Core.Collections.Sellable toSend)
+    [HarmonyPrefix]
+    public static bool Send_Prefix(WorkSceneServePannel __instance, GameData.Core.Collections.Sellable toSend)
     {
-         throw new System.NotImplementedException();
+        // This function will not actually send food/bev to guest, because player can revoke them.
+        if (toSend != null)
+        {
+            Log.Info($"toSend {toSend.type}, id={toSend.Id}, {toSend.ToString()}");
+        }
+        if (toSend == null || __instance == null)
+        {
+            Log.Error($"toSend is null, will close serve panel");
+            CommandScheduler.EnqueueWithNoCondition(() =>
+            {
+                WorkSceneManager.CloseServePanel(__instance);
+            });
+            return false;
+        }
+        return true;
     }
 }

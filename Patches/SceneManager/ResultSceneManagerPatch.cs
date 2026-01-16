@@ -15,6 +15,6 @@ public partial class ResultSceneManagerPatch
         MpManager.OnSceneTransit(Scene.ResultScene);
         var callback = NightScene.GuestManagementUtility.GuestsManager.Instance?.getPostprocessCharacterCallback;
         NightScene.GuestManagementUtility.GuestsManager.Instance?.Initialize(callback);
-        NightGuestManager.Clear();
+        WorkSceneManager.Clear();
     }
 }

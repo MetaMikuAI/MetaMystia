@@ -560,7 +560,7 @@ public partial class InGameConsole
                 }
                 else
                 {
-                    NightGuestManager.CloseIzakayaIfPossible();
+                    WorkSceneManager.CloseIzakayaIfPossible();
                     LogToConsole($"called try_close_izakaya");
                 }
                 break;

@@ -45,7 +45,8 @@ public partial class PrepAction : NetAction
         }
         PluginManager.Instance.RunOnMainThread(() =>
         {
-            SgrYuki.Utils.Panel.ClosePanelUntil("IzakayaConfigPannelNew(Clone)");
+            string[] ExceptPanels = ["WorkSceneTrayPannel(Clone)", "WorkSceneSustainedPannel(Clone)"];  // 白玉楼测验
+            SgrYuki.Utils.Panel.ClosePanelUntil("IzakayaConfigPannelNew(Clone)", ExceptPanels);
             IzakayaConfigPannelPatch.instanceRef._SolveDailyCompletion_b__61_7();
         });
     }

@@ -15,6 +15,14 @@ public partial class IzakayaConfigPannelPatch
     public static void IzakayaConfigPannel_OnPanelOpen_Postfix(IzakayaConfigPannel __instance)
     {
         instanceRef = __instance;
+        if (MpManager.IsConnected)
+        {
+            PluginManager.Instance.RunOnMainThread(() =>
+            {
+                PrepSceneManager.ClearGroups();
+                PrepSceneManager.UpdateUI();
+            });
+        }
         Log.LogInfo($"IzakayaConfigPannel OnPanelOpen called");
     }
 

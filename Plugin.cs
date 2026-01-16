@@ -4,6 +4,7 @@ using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using MetaMystia.Debugger;
+using SgrYuki.Utils;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -19,36 +20,50 @@ public class Plugin : BasePlugin
     public const bool EnableWebConsole = false;
 
     public static Type[] ToBePatched = [
+        // SceneManager Patches
+        typeof(MainSceneManagerPatch),
+        typeof(DaySceneManagerPatch),
+        typeof(NightSceneManagerPatch),
+        typeof(PrepNightSceneManagerPatch),
+        typeof(ResultSceneManagerPatch),
+        typeof(StaffSceneManagerPatch),
+        typeof(UniversalGameManagerPatch),
+
+        // DayScene Patches
+        typeof(StatusTrackerPatch),
+        typeof(RunTimeSchedulerPatch),
         typeof(CharacterControllerUnitPatch),
         typeof(CharacterInputPatch),
-        typeof(CookControllerPatch),
-        typeof(DataBaseCharacterPatch),
-        typeof(DaySceneManagerPatch),
-        typeof(DaySceneMapProfilePatch),
         typeof(DayScenePlayerInputPatch),
-        typeof(DialogPannelPatch),
+
+        // PrepScene Patches
         typeof(IzakayaConfigPannelPatch),
         typeof(IzakayaConfigurePatch),
         typeof(IzakayaSelectorPanelPatch),
-        typeof(MainSceneManagerPatch),
-        typeof(NightSceneManagerPatch),
-        typeof(PrepNightSceneManagerPatch),
-        typeof(RunTimeSchedulerPatch),
-        typeof(StaffSceneManagerPatch),
-        typeof(UniversalGameManagerPatch),
-        typeof(WorkSceneStoragePannelPatch),
+
+        // WorkScene Patches
+        typeof(CookControllerPatch),
         typeof(GuestsManagerPatch),
         typeof(GuestGroupControllerPatch),
         typeof(WorkSceneServePannelPatch),
+        typeof(WorkSceneStoragePannelPatch),
+        typeof(QTERewardManagerPatch),
+        typeof(NightSceneEventManagerPatch),
+        typeof(MystiaQTEBuffRewardPatch),
         typeof(GameTimeManagerPatch),
-        typeof(ResultSceneManagerPatch),
-        typeof(CharacterPortrayalPatch),
-        typeof(SpecialGuestDescriberPatch),
+        typeof(NightScene_SceneManager__c__DisplayClass62_0_Patch),
+
+        // ResourceEx Patches
+        typeof(DataBaseCharacterPatch),
         typeof(DataBaseDayPatch),
         typeof(DataBaseCorePatch),
         typeof(DataBaseLanguagePatch),
         typeof(NightSceneLanguagePatch),
+        typeof(SpecialGuestDescriberPatch),
+        typeof(DaySceneMapProfilePatch),
+        typeof(DialogPannelPatch),
         typeof(DataBaseSchedulerPatch)
+
     ];
 
     public static bool AllPatched => PatchedException == null;
@@ -68,8 +83,8 @@ public class Plugin : BasePlugin
             ClassInjector.RegisterTypeInIl2Cpp<PluginManager>();
             Log.LogInfo("Registered C# Types in Il2Cpp");
         }
-        catch {
-            Log.LogError("FAILED to Register Il2Cpp Type!");
+        catch (Exception ex) {
+            Log.LogError($"FAILED to Register Il2Cpp Type! {ex.Message}");
         }
 
         try {
@@ -84,7 +99,10 @@ public class Plugin : BasePlugin
                 harmony.PatchAll(patch);
                 Log.LogInfo($"Applied {patch.Name}");
             }
-            
+
+            NativeDllExtractor.Extract("MetaMystia.Patches.Native.Runtime.MinHook.x64.dll", MinHook.DLLFilename);
+            MinHook_SpawnNormalGuestGroup.InstallHook();
+
             // ShigureYuki.DebugClassPatcher.PatchAllInnerClass(ref harmony, typeof(ShigureYuki.DebugConsolePatch));
             NetAction.RegisterAllFormatter();
 
@@ -92,7 +110,7 @@ public class Plugin : BasePlugin
 
         }
         catch (Exception ex) {
-            Log.LogFatal($"FAILED to Apply Hooks! {ex.Message}");
+            Log.LogFatal($"FAILED to Apply Hooks! {ex.Message}");   
             PatchedException = ex;
         }
     }

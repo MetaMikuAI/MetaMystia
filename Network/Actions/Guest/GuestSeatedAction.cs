@@ -10,7 +10,7 @@ public partial class GuestSeatedAction : NetAction
 {
     public override ActionType Type => ActionType.GUEST_SEATED;
 
-    public string GuestUniqId { get; set; }
+    public string GuestUUID { get; set; }
 
     public int DeskId { get; set; }
 
@@ -30,87 +30,94 @@ public partial class GuestSeatedAction : NetAction
         {
             return;
         }
+        
+        string executeInfo = $"Seated: guid {GuestUUID}, DeskId {DeskId}, SeatId {SeatId}";
 
-        bool executeWhen()
-        {
-            if (NightGuestManager.CheckStatus(GuestUniqId, NightGuestManager.Status.Generated) && !MpManager.InStory)
-            {
-                if (GuestsManager.instance.GetInDeskGuest(DeskId) == null)
-                {
-                    return true;
-                }
-                if (!GuestsManager.instance.CheckGuestIsInDesk(DeskId))
-                {
-                    return true;
-                }
-                var guestTargetDesk = NightGuestManager.GetGuestUUID(GuestsManager.instance.GetInDeskGuest(DeskId));
-                return NightGuestManager.GetGuestDeskcode(guestTargetDesk) != DeskId + 1;
-            }
-            return false;
-        }
+        bool executeWhen() => ExecuteWhen(GuestUUID, DeskId);
 
-        void respawn()
-        {
-            var info = NightGuestManager.GetGuestInfo(GuestUniqId);
-            NightGuestManager.SetGuestStatus(GuestUniqId, NightGuestManager.Status.PendingGenerate);
-            NightGuestManager.SpawnGuestGroup(info, GuestUniqId);
-            Log.LogWarning($"Seated-Respawned: guid {GuestUniqId}");
-        }
-
-        void onExecute()
-        {
-            var guestTargetDesk = GuestsManager.instance.GetInDeskGuest(DeskId);
-            var guest = NightGuestManager.GetGuest(GuestUniqId);
-
-            if (guestTargetDesk != null && guestTargetDesk != guest)
-            {
-                Log.LogWarning($"guest {GuestUniqId}, guestTargetDesk not null, will force set previous guest {NightGuestManager.GetGuestUUID(guestTargetDesk)} out, DeskId {DeskId}, SeatId {SeatId}");
-                GuestsManager.instance.SetGuestOutDesk(guestTargetDesk);
-                GuestsManager.instance.occupiedDesks.Remove(DeskId);
-            }
-
-            NightGuestManager.SetGuestDeskcodeSeat(GuestUniqId, SeatId);
-
-            var seated = GuestsManagerPatch.TrySendToSeat_Original(GuestsManager.instance, guest, FirstSpawn, DeskId, true);
-            if (seated)
-            {
-                NightGuestManager.SetGuestStatus(GuestUniqId, NightGuestManager.Status.Seated);
-                NightGuestManager.SetGuestDeskcode(GuestUniqId, guest.DeskCode);
-            } 
-            else
-            {
-                Log.LogError($"try send to seat fail, guest {GuestUniqId}, DeskId {DeskId}, SeatId {SeatId}");
-            }
-
-        }
+        void onExecute() => Execute(GuestUUID, DeskId, SeatId, FirstSpawn);
 
         void beforeExecute()
         {
-            if (NightGuestManager.IsGuestNull(GuestUniqId))
+            if (WorkSceneManager.IsGuestNull(GuestUUID))
             {
                 respawn();
             }
         }
-        
-        CommandScheduler.Enqueue(
+
+        void respawn() => Respawn(GuestUUID);
+
+        WorkSceneManager.EnqueueGuestCommand(
+            key: GuestUUID,
             executeWhen: executeWhen,
-            executeInfo: $"Seated: guid {GuestUniqId}, DeskId {DeskId}, SeatId {SeatId}",
+            executeInfo: executeInfo,
             execute: onExecute,
             beforeExecute: beforeExecute,
-            timeoutSeconds: 60
+            timeoutSeconds: 10
         );
     }
 
-    public static void Send(string guestUniqId, int deskId, bool firstSpawn, int seatId)
+    public static void Respawn(string GuestUUID)
+    {
+        var info = WorkSceneManager.GetGuestInfo(GuestUUID);
+        WorkSceneManager.SetGuestStatus(GuestUUID, WorkSceneManager.Status.PendingGenerate);
+        WorkSceneManager.SpawnGuestGroup(info, GuestUUID);
+        Log.LogWarning($"Respawned: guid {GuestUUID}");
+    }
+
+    public static void Execute(string GuestUUID, int DeskId, int SeatId, bool FirstSpawn)
+    {
+        var guestTargetDesk = GuestsManager.instance.GetInDeskGuest(DeskId);
+        var guest = WorkSceneManager.GetGuest(GuestUUID);
+
+        if (guestTargetDesk != null && guestTargetDesk != guest)
+        {
+            Log.LogWarning($"guest {GuestUUID}, guestTargetDesk not null, will force set previous guest {WorkSceneManager.GetGuestUUID(guestTargetDesk)} out, DeskId {DeskId}, SeatId {SeatId}");
+            WorkSceneManager.RemoveGuestAndOrder(DeskId);
+        }
+
+        WorkSceneManager.SetGuestDeskcodeSeat(GuestUUID, SeatId);
+
+        var seated = GuestsManagerPatch.TrySendToSeat_Original(GuestsManager.instance, guest, FirstSpawn, DeskId, true);
+        if (seated)
+        {
+            WorkSceneManager.SetGuestStatus(GuestUUID, WorkSceneManager.Status.Seated);
+            WorkSceneManager.SetGuestDeskcode(GuestUUID, guest.DeskCode);
+        }
+        else
+        {
+            Log.LogError($"try send to seat fail, guest {GuestUUID}, DeskId {DeskId}, SeatId {SeatId}");
+        }
+    }
+
+    public static bool ExecuteWhen(string GuestUUID, int DeskId)
+    {
+        if (WorkSceneManager.CheckStatus(GuestUUID, WorkSceneManager.Status.Generated) && !MpManager.InStory)
+        {
+            if (GuestsManager.instance.GetInDeskGuest(DeskId) == null)
+            {
+                return true;
+            }
+            if (!GuestsManager.instance.CheckGuestIsInDesk(DeskId))
+            {
+                return true;
+            }
+            var guestTargetDesk = WorkSceneManager.GetGuestUUID(GuestsManager.instance.GetInDeskGuest(DeskId));
+            return WorkSceneManager.GetGuestDeskcode(guestTargetDesk) != DeskId;
+        }
+        return false;
+    }
+    
+    public static void Send(string GuestUUID, int deskId, bool firstSpawn, int seatId)
     {
         NetPacket packet = new([new GuestSeatedAction
         {
-            GuestUniqId = guestUniqId,
+            GuestUUID = GuestUUID,
             DeskId = deskId,
             FirstSpawn = firstSpawn,
             SeatId = seatId
         }]);
-        SendToPeer(packet);
+        SendToHostOrBroadcast(packet);
     }
 }
 

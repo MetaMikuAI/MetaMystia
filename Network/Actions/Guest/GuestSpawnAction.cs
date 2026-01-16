@@ -1,6 +1,6 @@
 using MemoryPack;
 using SgrYuki.Utils;
-using static MetaMystia.NightGuestManager;
+using static MetaMystia.WorkSceneManager;
 
 namespace MetaMystia;
 
@@ -27,31 +27,27 @@ public partial class GuestSpawnAction : NetAction
             return;
         }
 
-        CommandScheduler.Enqueue(
+        WorkSceneManager.EnqueueGuestCommand(
+            key: UUID,
             executeWhen: () => !MpManager.InStory,
             executeInfo: $"Spawned: guid {UUID}, special {GuestInfo.IsSpecial}",
             execute: () =>
             {
                 SetGuestStatus(UUID, Status.PendingGenerate);
                 SpawnGuestGroup(GuestInfo, UUID);
-            });
+            },
+            timeoutSeconds: 60
+        );
     }
 
-    public static void Send(int guest, bool isSpecial, string uuid, int? guest1Visualid = null, int? guest2 = null, int? guest2Visualid = null)
+    public static void Send(string uuid, GuestInfo guestInfo)
     {
         NetPacket packet = new([new GuestSpawnAction
         {
             UUID = uuid,
-            GuestInfo = new GuestInfo {
-                Id = guest,
-                VisualId = guest1Visualid,
-                Id2 = guest2,
-                VisualId2 = guest2Visualid,
-                IsSpecial = isSpecial
-            }
+            GuestInfo = guestInfo
         }]);
-        SendToPeer(packet);
+        SendToHostOrBroadcast(packet);
     }
-
 }
 
