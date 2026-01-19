@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Text.Json;
 using System.Threading.Tasks;
 using MetaMystia;
@@ -8,7 +11,9 @@ namespace SgrYuki.Utils;
 
 [AutoLog]
 public static partial class GitHubReleaseHelper
-{
+{   
+    public const string GetPluginVersionAPI = "https://api.izakaya.cc/version/meta-mystia";
+    public static string MetricsAPI(string version, string user_id) => $"https://track.izakaya.cc/api.php?idsite=13&rec=1&ca=1&e_c=Client&e_a=Run&e_n{version}&_id={user_id}&uid={user_id}";
     private static readonly System.Net.Http.HttpClient _http = new()
     {
         BaseAddress = new Uri("https://api.github.com/")
@@ -24,11 +29,9 @@ public static partial class GitHubReleaseHelper
         string owner,
         string repo)
     {
-        var response = await _http.GetAsync(
-            $"repos/{owner}/{repo}/releases/latest");
+        var response = await _http.GetAsync($"repos/{owner}/{repo}/releases/latest");
 
-        if (!response.IsSuccessStatusCode)
-            return null;
+        if (!response.IsSuccessStatusCode) return null;
 
         var json = await response.Content.ReadAsStringAsync();
         var dict = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
@@ -44,8 +47,8 @@ public static partial class GitHubReleaseHelper
     {
         var c = new System.Net.Http.HttpClient();
         c.DefaultRequestHeaders.UserAgent.ParseAdd("MetaMystia/1.0");
-        
-        var response = await c.GetAsync("https://api.izakaya.cc/version/meta-mystia");
+
+        var response = await c.GetAsync(GetPluginVersionAPI);
 
         if (!response.IsSuccessStatusCode) return null;
 
@@ -61,11 +64,45 @@ public static partial class GitHubReleaseHelper
 
     public static string GetPluginLatestTag(bool useGithub = false)
     {
+        return GetPluginLatestTagAsync(useGithub).GetAwaiter().GetResult();
+    }
+
+    public static Task<string> GetPluginLatestTagAsync(bool useGithub = false)
+    {
         if (useGithub)
         {
-            return GetLatestReleaseTagUsingGithubAsync("MetaMikuAI", "MetaMystia").GetAwaiter().GetResult();
+            return GetLatestReleaseTagUsingGithubAsync("MetaMikuAI", "MetaMystia");
         }
-        return GetLatestReleaseTagAsync().GetAwaiter().GetResult();
+        return GetLatestReleaseTagAsync();
+    }
+
+    public static string GetActiveMacAddress()
+    {
+        foreach (var nic in NetworkInterface.GetAllNetworkInterfaces())
+        {
+            if (nic.OperationalStatus != OperationalStatus.Up)
+                continue;
+
+            if (nic.NetworkInterfaceType == NetworkInterfaceType.Loopback)
+                continue;
+
+            var props = nic.GetIPProperties();
+            if (props.UnicastAddresses.Any(u => u.Address.AddressFamily == AddressFamily.InterNetwork))
+            {
+                return nic.GetPhysicalAddress().ToString();
+            }
+        }
+        return null;
+    }
+
+    public static async Task<bool> ReportMetrics()
+    {
+        var c = new System.Net.Http.HttpClient();
+        c.DefaultRequestHeaders.UserAgent.ParseAdd("MetaMystia/1.0");
+
+        var response = await c.GetAsync(MetricsAPI(MpManager.ModVersion, GetActiveMacAddress()));
+        Log.Info($"reporting metrics {MpManager.ModVersion}, {GetActiveMacAddress()}");
+        return response.IsSuccessStatusCode;
     }
 }
 

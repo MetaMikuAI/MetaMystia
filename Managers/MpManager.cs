@@ -51,6 +51,7 @@ public static partial class MpManager
     public static bool InputAvailable => Common.UI.UniversalGameManager.IsInputEnabled;
 
     public static string GameVersion => Common.LoadingSceneManager.VersionData;
+    public static string ModVersion => MyPluginInfo.PLUGIN_VERSION;
     public static string PeerGameVersion = "";
     
     public static void SwitchRole(bool stop_existed_server = true)

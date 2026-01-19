@@ -34,9 +34,9 @@ public partial class HelloAction : NetAction
         MpManager.PeerId = PeerId;
         MpManager.PeerGameVersion = GameVersion;
 
-        if (Version != MyPluginInfo.PLUGIN_VERSION)
+        if (Version != MpManager.ModVersion)
         {
-            Log.LogError($"Mod version mismatch! Local: {MyPluginInfo.PLUGIN_VERSION}, Remote: {Version}");
+            Log.LogError($"Mod version mismatch! Local: {MpManager.ModVersion}, Remote: {Version}");
             MpManager.DisconnectPeer();
             Notify.ShowOnMainThread("Mod 版本不匹配，连接已断开！");
             return;

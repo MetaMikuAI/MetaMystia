@@ -93,6 +93,26 @@ public static partial class CommandScheduler
 
     public static void EnqueueWithNoCondition(Action execute) => Enqueue(() => true, execute);
 
+    public static void NewThreadRunInBackGround(Action execute)
+    {
+        void act()
+        {
+            try
+            {
+                execute.Invoke();
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"cannot execute in new thread background, {ex.Message}, {ex.StackTrace}");
+            }
+        }
+        var t = new Thread(act)
+        {
+            IsBackground = true
+        };
+        t.Start();
+    }
+
     public static void RunInBackGround(Action execute)
     {
         void act()
@@ -103,14 +123,10 @@ public static partial class CommandScheduler
             }
             catch (Exception ex)
             {
-                Log.Error($"cannot execute in background, {ex.Message}, {ex.StackTrace}");
+                Log.Error($"cannot execute in task background, {ex.Message}, {ex.StackTrace}");
             }
         }
-        var t = new Thread(act)
-        {
-            IsBackground = true
-        };
-        t.Start();
+        System.Threading.Tasks.Task.Run(act);
     }
 
     // ================================

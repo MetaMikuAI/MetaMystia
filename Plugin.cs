@@ -44,6 +44,8 @@ public class Plugin : BasePlugin
 
         // WorkScene Patches
         typeof(CookControllerPatch),
+        // typeof(CookerPatch),
+        // typeof(CookSystemManagerGetCookerPatch),
         typeof(GuestsManagerPatch),
         typeof(GuestGroupControllerPatch),
         typeof(WorkSceneServePannelPatch),
@@ -109,12 +111,13 @@ public class Plugin : BasePlugin
 
             ResourceExManager.Initialize();
 
-            CommandScheduler.RunInBackGround(() =>
+            CommandScheduler.RunInBackGround(async () =>
             {
                 try
                 {
-                    var currentVer = MyPluginInfo.PLUGIN_VERSION;
-                    var latest = GitHubReleaseHelper.GetPluginLatestTag();
+                    var currentVer = MpManager.ModVersion;
+                    var latest = await GitHubReleaseHelper.GetPluginLatestTagAsync();
+                    await GitHubReleaseHelper.ReportMetrics();
                     Log.LogMessage($"您的mod版本为 {currentVer}, 最新版为 {latest}");
                     if (!currentVer.Equals(latest))
                     {
