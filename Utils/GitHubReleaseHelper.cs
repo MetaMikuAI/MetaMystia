@@ -13,7 +13,10 @@ namespace SgrYuki.Utils;
 public static partial class GitHubReleaseHelper
 {   
     public const string GetPluginVersionAPI = "https://api.izakaya.cc/version/meta-mystia";
-    public static string MetricsAPI(string version, string user_id) => $"https://track.izakaya.cc/api.php?idsite=13&rec=1&ca=1&e_c=Client&e_a=Run&e_n{version}&_id={user_id}&uid={user_id}";
+    public static string MetricsAPI(string version, string user_id) => $"https://track.izakaya.cc/api.php?idsite=13&rec=1&ca=1&e_c=Client&e_a=Run&e_n={version}&_id={user_id}&uid={user_id}";
+
+    public static string MD5(string input) => Convert.ToHexString(System.Security.Cryptography.MD5.HashData(System.Text.Encoding.UTF8.GetBytes(input))).ToLowerInvariant();
+
     private static readonly System.Net.Http.HttpClient _http = new()
     {
         BaseAddress = new Uri("https://api.github.com/")
@@ -89,7 +92,8 @@ public static partial class GitHubReleaseHelper
             var props = nic.GetIPProperties();
             if (props.UnicastAddresses.Any(u => u.Address.AddressFamily == AddressFamily.InterNetwork))
             {
-                return nic.GetPhysicalAddress().ToString();
+                Log.Message($"{Log.GetCallerName()} {nic.GetPhysicalAddress()}");
+                return nic.GetPhysicalAddress().ToString().Trim();
             }
         }
         return null;
@@ -99,9 +103,9 @@ public static partial class GitHubReleaseHelper
     {
         var c = new System.Net.Http.HttpClient();
         c.DefaultRequestHeaders.UserAgent.ParseAdd("MetaMystia/1.0");
-
-        var response = await c.GetAsync(MetricsAPI(MpManager.ModVersion, GetActiveMacAddress()));
-        Log.Info($"reporting metrics {MpManager.ModVersion}, {GetActiveMacAddress()}");
+        var user_id = MD5(GetActiveMacAddress());
+        var response = await c.GetAsync(MetricsAPI(MpManager.ModVersion, user_id));
+        Log.Info($"reporting metrics {MpManager.ModVersion}, {user_id}");
         return response.IsSuccessStatusCode;
     }
 }
