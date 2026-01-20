@@ -52,6 +52,7 @@ public static partial class MpManager
 
     public static string GameVersion => Common.LoadingSceneManager.VersionData;
     public static string ModVersion => MyPluginInfo.PLUGIN_VERSION;
+    public static Language Language => Common.UI.EscapeUtility.EscConfigPannel.CurrentSettings.CurrentLanguage.GetLanguage();
     public static string PeerGameVersion = "";
 
     #region Multiplayer GamePlay Getters 
@@ -197,7 +198,7 @@ public static partial class MpManager
             {
                 SwitchRole(stop_existed_server);
             }
-
+            PluginManager.Console.LogToConsole(TextId.MpConnecting.Get(peerIp, port));
             Log.LogInfo($"[C] Connecting to {peerIp}:{port}...");
             client = new(peerIp, port);
             await client.StartAsync();

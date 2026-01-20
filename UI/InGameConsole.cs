@@ -340,11 +340,10 @@ public partial class InGameConsole
 
     private async Task MultiplayerCommand(string[] args)
     {
-        const string subcommandHelp = "Subcommands: start, stop, restart, status, id, connect, disconnect";
         if (args.Length == 0)
         {
-            LogToConsole("Usage: /mp <subcommand> [args]");
-            LogToConsole(subcommandHelp);
+            LogToConsole(L10n.Get(TextId.MpUsageRoot));
+            LogToConsole(L10n.Get(TextId.MpSubcommandHelp));
             return;
         }
 
@@ -353,44 +352,44 @@ public partial class InGameConsole
         switch (subcommand)
         {
             case "start":
-                const string UsageHelp = "Usage: /mp start server or /mp start client";
                 if (args.Length < 2)
                 {
-                    LogToConsole(UsageHelp);
+                    LogToConsole(TextId.MpUsageHelp.Get());
                     break;
                 }
                 if (MpManager.IsRunning)
                 {
-                    LogToConsole($"Multiplayer already started as {MpManager.RoleName}");
+                    LogToConsole(TextId.MpAlreadyStarted.Get(MpManager.RoleName));
                     break;
                 }
                 if ("server".Equals(args[1].ToLower()))
                 {
                     if (MpManager.Start(MpManager.ROLE.Host))
                     {
-                        LogToConsole("Multiplayer started as Host");
+                        LogToConsole(TextId.MpStartedAsHost.Get());
                     }
                 }
                 else if ("client".Equals(args[1].ToLower()))
                 {
                     if (MpManager.Start(MpManager.ROLE.Client))
                     {
-                        LogToConsole("Multiplayer started as Client");
+                        LogToConsole(TextId.MpStartedAsClient.Get());
                     }
                 }
                 else
                 {
-                    LogToConsole(UsageHelp);
+                    LogToConsole(TextId.MpUsageHelp.Get());
                 }
                 break;
             case "stop":
                 MpManager.Stop();
-                LogToConsole("Multiplayer stopped");
+                LogToConsole(L10n.Get(TextId.MpStopped));
                 break;
+
             case "restart":
                 if (MpManager.Restart())
                 {
-                    LogToConsole("Multiplayer restarted");
+                    LogToConsole(L10n.Get(TextId.MpRestarted));
                 }
                 break;
             case "status":
@@ -400,16 +399,18 @@ public partial class InGameConsole
             case "id":
                 if (args.Length < 2)
                 {
-                    LogToConsole("Usage: /mp id <new_id>");
+                    LogToConsole(L10n.Get(TextId.MpUsageSetId));
                     break;
                 }
                 MpManager.PlayerId = args[1];
-                LogToConsole($"Player ID set to {args[1]}");
+                LogToConsole(
+                    L10n.Get(TextId.MpPlayerIdSet, args[1])
+                );
                 break;
             case "connect":
                 if (args.Length < 2)
                 {
-                    LogToConsole("Usage: /mp connect <ip> <port>(optional)");
+                    LogToConsole(L10n.Get(TextId.ConnectCommand));
                     break;
                 }
                 // args[0]: connect, args[1]: ip or ip:port, args[2]: port
@@ -446,27 +447,27 @@ public partial class InGameConsole
 
                 if (result)
                 {
-                    LogToConsole($"Connected to {address}");
+                    LogToConsole(L10n.Get(TextId.ConnectCommandConnected, address));
                 }
                 else
                 {
-                    LogToConsole($"Failed to connect to {address}");
+                    LogToConsole(L10n.Get(TextId.ConnectCommandFail, address));
                 }
                 break;
             case "disconnect":
                 if (!MpManager.IsConnected)
                 {
-                    LogToConsole("No active connection");
+                    LogToConsole(L10n.Get(TextId.MpNoActiveConnection));
                 }
                 else
                 {
                     MpManager.DisconnectPeer();
-                    LogToConsole("Disconnected");
+                    LogToConsole(L10n.Get(TextId.MpDisconnected));
                 }
                 break;
             default:
-                LogToConsole($"Unknown subcommand: {subcommand}");
-                LogToConsole(subcommandHelp);
+                LogToConsole(L10n.Get(TextId.MpUnknownSubcommand, subcommand));
+                LogToConsole(L10n.Get(TextId.MpSubcommandHelp));
                 break;
         }
     }
@@ -475,7 +476,7 @@ public partial class InGameConsole
     {
         if (!MpManager.IsConnected)
         {
-            LogToConsole("No active connection");
+            LogToConsole(TextId.MpNoActiveConnection.Get());
         }
         else
         {
