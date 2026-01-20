@@ -44,8 +44,14 @@ public static partial class NightSceneEventManagerPatch
 
     [HarmonyPatch(nameof(EventManager.FundEdit))]
     [HarmonyPrefix]
-    public static bool FundEdit_Prefix(EventManager __instance, float value)
+    public static bool FundEdit_Prefix(EventManager __instance, ref float value)
     {
+        if (MpManager.IsConnectedHost)
+        {
+            var newValue = value * MpManager.MultiplayerFundModifier;
+            Log.Info($"FundEdit_Prefix, value {value} => {newValue}");
+            value = newValue;
+        }
         if (MpManager.IsConnectedClient && !MpManager.InStory)
         {
             Log.Info($"FundEdit_Prefix prevented, value {value}");
@@ -74,8 +80,14 @@ public static partial class NightSceneEventManagerPatch
 
     [HarmonyPatch(nameof(EventManager.TipEdit))]
     [HarmonyPrefix]
-    public static bool TipEdit_Prefix(EventManager __instance, int value, EventManager.ServeType serveType)
+    public static bool TipEdit_Prefix(EventManager __instance, ref int value, EventManager.ServeType serveType)
     {
+        if (MpManager.IsConnectedHost)
+        {
+            int newValue = (int)(value * MpManager.MultiplayerTipModifier);
+            Log.Info($"TipEdit_Prefix, value {value} => {newValue}");
+            value = newValue;
+        }
         if (MpManager.IsConnectedClient && !MpManager.InStory)
         {
             Log.Debug($"TipEdit_Prefix prevented, value {value}, type {serveType}");

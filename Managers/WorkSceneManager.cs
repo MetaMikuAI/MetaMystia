@@ -80,9 +80,9 @@ public static partial class WorkSceneManager
 
     public static ConcurrentQueue<int> normalGuestProfilePairIndexQueue = new(); 
 
-
     public static Il2CppSystem.Func<int> GetWholeNightTimeOriginal;
-    public static Func<int> GetWholeNightTimeReplaced = () => GetWholeNightTimeOriginal.Invoke() * 2;   // 240*2 = 480s = 8min
+
+    public static Func<int> GetWholeNightTimeReplaced = () => MpManager.WorkTimeModifier;
 
     public static bool InHakugyokurouChallenge => NightScene.NightSceneDirector.ChallengeMode == NightScene.NightSceneDirector.ChallengeType.Story_Basic 
         || NightScene.NightSceneDirector.ChallengeMode == NightScene.NightSceneDirector.ChallengeType.Story_Advanced 

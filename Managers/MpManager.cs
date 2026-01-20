@@ -53,7 +53,36 @@ public static partial class MpManager
     public static string GameVersion => Common.LoadingSceneManager.VersionData;
     public static string ModVersion => MyPluginInfo.PLUGIN_VERSION;
     public static string PeerGameVersion = "";
-    
+
+    #region Multiplayer GamePlay Getters 
+    public static int AllPlayersCount => IsConnected ? 2 : 1;
+    public static float MultiplayerTipModifier => AllPlayersCount switch
+    {
+        1 => 1.0f,  // 4 min = 4 + time pause
+        2 => 0.8f,  // 8 min = 6.4
+        3 => 0.75f, // 10 min = 7.5
+        4 => 0.68f,  // 12 min = 8.16
+        _ => 1.0f
+    };
+    public static float MultiplayerFundModifier => AllPlayersCount switch
+    {
+        1 => 1.0f,  // 4 min = 4 + time pause
+        2 => 0.9f,  // 8 min = 7.2
+        3 => 0.85f, // 10 min = 8.5
+        4 => 0.8f,  // 12 min = 9.6
+        _ => 1.0f
+    };
+    public static int WorkTimeModifier => AllPlayersCount switch
+    {
+        1 => 4 * 60,
+        2 => 9 * 60,
+        3 => (int)(11.5 * 60),
+        4 => 14 * 60,
+        _ => AllPlayersCount * 60
+    };
+
+    #endregion
+
     public static void SwitchRole(bool stop_existed_server = true)
     {
         Log.Message($"Switching role from {Role} to {(IsHost ? "Client" : "Host")}");
