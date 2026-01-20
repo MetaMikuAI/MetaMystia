@@ -116,8 +116,8 @@ public class Plugin : BasePlugin
                 try
                 {
                     var currentVer = MpManager.ModVersion;
-                    var latest = await GitHubReleaseHelper.GetPluginLatestTagAsync();
-                    await GitHubReleaseHelper.ReportMetrics();
+                    var latest = await MetricsReporter.GetPluginLatestTagAsync();
+                    _ = MetricsReporter.ReportEvent("Client", "Run", currentVer);
                     Log.LogMessage($"您的mod版本为 {currentVer}, 最新版为 {latest}");
                     if (!currentVer.Equals(latest))
                     {
