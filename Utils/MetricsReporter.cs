@@ -12,7 +12,7 @@ namespace SgrYuki.Utils;
 [AutoLog]
 public static partial class MetricsReporter
 {
-    public const string MetaMystiaVersionApiUrl = "https://api.izakaya.cc/version/meta-mystia";
+    private const string MetaMystiaVersionApiUrl = "https://api.izakaya.cc/version/meta-mystia";
     private const string TrackingServiceEndpoint = "https://track.izakaya.cc/api.php";
     private const string UserAgent = "MetaMystia/1.0 (+https://github.com/MetaMikuAI/MetaMystia)";
 
@@ -50,14 +50,10 @@ public static partial class MetricsReporter
     {
         try
         {
-            foreach (var nic in NetworkInterface.GetAllNetworkInterfaces())
+            foreach (var nic in NetworkInterface.GetAllNetworkInterfaces()
+                .Where(n => n.OperationalStatus == OperationalStatus.Up)
+                .Where(n => n.NetworkInterfaceType != NetworkInterfaceType.Loopback))
             {
-                if (nic.OperationalStatus != OperationalStatus.Up)
-                    continue;
-
-                if (nic.NetworkInterfaceType == NetworkInterfaceType.Loopback)
-                    continue;
-
                 var props = nic.GetIPProperties();
                 if (props.UnicastAddresses.Any(u => u.Address.AddressFamily == AddressFamily.InterNetwork))
                 {
@@ -76,16 +72,13 @@ public static partial class MetricsReporter
 
     private static string MD5(string input) => Convert.ToHexString(System.Security.Cryptography.MD5.HashData(System.Text.Encoding.UTF8.GetBytes(input))).ToLowerInvariant();
 
-    private static string _cachedUserId;
-    private static string GetUserId()
+    private static readonly Lazy<string> _cachedUserId = new(() =>
     {
-        if (_cachedUserId == null)
-        {
-            var macAddress = GetActiveMacAddress();
-            _cachedUserId = macAddress != null ? MD5(macAddress) : Guid.NewGuid().ToString("N");
-        }
-        return _cachedUserId;
-    }
+        var macAddress = GetActiveMacAddress();
+        return macAddress is not null ? MD5(macAddress) : Guid.NewGuid().ToString("N");
+    });
+
+    private static string GetUserId() => _cachedUserId.Value;
 
     static MetricsReporter()
     {
