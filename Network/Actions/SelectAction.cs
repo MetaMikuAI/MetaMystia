@@ -16,7 +16,7 @@ public partial class SelectAction : NetAction
             KyoukoManager.IzakayaMapLabel = MapLabel;
             KyoukoManager.IzakayaLevel = MapLevel;
 
-            Dialog.ShowInformDialog(MapLabel, MapLevel, null);
+            Notify.ShowOnMainThread($"对方选择了 {Utils.GetMapLabelNameCN(MapLabel)} {Utils.GetMapLevelNameCN(MapLevel)} 作为开店地点");
         });
     }
 

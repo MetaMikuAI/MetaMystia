@@ -89,7 +89,7 @@ public partial class DaySceneManagerPatch
         }
         else
         {
-            Dialog.ShowReadyDialog(false, null);
+            Notify.ShowOnMainThread($"你已经准备好营业啦！");
             return false;
         }
     }

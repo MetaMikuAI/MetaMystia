@@ -9,7 +9,6 @@ namespace MetaMystia;
 [AutoLog]
 public partial class IzakayaSelectorPanelPatch
 {
-    public static bool _skipPatchIzakayaSelectionConfirmation = false;
     public static Common.UI.IzakayaSelectorPanel_New instanceRef = null;
     public static Dictionary<string, Common.UI.GlobalMap.IGuideMapSpot> cachedSpots = new Dictionary<string, Common.UI.GlobalMap.IGuideMapSpot>();
 
@@ -58,11 +57,7 @@ public partial class IzakayaSelectorPanelPatch
             Log.LogWarning($"Not in multiplayer session, skipping patch");
             return true;
         }
-        if (_skipPatchIzakayaSelectionConfirmation)
-        {
-            Log.LogWarning($"skipPatchIzakayaSelectionConfirmation is true, skipping patch");
-            return true;
-        }
+
         if (MpManager.PeerScene == Common.UI.Scene.IzakayaPrepScene || MpManager.PeerScene == Common.UI.Scene.WorkScene)
         {
             Log.Error($"peer already in prep scene, will disconnect");
@@ -88,14 +83,14 @@ public partial class IzakayaSelectorPanelPatch
         {
             Log.LogWarning($"Kyouko has not selected an Izakaya yet -> send SELECT and skip");
             SelectAction.Send(izakayaMapLabel, izakayaLevel);
-            Dialog.ShowSelectedDialog(izakayaMapLabel, null);
+            Notify.ShowOnMainThread($"你选择了 {izakayaMapLabel} 作为开店地点");
             return false;
         }
 
         if (izakayaMapLabel != KyoukoManager.IzakayaMapLabel || izakayaLevel != KyoukoManager.IzakayaLevel)
         {
             Log.LogWarning($"Selected Izakaya does not match Kyouko's selection -> show rejection dialog");
-            Dialog.ShowRejectDialog(izakayaMapLabel, KyoukoManager.IzakayaMapLabel, null);
+            Notify.ShowOnMainThread($"你选择了 {izakayaMapLabel} 作为开店地点，对方选择了 {KyoukoManager.IzakayaMapLabel}，你俩得选一样的");
             return false;
         }
 
@@ -106,13 +101,18 @@ public partial class IzakayaSelectorPanelPatch
             cachedSpots.TryGetValue(izakayaMapLabel, out var spot);
             instanceRef.m_CurrentSelectedSpot = spot;
             instanceRef.m_CurrentSelectedIzakayaLevel = (Common.UI.IzakayaLevel)izakayaLevel;
-            _skipPatchIzakayaSelectionConfirmation = true;
             SgrYuki.Utils.Panel.CloseActivePanelsBeforeSceneTransit();
-            instanceRef._OnGuideMapInitialize_b__21_0();
-            _skipPatchIzakayaSelectionConfirmation = false;
+            _OnGuideMapInitialize_b__21_0_Original(instanceRef);
         };
         Dialog.ShowConfirmDialog(izakayaMapLabel, closePanelCallback);
         return false;
+    }
+
+    [HarmonyPatch(nameof(Common.UI.IzakayaSelectorPanel_New._OnGuideMapInitialize_b__21_0))]
+    [HarmonyReversePatch]
+    public static void _OnGuideMapInitialize_b__21_0_Original(Common.UI.IzakayaSelectorPanel_New __instance)
+    {
+        throw new System.NotImplementedException("Bad Bad Metamiku");
     }
 
     [HarmonyPatch(nameof(Common.UI.IzakayaSelectorPanel_New.OnGuideMapSpotSelected))]

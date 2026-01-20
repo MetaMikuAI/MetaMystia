@@ -52,7 +52,7 @@ public static partial class Dialog
         return newDialogPackage;
     }
 
-    public static void BuildAndShow(
+    private static void BuildAndShow(
         CustomDialogList dialogList,
         System.Action onFinishCallback = null)
     {

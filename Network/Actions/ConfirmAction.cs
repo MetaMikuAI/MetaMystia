@@ -27,10 +27,8 @@ public partial class ConfirmAction : NetAction
             {
                 IzakayaSelectorPanelPatch.instanceRef.m_CurrentSelectedSpot = spot;
                 IzakayaSelectorPanelPatch.instanceRef.m_CurrentSelectedIzakayaLevel = targetLevel;
-                IzakayaSelectorPanelPatch._skipPatchIzakayaSelectionConfirmation = true;
                 SgrYuki.Utils.Panel.CloseActivePanelsBeforeSceneTransit();
-                IzakayaSelectorPanelPatch.instanceRef._OnGuideMapInitialize_b__21_0();
-                IzakayaSelectorPanelPatch._skipPatchIzakayaSelectionConfirmation = false;
+                IzakayaSelectorPanelPatch._OnGuideMapInitialize_b__21_0_Original(IzakayaSelectorPanelPatch.instanceRef);
             });
         });
     }
