@@ -41,7 +41,7 @@ public static partial class MetricsReporter
         Timeout = TimeSpan.FromSeconds(10)
     };
 
-    private static readonly System.Net.Http.HttpClient _client = new()
+    private static readonly System.Net.Http.HttpClient _metricsClient = new()
     {
         Timeout = TimeSpan.FromSeconds(10)
     };
@@ -84,8 +84,8 @@ public static partial class MetricsReporter
     {
         _githubApiClient.DefaultRequestHeaders.UserAgent.ParseAdd(UserAgent);
         _githubApiClient.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github+json");
-        _client.DefaultRequestHeaders.UserAgent.ParseAdd(UserAgent);
-        _client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
+        _metricsClient.DefaultRequestHeaders.UserAgent.ParseAdd(UserAgent);
+        _metricsClient.DefaultRequestHeaders.Accept.ParseAdd("application/json");
     }
 
     private static async Task<string> GetLatestReleaseTagUsingGithubAsync(
@@ -117,7 +117,7 @@ public static partial class MetricsReporter
     {
         try
         {
-            var response = await _client.GetAsync(MetaMystiaVersionApiUrl);
+            var response = await _metricsClient.GetAsync(MetaMystiaVersionApiUrl);
 
             if (!response.IsSuccessStatusCode) return null;
 
@@ -145,9 +145,9 @@ public static partial class MetricsReporter
         return GetLatestReleaseTagAsync();
     }
 
-    private static void ReportAsync(Func<Task> reportAction, string actionName)
+    private static Task ReportAsync(Func<Task> reportAction, string actionName)
     {
-        Task.Run(async () =>
+        return Task.Run(async () =>
         {
             try
             {
@@ -164,7 +164,7 @@ public static partial class MetricsReporter
     {
         try
         {
-            var response = await _client.GetAsync(url);
+            var response = await _metricsClient.GetAsync(url);
             var success = response.IsSuccessStatusCode;
 
             if (success)
@@ -191,9 +191,9 @@ public static partial class MetricsReporter
     /// <param name="category">事件类别</param>
     /// <param name="action">事件动作</param>
     /// <param name="name">事件名称（可选）</param>
-    public static void ReportEvent(string category, string action, string name = null)
+    public static Task ReportEvent(string category, string action, string name = null)
     {
-        ReportAsync(async () =>
+        return ReportAsync(async () =>
         {
             var userId = GetUserId();
             var parameters = new Dictionary<string, string>
@@ -211,9 +211,9 @@ public static partial class MetricsReporter
         }, "ReportEvent");
     }
 
-    public static void SendHeartbeat()
+    public static Task SendHeartbeat()
     {
-        ReportAsync(async () =>
+        return ReportAsync(async () =>
         {
             var userId = GetUserId();
             var url = BuildTrackingUrl(userId, new Dictionary<string, string>
