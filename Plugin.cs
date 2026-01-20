@@ -106,24 +106,7 @@ public class Plugin : BasePlugin
 
             ResourceExManager.Initialize();
 
-            CommandScheduler.RunInBackGround(async () =>
-            {
-                try
-                {
-                    var currentVer = MpManager.ModVersion;
-                    var latest = await MetricsReporter.GetPluginLatestTagAsync();
-                    if (!PluginManager.DEBUG) _ = MetricsReporter.ReportEvent("Client", "Run", currentVer);
-                    Log.LogMessage($"您的mod版本为 {currentVer}, 最新版为 {latest}");
-                    if (!currentVer.Equals(latest))
-                    {
-                        Notify.ShowOnNextAvailableScene($"您的mod版本为 {currentVer}, 最新版为 {latest}, 建议更新到最新版！");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Log.LogError($"cannot get plugin version, {ex.Message}, {ex.StackTrace}");
-                }
-            });
+            MetricsReporter.OnPluginInitialized();
 
         }
         catch (Exception ex) {

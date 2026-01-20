@@ -224,4 +224,26 @@ public static partial class MetricsReporter
             await SendTrackingRequestAsync(url, "Heartbeat");
         }, "SendHeartbeat");
     }
+
+    public static void OnPluginInitialized()
+    {
+        CommandScheduler.RunInBackGround(async () =>
+            {
+                try
+                {
+                    var currentVer = MpManager.ModVersion;
+                    var latest = await GetPluginLatestTagAsync();
+                    if (!PluginManager.DEBUG) _ = ReportEvent("Client", "Run", currentVer);
+                    Log.Message($"您的mod版本为 {currentVer}, 最新版为 {latest}");
+                    if (!currentVer.Equals(latest))
+                    {
+                        Notify.ShowOnNextAvailableScene($"您的mod版本为 {currentVer}, 最新版为 {latest}, 建议更新到最新版！");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error($"cannot get plugin version, {ex.Message}, {ex.StackTrace}");
+                }
+            });
+    }
 }
