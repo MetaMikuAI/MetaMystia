@@ -214,25 +214,8 @@ public static partial class MetricsReporter
                 parameters["e_n"] = name;
 
             var url = BuildTrackingUrl(userId, parameters);
-            await SendTrackingRequestAsync(url, $"ReportEvent({category}/{action})");
+            await SendTrackingRequestAsync(url, $"ReportEvent({category}/{action}{(name == null ? "" : $"/{name}")})");
         }, "ReportEvent");
-    }
-
-    public static void ReportVersion(string version)
-    {
-        ReportAsync(async () =>
-        {
-            var userId = GetUserId();
-            var url = BuildTrackingUrl(userId, new Dictionary<string, string>
-            {
-                ["ca"] = "1",
-                ["e_c"] = "Client",
-                ["e_a"] = "Run",
-                ["e_n"] = version
-            });
-
-            await SendTrackingRequestAsync(url, $"ReportVersion({version})");
-        }, "ReportVersion");
     }
 
     public static void SendHeartbeat()
