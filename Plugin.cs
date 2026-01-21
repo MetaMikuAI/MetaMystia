@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using BepInEx;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
@@ -76,6 +77,18 @@ public class Plugin : BasePlugin
     {
         Console.OutputEncoding = System.Text.Encoding.UTF8;
         Log.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
+
+        _ = Task.Run(() =>
+        {
+            try
+            {
+                UpdateManager.CleanupOldDlls();
+            }
+            catch (Exception ex)
+            {
+                Log.LogWarning($"Failed to cleanup old dll files: {ex.Message}");
+            }
+        });
 
         try {
             ClassInjector.RegisterTypeInIl2Cpp<PluginManager>();

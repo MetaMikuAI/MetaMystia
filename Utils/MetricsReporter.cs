@@ -14,7 +14,7 @@ public static partial class MetricsReporter
 {
     private const string MetaMystiaVersionApiUrl = "https://api.izakaya.cc/version/meta-mystia";
     private const string TrackingServiceEndpoint = "https://track.izakaya.cc/api.php";
-    private const string UserAgent = "MetaMystia/1.0 (+https://github.com/MetaMikuAI/MetaMystia)";
+    public const string UserAgent = "MetaMystia/1.0 (+https://github.com/MetaMikuAI/MetaMystia)";
 
     private static string BuildTrackingUrl(string userId, Dictionary<string, string> parameters)
     {
@@ -268,12 +268,22 @@ public static partial class MetricsReporter
                 try
                 {
                     var currentVer = MpManager.ModVersion;
-                    var latest = await GetPluginLatestTagAsync();
-                    if (!PluginManager.DEBUG) _ = ReportEvent("Client", "Run", currentVer);
-                    Log.Message($"您的mod版本为 {currentVer}, 最新版为 {latest}");
-                    if (!currentVer.Equals(latest))
+                    var latestVer = await GetPluginLatestTagAsync();
+
+                    Log.Message($"当前 Mod 版本为 {currentVer}，最新版为 {latestVer}");
+
+                    if (!PluginManager.DEBUG)
                     {
-                        Notify.ShowOnNextAvailableScene($"您的mod版本为 {currentVer}, 最新版为 {latest}, 建议更新到最新版！");
+                        _ = ReportEvent("Client", "Run", currentVer);
+
+                        if (currentVer.Equals(latestVer)) return;
+
+                        Notify.ShowOnNextAvailableScene($"您的 Mod 版本为 {currentVer}，最新版为 {latestVer}，建议更新到最新版！");
+
+                        if (UpdateManager.CheckCurrentVersionDllExists(currentVer))
+                            Notify.ShowOnNextAvailableScene("您可以在控制台中执行 /update 命令进行升级。");
+                        else
+                            Notify.ShowOnNextAvailableScene($"未检测到 dll 文件（MetaMystia-v{currentVer}.dll），无法使用自动更新。请手动下载最新版本。");
                     }
                 }
                 catch (Exception ex)

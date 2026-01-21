@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Common.UI;
 using Il2CppInterop.Runtime;
-using NightScene.GuestManagementUtility;
+using SgrYuki.Utils;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -296,6 +296,14 @@ public partial class InGameConsole
                 case "webdebug":
                     OpenWebDebugger(args);
                     break;
+                case "update":
+                    _ = UpdateCommand();
+                    break;
+#if DEBUG
+                case "test-update":
+                    LogToConsole(UpdateManager.ExecuteTestCommand(args));
+                    break;
+#endif
                 default:
                     LogToConsole("Unknown command: " + command);
                     HelpCommand();
@@ -308,7 +316,7 @@ public partial class InGameConsole
 
     private void HelpCommand()
     {
-        LogToConsole("Available commands: /help, /clear, /get, /mp, /call, /debug, /webdebug");
+        LogToConsole("Available commands: /help, /clear, /get, /mp, /call, /debug, /webdebug, /update");
     }
 
     private void GetCommand(string[] args)
@@ -575,6 +583,56 @@ public partial class InGameConsole
                 break;
         }
     }
+
+    private async Task UpdateCommand()
+    {
+        LogToConsole("开始更新流程...");
+
+        try
+        {
+            var currentVer = MpManager.ModVersion;
+            var latestVer = await MetricsReporter.GetPluginLatestTagAsync();
+
+            if (string.IsNullOrEmpty(latestVer))
+            {
+                LogToConsole("无法获取最新版本信息，请稍后重试");
+                return;
+            }
+            if (currentVer == latestVer)
+            {
+                LogToConsole($"当前版本 {currentVer} 已是最新版本");
+                return;
+            }
+            if (!UpdateManager.CheckCurrentVersionDllExists(currentVer))
+            {
+                LogToConsole($"未找到当前版本的 dll 文件（MetaMystia-v{currentVer}.dll），无法自动更新");
+                LogToConsole("请手动下载最新版本并删除旧版本 dll 文件");
+                return;
+            }
+
+            LogToConsole($"当前版本：{currentVer}，最新版本：{latestVer}");
+            LogToConsole("正在下载更新...");
+
+            var success = await UpdateManager.ExecuteUpdateAsync(currentVer, latestVer);
+
+            if (success)
+            {
+                LogToConsole("更新成功！");
+                LogToConsole("请手动退出游戏并重新启动以应用更新。");
+            }
+            else
+            {
+                LogToConsole("更新失败，请查看日志获取详细信息");
+            }
+
+        }
+        catch (System.Exception ex)
+        {
+            LogToConsole($"更新过程中发生错误：{ex.Message}");
+            Log.Error($"Update command failed: {ex}");
+        }
+    }
+
     private void OpenWebDebugger(string[] args)
     {
         if (args.Length < 2 || args[0].ToLower() != "start")
