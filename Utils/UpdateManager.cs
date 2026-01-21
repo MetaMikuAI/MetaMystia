@@ -61,39 +61,39 @@ public static partial class UpdateManager
 
             if (dict != null && dict.TryGetValue("assets", out var assets) && assets.ValueKind == JsonValueKind.Array)
             {
-                foreach (var asset in assets.EnumerateArray())
+                var matchingAssets = assets.EnumerateArray()
+                    .Where(asset => asset.TryGetProperty("name", out var name) &&
+                                    name.GetString()?.StartsWith("MetaMystia-v", StringComparison.OrdinalIgnoreCase) == true &&
+                                    name.GetString().EndsWith(".dll", StringComparison.OrdinalIgnoreCase) &&
+                                    asset.TryGetProperty("browser_download_url", out _));
+
+                foreach (var asset in matchingAssets)
                 {
-                    if (asset.TryGetProperty("name", out var name))
+                    if (asset.TryGetProperty("browser_download_url", out var downloadUrl))
                     {
-                        var fileName = name.GetString();
-                        if (fileName?.StartsWith("MetaMystia-v", StringComparison.OrdinalIgnoreCase) == true &&
-                            fileName.EndsWith(".dll", StringComparison.OrdinalIgnoreCase) &&
-                            asset.TryGetProperty("browser_download_url", out var downloadUrl))
+                        var url = downloadUrl.GetString();
+                        Log.Info($"Found dll download URL from GitHub: {url}");
+
+                        try
                         {
-                            var url = downloadUrl.GetString();
-                            Log.Info($"Found dll download URL from GitHub: {url}");
+                            using var headRequest = new HttpRequestMessage(HttpMethod.Head, url);
+                            using var headResponse = await _httpClient.SendAsync(headRequest, HttpCompletionOption.ResponseHeadersRead);
 
-                            try
+                            if (headResponse.IsSuccessStatusCode)
                             {
-                                using var headRequest = new HttpRequestMessage(HttpMethod.Head, url);
-                                using var headResponse = await _httpClient.SendAsync(headRequest, HttpCompletionOption.ResponseHeadersRead);
-
-                                if (headResponse.IsSuccessStatusCode)
-                                {
-                                    Log.Info("Download URL is accessible");
-                                    return (url, null);
-                                }
-                                else
-                                {
-                                    Log.Warning($"Download URL returned {headResponse.StatusCode}, may not be accessible");
-                                    return (null, $"DownloadUrlNotAccessible:HTTP{(int)headResponse.StatusCode}");
-                                }
+                                Log.Info("Download URL is accessible");
+                                return (url, null);
                             }
-                            catch (Exception ex)
+                            else
                             {
-                                Log.Warning($"Failed to verify download URL accessibility: {ex.Message}");
-                                return (null, $"DownloadUrlVerifyFailed:{ex.GetType().Name}");
+                                Log.Warning($"Download URL returned {headResponse.StatusCode}, may not be accessible");
+                                return (null, $"DownloadUrlNotAccessible:HTTP{(int)headResponse.StatusCode}");
                             }
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Warning($"Failed to verify download URL accessibility: {ex.Message}");
+                            return (null, $"DownloadUrlVerifyFailed:{ex.GetType().Name}");
                         }
                     }
                 }
