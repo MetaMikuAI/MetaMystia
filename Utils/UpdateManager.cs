@@ -347,6 +347,8 @@ public static partial class UpdateManager
                 .Where(dll => dll != $"MetaMystia-v{newVersion}.dll")
                 .ToArray();
 
+            var failedRenames = new List<string>();
+
             foreach (var dll in oldDllsToRename)
             {
                 var fullPath = Path.Combine(Paths.PluginPath, dll);
@@ -360,12 +362,27 @@ public static partial class UpdateManager
                 }
                 catch (Exception ex)
                 {
-                    Log.Warning($"Failed to rename {dll}: {ex.Message}");
+                    Log.Error($"Failed to rename {dll}: {ex.Message}");
+                    failedRenames.Add(dll);
                 }
             }
 
-            Log.Info("Update completed successfully!");
-            _ = MetricsReporter.ReportEvent("Update", "Success", $"{currentVersion}->{newVersion}");
+            if (failedRenames.Count > 0)
+            {
+                Log.Error("==================================================");
+                Log.Error("WARNING: Failed to rename old DLL files!");
+                Log.Error("Multiple plugin versions may be present, which could cause conflicts.");
+                Log.Error($"Failed files: {string.Join(", ", failedRenames)}");
+                Log.Error("Please manually delete or rename these files before restarting.");
+                Log.Error("==================================================");
+
+                _ = MetricsReporter.ReportEvent("Update", "PartialSuccess", $"{currentVersion}->{newVersion}:RenameFailures:{failedRenames.Count}");
+            }
+            else
+            {
+                Log.Info("Update completed successfully!");
+                _ = MetricsReporter.ReportEvent("Update", "Success", $"{currentVersion}->{newVersion}");
+            }
 
             return true;
         }
