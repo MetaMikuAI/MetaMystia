@@ -58,11 +58,7 @@ public static partial class MetricsReporter
                 if (props.UnicastAddresses.Any(u => u.Address.AddressFamily == AddressFamily.InterNetwork))
                 {
                     var macAddress = nic.GetPhysicalAddress().ToString().Trim();
-                    if (!string.IsNullOrEmpty(macAddress))
-                    {
-                        Log.Message($"GetActiveMacAddress: {macAddress}");
-                        return macAddress;
-                    }
+                    if (!string.IsNullOrEmpty(macAddress)) return macAddress;
                 }
             }
         }
@@ -83,7 +79,6 @@ public static partial class MetricsReporter
             var processorCount = Environment.ProcessorCount;
 
             var combined = $"{computerName}|{userName}|{osVersion}|{processorCount}";
-            Log.Message($"GetMachineId components: {combined}");
             return combined;
         }
         catch (Exception ex)
@@ -109,9 +104,9 @@ public static partial class MetricsReporter
 
         if (identifiers.Count > 0)
         {
-            var combined = string.Join("|", identifiers);
+            var combined = MD5(string.Join("|", identifiers));
             Log.Message($"User ID generated from: {combined}");
-            return MD5(combined);
+            return combined;
         }
 
         var fallbackId = Guid.NewGuid().ToString("N");
