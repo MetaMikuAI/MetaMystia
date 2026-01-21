@@ -199,12 +199,18 @@ public static partial class UpdateManager
             foreach (var file in oldFiles)
             {
                 var fileName = Path.GetFileName(file);
-                var versionPart = fileName.Substring("MetaMystia-v".Length, fileName.Length - "MetaMystia-v".Length - ".dll.old".Length);
+                var match = System.Text.RegularExpressions.Regex.Match(fileName, @"^MetaMystia-v([\d.]+)\.dll\.old$");
 
-                if (!string.IsNullOrEmpty(versionPart) && versionPart.All(c => char.IsDigit(c) || c == '.'))
-                    CleanupFile(file);
+                if (match.Success)
+                {
+                    var versionPart = match.Groups[1].Value;
+                    if (!string.IsNullOrEmpty(versionPart) && versionPart.All(c => char.IsDigit(c) || c == '.'))
+                        CleanupFile(file);
+                    else
+                        Log.Warning($"Skipping invalid version format: {fileName}");
+                }
                 else
-                    Log.Warning($"Skipping invalid version format: {fileName}");
+                    Log.Warning($"Skipping file with unexpected name format: {fileName}");
             }
 
             if (oldFiles.Length > 0)
