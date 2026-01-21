@@ -339,9 +339,12 @@ public static partial class UpdateManager
 
             Log.Info($"Downloaded new version: {Path.GetFileName(newDllPath)}");
 
-            foreach (var dll in GetExistingDllFiles()
+            var existingDlls = GetExistingDllFiles();
+            var oldDllsToRename = existingDlls
                 .Where(dll => dll != $"MetaMystia-v{newVersion}.dll")
-                .ToArray())
+                .ToArray();
+
+            foreach (var dll in oldDllsToRename)
             {
                 var fullPath = Path.Combine(Paths.PluginPath, dll);
                 var oldPath = fullPath + ".old";
@@ -383,7 +386,7 @@ public static partial class UpdateManager
                 return MpManager.ModVersion;
             }
 
-            var versions = dlls
+            var highestVersion = dlls
                 .Select(dll =>
                 {
                     var match = System.Text.RegularExpressions.Regex.Match(dll, @"MetaMystia-v(\d+\.\d+\.\d+)\.dll");
@@ -393,15 +396,15 @@ public static partial class UpdateManager
                 .OrderByDescending(v => new Version(v))
                 .FirstOrDefault();
 
-            if (versions == null)
+            if (highestVersion == null)
             {
                 Log.Warning("No valid version found in dll filenames, falling back to ModVersion");
                 return MpManager.ModVersion;
             }
 
-            Log.Info($"Detected current dll version: {versions}");
+            Log.Info($"Detected current dll version: {highestVersion}");
 
-            return versions;
+            return highestVersion;
         }
         catch (Exception ex)
         {
