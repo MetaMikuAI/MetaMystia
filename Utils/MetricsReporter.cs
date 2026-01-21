@@ -58,8 +58,7 @@ public static partial class MetricsReporter
                 if (props.UnicastAddresses.Any(u => u.Address.AddressFamily == AddressFamily.InterNetwork))
                 {
                     var macAddress = nic.GetPhysicalAddress().ToString().Trim();
-                    Log.Message($"GetActiveMacAddress: {macAddress}");
-                    return macAddress;
+                    if (!string.IsNullOrEmpty(macAddress)) return macAddress;
                 }
             }
         }
@@ -70,12 +69,49 @@ public static partial class MetricsReporter
         return null;
     }
 
+    private static string GetMachineId()
+    {
+        try
+        {
+            var computerName = Environment.MachineName;
+            var userName = Environment.UserName;
+            var osVersion = Environment.OSVersion.VersionString;
+            var processorCount = Environment.ProcessorCount;
+
+            var combined = $"{computerName}|{userName}|{osVersion}|{processorCount}";
+            return combined;
+        }
+        catch (Exception ex)
+        {
+            Log.Warning($"Failed to get machine ID: {ex.Message}");
+            return null;
+        }
+    }
+
     private static string MD5(string input) => Convert.ToHexString(System.Security.Cryptography.MD5.HashData(System.Text.Encoding.UTF8.GetBytes(input))).ToLowerInvariant();
 
     private static readonly Lazy<string> _cachedUserId = new(() =>
     {
+        var identifiers = new List<string>();
+
+        var machineId = GetMachineId();
+        if (!string.IsNullOrEmpty(machineId))
+            identifiers.Add($"MACHINE:{machineId}");
+
         var macAddress = GetActiveMacAddress();
-        return macAddress is not null ? MD5(macAddress) : Guid.NewGuid().ToString("N");
+        if (!string.IsNullOrEmpty(macAddress))
+            identifiers.Add($"MAC:{macAddress}");
+
+        if (identifiers.Count > 0)
+        {
+            var combined = MD5(string.Join("|", identifiers));
+            Log.Message($"User ID generated from: {combined}");
+            return combined;
+        }
+
+        var fallbackId = Guid.NewGuid().ToString("N");
+        Log.Warning($"No stable identifiers found, using random GUID: {fallbackId}");
+        return fallbackId;
     });
 
     private static string GetUserId() => _cachedUserId.Value;
