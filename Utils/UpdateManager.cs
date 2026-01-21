@@ -17,6 +17,8 @@ public static partial class UpdateManager
     private const string GitHubApiUrl = "https://api.github.com/repos/MetaMikuAI/MetaMystia/releases/latest";
     private const string RedirectUrl = "https://url.izakaya.cc/getMetaMystia";
 
+    private static readonly SemaphoreSlim _updateLock = new(1, 1);
+
     private static readonly HttpClient _httpClient = new(new SocketsHttpHandler
     {
         ConnectTimeout = TimeSpan.FromSeconds(10),
@@ -317,6 +319,11 @@ public static partial class UpdateManager
             Log.Info("Already up to date");
             return false;
         }
+        if (!await _updateLock.WaitAsync(0))
+        {
+            Log.Warning("Update is already in progress, please wait for it to complete");
+            return false;
+        }
 
         try
         {
@@ -397,6 +404,10 @@ public static partial class UpdateManager
             Log.Error($"Update failed: {ex.Message}");
             _ = MetricsReporter.ReportEvent("Update", "Failed", $"{currentVersion}->{newVersion}:{ex.GetType().Name}:{ex.Message}");
             return false;
+        }
+        finally
+        {
+            _updateLock.Release();
         }
     }
 
