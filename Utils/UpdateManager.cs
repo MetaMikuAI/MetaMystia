@@ -91,7 +91,7 @@ public static partial class UpdateManager
                     try
                     {
                         using var headRequest = new HttpRequestMessage(HttpMethod.Head, url);
-                        using var headResponse = await _apiClient.SendAsync(headRequest, HttpCompletionOption.ResponseHeadersRead);
+                        using var headResponse = await _apiClient.SendAsync(headRequest, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
 
                         if (headResponse.IsSuccessStatusCode)
                         {
