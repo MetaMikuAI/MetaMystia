@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using BepInEx;
 using MetaMystia;
@@ -15,8 +16,24 @@ public static partial class UpdateManager
 {
     private const string GitHubApiUrl = "https://api.github.com/repos/MetaMikuAI/MetaMystia/releases/latest";
     private const string RedirectUrl = "https://url.izakaya.cc/getMetaMystia";
-    private static readonly HttpClient _httpClient = new() { Timeout = TimeSpan.FromSeconds(10) };
-    private static readonly HttpClient _githubClient = new() { Timeout = TimeSpan.FromSeconds(10) };
+
+    private static readonly HttpClient _httpClient = new(new SocketsHttpHandler
+    {
+        ConnectTimeout = TimeSpan.FromSeconds(10),
+        PooledConnectionLifetime = TimeSpan.FromMinutes(5)
+    })
+    {
+        Timeout = Timeout.InfiniteTimeSpan
+    };
+
+    private static readonly HttpClient _githubClient = new(new SocketsHttpHandler
+    {
+        ConnectTimeout = TimeSpan.FromSeconds(10),
+        PooledConnectionLifetime = TimeSpan.FromMinutes(5)
+    })
+    {
+        Timeout = Timeout.InfiniteTimeSpan
+    };
 
     static UpdateManager()
     {

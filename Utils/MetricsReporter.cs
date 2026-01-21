@@ -234,7 +234,7 @@ public static partial class MetricsReporter
                     var currentVer = MpManager.ModVersion;
                     var latestVer = await GetPluginLatestTagAsync();
 
-                    Log.Message($"当前 Mod 版本为 {currentVer}, 最新版为 {latestVer}");
+                    Log.Message($"当前 Mod 版本为 {currentVer}，最新版为 {latestVer}");
 
                     if (!PluginManager.DEBUG)
                     {
@@ -242,7 +242,7 @@ public static partial class MetricsReporter
 
                         if (currentVer.Equals(latestVer)) return;
 
-                        Notify.ShowOnNextAvailableScene($"您的 Mod 版本为 {currentVer}, 最新版为 {latestVer}, 建议更新到最新版！");
+                        Notify.ShowOnNextAvailableScene($"您的 Mod 版本为 {currentVer}，最新版为 {latestVer}，建议更新到最新版！");
                         if (UpdateManager.CheckCurrentVersionDllExists(currentVer)) Notify.ShowOnNextAvailableScene("您可以在控制台中执行 /update 命令进行升级。");
                     }
                 }
