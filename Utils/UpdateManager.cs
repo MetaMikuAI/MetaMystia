@@ -243,6 +243,8 @@ public static partial class UpdateManager
 
             var buffer = new byte[8192];
             long totalRead = 0;
+            long lastLoggedBytes = 0;
+            const long logInterval = 100 * 1024; // 每100KB记录一次
             int bytesRead;
 
             while ((bytesRead = await contentStream.ReadAsync(buffer)) > 0)
@@ -250,10 +252,11 @@ public static partial class UpdateManager
                 await fileStream.WriteAsync(buffer.AsMemory(0, bytesRead));
                 totalRead += bytesRead;
 
-                if (totalBytes > 0 && totalRead % (100 * 1024) == 0)
+                if (totalBytes > 0 && totalRead - lastLoggedBytes >= logInterval)
                 {
                     var progress = (double)totalRead / totalBytes * 100;
                     Log.Info($"Download progress: {progress:F1}%");
+                    lastLoggedBytes = totalRead;
                 }
             }
 
