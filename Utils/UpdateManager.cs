@@ -16,6 +16,8 @@ public static partial class UpdateManager
 {
     private const string GitHubApiUrl = "https://api.github.com/repos/MetaMikuAI/MetaMystia/releases/latest";
     private const string RedirectUrl = "https://url.izakaya.cc/getMetaMystia";
+    private const string DllOldFilePattern = @"^MetaMystia-v([\d.]+)\.dll\.old$";
+    private const string DllVersionPattern = @"^MetaMystia-v([\d.]+)\.dll$";
 
     private static readonly SemaphoreSlim _updateLock = new(1, 1);
 
@@ -63,40 +65,46 @@ public static partial class UpdateManager
 
             if (dict != null && dict.TryGetValue("assets", out var assets) && assets.ValueKind == JsonValueKind.Array)
             {
-                var matchingAssets = assets.EnumerateArray()
-                    .Where(asset => asset.TryGetProperty("name", out var name) &&
-                                    name.GetString()?.StartsWith("MetaMystia-v", StringComparison.OrdinalIgnoreCase) == true &&
-                                    name.GetString().EndsWith(".dll", StringComparison.OrdinalIgnoreCase) &&
-                                    asset.TryGetProperty("browser_download_url", out _));
-
-                foreach (var asset in matchingAssets)
-                {
-                    if (asset.TryGetProperty("browser_download_url", out var downloadUrl))
+                var matchingUrls = assets.EnumerateArray()
+                    .Select(asset =>
                     {
-                        var url = downloadUrl.GetString();
-                        Log.Info($"Found dll download URL from GitHub: {url}");
+                        if (!asset.TryGetProperty("name", out var nameElement))
+                            return null;
+                        var name = nameElement.GetString();
+                        if (string.IsNullOrEmpty(name) ||
+                            !name.StartsWith("MetaMystia-v", StringComparison.OrdinalIgnoreCase) ||
+                            !name.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
+                            return null;
+                        if (!asset.TryGetProperty("browser_download_url", out var downloadUrlElement))
+                            return null;
+                        return downloadUrlElement.GetString();
+                    })
+                    .Where(url => !string.IsNullOrEmpty(url));
 
-                        try
-                        {
-                            using var headRequest = new HttpRequestMessage(HttpMethod.Head, url);
-                            using var headResponse = await _apiClient.SendAsync(headRequest, HttpCompletionOption.ResponseHeadersRead);
+                foreach (var url in matchingUrls)
+                {
+                    Log.Info($"Found dll download URL from GitHub: {url}");
 
-                            if (headResponse.IsSuccessStatusCode)
-                            {
-                                Log.Info("Download URL is accessible");
-                                return (url, null);
-                            }
-                            else
-                            {
-                                Log.Warning($"Download URL returned {headResponse.StatusCode}, may not be accessible");
-                                return (null, $"DownloadUrlNotAccessible:HTTP{(int)headResponse.StatusCode}");
-                            }
-                        }
-                        catch (Exception ex)
+                    try
+                    {
+                        using var headRequest = new HttpRequestMessage(HttpMethod.Head, url);
+                        using var headResponse = await _apiClient.SendAsync(headRequest, HttpCompletionOption.ResponseHeadersRead);
+
+                        if (headResponse.IsSuccessStatusCode)
                         {
-                            Log.Warning($"Failed to verify download URL accessibility: {ex.Message}");
-                            return (null, $"DownloadUrlVerifyFailed:{ex.GetType().Name}");
+                            Log.Info("Download URL is accessible");
+                            return (url, null);
                         }
+                        else
+                        {
+                            Log.Warning($"Download URL returned {headResponse.StatusCode}, may not be accessible");
+                            return (null, $"DownloadUrlNotAccessible:HTTP{(int)headResponse.StatusCode}");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Warning($"Failed to verify download URL accessibility: {ex.Message}");
+                        return (null, $"DownloadUrlVerifyFailed:{ex.GetType().Name}");
                     }
                 }
             }
@@ -201,7 +209,7 @@ public static partial class UpdateManager
             foreach (var file in oldFiles)
             {
                 var fileName = Path.GetFileName(file);
-                var match = System.Text.RegularExpressions.Regex.Match(fileName, @"^MetaMystia-v([\d.]+)\.dll\.old$");
+                var match = System.Text.RegularExpressions.Regex.Match(fileName, DllOldFilePattern);
 
                 if (match.Success)
                 {
@@ -443,7 +451,7 @@ public static partial class UpdateManager
             var highestVersion = dlls
                 .Select(dll =>
                 {
-                    var match = System.Text.RegularExpressions.Regex.Match(dll, @"MetaMystia-v(\d+\.\d+\.\d+)\.dll");
+                    var match = System.Text.RegularExpressions.Regex.Match(dll, DllVersionPattern);
                     return match.Success ? match.Groups[1].Value : null;
                 })
                 .Where(v => v != null)
