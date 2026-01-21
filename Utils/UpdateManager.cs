@@ -19,13 +19,13 @@ public static partial class UpdateManager
 
     private static readonly SemaphoreSlim _updateLock = new(1, 1);
 
-    private static readonly HttpClient _httpClient = new(new SocketsHttpHandler
+    private static readonly HttpClient _apiClient = new(new SocketsHttpHandler
     {
         ConnectTimeout = TimeSpan.FromSeconds(10),
         PooledConnectionLifetime = TimeSpan.FromMinutes(5)
     })
     {
-        Timeout = Timeout.InfiniteTimeSpan
+        Timeout = TimeSpan.FromMinutes(2)
     };
 
     private static readonly HttpClient _githubClient = new(new SocketsHttpHandler
@@ -34,12 +34,12 @@ public static partial class UpdateManager
         PooledConnectionLifetime = TimeSpan.FromMinutes(5)
     })
     {
-        Timeout = Timeout.InfiniteTimeSpan
+        Timeout = TimeSpan.FromMinutes(5)
     };
 
     static UpdateManager()
     {
-        _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(MetricsReporter.UserAgent);
+        _apiClient.DefaultRequestHeaders.UserAgent.ParseAdd(MetricsReporter.UserAgent);
         _githubClient.DefaultRequestHeaders.UserAgent.ParseAdd(MetricsReporter.UserAgent);
         _githubClient.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github+json");
     }
@@ -79,7 +79,7 @@ public static partial class UpdateManager
                         try
                         {
                             using var headRequest = new HttpRequestMessage(HttpMethod.Head, url);
-                            using var headResponse = await _httpClient.SendAsync(headRequest, HttpCompletionOption.ResponseHeadersRead);
+                            using var headResponse = await _apiClient.SendAsync(headRequest, HttpCompletionOption.ResponseHeadersRead);
 
                             if (headResponse.IsSuccessStatusCode)
                             {
@@ -119,7 +119,7 @@ public static partial class UpdateManager
         {
             Log.Info("Trying to get download URL from redirect service...");
             using var request = new HttpRequestMessage(HttpMethod.Head, RedirectUrl);
-            using var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+            using var response = await _apiClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
 
             var redirectedUrl = response.RequestMessage?.RequestUri?.ToString() ?? RedirectUrl;
             Log.Info($"Redirected to: {redirectedUrl}");
@@ -234,7 +234,7 @@ public static partial class UpdateManager
         {
             Log.Info($"Downloading from {url}");
 
-            using var response = await _httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
+            using var response = await _apiClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
 
             if (!response.IsSuccessStatusCode)
             {
