@@ -30,7 +30,7 @@ public static partial class UpdateManager
         PooledConnectionLifetime = TimeSpan.FromMinutes(5)
     })
     {
-        Timeout = TimeSpan.FromMinutes(2)
+        Timeout = TimeSpan.FromMinutes(5)
     };
 
     private static readonly HttpClient _githubClient = new(new SocketsHttpHandler
@@ -347,9 +347,9 @@ public static partial class UpdateManager
             Log.Info("Already up to date");
             return false;
         }
-        if (!await _updateLock.WaitAsync(0))
+        if (!await _updateLock.WaitAsync(TimeSpan.FromMinutes(5)))
         {
-            Log.Warning("Update is already in progress, please wait for it to complete");
+            Log.Error("Update lock timeout - another update has been running for more than 5 minutes");
             return false;
         }
 
