@@ -77,6 +77,8 @@ public class Plugin : BasePlugin
         Console.OutputEncoding = System.Text.Encoding.UTF8;
         Log.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
 
+        UpdateManager.CleanupOldDlls();
+
         try {
             ClassInjector.RegisterTypeInIl2Cpp<PluginManager>();
             Log.LogInfo("Registered C# Types in Il2Cpp");
