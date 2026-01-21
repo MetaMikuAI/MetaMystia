@@ -246,33 +246,50 @@ public static partial class UpdateManager
             var totalBytes = response.Content.Headers.ContentLength ?? 0;
             Log.Info($"File size: {totalBytes / 1024.0:F2} KB");
 
-            await using var contentStream = await response.Content.ReadAsStreamAsync();
-            await using var fileStream = new FileStream(tempPath, FileMode.Create, FileAccess.Write, FileShare.None);
-
-            var buffer = new byte[8192];
-            long totalRead = 0;
-            long lastLoggedBytes = 0;
-            const long logInterval = 100 * 1024; // 每100KB记录一次
-            int bytesRead;
-
-            while ((bytesRead = await contentStream.ReadAsync(buffer)) > 0)
+            await using (var contentStream = await response.Content.ReadAsStreamAsync())
+            await using (var fileStream = new FileStream(tempPath, FileMode.Create, FileAccess.Write, FileShare.None))
             {
-                await fileStream.WriteAsync(buffer.AsMemory(0, bytesRead));
-                totalRead += bytesRead;
+                var buffer = new byte[8192];
+                long totalRead = 0;
+                long lastLoggedBytes = 0;
+                const long logInterval = 100 * 1024;
+                int bytesRead;
 
-                if (totalBytes > 0 && totalRead - lastLoggedBytes >= logInterval)
+                while ((bytesRead = await contentStream.ReadAsync(buffer)) > 0)
                 {
-                    var progress = (double)totalRead / totalBytes * 100;
-                    Log.Info($"Download progress: {progress:F1}%");
-                    lastLoggedBytes = totalRead;
+                    await fileStream.WriteAsync(buffer.AsMemory(0, bytesRead));
+                    totalRead += bytesRead;
+
+                    if (totalBytes > 0 && totalRead - lastLoggedBytes >= logInterval)
+                    {
+                        var progress = (double)totalRead / totalBytes * 100;
+                        Log.Info($"Download progress: {progress:F1}%");
+                        lastLoggedBytes = totalRead;
+                    }
                 }
+
+                await fileStream.FlushAsync();
             }
 
-            await fileStream.FlushAsync();
-            fileStream.Close();
+            try
+            {
+                if (File.Exists(outputPath))
+                {
+                    var backupPath = outputPath + ".bak";
+                    File.Replace(tempPath, outputPath, backupPath, ignoreMetadataErrors: true);
+                    if (File.Exists(backupPath)) File.Delete(backupPath);
+                }
+                else
+                    File.Move(tempPath, outputPath);
 
-            if (File.Exists(outputPath)) File.Delete(outputPath);
-            File.Move(tempPath, outputPath);
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Failed to replace file: {ex.Message}");
+
+                if (File.Exists(outputPath)) File.Delete(outputPath);
+                File.Move(tempPath, outputPath);
+            }
 
             Log.Info($"Download completed: {outputPath}");
             return (true, null);
