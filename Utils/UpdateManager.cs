@@ -220,6 +220,8 @@ public static partial class UpdateManager
 
     private static async Task<(bool success, string error)> DownloadFileAsync(string url, string outputPath)
     {
+        var tempPath = outputPath + ".tmp";
+
         try
         {
             Log.Info($"Downloading from {url}");
@@ -237,7 +239,7 @@ public static partial class UpdateManager
             Log.Info($"File size: {totalBytes / 1024.0:F2} KB");
 
             await using var contentStream = await response.Content.ReadAsStreamAsync();
-            await using var fileStream = new FileStream(outputPath, FileMode.Create, FileAccess.Write, FileShare.None);
+            await using var fileStream = new FileStream(tempPath, FileMode.Create, FileAccess.Write, FileShare.None);
 
             var buffer = new byte[8192];
             long totalRead = 0;
@@ -255,6 +257,12 @@ public static partial class UpdateManager
                 }
             }
 
+            await fileStream.FlushAsync();
+            fileStream.Close();
+
+            if (File.Exists(outputPath)) File.Delete(outputPath);
+            File.Move(tempPath, outputPath);
+
             Log.Info($"Download completed: {outputPath}");
             return (true, null);
         }
@@ -262,6 +270,8 @@ public static partial class UpdateManager
         {
             var error = $"{ex.GetType().Name}:{ex.Message}";
             Log.Error($"Download failed: {error}");
+
+            CleanupFile(tempPath);
             return (false, error);
         }
     }
@@ -323,7 +333,6 @@ public static partial class UpdateManager
             var (downloadSuccess, downloadError) = await DownloadFileAsync(downloadUrl, newDllPath);
             if (!downloadSuccess)
             {
-                CleanupFile(newDllPath);
                 _ = MetricsReporter.ReportEvent("Update", "Failed", $"{currentVersion}->{newVersion}:Download:{downloadError}");
                 return false;
             }
