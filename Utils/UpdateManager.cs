@@ -19,6 +19,9 @@ public static partial class UpdateManager
     private const string DllOldFilePattern = @"^MetaMystia-v([\d.]+)\.dll\.old$";
     private const string DllVersionPattern = @"^MetaMystia-v([\d.]+)\.dll$";
 
+    private static readonly System.Text.RegularExpressions.Regex DllOldFileRegex = new(DllOldFilePattern, System.Text.RegularExpressions.RegexOptions.Compiled);
+    private static readonly System.Text.RegularExpressions.Regex DllVersionRegex = new(DllVersionPattern, System.Text.RegularExpressions.RegexOptions.Compiled);
+
     private static readonly SemaphoreSlim _updateLock = new(1, 1);
 
     private static readonly HttpClient _apiClient = new(new SocketsHttpHandler
@@ -209,7 +212,7 @@ public static partial class UpdateManager
             foreach (var file in oldFiles)
             {
                 var fileName = Path.GetFileName(file);
-                var match = System.Text.RegularExpressions.Regex.Match(fileName, DllOldFilePattern);
+                var match = DllOldFileRegex.Match(fileName);
 
                 if (match.Success)
                 {
@@ -451,7 +454,7 @@ public static partial class UpdateManager
             var highestVersion = dlls
                 .Select(dll =>
                 {
-                    var match = System.Text.RegularExpressions.Regex.Match(dll, DllVersionPattern);
+                    var match = DllVersionRegex.Match(dll);
                     return match.Success ? match.Groups[1].Value : null;
                 })
                 .Where(v => v != null)
@@ -528,7 +531,7 @@ public static partial class UpdateManager
             Log.Info($"Next steps:");
             Log.Info($"  1. Restart the game");
             Log.Info($"  2. The new version ({Path.GetFileName(newDllPath)}) will be loaded");
-            Log.Info($"  3. All old dlls (including current v{currentVersion}) have been renamed to .old and auto-deleted on next startup");
+            Log.Info($"  3. All old dlls (including current v{currentVersion}) have been renamed to .old and will be auto-deleted on next startup");
         }
         catch (Exception ex)
         {
