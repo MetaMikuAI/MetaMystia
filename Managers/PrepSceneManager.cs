@@ -14,9 +14,9 @@ public static partial class PrepSceneManager
     public static readonly int MaxCookers = 8; // 可信联机下双方都不会越界
     public static bool localPlayerReady = false;
     public static bool remotePlayerReady = false;
-    public static void init()
+
+    public static void Initialize()
     {
-        localPrepTable = new PrepAction.Table();
         localPlayerReady = false;
         remotePlayerReady = false;
 
@@ -26,6 +26,8 @@ public static partial class PrepSceneManager
         }
         GameData.RunTime.Common.StatusTracker.Instance.partners.Clear();
     }
+
+    public static void ClearPrepTable() => localPrepTable = new PrepAction.Table();
 
     public static void MergeFromPeer(PrepAction.Table remotePrepTable)
     {
@@ -326,7 +328,6 @@ public static partial class PrepSceneManager
         GameData.RunTime.NightSceneUtility.IzakayaConfigure.Instance.DailyBeverages.Clear();
         // GameData.RunTime.NightSceneUtility.IzakayaConfigure.Instance.CookerConfigure.Clear(); 
         // System.ExecutionEngineException: Attempting to call method 'UnityEngine.InputSystem.Utilities.ArrayHelpers::Clear<System.Int32>' for which no ahead of time (AOT) code was generated.
-        localPrepTable = new PrepAction.Table();
     }
 
     public static void UpdateAll()

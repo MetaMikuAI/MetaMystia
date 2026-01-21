@@ -17,6 +17,7 @@ public partial class DaySceneManagerPatch
         MpManager.OnSceneTransit(Scene.DayScene);
         MpManager.Initialize();
         ResourceExManager.OnDaySceneAwake();
+        PrepSceneManager.ClearPrepTable();
         if (MpManager.IsConnected)
         {
             CommandScheduler.Enqueue(

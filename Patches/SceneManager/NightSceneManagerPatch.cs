@@ -21,6 +21,7 @@ public static partial class NightSceneManagerPatch
         {
             return;
         }
+        PrepSceneManager.ClearPrepTable();
         WorkSceneManager.Clear();
         MpManager.Initialize();
 

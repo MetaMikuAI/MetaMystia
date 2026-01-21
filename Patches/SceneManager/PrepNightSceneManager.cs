@@ -9,12 +9,11 @@ namespace MetaMystia;
 [AutoLog]
 public partial class PrepNightSceneManagerPatch
 {
-    
     [HarmonyPatch(nameof(SceneManager.Start))]
     [HarmonyPostfix]
     public static void PrepNightScene_Start_Postfix()
     {
         MpManager.OnSceneTransit(Scene.IzakayaPrepScene);
-        PrepSceneManager.init();
+        PrepSceneManager.Initialize();
     }
 }

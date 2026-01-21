@@ -1,5 +1,6 @@
 using HarmonyLib;
 using PrepNightScene.UI;
+using SgrYuki.Utils;
 
 namespace MetaMystia;
 
@@ -17,11 +18,8 @@ public partial class IzakayaConfigPannelPatch
         instanceRef = __instance;
         if (MpManager.IsConnected)
         {
-            PluginManager.Instance.RunOnMainThread(() =>
-            {
-                PrepSceneManager.ClearGroups();
-                PrepSceneManager.UpdateUI();
-            });
+            PrepSceneManager.ClearGroups();
+            PrepSceneManager.UpdateAll();
         }
         Log.LogInfo($"IzakayaConfigPannel OnPanelOpen called");
     }
