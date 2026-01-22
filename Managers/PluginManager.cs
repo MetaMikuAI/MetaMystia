@@ -99,7 +99,11 @@ public partial class PluginManager : MonoBehaviour
         if (DEBUG)
         {
             if (Input.GetKeyDown(KeyCode.F7)) BepInEx.ConsoleManager.DetachConsole();
-            if (Input.GetKeyDown(KeyCode.F8)) BepInEx.ConsoleManager.CreateConsole();
+            if (Input.GetKeyDown(KeyCode.F8))
+            {
+                BepInEx.ConsoleManager.CreateConsole();
+                System.Console.OutputEncoding = System.Text.Encoding.UTF8;
+            }
             if (Input.GetKeyDown(KeyCode.F9))
             {
                 WorkSceneManager.CloseIzakayaIfPossible();
@@ -132,7 +136,7 @@ public partial class PluginManager : MonoBehaviour
                 // string preNode = "Main_1_BeastForest_008-Event";
                 // DataBaseScheduler.allNodes[preNode].postEvents.AddItem(preNode);
 
-                // 注册 trigger 
+                // 注册 trigger
                 var trigger = new SchedulerNode.Trigger();
                 trigger.triggerType = SchedulerNode.Trigger.TriggerType.KizunaCheckPoint;
                 trigger.triggerId = "_Daiyousei";
