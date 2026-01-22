@@ -1,0 +1,15 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "dotnet: build release",
+            "type": "shell",
+            "command": "dotnet",
+            "args": ["build", "-c", "Release"],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
+        }
+    ]
+}
