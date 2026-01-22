@@ -280,10 +280,6 @@ public static partial class MetricsReporter
 
                         Notify.ShowOnNextAvailableScene($"您的 Mod 版本为 {currentVer}，最新版为 {latestVer}，建议更新到最新版！");
 
-                        if (UpdateManager.CheckCurrentVersionDllExists(currentVer))
-                            Notify.ShowOnNextAvailableScene("您可以在控制台中执行 /update 命令进行升级。");
-                        else
-                            Notify.ShowOnNextAvailableScene($"未检测到 dll 文件（MetaMystia-v{currentVer}.dll），无法使用自动更新。请手动下载最新版本。");
                     }
                 }
                 catch (Exception ex)

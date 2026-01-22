@@ -9,6 +9,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace MetaMystia;
+
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
 public class Plugin : BasePlugin
 {
@@ -78,27 +79,18 @@ public class Plugin : BasePlugin
         Console.OutputEncoding = System.Text.Encoding.UTF8;
         Log.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
 
-        _ = Task.Run(() =>
+        try
         {
-            try
-            {
-                UpdateManager.CleanupOldDlls();
-            }
-            catch (Exception ex)
-            {
-                Log.LogWarning($"Failed to cleanup old dll files: {ex.Message}");
-            }
-        });
-
-        try {
             ClassInjector.RegisterTypeInIl2Cpp<PluginManager>();
             Log.LogInfo("Registered C# Types in Il2Cpp");
         }
-        catch (Exception ex) {
+        catch (Exception ex)
+        {
             Log.LogError($"FAILED to Register Il2Cpp Type! {ex.Message}");
         }
 
-        try {
+        try
+        {
             var harmony = new Harmony(MyPluginInfo.PLUGIN_GUID);
 
             var originalHandle = AccessTools.Method(typeof(CanvasScaler), "Handle");
@@ -122,8 +114,9 @@ public class Plugin : BasePlugin
             MetricsReporter.OnPluginInitialized();
 
         }
-        catch (Exception ex) {
-            Log.LogFatal($"FAILED to Apply Hooks! {ex.Message}");   
+        catch (Exception ex)
+        {
+            Log.LogFatal($"FAILED to Apply Hooks! {ex.Message}");
             PatchedException = ex;
         }
     }
@@ -134,10 +127,10 @@ public class Plugin : BasePlugin
         {
             return;
         }
-        
+
         FirstEnterMain = false;
         Instance.Log.LogInfo("First time entering Main Scene.");
-        
+
         DLCManager.Initialize();
     }
 
@@ -146,15 +139,19 @@ public class Plugin : BasePlugin
         [HarmonyPostfix]
         static void Handle()
         {
-            if (PluginManager.Instance == null) {
+            if (PluginManager.Instance == null)
+            {
                 Instance.Log.LogMessage("Bootstrapping Trainer...");
-                try {
+                try
+                {
                     PluginManager.Create("PluginManager");
-                    if (PluginManager.Instance != null) {
+                    if (PluginManager.Instance != null)
+                    {
                         Instance.Log.LogMessage("Trainer Bootstrapped!");
                     }
                 }
-                catch (Exception e) {
+                catch (Exception e)
+                {
                     Instance.Log.LogMessage($"ERROR Bootstrapping Trainer: {e.Message}");
                 }
             }
