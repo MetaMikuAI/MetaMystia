@@ -24,6 +24,7 @@ public static partial class ResourceExManager
 
     private static Dictionary<int, IngredientConfig> IngredientConfigs = new Dictionary<int, IngredientConfig>();
     private static Dictionary<int, FoodConfig> FoodConfigs = new Dictionary<int, FoodConfig>();
+    private static Dictionary<int, BeverageConfig> BeverageConfigs = new Dictionary<int, BeverageConfig>();
     private static Dictionary<int, RecipeConfig> RecipeConfigs = new Dictionary<int, RecipeConfig>();
     private static List<MissionNodeConfig> MissionNodeConfigs = new List<MissionNodeConfig>();
     private static List<EventNodeConfig> EventNodeConfigs = new List<EventNodeConfig>();
@@ -40,6 +41,7 @@ public static partial class ResourceExManager
     {
         RegisterAllSpawnConfigs();
         RegisterAllIngredients();
+        RegisterAllBeverages();
         RegisterAllRecipes();
         RegisterAllFoods();
     }
@@ -53,6 +55,7 @@ public static partial class ResourceExManager
         RegisterAllBevRequests();
         RegisterSpecialPortraits();
         RegisterAllIngredientLanguages();
+        RegisterAllBeverageLanguages();
         RegisterAllFoodLanguages();
         RegisterAllMissionNodeLanguages();
     }
@@ -294,6 +297,15 @@ public static partial class ResourceExManager
             }
         }
 
+        if (config?.beverages != null)
+        {
+            foreach (var beverageConfig in config.beverages)
+            {
+                beverageConfig.ModRoot = modRootInfo;
+                BeverageConfigs[beverageConfig.id] = beverageConfig;
+                Log.LogInfo($"[{modName}] Loaded config for beverage {beverageConfig.name} ({beverageConfig.id})");
+            }
+        }
         if (config?.recipes != null)
         {
             foreach (var recipeConfig in config.recipes)

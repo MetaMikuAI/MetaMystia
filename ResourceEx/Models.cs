@@ -96,6 +96,7 @@ public class ResourceConfig
     public List<IngredientConfig> ingredients { get; set; }
     public List<RecipeConfig> recipes { get; set; }
     public List<FoodConfig> foods { get; set; }
+    public List<BeverageConfig> beverages { get; set; }
     public List<MissionNodeConfig> missionNodes { get; set; }
     public List<EventNodeConfig> eventNodes { get; set; }
 }
@@ -125,6 +126,19 @@ public class IngredientConfig
     public bool isFish { get; set; }
     public bool isMeat { get; set; }
     public bool isVeg { get; set; }
+    public int baseValue { get; set; }
+    public List<int> tags { get; set; }
+
+    public string spritePath { get; set; }
+    public string ModRoot { get; set; }
+}
+
+public class BeverageConfig
+{
+    public int id { get; set; }
+    public string name { get; set; }
+    public string description { get; set; }
+    public int level { get; set; }
     public int baseValue { get; set; }
     public List<int> tags { get; set; }
 
