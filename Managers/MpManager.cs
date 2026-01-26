@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using SgrYuki.Utils;
@@ -14,73 +16,79 @@ public static partial class MpManager
         Client
     }
 
+    #region Const Values
     private const int TCP_PORT = 40815;
-    private static string _playerId = Environment.MachineName;
-    public static string PlayerId { get { return _playerId; } set { _playerId = value; Log.LogInfo($"Player ID set to: {value}"); } }
+    public const long SERVER_ID = 0;
+    public const long NOT_CONNECTED_CLIENT_ID = -1;
+    private const string SyncActionCommandID = "SyncAction";
+    #endregion
+
+    #region Multiplayer Related Values
+    public static string PlayerId { get; set { field = value; Log.Info($"Player ID set to: {value}"); } } = Environment.MachineName;
+    public static string PeerAddress { get; set; }
+    public static string PeerId { get; set; }
+    public static long Latency { get; private set; } = 0;
+
+    public static int ConnectedPlayersCount => IsConnected ? 1 : 0;
+    public static int AllPlayersCount => ConnectedPlayersCount + 1;
+    #endregion
+
     private static TcpServer server = null;
     private static TcpClientWrapper client = null;
     private static ROLE Role;
-    private static ROLE GameRole;
     public static bool IsRunning { get; private set; }
-    public static bool IsConnected => (IsHost ? server?.HasAliveClient : client?.IsConnected)?? false;
-    public static string PeerAddress {get; set;}
-    public static string PeerId {get; set;}
-    public static long Latency {get; private set;} = 0;
-    private static System.Collections.Concurrent.ConcurrentDictionary<int, long> pingSendTimes = new();
+    public static bool IsHost => Role == ROLE.Host;
+    public static bool IsClient => Role == ROLE.Client;
+    private static bool IsConnecting = false;
+    public static bool IsConnected => (IsHost ? server?.HasAliveClient : client?.IsConnected) ?? false;
+    public static bool IsConnectedClient => IsConnected && IsClient;
+    public static bool IsConnectedHost => IsConnected && IsHost;
+    public static string RoleTag => IsHost ? "[S]" : "[C]";
+    public static string RoleName => IsHost ? "Host" : "Client";
+
+    private static ConcurrentDictionary<int, long> pingSendTimes = new();
     public static long TimestampNow => DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
     public static long TimeOffset = 0;
     public static long GetSynchronizedTimestampNow => TimestampNow - TimeOffset;
     private static int _pingId = 0;
 
-    public static bool IsConnectedClient => IsConnected && IsClient;
-    public static bool IsConnectedHost => IsConnected && IsHost;
-    public static bool IsHost => Role == ROLE.Host;
-    public static bool IsClient => Role == ROLE.Client;
-    public static string RoleTag => IsHost ? "[S]" : "[C]";
-    public static string RoleName => IsHost ? "Host" : "Client";
-
-    public static bool IsGameRoleHost => GameRole == ROLE.Host;
-    public static bool IsGameRoleClient => GameRole == ROLE.Client;
-
-    public static Common.UI.Scene LocalScene {get; private set;} = Common.UI.Scene.EmptyScene;
-    public static Common.UI.Scene PeerScene;
-
-    public static System.Collections.Generic.List<string> ActiveDLCLabel => DLCManager.ActiveDLCLabel;
-    public static System.Collections.Generic.List<string> PeerActiveDLCLabel => DLCManager.PeerActiveDLCLabel;
-
+    #region SinglePlay GamePlay Getters
+    public static Common.UI.Scene LocalScene { get; private set; } = Common.UI.Scene.EmptyScene;
+    public static List<string> ActiveDLCLabel => DLCManager.ActiveDLCLabel;
     public static bool InStory => Common.SceneDirector.Instance.playableDirector.state == UnityEngine.Playables.PlayState.Playing || Common.SceneDirector.Instance.playableDirector.state == UnityEngine.Playables.PlayState.Delayed;
+    public static bool ShouldSkipAction => !IsConnected || InStory;
     public static bool InputAvailable => Common.UI.UniversalGameManager.IsInputEnabled;
 
     public static string GameVersion => Common.LoadingSceneManager.VersionData;
     public static string ModVersion => MyPluginInfo.PLUGIN_VERSION;
     public static Language Language => Common.UI.EscapeUtility.EscConfigPannel.CurrentSettings.CurrentLanguage.GetLanguage();
-    public static string PeerGameVersion = "";
 
-    #region Multiplayer GamePlay Getters 
-    public static int AllPlayersCount => IsConnected ? 2 : 1;
+    #endregion
+    #region Multiplayer GamePlay Getters
+
     public static float MultiplayerTipModifier => AllPlayersCount switch
     {
         1 => 1.0f,  // 4 min = 4 + time pause
-        2 => 0.8f,  // 8 min = 6.4
-        3 => 0.75f, // 10 min = 7.5
-        4 => 0.68f,  // 12 min = 8.16
-        _ => 1.0f
+        2 => 0.8f,  // 9 min = 7.2
+        3 => 0.75f, // 11 min = 8.25
+        4 => 0.68f, // 13 min = 8.84
+        _ => 0.6f
     };
     public static float MultiplayerFundModifier => AllPlayersCount switch
     {
         1 => 1.0f,  // 4 min = 4 + time pause
-        2 => 0.9f,  // 8 min = 7.2
-        3 => 0.85f, // 10 min = 8.5
-        4 => 0.8f,  // 12 min = 9.6
-        _ => 1.0f
+        2 => 0.9f,  // 9 min = 8.1
+        3 => 0.85f, // 11 min = 9.35
+        4 => 0.8f,  // 13 min = 10.4
+        _ => 0.7f
     };
     public static int WorkTimeModifier => AllPlayersCount switch
     {
         1 => 4 * 60,
         2 => 9 * 60,
-        3 => (int)(11.5 * 60),
-        4 => 14 * 60,
-        _ => AllPlayersCount * 60
+        3 => 11 * 60,
+        4 => 13 * 60,
+        _ => 15
     };
 
     #endregion
@@ -96,7 +104,7 @@ public static partial class MpManager
                 server = null;
             }
             Role = ROLE.Client;
-        } 
+        }
         else
         {
             client?.Close();
@@ -104,7 +112,6 @@ public static partial class MpManager
             server.Start();
             Role = ROLE.Host;
         }
-        GameRole = Role;
     }
 
     public static bool Start(ROLE r = ROLE.Host)
@@ -125,9 +132,8 @@ public static partial class MpManager
         IsRunning = true;
         PeerId = "<Unknown>";
         Role = r;
-        GameRole = Role;
         Log.Info(DumpDebugText());
-        switch (r) 
+        switch (r)
         {
             case ROLE.Host:
                 server = new(TCP_PORT);
@@ -160,7 +166,6 @@ public static partial class MpManager
         {
             Log.LogError($"Error stopping: {e.Message}");
         }
-
         Log.LogInfo("MpManager has stopped");
     }
 
@@ -179,12 +184,9 @@ public static partial class MpManager
 
     public static async Task<bool> ConnectToPeerAsync(string peerIp, int port = TCP_PORT, bool stop_existed_server = true)
     {
-        if (!IsRunning)
+        if (!IsRunning && !Start(ROLE.Client))
         {
-            if (!Start(ROLE.Client))
-            {
-                return false;
-            }
+            return false;
         }
 
         if (IsConnected)
@@ -193,8 +195,15 @@ public static partial class MpManager
             return false;
         }
 
+        if (IsConnecting)
+        {
+            Log.LogWarning("[C] Now try connecting to a peer, please wait..");
+            return false;
+        }
+
         try
         {
+            IsConnecting = true;
             if (IsHost)
             {
                 SwitchRole(stop_existed_server);
@@ -213,6 +222,10 @@ public static partial class MpManager
             Log.LogError($"[C] Error connecting to peer: {e.Message}");
             return false;
         }
+        finally
+        {
+            IsConnecting = false;
+        }
     }
 
     public static void OnConnected(string ip)
@@ -221,7 +234,7 @@ public static partial class MpManager
         PeerAddress = ip;
         HelloAction.Send();
         SceneTransitAction.Send(LocalScene);
-        SyncAction.Send();
+        CommandScheduler.EnqueueInterval(SyncActionCommandID, 0.5f, SyncAction.Send);
         CommandScheduler.Enqueue(
             executeWhen: () => KyoukoManager.GetCharacterComponent() != null,
             execute: () => KyoukoManager.GetCharacterComponent()?.UpdateIcon(false),
@@ -229,19 +242,19 @@ public static partial class MpManager
         );
         Notify.ShowOnMainThread($"联机系统：已连接！");
     }
-    
+
 
     public static void OnDisconnected()
     {
         PeerAddress = "<Unknown>";
         PeerId = "<Unknown>";
-        PeerGameVersion = "";
         DLCManager.ClearPeer();
         CommandScheduler.Enqueue(
             executeWhen: () => KyoukoManager.GetCharacterComponent() != null,
             execute: () => KyoukoManager.GetCharacterComponent()?.UpdateIcon(true),
             timeoutSeconds: 120
         );
+        CommandScheduler.CancelInterval(SyncActionCommandID);
         Notify.ShowOnMainThread($"联机系统：连接已断开！");
     }
 
@@ -250,19 +263,27 @@ public static partial class MpManager
         action.OnReceived();
     }
 
+    public static void SendToHostOrBroadcast(NetPacket packet)
+    {
+        if (IsHost)
+        {
+            server?.Send(packet);
+        }
+        else
+        {
+            client?.Send(packet);
+        }
+    }
+
     public static void SendToPeer(NetPacket packet)
     {
-        if (IsConnected)
+        if (IsHost)
         {
-            packet.GetFirstAction().LogActionSend(true);
-            if (IsHost)
-            {
-                server.Send(packet);
-            }
-            else
-            {
-                client.Send(packet);
-            }
+            server?.Send(packet);
+        }
+        else
+        {
+            client?.Send(packet);
         }
     }
 
@@ -273,7 +294,7 @@ public static partial class MpManager
             if (IsHost)
             {
                 server.DisconnectClient();
-            } 
+            }
             else
             {
                 client.Close();

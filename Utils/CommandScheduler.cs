@@ -59,7 +59,7 @@ public static partial class CommandScheduler
     public static float Now => UnityEngine.Time.unscaledTime;
 
     // ================================
-    // Public API 
+    // Public API
     // ================================
     public static void Enqueue(
         Func<bool> executeWhen,
@@ -206,8 +206,8 @@ public static partial class CommandScheduler
     /// </summary>
     /// <param name="key"></param>
     /// <returns>目标关键字队列未执行命令数</returns>
-    public static int RemoveFromKeyQueue(string key) => RemoveFromKeyQueue(KeyQueue, key);
-    public static int RemoveFromKeyQueue(KeyCommandQueue keyCommandQueue, string key)
+    public static int RemoveKeyFromKeyQueue(string key) => RemoveKeyFromKeyQueue(KeyQueue, key);
+    public static int RemoveKeyFromKeyQueue(KeyCommandQueue keyCommandQueue, string key)
     {
         int count = 0;
         if (keyCommandQueue.TryRemove(key, out var commandQ))

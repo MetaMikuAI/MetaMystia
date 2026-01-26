@@ -1,4 +1,8 @@
+using System;
+using System.Reflection;
+using BepInEx.Logging;
 using MemoryPack;
+using SgrYuki.Utils;
 
 namespace MetaMystia;
 
@@ -67,10 +71,90 @@ public abstract partial class NetAction
 {
     public abstract ActionType Type { get; }
     public long TimestampMs { get; protected set; }
+    public long SenderId { get; protected set; }
 
-    protected NetAction() => TimestampMs = MpManager.TimestampNow;
-    
-    public abstract void OnReceived();
+    [MemoryPackIgnore]
+    protected virtual bool SkipReceiveOnStory { get; } = false;
+
+    [MemoryPackIgnore]
+    protected virtual bool SkipSendOnStory { get; } = false;
+
+    [MemoryPackIgnore]
+    protected virtual LogLevel OnReceiveLogLevel { get; } = LogLevel.Info;
+
+    [MemoryPackIgnore]
+    protected virtual LogLevel OnSendLogLevel { get; } = LogLevel.Info;
+
+    [MemoryPackIgnore]
+    protected virtual bool OnReceiveLogOnlyAction { get; } = false;
+
+    [MemoryPackIgnore]
+    protected virtual bool OnSendLogOnlyAction { get; } = false;
+
+    [MemoryPackIgnore]
+    private const string OnReceivedDerivedAfterStoryOverCommand = "OnReceivedDerivedAfterStoryOver";
+
+    protected NetAction()
+    {
+        TimestampMs = MpManager.TimestampNow;
+    }
+
+
+    public abstract void OnReceivedDerived();
+    public void OnReceived()
+    {
+        LogActionReceived();
+        if (SkipReceiveOnStory && MpManager.ShouldSkipAction)
+        {
+            Log.Info($"{MpManager.RoleTag} Received Skip {Type}: {ToString()}");
+            return;
+        }
+        var targetScene = GetReceivedScene();
+        if (targetScene != null && MpManager.LocalScene != targetScene.Value)
+        {
+            Log.Info($"{MpManager.RoleTag} Received in invalid scene: {Type}: {ToString()}");
+            return;
+        }
+        if (GetOnReceivedDerivedExecuteAfterStoryOver())
+        {
+            ExecuteAfterStoryOver(OnReceivedDerived);
+        }
+        else
+        {
+            OnReceivedDerived();
+        }
+    }
+
+    private Common.UI.Scene? GetReceivedScene()
+    {
+        var method = this.GetType().GetMethod(nameof(OnReceivedDerived));
+        var attr = method.GetCustomAttribute<CheckSceneAttribute>();
+        return attr?.Scene;
+    }
+
+    private bool GetOnReceivedDerivedExecuteAfterStoryOver()
+    {
+        var method = this.GetType().GetMethod(nameof(OnReceivedDerived));
+        var attr = method.GetCustomAttribute<ExecuteAfterStoryAttribute>();
+        return attr != null;
+    }
+
+
+    private void ExecuteAfterStoryOver(Action action)
+    {
+        CommandScheduler.EnqueueKey(
+            key: OnReceivedDerivedAfterStoryOverCommand,
+            executeWhen: () => !MpManager.ShouldSkipAction,
+            executeInfo: $"OnReceivedDerivedAfterStoryOver {Type}: {ToString()}",
+            execute: action,
+            timeoutSeconds: 300
+        );
+    }
+    public static void RemoveExecuteAfterStoryOver()
+    {
+        CommandScheduler.RemoveKeyFromKeyQueue(OnReceivedDerivedAfterStoryOverCommand);
+    }
+
     public override string ToString()
     {
         return System.Text.Json.JsonSerializer.Serialize((object)this,
@@ -83,57 +167,89 @@ public abstract partial class NetAction
             });
     }
 
-    private static void LogAction(BepInEx.Logging.LogLevel logLevel, string logStr)
+    private static void LogAction(LogLevel logLevel, string logStr)
     {
         switch (logLevel)
         {
-            case BepInEx.Logging.LogLevel.Debug:
-                Log.LogDebug(logStr, false);
+            case LogLevel.Debug:
+                Log.Debug(logStr, false);
                 break;
-            case BepInEx.Logging.LogLevel.Warning:
-                Log.LogWarning(logStr, false);
+            case LogLevel.Warning:
+                Log.Warning(logStr, false);
                 break;
-            case BepInEx.Logging.LogLevel.Error:
-                Log.LogError(logStr, false);
+            case LogLevel.Error:
+                Log.Error(logStr, false);
                 break;
-            case BepInEx.Logging.LogLevel.Message:
-                Log.LogMessage(logStr, false);
+            case LogLevel.Fatal:
+                Log.Fatal(logStr, false);
+                break;
+            case LogLevel.Message:
+                Log.Message(logStr, false);
                 break;
             default:
-                Log.LogInfo(logStr, false);
+                Log.Info(logStr, false);
                 break;
         }
     }
 
-    protected void LogActionReceived(BepInEx.Logging.LogLevel logLevel, bool onlyAction = false, string prefix = "")
+    protected void LogActionReceived()
     {
-        string logStr = $"{MpManager.RoleTag} {prefix}Received {Type}{(onlyAction ? "" : $": {ToString()}")}";
-        LogAction(logLevel, logStr);
+        string logStr = $"{MpManager.RoleTag} Received {Type}{(OnReceiveLogOnlyAction ? "" : $": {ToString()}")}";
+        LogAction(OnReceiveLogLevel, logStr);
     }
 
-    protected void LogActionSend(BepInEx.Logging.LogLevel logLevel, bool onlyAction = false, string prefix = "")
+    protected void LogActionSend()
     {
-        string logStr = $"{MpManager.RoleTag} {prefix}Send {Type}{(onlyAction ? "" : $": {ToString()}")}";
-        LogAction(logLevel, logStr);
+        string logStr = $"{MpManager.RoleTag} Send {Type}{(OnSendLogOnlyAction ? "" : $": {ToString()}")}";
+        LogAction(OnSendLogLevel, logStr);
     }
 
-    public virtual void LogActionReceived(bool onlyAction = false, string prefix = "")
+    protected void SendToHostOrBroadcast()
     {
-        LogActionReceived(BepInEx.Logging.LogLevel.Info, onlyAction, prefix);
+        if (SkipSendOnStory && MpManager.ShouldSkipAction)
+        {
+            Log.Info($"{MpManager.RoleTag} Will not send Skip {Type}: {ToString()}");
+            return;
+        }
+        if (!MpManager.IsConnected) return;
+
+        LogActionSend();
+
+        var packet = NetPacket.FromSingleAction(this);
+        MpManager.SendToHostOrBroadcast(packet);
     }
 
-    public virtual void LogActionSend(bool onlyAction = false, string prefix = "")
+    protected void SendToPeer(long peerId)
     {
-        LogActionSend(BepInEx.Logging.LogLevel.Info, onlyAction, prefix);
+        if (SkipSendOnStory && MpManager.ShouldSkipAction)
+        {
+            Log.Info($"{MpManager.RoleTag} Will not send Skip {Type}: {ToString()}");
+            return;
+        }
+        if (!MpManager.IsConnected) return;
+
+        LogActionSend();
+
+        var packet = NetPacket.FromSingleAction(this);
+        MpManager.SendToPeer(packet);
     }
 
-    protected static void SendToPeer(NetPacket packet) => MpManager.SendToPeer(packet);
-    protected static void SendToHostOrBroadcast(NetPacket packet) => MpManager.SendToPeer(packet);
-
+    public void ChangeSender(long newSender) => SenderId = newSender;
 
     public static void RegisterAllFormatter()
     {
         if (!MemoryPackFormatterProvider.IsRegistered<NetAction>()) MemoryPackFormatterProvider.Register(new NetActionFormatter());
         if (!MemoryPackFormatterProvider.IsRegistered<NetAction[]>()) MemoryPackFormatterProvider.Register(new MemoryPack.Formatters.ArrayFormatter<NetAction>());
     }
+
+    [AttributeUsage(AttributeTargets.Method)]
+    protected class CheckSceneAttribute(Common.UI.Scene scene) : Attribute
+    {
+        public Common.UI.Scene Scene { get; } = scene;
+    }
+
+    [AttributeUsage(AttributeTargets.Method)]
+    protected class ExecuteAfterStoryAttribute : Attribute { }
 }
+
+
