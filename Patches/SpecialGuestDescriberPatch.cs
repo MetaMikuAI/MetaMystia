@@ -27,8 +27,9 @@ public partial class SpecialGuestDescriberPatch
     public static void Describe_Postfix(SpecialGuestDescriber __instance, SpecialGuest detail, CancellationToken cancellationToken)
     {
         var portrayal = detail.CharacterDefaultPortrayal;
-        if (ResourceExManager.TryGetSpecialGuestCustomPortrayal(portrayal, out var portrayalSprites))
+        if (ResourceExManager.TryGetSpecialGuestCustomPortrayal(portrayal, out var portrayalSprites, out var faceInNoteBook))
         {
+            portrayal.faceInNoteBook = faceInNoteBook;
             if (portrayal.faceInNoteBook >= 0 && portrayal.faceInNoteBook < portrayalSprites.Length)
             {
                 __instance.portrayal.sprite = portrayalSprites[portrayal.faceInNoteBook];

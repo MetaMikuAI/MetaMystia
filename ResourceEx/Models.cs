@@ -18,6 +18,7 @@ public class CharacterConfig
     public List<string> descriptions { get; set; }
     public string type { get; set; }
     public List<PortraitConfig> portraits { get; set; }
+    public int? faceInNoteBook { get; set; }
     public GuestConfig guest { get; set; }
     public CharacterSpriteSetCompactConfig characterSpriteSetCompact { get; set; }
     public KizunaEventConfig kizuna { get; set; }
