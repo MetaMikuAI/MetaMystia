@@ -57,6 +57,14 @@ public partial class HelloAction : NetAction
             return;
         }
 
+        if (MystiaManager.IsDayOver || PeerManager.IsDayOver)
+        {
+            Log.LogError($"Already dayOver! Local: {MystiaManager.IsDayOver}, Remote: {PeerManager.IsDayOver}");
+            MpManager.DisconnectPeer();
+            Notify.ShowOnMainThread("有玩家不处于白天或主界面，连接已断开");
+            return;
+        }
+
         DLCManager.PeerActiveDLCLabel = PeerActiveDLCLabel ?? [];
         DLCManager.PeerRecipes = PeerDLCRecipes ?? [];
         DLCManager.PeerCookers = PeerDLCCookers ?? [];

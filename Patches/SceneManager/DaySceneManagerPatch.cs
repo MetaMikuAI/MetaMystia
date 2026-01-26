@@ -54,12 +54,13 @@ public partial class DaySceneManagerPatch
     {
         Log.InfoCaller($"called");
 
+        MystiaManager.IsDayOver = true;
+
         if (!MpManager.IsConnected)
         {
             return true;
         }
 
-        MystiaManager.IsDayOver = true;
         Notify.ShowOnMainThread(TextId.MystiaReadyForWork.Get());
         ReadyAction.Send(ReadyType.DayOver);
         MpManager.DayOver(MpManager.SERVER_ID);
