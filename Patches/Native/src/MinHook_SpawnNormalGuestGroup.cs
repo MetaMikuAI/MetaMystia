@@ -28,7 +28,7 @@ public static partial class MinHook_SpawnNormalGuestGroup
         [MarshalAs(UnmanagedType.I1)] bool shouldFade,
         IntPtr method
     );
-    
+
     public static void InstallHook()
     {
         _hook = Hook_SpawnNormalGuestGroup;
@@ -52,11 +52,10 @@ public static partial class MinHook_SpawnNormalGuestGroup
         bool shouldFade,
         IntPtr method)
     {
-        Log.Info("Hook_SpawnNormalGuestGroup called");
-        
-        if (!GuestsManagerPatch.SpawnNormalGuestGroup_WithArg_Manual_Call 
-            && MpManager.IsConnectedClient 
-            && MpManager.LocalScene == Common.UI.Scene.WorkScene 
+        Log.DebugCaller($"called");
+        if (!GuestsManagerPatch.SpawnNormalGuestGroup_WithArg_Manual_Call
+            && MpManager.IsConnectedClient
+            && MpManager.LocalScene == Common.UI.Scene.WorkScene
             && !MpManager.InStory)
         {
             return IntPtr.Zero;
@@ -72,29 +71,36 @@ public static partial class MinHook_SpawnNormalGuestGroup
             method
         );
 
+        if (res == IntPtr.Zero)
+        {
+            Log.WarningCaller($"failed to SpawnNormalGuestGroup, skip");
+            return IntPtr.Zero;
+        }
+
         if (MpManager.IsConnectedHost && MpManager.LocalScene == Common.UI.Scene.WorkScene && !MpManager.InStory)
         {
             var guestGroupControllerCvt = new GuestGroupController(res);
             // var normalGuestsCvt = new Il2CppSystem.Collections.Generic.IEnumerable<NormalGuest>(normalGuests);
             var overrideSpawnPositionCvt = new Il2CppSystem.Nullable<UnityEngine.Vector3>(overrideSpawnPosition);
-            
+
             // uuid stored in PostInitializeGuestGroup_Prefix
             string uuid = WorkSceneManager.GetGuestUUID(guestGroupControllerCvt);
             var array = guestGroupControllerCvt.GetAllGuests().ToIl2CppReferenceArray();
 
             var guestVisualArraySorted = DataBaseCharacter.NormalGuestVisual.Get(array[0].id).SortByToString();
             int visualId1 = GuestsManagerPatch.IndexAt(uuid, guestVisualArraySorted, array[0].CharacterPixel);
-            
-            var info = new WorkSceneManager.GuestInfo {
+
+            var info = new WorkSceneManager.GuestInfo
+            {
                 Id = array[0].id,
                 VisualId = visualId1,
                 IsSpecial = false,
                 LeaveType = (GuestGroupController.LeaveType)leaveType
             };
-            if (overrideSpawnPositionCvt.HasValue && overrideSpawnPositionCvt.Value.sqrMagnitude > 0.25*0.25*3 && overrideSpawnPositionCvt.Value.sqrMagnitude < 15*15*3) // min: 0.25*0.25*3 / max: 15*15*3
+            if (overrideSpawnPositionCvt.HasValue && overrideSpawnPositionCvt.Value.sqrMagnitude > 0.25 * 0.25 * 3 && overrideSpawnPositionCvt.Value.sqrMagnitude < 15 * 15 * 3) // min: 0.25*0.25*3 / max: 15*15*3
             {
                 info.OverrideSpawnPosition = overrideSpawnPositionCvt.Value;
-                Log.Warning($"overrideSpawnPositionCvt, {overrideSpawnPositionCvt.Value}");
+                Log.InfoCaller($"overrideSpawnPositionCvt, {overrideSpawnPositionCvt.Value}");
             }
             if (array.Length > 1)
             {
@@ -104,7 +110,10 @@ public static partial class MinHook_SpawnNormalGuestGroup
                 info.VisualId2 = visualId2;
             }
             GuestSpawnAction.Send(uuid, info);
-            WorkSceneManager.SetGuestStatus(uuid, WorkSceneManager.Status.Generated);
+
+            // 通过FSM转移状态
+            var fsm = WorkSceneManager.GetOrCreateGuestFSM(uuid);
+            fsm.ChangeState(WorkSceneManager.Status.Generated);
         }
         return res;
     }

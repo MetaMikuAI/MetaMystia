@@ -5,20 +5,17 @@ namespace MetaMystia;
 
 [MemoryPackable]
 [AutoLog]
-public partial class CookAction : NetAction
+public partial class CookAction : AffectStoryAction
 {
     public override ActionType Type => ActionType.COOK;
     public int GridIndex { get; set; }
     public int RecipeId {get; set; }
     public SellableFood Food { get; set; }
-    public override void OnReceived()
+
+    [CheckScene(Common.UI.Scene.WorkScene)]
+    public override void OnReceivedDerived()
     {
         Log.LogInfo($"Received COOK: CookerIndex={GridIndex}, FoodId={Food.FoodId}, Modifiers=[{string.Join(",", Food.ModifierIds)}]");
-        if (MpManager.InStory || MpManager.LocalScene != Common.UI.Scene.WorkScene)
-        {
-            Log.LogInfo("current in story, will skip receive");
-            return;
-        }
         PluginManager.Instance.RunOnMainThread(() =>
         {
             if (!DLCManager.RecipeAvailable(RecipeId))
@@ -48,16 +45,12 @@ public partial class CookAction : NetAction
 
     public static void Send(int gridIndex, SellableFood food, int recipeId)
     {
-        if (MpManager.InStory)
-        {
-            Log.LogInfo("current in story, will skip send");
-        }
-        NetPacket packet = new([new CookAction
+        var action = new CookAction
         {
             GridIndex = gridIndex,
             RecipeId = recipeId,
             Food = food
-        }]);
-        SendToPeer(packet);
+        };
+        action.SendToHostOrBroadcast();
     }
 }

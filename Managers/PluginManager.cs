@@ -12,6 +12,7 @@ using GameData.Core.Collections;
 using System.Linq;
 using Il2CppSystem.Runtime.InteropServices.ComTypes;
 using GameData.CoreLanguage;
+using SgrYuki.Utils;
 
 namespace MetaMystia;
 
@@ -19,7 +20,14 @@ namespace MetaMystia;
 public partial class PluginManager : MonoBehaviour
 {
     public static PluginManager Instance { get; private set; }
-    public static readonly string Label = $"{MyPluginInfo.PLUGIN_NAME} v{MyPluginInfo.PLUGIN_VERSION} loaded";
+
+    private const string ChangePluginNameCommand = "ChangePluginNameCommand";
+    private const int ChangePluginNameCommandInterval = 120;
+    private readonly string[] PluginNames = [MyPluginInfo.PLUGIN_NAME, "ShigureMystia"];
+    private static string PluginName = MyPluginInfo.PLUGIN_NAME;
+    private static string LoadedLabel(string pluginName) => $"{pluginName} v{MpManager.ModVersion} loaded";
+    public static string Label => LoadedLabel(PluginName);
+
     public static InGameConsole Console { get; private set; }
     public static Debugger.WebDebugger Debugger = null;
     private bool isTextVisible = true;
@@ -52,7 +60,11 @@ public partial class PluginManager : MonoBehaviour
     private void Awake()
     {
         Console = new InGameConsole();
-        // MpManager.Start();
+        CommandScheduler.EnqueueInterval(
+            commandId: ChangePluginNameCommand,
+            intervalSeconds: ChangePluginNameCommandInterval,
+            execute: () => PluginName = PluginNames.GetRandomOne()
+        );
     }
 
     private void OnGUI()
@@ -70,18 +82,7 @@ public partial class PluginManager : MonoBehaviour
 
     private void Update()
     {
-        while (_mainThreadQueue.TryDequeue(out var action))
-        {
-            try
-            {
-                action();
-                // Log.LogDebug($"Successfully executed action on main thread");
-            }
-            catch (Exception e)
-            {
-                Log.LogError($"Error executing on main thread: {e.Message}\n{e.StackTrace}");
-            }
-        }
+        UpdateRunOnMainThreadQueue();
 
         Console?.Update();
 
@@ -226,61 +227,34 @@ public partial class PluginManager : MonoBehaviour
         }
     }
 
-    public void RunOnMainThread(Action action)
+    private void UpdateRunOnMainThreadQueue()
     {
-        // Log.LogDebug($"Enqueue action to run on main thread");
-        _mainThreadQueue.Enqueue(action);
-    }
-
-    public void RunOnMainThread(Action action, Func<bool> condition)
-    {
-        if (condition == null)
+        while (_mainThreadQueue.TryDequeue(out var action))
         {
-            RunOnMainThread(action);
-            return;
-        }
-
-        lock (_conditionalActions)
-        {
-            _conditionalActions.Add((action, condition));
+            try
+            {
+                action();
+            }
+            catch (Exception e)
+            {
+                Log.LogError($"Error executing on main thread: {e.Message}\n{e.StackTrace}");
+            }
         }
     }
+
+    public void RunOnMainThread(Action action) => _mainThreadQueue.Enqueue(action);
 
     private void FixedUpdate()
     {
-        SgrYuki.Utils.CommandScheduler.Tick();
-        lock (_conditionalActions)
-        {
-            for (int i = _conditionalActions.Count - 1; i >= 0; i--)
-            {
-                var (action, condition) = _conditionalActions[i];
-                bool shouldRun = false;
-                try
-                {
-                    shouldRun = condition();
-                }
-                catch (Exception e)
-                {
-                    Log.LogError($"Error checking condition: {e.Message}");
-                    _conditionalActions.RemoveAt(i);
-                    continue;
-                }
-
-                if (shouldRun)
-                {
-                    RunOnMainThread(action);
-                    _conditionalActions.RemoveAt(i);
-                }
-            }
-        }
+        CommandScheduler.Tick();
 
         switch (MpManager.LocalScene)
         {
             case Scene.DayScene:
-                KyoukoManager.OnFixedUpdate();
+                PeerManager.OnFixedUpdate();
                 break;
             case Scene.WorkScene:
-                KyoukoManager.OnFixedUpdate();
+                PeerManager.OnFixedUpdate();
                 break;
             default:
                 break;

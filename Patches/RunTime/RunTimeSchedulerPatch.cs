@@ -10,7 +10,7 @@ public partial class RunTimeSchedulerPatch
     [HarmonyPostfix]
     public static void Initialize_Postfix()
     {
-        Log.Warning("RunTimeScheduler.Initialize Postfix called.");    
+        Log.Warning("RunTimeScheduler.Initialize Postfix called.");
     }
 
     [HarmonyPatch(nameof(RunTimeScheduler.OnEnterDaySceneMap))]
@@ -21,7 +21,7 @@ public partial class RunTimeSchedulerPatch
         if (MpManager.IsConnected && !MpManager.InStory)
         {
             SyncAction.Send();
-            KyoukoManager.TryAddHeightProcessor();
+            PeerManager.TryAddHeightProcessor();
         }
     }
 }

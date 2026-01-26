@@ -36,7 +36,14 @@ public enum TextId
     MpNoActiveConnection,
     MpConnecting,
     MpDisconnected,
-    MpUnknownSubcommand
+    MpUnknownSubcommand,
+
+    DLCPeerRecipeNotAvailable,
+    DLCPeerBeverageNotAvailable,
+    DLCPeerFoodNotAvailable,
+
+    MystiaReadyForWork,
+    ReadyForWork
 }
 
 public static class L10n
@@ -156,7 +163,45 @@ public static class L10n
             [Language.ChineseSimplified] = "未知的子命令：{0}",
             [Language.Japanese] = "不明なサブコマンド：{0}"
         },
+
+        [TextId.DLCPeerFoodNotAvailable] = new()
+        {
+            [Language.English] = "One or more players have not installed the DLC that contains the food item {0}.",
+            [Language.ChineseSimplified] = "有玩家未装载有此食物 {0} 的 DLC",
+        },
+
+        [TextId.DLCPeerBeverageNotAvailable] = new()
+        {
+            [Language.English] = "One or more players have not installed the DLC that contains the beverage item {0}.",
+            [Language.ChineseSimplified] = "有玩家未装载有此酒水 {0} 的 DLC",
+        },
+
+        [TextId.DLCPeerRecipeNotAvailable] = new()
+        {
+            [Language.English] = "One or more players have not installed the DLC that contains the recipe item {0}.",
+            [Language.ChineseSimplified] = "有玩家未装载有此食谱 {0} 的 DLC",
+        },
+
+        [TextId.ReadyForWork] = new()
+        {
+            [Language.English] = "{0} are ready to open for business.",
+            [Language.ChineseSimplified] = "{0} 已经准备好营业啦",
+        },
     };
+
+    static L10n()
+    {
+        PostInitializeTable();
+    }
+
+    private static void PostInitializeTable()
+    {
+        Table[TextId.MystiaReadyForWork] = new()
+        {
+            [Language.English] = TextId.ReadyForWork.Get("You"),
+            [Language.ChineseSimplified] = TextId.ReadyForWork.Get("你"),
+        };
+    }
 
     public static string Get(this TextId key, params object[] args)
     {

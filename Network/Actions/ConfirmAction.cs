@@ -3,25 +3,24 @@ using MemoryPack;
 namespace MetaMystia;
 
 [MemoryPackable]
-public partial class ConfirmAction : NetAction
+public partial class MapDecidedAction : NetAction
 {
-    public override ActionType Type => ActionType.CONFIRM;
+    public override ActionType Type => ActionType.MAP_DECIDED;
     public string MapLabel { get; set; } = "";
     public int Level { get; set; } = 0;
-    public override void OnReceived()
+    public override void OnReceivedDerived()
     {
-        // 接收 CONFIRM 包 
+        // 接收 CONFIRM 包
         // -> 检查已有选择，不匹配则应强制修改
         // -> 展示「确认」对话
         // -> 对话回调中调用 _OnGuideMapInitialize_b__21_0 以结束
-        LogActionReceived();
 
         PluginManager.Instance.RunOnMainThread(() =>
         {
             IzakayaSelectorPanelPatch.cachedSpots.TryGetValue(MapLabel, out var spot);
             var targetLevel = (Common.UI.IzakayaLevel)Level;
-            KyoukoManager.IzakayaLevel = Level;
-            KyoukoManager.IzakayaMapLabel = MapLabel;
+            PeerManager.IzakayaLevel = Level;
+            PeerManager.IzakayaMapLabel = MapLabel;
 
             Dialog.ShowConfirmDialog(MapLabel, () =>
             {
@@ -35,11 +34,10 @@ public partial class ConfirmAction : NetAction
 
     public static void Send(string mapLabel, int level)
     {
-        NetPacket packet = new([new ConfirmAction
+        new MapDecidedAction
         {
             MapLabel = mapLabel,
             Level = level
-        }]);
-        SendToPeer(packet);
+        }.SendToHostOrBroadcast();
     }
 }

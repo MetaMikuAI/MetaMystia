@@ -4,19 +4,15 @@ namespace MetaMystia;
 
 [MemoryPackable]
 [AutoLog]
-public partial class QTEAction : NetAction
+public partial class QTEAction : AffectStoryAction
 {
     public override ActionType Type => ActionType.QTE;
     public int GridIndex { get; set; }
     public float QTEScore { get; set; }
-    public override void OnReceived()
+
+    [CheckScene(Common.UI.Scene.WorkScene)]
+    public override void OnReceivedDerived()
     {
-        LogActionReceived();
-        if (MpManager.InStory || MpManager.LocalScene != Common.UI.Scene.WorkScene)
-        {
-            Log.LogInfo("current in story, will skip receive");
-            return;
-        }
         PluginManager.Instance.RunOnMainThread(() =>
         {
             var cookerController = CookManager.GetCookerControllerByIndex(GridIndex);
@@ -31,15 +27,11 @@ public partial class QTEAction : NetAction
 
     public static void Send(int gridIndex, float qteScore)
     {
-        if (MpManager.InStory)
-        {
-            Log.LogInfo("current in story, will skip send");
-        }
-        NetPacket packet = new([new QTEAction
+        var action = new QTEAction
         {
             GridIndex = gridIndex,
             QTEScore = qteScore
-        }]);
-        SendToPeer(packet);
+        };
+        action.SendToHostOrBroadcast();
     }
 }

@@ -1,4 +1,5 @@
 using HarmonyLib;
+using SgrYuki.Utils;
 
 namespace MetaMystia;
 
@@ -6,34 +7,57 @@ namespace MetaMystia;
 [AutoLog]
 public partial class GameTimeManagerPatch
 {
+    public const string StoryStartActionKey = "story_start_disable_collision";
+    public const string StoryStopActionKey = "story_over_enable_collision";
+
     [HarmonyPatch(nameof(Common.TimelineExtestion.GameTimeManager.SetGameTimeMode))]
     [HarmonyPrefix]
     public static void SetGameTimeMode_Prefix(Common.TimelineExtestion.GameTimeManager __instance, ref Common.TimelineExtestion.GameTimeManager.TimeMode mode)
     {
-        if (MpManager.IsConnected && MpManager.LocalScene == Common.UI.Scene.WorkScene && !MpManager.InStory)
+        if (MpManager.LocalScene == Common.UI.Scene.WorkScene && !MpManager.ShouldSkipAction)
         {
             mode = Common.TimelineExtestion.GameTimeManager.TimeMode.Resume;
         }
+        Log.DebugCaller($"time mode changed to {mode}");
     }
+
+    public static void FreezeTime() => Common.TimelineExtestion.GameTimeManager.Instance?.SetGameTimeMode(Common.TimelineExtestion.GameTimeManager.TimeMode.Freeze);
+    public static void ResumeTime() => Common.TimelineExtestion.GameTimeManager.Instance?.SetGameTimeMode(Common.TimelineExtestion.GameTimeManager.TimeMode.Resume);
 
     [HarmonyPatch(nameof(Common.TimelineExtestion.GameTimeManager.OnPlayableDirectorPlayed))]
     [HarmonyPrefix]
-    public static void OnPlayableDirectorPlayed_Prefix(Common.TimelineExtestion.GameTimeManager __instance, ref UnityEngine.Playables.PlayableDirector playableDirector)
+    public static void OnPlayableDirectorPlayed_Prefix(Common.TimelineExtestion.GameTimeManager __instance, UnityEngine.Playables.PlayableDirector playableDirector)
     {
-        var prevCollisionSetting = KyoukoManager.GetIgnoreCollision();
         var onStopped = (UnityEngine.Playables.PlayableDirector _) =>
         {
-            SgrYuki.Utils.CommandScheduler.Enqueue(
-                executeWhen: () => MystiaManager.CharacterSpawnedAndInitialized,
-                executeInfo: $"set ignore collision to {prevCollisionSetting}",
-                execute: () => KyoukoManager.IgnoreCollisionWithSelf(prevCollisionSetting)
+            CommandScheduler.RemoveKeyFromKeyQueue(StoryStartActionKey);
+
+            CommandScheduler.EnqueueKey(
+                key: StoryStartActionKey,
+                executeWhen: () => PeerManager.GetCharacterUnit() != null,
+                execute: () =>
+                {
+                    Log.Info($"story over, enabled collision for {PeerManager.GetCharacterUnit()?.name}");
+                    PeerManager.EnableCollision(true);
+                }
             );
+            playableDirector.remove_stopped(_onPlayableDirectorStoppedCallback);
+            Log.Info($"removed callback for {playableDirector.name}");
         };
-        playableDirector.add_stopped(onStopped);
-        SgrYuki.Utils.CommandScheduler.Enqueue(
-            executeWhen: () => MystiaManager.CharacterSpawnedAndInitialized,
-            executeInfo: $"set ignore collision to true",
-            execute: () => KyoukoManager.IgnoreCollisionWithSelf(true)
+        _onPlayableDirectorStoppedCallback = onStopped;
+        playableDirector.add_stopped(_onPlayableDirectorStoppedCallback);
+
+        CommandScheduler.RemoveKeyFromKeyQueue(StoryStopActionKey);
+        CommandScheduler.EnqueueKey(
+            key: StoryStartActionKey,
+            executeWhen: () => PeerManager.GetCharacterUnit() != null,
+            execute: () =>
+            {
+                Log.Info($"story start, disabled collision for {PeerManager.GetCharacterUnit()?.name}");
+                PeerManager.EnableCollision(false);
+            }
         );
     }
+
+    private static Il2CppSystem.Action<UnityEngine.Playables.PlayableDirector> _onPlayableDirectorStoppedCallback;
 }

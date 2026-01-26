@@ -8,7 +8,7 @@ using UnityEngine;
 namespace MetaMystia;
 
 [AutoLog]
-public static partial class KyoukoManager
+public static partial class PeerManager
 {
     public static readonly string KYOUKO_ID = "Kyouko";
 
@@ -18,7 +18,8 @@ public static partial class KyoukoManager
     private static Vector2 positionOffset;
     private static Vector2 currectVelocity;
 
-    public static bool IsReady = false;
+    public static bool IsDayOver = false;
+    public static bool IsPrepOver = false;
 
     public static string IzakayaMapLabel = "";
     public static int IzakayaLevel = 0;
@@ -50,7 +51,8 @@ public static partial class KyoukoManager
         actualVelocity = Vector2.zero;
         positionOffset = Vector2.zero;
         currectVelocity = Vector2.zero;
-        IsReady = false;
+        IsDayOver = false;
+        IsPrepOver = false;
         FirstSync = true;
         IzakayaMapLabel = "";
         IzakayaLevel = 0;
@@ -70,7 +72,7 @@ public static partial class KyoukoManager
             return;
         }
         // 在每个 FixedUpdate 执行位置修正
-        
+
         // if (positionOffset.magnitude > 0.001f)
         // {
         //     return;
@@ -105,10 +107,10 @@ public static partial class KyoukoManager
         SetMoving(true);
         characterUnit.UpdateInputVelocity(velocity);
         if (MpManager.LocalScene == Common.UI.Scene.DayScene)
-        {  
+        {
             var trackedNPC = RunTimeDayScene.GetTrackedNPC(KYOUKO_ID);
             var position = characterUnit.rb2d.position;
-            trackedNPC?.overridePosition?.position = new KeyValuePair<float, float>( 
+            trackedNPC?.overridePosition?.position = new KeyValuePair<float, float>(
                 position.x,
                 position.y
             ); // TODO: 也许有更优雅的方式？
@@ -120,7 +122,7 @@ public static partial class KyoukoManager
         switch (MpManager.LocalScene)
         {
             case Common.UI.Scene.DayScene:
-                return DayScene.DaySceneMap.TryGetCharacter(KYOUKO_ID)?.Character;        
+                return DayScene.DaySceneMap.TryGetCharacter(KYOUKO_ID)?.Character;
             case Common.UI.Scene.WorkScene:
                 if (!Common.SceneDirector.Instance.characterCollection.ContainsKey(KYOUKO_ID))
                 {
@@ -128,7 +130,7 @@ public static partial class KyoukoManager
                     SgrYuki.Utils.CommandScheduler.Enqueue(
                         executeWhen: () => MystiaManager.CharacterSpawnedAndInitialized,
                         executeInfo: $"respawn night kyouko",
-                        execute: () => SpawnNightKyouko(MystiaManager.GetPosition(), true, true)
+                        execute: () => SpawnNightKyouko(MystiaManager.Position, true, true)
                     );
                     return null;
                 }
@@ -149,13 +151,23 @@ public static partial class KyoukoManager
         var component = characterUnit.GetComponent<CharacterConditionComponent>();
         if (component == null)
         {
-            Log.LogWarning($"CharacterConditionComponent of '{KYOUKO_ID}' is null");
+            Log.Debug($"CharacterConditionComponent of '{KYOUKO_ID}' is null");
             return null;
         }
 
         return component;
     }
 
+    [OnMainThread]
+    public static void EnableCollision(CharacterControllerUnit unit, bool enable = true)
+    {
+        unit?.UpdateColliderStatus(enable);
+        unit?.rb2d?.isKinematic = !enable;
+        Log.Info($"set collision for {unit?.name} to {enable}");
+    }
+
+    [OnMainThread]
+    public static void EnableCollision(bool enable = true) => EnableCollision(GetCharacterUnit(), enable);
     public static Rigidbody2D GetRigidbody2D()
     {
         var characterUnit = GetCharacterUnit();
@@ -205,7 +217,7 @@ public static partial class KyoukoManager
             Log.Debug($"Failed to get CharacterControllerUnit for Kyouko");
             return;
         }
-        
+
         // characterUnit.UpdateInputVelocity(inputDirection);
         // 速度设置已由 OnFixedUpdate 负责
         actualVelocity = inputDirection;
@@ -291,7 +303,7 @@ public static partial class KyoukoManager
             UpdateSprintState(isSprinting);
             SyncAction.Send();
         }
-        else 
+        else
         {
             Log.LogDebug($"Kyouko is still in the same map {MapLabel}, updating position");
             UpdateInputDirection(inputDirection);
@@ -300,7 +312,7 @@ public static partial class KyoukoManager
         }
     }
 
-    
+
     public static void NightSyncFromPeer(Vector2 inputDirection, Vector2 position)
     {
         Log.LogDebug($"NightSyncFromPeer, inputDirection: ({inputDirection.x}, {inputDirection.y}), position: ({position.x}, {position.y})");
@@ -338,19 +350,19 @@ public static partial class KyoukoManager
         if (characterUnit.GetComponent<HeightBlendedInputProcessorComponent>() != null)
         {
             TryInitHeightMap();
-            Log.LogWarning($"Kyouko already has HeightBlendedInputProcessorComponent");
+            Log.Info($"Kyouko already has HeightBlendedInputProcessorComponent");
             return;
         }
 
         heightProcessor = characterUnit.AddInputProcessor<HeightBlendedInputProcessorComponent>();
-        
+
         // var selfUnit = Common.SceneDirector.Instance.characterCollection["Self"];
         // var selfHeightProcessor = selfUnit.gameObject.GetComponent<Common.CharacterUtility.HeightBlendedInputProcessorComponent>();
         // heightProcessor.Initialize(selfHeightProcessor.heightMap);
-        
+
         TryInitHeightMap();
 
-        Log.LogInfo($"Added HeightBlendedInputProcessorComponent to NightKyouko");
+        Log.Info($"Added HeightBlendedInputProcessorComponent to NightKyouko");
     }
 
     private static void TryInitHeightMap()

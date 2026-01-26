@@ -28,13 +28,16 @@ public class Plugin : BasePlugin
         typeof(ResultSceneManagerPatch),
         typeof(StaffSceneManagerPatch),
         typeof(UniversalGameManagerPatch),
+        typeof(ReceivedObjectDisplayerControllerPatch),
 
         // DayScene Patches
+        typeof(DaySceneUtilityPatch),
         typeof(StatusTrackerPatch),
         typeof(RunTimeSchedulerPatch),
         typeof(CharacterControllerUnitPatch),
         typeof(CharacterInputPatch),
         typeof(DayScenePlayerInputPatch),
+        // typeof(RunTimeSchedulerPatch),
 
         // PrepScene Patches
         typeof(IzakayaConfigPannelPatch),
@@ -43,6 +46,7 @@ public class Plugin : BasePlugin
 
         // WorkScene Patches
         typeof(CookControllerPatch),
+        typeof(SellablePatch),
         // typeof(CookerPatch),
         // typeof(CookSystemManagerGetCookerPatch),
         typeof(GuestsManagerPatch),

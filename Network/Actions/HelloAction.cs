@@ -15,24 +15,21 @@ public partial class HelloAction : NetAction
     public string GameVersion { get; set; } = "";
     public Scene CurrentGameScene { get; set; }
 
-    public List<string> PeerActiveDLCLabel { get; set; } 
-    public HashSet<int> PeerDLCRecipes {get; set;} = null;
-    public HashSet<int> PeerDLCCookers {get; set;} = null;
-    public HashSet<int> PeerDLCFoods {get; set;} = null;
-    public HashSet<int> PeerDLCBeverages {get; set;} = null;
-    public HashSet<int> PeerDLCNormalGuests {get; set;} = null;
-    public HashSet<int> PeerDLCSpecialGuests {get; set;} = null;
+    public List<string> PeerActiveDLCLabel { get; set; }
+    public HashSet<int> PeerDLCRecipes { get; set; } = null;
+    public HashSet<int> PeerDLCCookers { get; set; } = null;
+    public HashSet<int> PeerDLCFoods { get; set; } = null;
+    public HashSet<int> PeerDLCBeverages { get; set; } = null;
+    public HashSet<int> PeerDLCNormalGuests { get; set; } = null;
+    public HashSet<int> PeerDLCSpecialGuests { get; set; } = null;
 
-    public override void LogActionSend(bool _onlyAction, string prefix)
-    {
-        LogActionSend(BepInEx.Logging.LogLevel.Message, false, prefix);
-    }
+    protected override BepInEx.Logging.LogLevel OnReceiveLogLevel => BepInEx.Logging.LogLevel.Message;
+    protected override BepInEx.Logging.LogLevel OnSendLogLevel => BepInEx.Logging.LogLevel.Message;
+    public new void LogActionSend() => base.LogActionSend();
 
-    public override void OnReceived()
+    public override void OnReceivedDerived()
     {
-        LogActionReceived(BepInEx.Logging.LogLevel.Message);
         MpManager.PeerId = PeerId;
-        MpManager.PeerGameVersion = GameVersion;
 
         if (Version != MpManager.ModVersion)
         {
@@ -59,7 +56,7 @@ public partial class HelloAction : NetAction
             Notify.ShowOnMainThread("有玩家不处于白天或主界面，连接已断开");
             return;
         }
-        
+
         DLCManager.PeerActiveDLCLabel = PeerActiveDLCLabel ?? [];
         DLCManager.PeerRecipes = PeerDLCRecipes ?? [];
         DLCManager.PeerCookers = PeerDLCCookers ?? [];
@@ -71,7 +68,8 @@ public partial class HelloAction : NetAction
 
     public static void Send()
     {
-        SendToPeer(new NetPacket([new HelloAction { 
+        new HelloAction
+        {
             PeerId = MpManager.PlayerId,
             PeerActiveDLCLabel = MpManager.ActiveDLCLabel,
             Version = MyPluginInfo.PLUGIN_VERSION,
@@ -84,6 +82,6 @@ public partial class HelloAction : NetAction
             PeerDLCNormalGuests = DLCManager.NormalGuests,
             PeerDLCRecipes = DLCManager.Recipes,
             PeerDLCSpecialGuests = DLCManager.SpecialGuests,
-        }]));
+        }.SendToHostOrBroadcast();
     }
 }

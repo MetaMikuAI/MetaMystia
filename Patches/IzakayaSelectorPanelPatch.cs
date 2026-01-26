@@ -27,21 +27,21 @@ public partial class IzakayaSelectorPanelPatch
         //     这里原本实际上是选择 Izakaya 的逻辑
         //     同样采用对称的设计，下面以 A 首先做出选择，B 之后进行确认来描述流程
         //     一共是四种事件，两件来自玩家，两件来自网络
-        //     
-        //     Peer A -> 「前往营业」 
-        //            -> 检查对端是否已经选择地图 
+        //
+        //     Peer A -> 「前往营业」
+        //            -> 检查对端是否已经选择地图
         //                 -> 否 -> 发送 SELECT 包并跳过 _OnGuideMapInitialize_b__21_0，展示对话
         //                 -> 是 -> 对称，略
-        //     
-        //     Peer A -> 接收 CONFIRM 包 
+        //
+        //     Peer A -> 接收 CONFIRM 包
         //            -> 检查已有选择，不匹配则应强制修改
         //            -> 展示「确认」对话
         //            -> 对话回调中调用 _OnGuideMapInitialize_b__21_0 以结束
-        //     
+        //
         //     Peer B -> 接收 SELECT 包，缓存并展示「提示」对话
-        //     
+        //
         //     Peer B -> 「前往营业」
-        //            -> 检查对端是否已经选择地图 
+        //            -> 检查对端是否已经选择地图
         //                -> 否 -> 对称，略
         //                -> 是 -> 检查 地图/level 是否匹配
         //                          -> 否 -> 展示「拒绝」对话
@@ -79,7 +79,7 @@ public partial class IzakayaSelectorPanelPatch
         Log.LogWarning($"Selected Spot: {izakayaMapLabel}, Level: {izakayaLevel}");
 
         var mySelect = $"{Utils.GetMapLabelNameCN(izakayaMapLabel)} {Utils.GetMapLevelNameCN(izakayaLevel)}";
-        if (KyoukoManager.IzakayaMapLabel == "" || KyoukoManager.IzakayaLevel == 0)
+        if (PeerManager.IzakayaMapLabel == "" || PeerManager.IzakayaLevel == 0)
         {
             Log.LogWarning($"Kyouko has not selected an Izakaya yet -> send SELECT and skip");
             SelectAction.Send(izakayaMapLabel, izakayaLevel);
@@ -87,16 +87,16 @@ public partial class IzakayaSelectorPanelPatch
             return false;
         }
 
-        if (izakayaMapLabel != KyoukoManager.IzakayaMapLabel || izakayaLevel != KyoukoManager.IzakayaLevel)
+        if (izakayaMapLabel != PeerManager.IzakayaMapLabel || izakayaLevel != PeerManager.IzakayaLevel)
         {
-            var peerSelect = $"{Utils.GetMapLabelNameCN(KyoukoManager.IzakayaMapLabel)} {Utils.GetMapLevelNameCN(KyoukoManager.IzakayaLevel)}";
+            var peerSelect = $"{Utils.GetMapLabelNameCN(PeerManager.IzakayaMapLabel)} {Utils.GetMapLevelNameCN(PeerManager.IzakayaLevel)}";
             Log.LogWarning($"Selected Izakaya does not match Kyouko's selection -> show rejection dialog");
             Notify.ShowOnMainThread($"你选择了 {mySelect} 作为开店地点，对方选择了 {peerSelect}，你俩得选一样的");
             return false;
         }
 
         Log.LogWarning($"Selected Izakaya matches Kyouko's selection -> send CONFIRM and show confirmation dialog");
-        ConfirmAction.Send(izakayaMapLabel, izakayaLevel);
+        MapDecidedAction.Send(izakayaMapLabel, izakayaLevel);
 
         System.Action closePanelCallback = () =>
         {

@@ -4,18 +4,14 @@ namespace MetaMystia;
 
 [MemoryPackable]
 [AutoLog]
-public partial class ExtractAction : NetAction
+public partial class ExtractAction : AffectStoryAction
 {
     public override ActionType Type => ActionType.EXTRACT;
     public int GridIndex { get; set; }
-    public override void OnReceived()
+
+    [CheckScene(Common.UI.Scene.WorkScene)]
+    public override void OnReceivedDerived()
     {
-        LogActionReceived();
-        if (MpManager.InStory || MpManager.LocalScene != Common.UI.Scene.WorkScene)
-        {
-            Log.LogInfo("current in story, will skip receive");
-            return;
-        }
         PluginManager.Instance.RunOnMainThread(() =>
         {
             var cookerController = CookManager.GetCookerControllerByIndex(GridIndex);
@@ -30,14 +26,10 @@ public partial class ExtractAction : NetAction
 
     public static void Send(int gridIndex)
     {
-        if (MpManager.InStory)
-        {
-            Log.LogInfo("current in story, will skip send");
-        }
-        NetPacket packet = new([new ExtractAction
+        var action = new ExtractAction
         {
             GridIndex = gridIndex
-        }]);
-        SendToPeer(packet);
+        };
+        action.SendToHostOrBroadcast();
     }
 }

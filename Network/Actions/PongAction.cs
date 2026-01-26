@@ -8,18 +8,16 @@ public partial class PongAction : NetAction
     public override ActionType Type => ActionType.PONG;
     public int Id { get; set; }
 
-    public override void LogActionSend(bool onlyAction, string prefix)
-    {
-        LogActionSend(BepInEx.Logging.LogLevel.Debug, onlyAction, prefix);
-    }
+    protected override BepInEx.Logging.LogLevel OnReceiveLogLevel => BepInEx.Logging.LogLevel.Debug;
+    protected override BepInEx.Logging.LogLevel OnSendLogLevel => BepInEx.Logging.LogLevel.Debug;
 
-    public override void OnReceived()
+    public override void OnReceivedDerived()
     {
-        LogActionReceived(BepInEx.Logging.LogLevel.Debug, false, "");
         MpManager.UpdateLatency(Id);
     }
-    public static NetPacket CreatePongPacket(int id)
+
+    public static void SendToPeer(long peerId, int id)
     {
-        return new NetPacket([new PongAction { Id = id }]);
+        new PongAction { Id = id }.SendToPeer(peerId);
     }
 }

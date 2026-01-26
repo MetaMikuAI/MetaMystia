@@ -16,7 +16,7 @@ public enum ActionType : ushort
     READY,
     MESSAGE,
     SELECT,
-    CONFIRM,
+    MAP_DECIDED,
     PREP,
     NIGHTSYNC,
     COOK,
@@ -34,7 +34,8 @@ public enum ActionType : ushort
     GUEST_PAY,
     GUEST_LEAVE,
     BUFF,
-    IZAKAYA_CLOSE
+    IZAKAYA_CLOSE,
+    GET_COLLECTABLE,
 }
 
 [MemoryPackable]
@@ -46,7 +47,7 @@ public enum ActionType : ushort
 [MemoryPackUnion((ushort)ActionType.READY, typeof(ReadyAction))]
 [MemoryPackUnion((ushort)ActionType.MESSAGE, typeof(MessageAction))]
 [MemoryPackUnion((ushort)ActionType.SELECT, typeof(SelectAction))]
-[MemoryPackUnion((ushort)ActionType.CONFIRM, typeof(ConfirmAction))]
+[MemoryPackUnion((ushort)ActionType.MAP_DECIDED, typeof(MapDecidedAction))]
 [MemoryPackUnion((ushort)ActionType.PREP, typeof(PrepAction))]
 [MemoryPackUnion((ushort)ActionType.NIGHTSYNC, typeof(NightSyncAction))]
 [MemoryPackUnion((ushort)ActionType.COOK, typeof(CookAction))]
@@ -65,6 +66,7 @@ public enum ActionType : ushort
 [MemoryPackUnion((ushort)ActionType.GUEST_LEAVE, typeof(GuestLeaveAction))]
 [MemoryPackUnion((ushort)ActionType.BUFF, typeof(BuffAction))]
 [MemoryPackUnion((ushort)ActionType.IZAKAYA_CLOSE, typeof(IzakayaCloseAction))]
+[MemoryPackUnion((ushort)ActionType.GET_COLLECTABLE, typeof(GetCollectableAction))]
 [AutoLog]
 
 public abstract partial class NetAction
@@ -97,6 +99,7 @@ public abstract partial class NetAction
     protected NetAction()
     {
         TimestampMs = MpManager.TimestampNow;
+        SenderId = 0;
     }
 
 
@@ -106,7 +109,10 @@ public abstract partial class NetAction
         LogActionReceived();
         if (SkipReceiveOnStory && MpManager.ShouldSkipAction)
         {
-            Log.Info($"{MpManager.RoleTag} Received Skip {Type}: {ToString()}");
+            if (OnReceiveLogLevel != LogLevel.Debug)
+            {
+                Log.Info($"{MpManager.RoleTag} Received Skip {Type}: {ToString()}");
+            }
             return;
         }
         var targetScene = GetReceivedScene();
@@ -208,7 +214,10 @@ public abstract partial class NetAction
     {
         if (SkipSendOnStory && MpManager.ShouldSkipAction)
         {
-            Log.Info($"{MpManager.RoleTag} Will not send Skip {Type}: {ToString()}");
+            if (OnSendLogLevel != LogLevel.Debug)
+            {
+                Log.Info($"{MpManager.RoleTag} Will not send Skip {Type}: {ToString()}");
+            }
             return;
         }
         if (!MpManager.IsConnected) return;

@@ -1,12 +1,11 @@
 using MemoryPack;
-using SgrYuki.Utils;
 using static MetaMystia.WorkSceneManager;
 
 namespace MetaMystia;
 
 
 [MemoryPackable]
-public partial class GuestSpawnAction : NetAction
+public partial class GuestSpawnAction : SendAffectStoryAction
 {
     public override ActionType Type => ActionType.GUEST_SPAWN;
 
@@ -14,26 +13,22 @@ public partial class GuestSpawnAction : NetAction
     public GuestInfo GuestInfo;
     public string UUID { get; set; }
 
-    public override void LogActionSend(bool onlyAction, string prefix)
-    {
-        LogActionSend(BepInEx.Logging.LogLevel.Info, false, prefix);
-    }
 
-    public override void OnReceived()
+    [CheckScene(Common.UI.Scene.WorkScene)]
+    [ExecuteAfterStory]
+    public override void OnReceivedDerived()
     {
-        LogActionReceived();
-        if (MpManager.LocalScene != Common.UI.Scene.WorkScene)
-        {
-            return;
-        }
-
-        WorkSceneManager.EnqueueGuestCommand(
+        EnqueueGuestCommand(
             key: UUID,
             executeWhen: () => !MpManager.InStory,
             executeInfo: $"Spawned: guid {UUID}, special {GuestInfo.IsSpecial}",
             execute: () =>
             {
-                SetGuestStatus(UUID, Status.PendingGenerate);
+                // 获取或创建FSM，初始化为Null状态
+                var fsm = GetOrCreateGuestFSM(UUID);
+                // 转移到PendingGenerate状态
+                fsm.TryGenerateGuest();
+                // 生成客人
                 SpawnGuestGroup(GuestInfo, UUID);
             },
             timeoutSeconds: 60
@@ -42,12 +37,12 @@ public partial class GuestSpawnAction : NetAction
 
     public static void Send(string uuid, GuestInfo guestInfo)
     {
-        NetPacket packet = new([new GuestSpawnAction
+        var action = new GuestSpawnAction
         {
             UUID = uuid,
             GuestInfo = guestInfo
-        }]);
-        SendToHostOrBroadcast(packet);
+        };
+        action.SendToHostOrBroadcast();
     }
 }
 

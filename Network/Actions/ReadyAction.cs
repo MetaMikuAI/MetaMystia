@@ -1,37 +1,73 @@
 using MemoryPack;
+using SgrYuki.Utils;
 
 namespace MetaMystia;
+
+public enum ReadyType
+{
+    DayOver,
+    PrepOver
+}
 
 [MemoryPackable]
 [AutoLog]
 public partial class ReadyAction : NetAction
 {
     public override ActionType Type => ActionType.READY;
-    public bool IsReady {get; set; }
-    public override void OnReceived()
+    public ReadyType ReadyType;
+    public bool AllReady = false;
+    public override void OnReceivedDerived()
     {
-        LogActionReceived();
-        if (MpManager.LocalScene != Common.UI.Scene.DayScene)
+        switch (ReadyType)
         {
-            Log.LogWarning("READY action received outside DayScene, ignoring.");
-            return;
+            case ReadyType.DayOver:
+                if (MpManager.LocalScene != Common.UI.Scene.DayScene)
+                {
+                    Log.LogWarning("READY action received outside DayScene, ignoring.");
+                    return;
+                }
+                if (AllReady)
+                {
+                    CommandScheduler.EnqueueWithNoCondition(() => Dialog.ShowReadyDialog(true, DaySceneManagerPatch.OnDayOver));
+                    return;
+                }
+                PeerManager.IsDayOver = true;
+                MpManager.DayOver(SenderId);
+                Notify.ShowOnMainThread(TextId.ReadyForWork.Get(MpManager.PeerId));
+                break;
+            case ReadyType.PrepOver:
+                if ((MpManager.LocalScene != Common.UI.Scene.IzakayaPrepScene && MpManager.LocalScene != Common.UI.Scene.WorkScene)
+                    || (MpManager.LocalScene == Common.UI.Scene.WorkScene && !WorkSceneManager.InHakugyokurouChallenge))   // 白玉楼
+                {
+                    Log.LogWarning("READY action received outside IzakayaPrepScene, ignoring.");
+                    return;
+                }
+
+                if (AllReady)
+                {
+                    CommandScheduler.EnqueueWithNoCondition(IzakayaConfigPannelPatch.PrepOver);
+                    return;
+                }
+                PeerManager.IsPrepOver = true;
+                MpManager.PrepOver(SenderId);
+                Notify.ShowOnMainThread(TextId.ReadyForWork.Get(MpManager.PeerId));
+                break;
+            default:
+                break;
         }
-        KyoukoManager.IsReady = true;
-        if (MystiaManager.IsDayOver)
-        {
-            PluginManager.Instance.RunOnMainThread(DaySceneManagerPatch.OnDayOver_Original);
-        }
-        // else: 00->01: Nope
-        Log.LogInfo("Kyouko is ready");
-        Notify.ShowOnMainThread($"对方已经准备好营业啦！");
+
     }
 
-    public static void Send()
+
+    public static void Send(ReadyType readyType)
     {
-        NetPacket packet = new([new ReadyAction
-        {
-            IsReady = true
-        }]);
-        SendToPeer(packet);
+        var action = new ReadyAction { ReadyType = readyType };
+        action.SendToHostOrBroadcast();
+    }
+
+    public static void Broadcast(ReadyType readyType)
+    {
+        var action = new ReadyAction { ReadyType = readyType, AllReady = true };
+        action.SendToHostOrBroadcast();
     }
 }

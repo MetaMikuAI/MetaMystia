@@ -1,270 +1,372 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using Il2CppSystem.IO;
 
 namespace SgrYuki.Utils;
 
 public static class Il2CppContainerExtensions
 {
-    public static T GetRandomOne<T>(this System.Collections.Generic.IEnumerable<T> source)
+    public static unsafe string Il2CppStringToManaged(IntPtr ptr)
     {
-        if (source == null)
-            throw new ArgumentNullException(nameof(source));
-
-        // 如果是 IReadOnlyList / List / Array，走 O(1)
-        if (source is System.Collections.Generic.IReadOnlyList<T> list)
-        {
-            if (list.Count == 0)
-                throw new InvalidOperationException("Collection is empty.");
-
-            return list[UnityEngine.Random.Range(0, list.Count)];
-        }
-
-        // 否则用水塘抽样
-        T result = default;
-        int count = 0;
-
-        foreach (var item in source)
-        {
-            count++;
-            if (UnityEngine.Random.Range(0, count) == 0)
-                result = item;
-        }
-
-        if (count == 0)
-            throw new InvalidOperationException("Collection is empty.");
-
-        return result;
-    }
-
-    public static Il2CppSystem.Collections.Generic.IEnumerable<T> ToIEnumerable<T>(this Il2CppSystem.Collections.Generic.List<T> list)
-    {
-        return new Il2CppSystem.Collections.Generic.IEnumerable<T>(list.Pointer);
-    }
-
-    public static Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<T> ToIl2CppReferenceArray<T>(
-        this Il2CppSystem.Collections.Generic.IEnumerable<T> enumerable) where T : Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
-    {
-        return enumerable.TryCast<Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<T>>();
-    }
-
-    public static Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<T> SortByToString<T>(
-            this Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<T> source)
-            where T : Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
-    {
-        if (source == null)
-            throw new ArgumentNullException(nameof(source));
-
-        int length = source.Length;
-        if (length <= 1)
-            return source; // 0/1 个元素无需排序
-
-        // 拷贝到托管数组
-        T[] managed = new T[length];
-        for (int i = 0; i < length; i++)
-        {
-            managed[i] = source[i];
-        }
-
-        // 排序（注意 null 处理）
-        Array.Sort(managed, (a, b) =>
-        {
-            if (ReferenceEquals(a, b)) return 0;
-            if (a is null) return -1;
-            if (b is null) return 1;
-
-            string sa = a.ToString();
-            string sb = b.ToString();
-
-            return string.Compare(
-                sa, sb,
-                StringComparison.Ordinal
-            );
-        });
-
-        // 构造新的 Il2CppReferenceArray
-        var result = new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<T>(length);
-        for (int i = 0; i < length; i++)
-        {
-            result[i] = managed[i];
-        }
-
-        return result;
-    }
-
-
-    public static System.Collections.Generic.List<KeyT> FilterKey<KeyT, ValueT>(
-        this Il2CppSystem.Collections.Generic.Dictionary<KeyT, ValueT> dict, Predicate<ValueT> condition)
-    {
-        var result = new System.Collections.Generic.List<KeyT>();
-        foreach (var kv in dict)
-        {
-            if (condition(kv.Value)) result.Add(kv.Key);
-        }
-        return result;
-    }
-
-    public static Il2CppSystem.Collections.Generic.Dictionary<TKey, TValue> ToIl2CppDictionary<TKey, TValue>(
-        this System.Collections.Generic.Dictionary<TKey, TValue> dict)
-    {
-        if (dict == null) return null;
-        var result = new Il2CppSystem.Collections.Generic.Dictionary<TKey, TValue>();
-        foreach (var kvp in dict)
-        {
-            result.Add(kvp.Key, kvp.Value);
-        }
-        return result;
-    }
-
-    public static System.Collections.Generic.List<T> ToManagedList<T>(
-            this Il2CppSystem.Collections.Generic.List<T> il2cppList)
-    {
-        if (il2cppList == null)
+        if (ptr == IntPtr.Zero)
             return null;
 
-        var result = new System.Collections.Generic.List<T>(il2cppList.Count);
-        for (int i = 0; i < il2cppList.Count; i++)
+        int length = *(int*)(ptr + IntPtr.Size * 2);
+        char* chars = (char*)(ptr + IntPtr.Size * 2 + sizeof(int));
+
+        return new string(chars, 0, length);
+    }
+
+    extension<T>(System.Collections.Generic.IEnumerable<T> source)
+    {
+        public T GetRandomOne()
         {
-            result.Add(il2cppList[i]);
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+
+            // 如果是 IReadOnlyList / List / Array，走 O(1)
+            if (source is System.Collections.Generic.IReadOnlyList<T> list)
+            {
+                if (list.Count == 0)
+                    throw new InvalidOperationException("Collection is empty.");
+
+                return list[UnityEngine.Random.Range(0, list.Count)];
+            }
+
+            // 否则用水塘抽样
+            T result = default;
+            int count = 0;
+
+            foreach (var item in source)
+            {
+                count++;
+                if (UnityEngine.Random.Range(0, count) == 0)
+                    result = item;
+            }
+
+            if (count == 0)
+                throw new InvalidOperationException("Collection is empty.");
+
+            return result;
         }
 
-        return result;
+        public string DumpElements(
+            string separator = ", ")
+        {
+            if (source == null) return "";
+
+            if (source is System.Collections.Generic.IReadOnlyList<T> list)
+            {
+                if (list.Count == 0) return "";
+            }
+
+            var sb = new System.Text.StringBuilder(1024);
+            sb.Append('{');
+            foreach (var item in source)
+            {
+                try
+                {
+                    sb.Append(item.ToString());
+                    sb.Append(separator);
+                }
+                catch (Exception ex)
+                {
+                    sb.Append($"<ToString threw {ex.GetType().Name}>");
+                }
+            }
+            sb.Append(" }");
+            return sb.ToString();
+        }
+
     }
 
-    public static Il2CppSystem.Collections.Generic.List<T> ToIl2CppList<T> (this Il2CppSystem.Collections.Generic.IEnumerable<T> enumerable)
+    extension<T>(Il2CppSystem.Collections.Generic.List<T> list)
     {
-        return new Il2CppSystem.Collections.Generic.List<T>(enumerable);
+        public Il2CppSystem.Collections.Generic.IEnumerable<T> ToIEnumerable()
+        {
+            return new Il2CppSystem.Collections.Generic.IEnumerable<T>(list.Pointer);
+        }
     }
-    
-    public static string DumpElements<T>(
-        this Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<T> array,
-        string separator = ", ")
+
+
+    public static Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<T> ToIl2CppReferenceArray<T>
+        (this Il2CppSystem.Collections.Generic.IEnumerable<T> enumerable)
         where T : Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
     {
-        if (array == null)
-            return "<Il2CppReferenceArray: null>";
+        return enumerable.ToArray().ToIl2CppReferenceArray();
+    }
 
-        int length = array.Length;
-        if (length == 0)
-            return "<Il2CppReferenceArray: empty>";
+    public static Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<T> ToIl2CppReferenceArray<T>
+        (this System.Collections.Generic.IEnumerable<T> source)
+        where T : Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
+    {
+        return new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<T>(source.ToArray());
+    }
 
-        var sb = new System.Text.StringBuilder(256);
-
-        sb.Append($"Il2CppReferenceArray<{typeof(T).Name}>[{length}] {{ ");
-
-        for (int i = 0; i < length; i++)
+    extension<T>(Il2CppSystem.Collections.Generic.IEnumerable<T> enumerable)
+    {
+        public Il2CppSystem.Collections.Generic.List<T> ToIl2CppList()
         {
-            if (i > 0)
-                sb.Append(separator);
-
-            T element = array[i];
-
-            if (element == null)
-            {
-                sb.Append("null");
-                continue;
-            }
-
-            try
-            {
-                sb.Append((element as UnityEngine.Object).ToString());
-            }
-            catch (Exception ex)
-            {
-                sb.Append($"<ToString threw {ex.GetType().Name}>");
-            }
+            return new Il2CppSystem.Collections.Generic.List<T>(enumerable);
         }
 
-        sb.Append(" }");
-        return sb.ToString();
-    }
-    
-    public static Il2CppSystem.Action ToIl2cppAction(this System.Action action)
-    {
-        return Il2CppInterop.Runtime.DelegateSupport.ConvertDelegate<Il2CppSystem.Action>(action);
+        public T GetRandomOne()
+        {
+            return enumerable.ToIl2CppList().ToManagedList().GetRandomOne();
+        }
     }
 
-    public static Il2CppSystem.Action<T> ToIl2cppAction<T>(this System.Action<T> action)
+    extension<T>(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<T> source) where T : Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
     {
-        return Il2CppInterop.Runtime.DelegateSupport.ConvertDelegate<Il2CppSystem.Action<T>>(action);
+        public Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<T> SortByToString(
+)
+        {
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+
+            int length = source.Length;
+            if (length <= 1)
+                return source; // 0/1 个元素无需排序
+
+            // 拷贝到托管数组
+            T[] managed = new T[length];
+            for (int i = 0; i < length; i++)
+            {
+                managed[i] = source[i];
+            }
+
+            // 排序（注意 null 处理）
+            Array.Sort(managed, (a, b) =>
+            {
+                if (ReferenceEquals(a, b)) return 0;
+                if (a is null) return -1;
+                if (b is null) return 1;
+
+                string sa = a.ToString();
+                string sb = b.ToString();
+
+                return string.Compare(
+                    sa, sb,
+                    StringComparison.Ordinal
+                );
+            });
+
+            // 构造新的 Il2CppReferenceArray
+            var result = new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<T>(length);
+            for (int i = 0; i < length; i++)
+            {
+                result[i] = managed[i];
+            }
+
+            return result;
+        }
     }
 
+    extension<KeyT, ValueT>(Il2CppSystem.Collections.Generic.Dictionary<KeyT, ValueT> dict)
+    {
+        public System.Collections.Generic.List<KeyT> FilterKey(Predicate<ValueT> condition)
+        {
+            var result = new System.Collections.Generic.List<KeyT>();
+            foreach (var kv in dict)
+            {
+                if (condition(kv.Value)) result.Add(kv.Key);
+            }
+            return result;
+        }
+
+        public System.Collections.Generic.List<KeyT> GetKeys()
+        {
+            var result = new System.Collections.Generic.List<KeyT>();
+            foreach (var kv in dict)
+            {
+                result.Add(kv.Key);
+            }
+            return result;
+        }
+
+        public System.Collections.Generic.List<System.Collections.Generic.KeyValuePair<KeyT, ValueT>> ToList()
+        {
+            var result = new System.Collections.Generic.List<System.Collections.Generic.KeyValuePair<KeyT, ValueT>>();
+            foreach (var kv in dict)
+            {
+                result.Add(new System.Collections.Generic.KeyValuePair<KeyT, ValueT>(kv.Key, kv.Value));
+            }
+            return result;
+        }
+    }
+
+    extension<TKey, TValue>(System.Collections.Generic.Dictionary<TKey, TValue> dict)
+    {
+        public Il2CppSystem.Collections.Generic.Dictionary<TKey, TValue> ToIl2CppDictionary(
+)
+        {
+            if (dict == null) return null;
+            var result = new Il2CppSystem.Collections.Generic.Dictionary<TKey, TValue>();
+            foreach (var kvp in dict)
+            {
+                result.Add(kvp.Key, kvp.Value);
+            }
+            return result;
+        }
+    }
+
+    extension<T>(Il2CppSystem.Collections.Generic.List<T> il2cppList)
+    {
+        public System.Collections.Generic.List<T> ToManagedList(
+)
+        {
+            if (il2cppList == null)
+                return null;
+
+            var result = new System.Collections.Generic.List<T>(il2cppList.Count);
+            for (int i = 0; i < il2cppList.Count; i++)
+            {
+                result.Add(il2cppList[i]);
+            }
+
+            return result;
+        }
+    }
+
+
+
+    extension<T>(Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<T> array) where T : Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
+    {
+        public string DumpElements(string separator = ", ")
+        {
+            if (array == null)
+                return "<Il2CppReferenceArray: null>";
+
+            int length = array.Length;
+            if (length == 0)
+                return "<Il2CppReferenceArray: empty>";
+
+            var sb = new System.Text.StringBuilder(1024);
+
+            sb.Append($"Il2CppReferenceArray<{typeof(T).Name}>[{length}] {{ ");
+
+            for (int i = 0; i < length; i++)
+            {
+                if (i > 0)
+                    sb.Append(separator);
+
+                T element = array[i];
+
+                if (element == null)
+                {
+                    sb.Append("null");
+                    continue;
+                }
+
+                try
+                {
+                    sb.Append((element as UnityEngine.Object).ToString());
+                }
+                catch (Exception ex)
+                {
+                    sb.Append($"<ToString threw {ex.GetType().Name}>");
+                }
+            }
+
+            sb.Append(" }");
+            return sb.ToString();
+        }
+    }
+
+    extension(Action action)
+    {
+        public Il2CppSystem.Action ToIl2cppAction()
+        {
+            return Il2CppInterop.Runtime.DelegateSupport.ConvertDelegate<Il2CppSystem.Action>(action);
+        }
+    }
+
+    extension<T>(Action<T> action)
+    {
+        public Il2CppSystem.Action<T> ToIl2cppAction()
+        {
+            return Il2CppInterop.Runtime.DelegateSupport.ConvertDelegate<Il2CppSystem.Action<T>>(action);
+        }
+    }
 }
 
-public static class Il2CppEnumerableExtensions
+public static class Il2CppIEnumerableExtensions
 {
-    /// <summary>
-    /// 是否至少存在一个元素
-    /// </summary>
-    public static bool Any(this Il2CppSystem.Collections.IEnumerable source)
+    extension(Il2CppSystem.Collections.IEnumerable source)
     {
-        if (source == null)
-            throw new ArgumentNullException(nameof(source));
-
-        var enumerator = source.GetEnumerator();
-        return enumerator.MoveNext();
-    }
-
-    /// <summary>
-    /// 是否存在满足条件的元素
-    /// </summary>
-    public static bool Any(
-        this Il2CppSystem.Collections.IEnumerable source,
-        Func<object, bool> predicate)
-    {
-        if (source == null)
-            throw new ArgumentNullException(nameof(source));
-        if (predicate == null)
-            throw new ArgumentNullException(nameof(predicate));
-
-        var enumerator = source.GetEnumerator();
-        while (enumerator.MoveNext())
+        /// <summary>
+        /// 是否至少存在一个元素
+        /// </summary>
+        public bool Any()
         {
-            if (predicate(enumerator.Current))
-                return true;
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+
+            var enumerator = source.GetEnumerator();
+            return enumerator.MoveNext();
         }
 
-        return false;
-    }
-
-    /// <summary>
-    /// 是否所有元素都满足条件
-    /// （空集合返回 true，符合 LINQ 语义）
-    /// </summary>
-    public static bool All(
-        this Il2CppSystem.Collections.IEnumerable source,
-        Func<object, bool> predicate)
-    {
-        if (source == null)
-            throw new ArgumentNullException(nameof(source));
-        if (predicate == null)
-            throw new ArgumentNullException(nameof(predicate));
-
-        var enumerator = source.GetEnumerator();
-        while (enumerator.MoveNext())
+        /// <summary>
+        /// 是否存在满足条件的元素
+        /// </summary>
+        public bool Any(
+            Func<object, bool> predicate)
         {
-            if (!predicate(enumerator.Current))
-                return false;
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+            if (predicate == null)
+                throw new ArgumentNullException(nameof(predicate));
+
+            var enumerator = source.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                if (predicate(enumerator.Current))
+                    return true;
+            }
+
+            return false;
         }
 
-        return true;
+        /// <summary>
+        /// 是否所有元素都满足条件
+        /// （空集合返回 true，符合 LINQ 语义）
+        /// </summary>
+        public bool All(
+            Func<object, bool> predicate)
+        {
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+            if (predicate == null)
+                throw new ArgumentNullException(nameof(predicate));
+
+            var enumerator = source.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                if (!predicate(enumerator.Current))
+                    return false;
+            }
+
+            return true;
+        }
     }
 }
+
 
 public sealed class LogWrapper
 {
     public readonly BepInEx.Logging.ManualLogSource _inner;
-    public readonly string _tag;
+    public readonly string _class_tag;
 
     public LogWrapper(BepInEx.Logging.ManualLogSource inner, string tag)
     {
         _inner = inner;
-        _tag = tag;
+        _class_tag = tag;
     }
 
     private static string GetTime() => DateTime.Now.ToString("HH:mm:ss.fff");
 
-    private string TagString(bool withTag) => withTag ? $"[{_tag}] " : "";
+    private string TagString(bool withTag) => withTag ? $"[{_class_tag}] " : "";
 
     public void Debug(string msg, bool withTag = true) => _inner.LogDebug($"[{GetTime()}] {TagString(withTag)}{msg}");
     public void Info(string msg, bool withTag = true) => _inner.LogInfo($"[{GetTime()}] {TagString(withTag)}{msg}");
@@ -272,6 +374,13 @@ public sealed class LogWrapper
     public void Warning(string msg, bool withTag = true) => _inner.LogWarning($"[{GetTime()}] {TagString(withTag)}{msg}");
     public void Error(string msg, bool withTag = true) => _inner.LogError($"[{GetTime()}] {TagString(withTag)}{msg}");
     public void Fatal(string msg, bool withTag = true) => _inner.LogFatal($"[{GetTime()}] {TagString(withTag)}{msg}");
+
+    public void DebugCaller(string msg, bool withTag = true) => _inner.LogDebug($"[{GetTime()}] {TagString(withTag)}[{GetOuterCallerName()}] {msg}");
+    public void InfoCaller(string msg, bool withTag = true) => _inner.LogInfo($"[{GetTime()}] {TagString(withTag)}[{GetOuterCallerName()}] {msg}");
+    public void MessageCaller(string msg, bool withTag = true) => _inner.LogMessage($"[{GetTime()}] {TagString(withTag)}[{GetOuterCallerName()}] {msg}");
+    public void WarningCaller(string msg, bool withTag = true) => _inner.LogWarning($"[{GetTime()}] {TagString(withTag)}[{GetOuterCallerName()}] {msg}");
+    public void ErrorCaller(string msg, bool withTag = true) => _inner.LogError($"[{GetTime()}] {TagString(withTag)}[{GetOuterCallerName()}] {msg}");
+    public void FatalCaller(string msg, bool withTag = true) => _inner.LogFatal($"[{GetTime()}] {TagString(withTag)}[{GetOuterCallerName()}] {msg}");
 
     public void LogDebug(string msg, bool withTag = true) => Debug(msg, withTag);
     public void LogInfo(string msg, bool withTag = true) => Info(msg, withTag);
@@ -281,6 +390,8 @@ public sealed class LogWrapper
     public void LogFatal(string msg, bool withTag = true) => Fatal(msg, withTag);
 
     public void LogStacktrace() => Functional.LogStacktrace(_inner);
+    public string GetCallerName([System.Runtime.CompilerServices.CallerMemberName] string caller = null) => caller;
+    public string GetOuterCallerName() => Functional.GetCallerName(3);
 }
 
 // Support "foreach" any container that implements [] operator and Count member method
@@ -421,6 +532,8 @@ public static class Functional
         Log.LogInfo(sb.ToString());
     }
 
+    public static string GetCallerName(int layer = 1) => new System.Diagnostics.StackTrace().GetFrame(layer)?.GetMethod()?.Name;
+
     public static void ModifyReadonlyField<T, FieldT>(T instance, string fieldName, FieldT newValue)
     {
         var field = typeof(T).GetField(
@@ -458,14 +571,16 @@ public static partial class Panel
             currentPanel.remove_OnPanelOpenCloseFadeFinishCallback(_dialog_panel_close_callback);
             Log.Warning("All dialog panels closed, callback removed.");
             CloseActivePanelsBeforeSceneTransit();
-        };
+        }
+        ;
 
         void RegisterDialogPanelCloseCallback(Common.DialogUtility.DialogPannel currentPanel)
         {
             System.Action<DEYU.AdpUISystem.PanelCollection.FadeType> managed = _ => OnDialogPanelFadeFinished(_, currentPanel);
             _dialog_panel_close_callback = Il2CppInterop.Runtime.DelegateSupport.ConvertDelegate<Il2CppSystem.Action<DEYU.AdpUISystem.PanelCollection.FadeType>>(managed);
             TopPanelAsDialog.add_OnPanelOpenCloseFadeFinishCallback(_dialog_panel_close_callback);
-        };
+        }
+        ;
 
         if (TopPanelAsDialog != null)
         {
@@ -491,10 +606,10 @@ public static partial class Panel
                 {
                     Log.Warning($"Closed regular panel {TopPanelName}");
                     TopPanel?.ControlledPanel?.ClosePanel();
-                } 
+                }
                 else
                 {
-                    Log.Error($"regular panel {TopPanelName} is not opened!");   
+                    Log.Error($"regular panel {TopPanelName} is not opened!");
                 }
             }
         }
@@ -503,7 +618,7 @@ public static partial class Panel
 
 
     /// <summary>
-    /// API Common.UI.GeneralSustainedPannel.CurrentActiveSustainedPannel.CloseActivePannel() 
+    /// API Common.UI.GeneralSustainedPannel.CurrentActiveSustainedPannel.CloseActivePannel()
     /// Can close:
     /// DayScene_FastTravelPannel(Clone)
     /// NoteBook_ProfilePannel(Clone)
@@ -519,7 +634,7 @@ public static partial class Panel
     /// NoteBook_AlbumItemSubPannel(Clone)
     /// Storage_MainPannel(Clone)
     /// Storage_OtherPannel(Clone)
-    /// 
+    ///
     /// Cannot close and will throw exception, then game will stuck:
     /// DayScene_FastTravelConfirmPannel(Clone)
     /// FlattenedFilterPanel(Clone)
@@ -534,7 +649,7 @@ public static partial class Panel
         string[] PanelToBeClosed = ["NoteBook", "Storage", "DayScene_FastTravelPannel", "EscMenu"];
         string[] PanelMustBeClosedFirst = ["DayScene_FastTravelConfirmPannel(Clone)", "FlattenedFilterPanel(Clone)", "EscMenu_LoadSubPannel(Clone)",
             "DialogPannel(Clone)",
-            "IzakayaDetailPanel(Clone)", "IzakayaConfigRemindSubPanel(Clone)", "IzakayaPresetPannel(Clone), IzakayaConfigPannelSubPannel(Clone)", 
+            "IzakayaDetailPanel(Clone)", "IzakayaConfigRemindSubPanel(Clone)", "IzakayaPresetPannel(Clone), IzakayaConfigPannelSubPannel(Clone)",
             "WorkSceneQTEPannel(Clone)",
             // "WorkSceneServePannel(Clone)", "WorkSceneTrayPannel(Clone)"
             ];
@@ -583,6 +698,12 @@ public static partial class Panel
                 return;
             }
         }
+        // GameData.Core.Collections.CharacterUtility.DataBaseCharacter.port.
+        // GameData.Core.Collections.CharacterUtility.DataBaseCharacter.m_PlayerActiveSkinPortrayal;
+        // GameData.RunTime.Common.RunTimeAlbum.ChangePlayerSkin(1);   // changed skin, but not album. Parameter: skin id
+        // GameData.Core.Collections.CharacterUtility.DataBaseCharacter.LoadActivePlayerSkinAsync(GameData.RunTime.Common.RunTimeStorage.GetAllClothes()[1]);  // changed album, not skin
+        // GameData.Core.Collections.DaySceneUtility.DataBaseDay.allNPCs["Kosuzu"].GetVisual();
+        // MetaMystia.MystiaManager.Instance.GetCharacterUnit(false).UpdateCharacterSprite(GameData.Core.Collections.DaySceneUtility.DataBaseDay.allNPCs["Kosuzu"].GetVisual());
     }
 }
 
@@ -607,5 +728,13 @@ public static class NativeDllExtractor
         stream.CopyTo(file);
 
         return targetPath;
+    }
+}
+
+public class TestClass
+{
+    public static GameData.Profile.DLC1_YuumaBossData Test()
+    {
+        return NightScene.SceneManager.Instance.m_LoadedBossData as GameData.Profile.DLC1_YuumaBossData;
     }
 }

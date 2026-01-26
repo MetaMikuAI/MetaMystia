@@ -7,20 +7,16 @@ public partial class PingAction : NetAction
 {
     public override ActionType Type => ActionType.PING;
     public int Id { get; set; }
-
-    public override void LogActionSend(bool onlyAction, string prefix)
+    protected override BepInEx.Logging.LogLevel OnReceiveLogLevel => BepInEx.Logging.LogLevel.Debug;
+    protected override BepInEx.Logging.LogLevel OnSendLogLevel => BepInEx.Logging.LogLevel.Debug;
+    public override void OnReceivedDerived()
     {
-        LogActionSend(BepInEx.Logging.LogLevel.Debug, onlyAction, prefix);
-    }
-
-    public override void OnReceived()
-    {
-        LogActionReceived(BepInEx.Logging.LogLevel.Debug, false, "");
         MpManager.TimeOffset = (MpManager.TimestampNow - TimestampMs) / 2;
-        MpManager.SendPong(Id);
+        PongAction.SendToPeer(SenderId, Id);
     }
-    public static NetPacket CreatePingPacket(int id)
+
+    public static void SendToPeer(long peerId, int id)
     {
-        return new NetPacket([new PingAction { Id = id }]);
+        new PingAction { Id = id }.SendToPeer(peerId);
     }
 }

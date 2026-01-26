@@ -2,13 +2,12 @@ using GameData.Core.Collections;
 using MemoryPack;
 using NightScene.GuestManagementUtility;
 using NightScene.Tiles;
-using SgrYuki.Utils;
 
 namespace MetaMystia;
 
 [MemoryPackable]
 [AutoLog]
-public partial class GuestServeAction : NetAction
+public partial class GuestServeAction : SendAffectStoryAction
 {
     public override ActionType Type => ActionType.GUEST_SERVE;
 
@@ -24,19 +23,11 @@ public partial class GuestServeAction : NetAction
     public int BeverageId { get; set; }
     public ServeType FoodType { get; set; }
 
-    public override void LogActionSend(bool _onlyAction, string prefix)
-    {
-        LogActionSend(BepInEx.Logging.LogLevel.Info, false, prefix);
-    }
 
-    public override void OnReceived()
+    [CheckScene(Common.UI.Scene.WorkScene)]
+    [ExecuteAfterStory]
+    public override void OnReceivedDerived()
     {
-        LogActionReceived();
-        if (MpManager.LocalScene != Common.UI.Scene.WorkScene)
-        {
-            return;
-        }
-
         // void setPanelOpenContext()
         // {
         //     var onOrderEvalAction = new Action(() => GuestsManager.instance.EvaluateOrder(guest, false));
@@ -61,7 +52,8 @@ public partial class GuestServeAction : NetAction
             executeInfo: $"Serve: guid {GuestUUID}, type {FoodType}, foodid {Food?.FoodId}, beverage {BeverageId}",
             execute: () =>
             {
-                var guest = WorkSceneManager.GetGuest(GuestUUID);
+                var fsm = WorkSceneManager.GetGuestFSM(GuestUUID);
+                var guest = fsm.GuestController;
                 var order = guest.PeekOrders();
 
                 // setPanelOpenContext();
@@ -71,14 +63,14 @@ public partial class GuestServeAction : NetAction
                         var food = Food.ToSellable();
                         order.ServFood = food;
                         TileManager.Instance.GuestTables[guest.DeskCode].tableDisplayer.SetFoodVisual(food.Text.Visual);
-                        WorkSceneManager.SetGuestOrderServedFood(GuestUUID);
+                        fsm.SetOrderServedFood();
                         // WorkSceneServePannelPatch.instanceRef?.UpdateFoodVisualOnDesk();
                         break;
                     case ServeType.Beverage:
                         var beverage = BeverageId.AsNewBeverage();
                         order.ServBeverage = beverage;
                         TileManager.Instance.GuestTables[guest.DeskCode].tableDisplayer.SetBeverageVisual(beverage.Text.Visual);
-                        WorkSceneManager.SetGuestOrderServedBeverage(GuestUUID);
+                        fsm.SetOrderServedBeverage();
                         // WorkSceneServePannelPatch.instanceRef?.UpdateBevVisualOnDesk();
                         break;
                     default:
@@ -88,7 +80,7 @@ public partial class GuestServeAction : NetAction
                         order.ServBeverage = beverage;
                         TileManager.Instance.GuestTables[guest.DeskCode].tableDisplayer.SetFoodVisual(food.Text.Visual);
                         TileManager.Instance.GuestTables[guest.DeskCode].tableDisplayer.SetBeverageVisual(beverage.Text.Visual);
-                        WorkSceneManager.SetGuestOrderFullfilled(GuestUUID);
+                        fsm.SetOrderFulfilled();
                         // WorkSceneServePannelPatch.instanceRef?.UpdateFoodVisualOnDesk();
                         // WorkSceneServePannelPatch.instanceRef?.UpdateBevVisualOnDesk();
                         break;
@@ -96,13 +88,13 @@ public partial class GuestServeAction : NetAction
 
                 if (order.IsFullfilled)
                 {
-                    Log.Message($"begin evaluate order for {GuestUUID}");
+                    Log.Message($"begin evaluate order for {fsm?.Identifier}");
                     GuestsManager.instance.EvaluateOrder(guest, false);
                 }
                 else
                 {
                     WorkSceneManager.DelayedSafeAddPatient(guest);
-                    Log.Message($"not Fullfilled yet for {GuestUUID}, will not evaluate");
+                    Log.Message($"not Fullfilled yet for {fsm?.Identifier}, will not evaluate");
                 }
 
                 // Try close serve panel
@@ -122,10 +114,12 @@ public partial class GuestServeAction : NetAction
                             {
                                 if (foodInTray != null)
                                 {
+                                    servePanel.willServeFood = null;
                                     trayInstance.Receive(foodInTray.Duplicate());
                                 }
                                 if (beverageIdInTray != null)
                                 {
+                                    servePanel.willServeBeverage = null;
                                     trayInstance.Receive(beverageIdInTray.Duplicate());
                                 }
                             }
@@ -134,7 +128,7 @@ public partial class GuestServeAction : NetAction
                     }
                 }
                 // already set in EvaluateOrder_Postfix
-                // WorkSceneManager.SetGuestStatus(GuestUUID, WorkSceneManager.Status.OrderEvaluated); 
+                // NightGuestManager.SetGuestStatus(GuestUUID, NightGuestManager.Status.OrderEvaluated);
             },
             timeoutSeconds: 10
         );
@@ -142,14 +136,14 @@ public partial class GuestServeAction : NetAction
 
     public static void Send(string GuestUUID, SellableFood food, int beverageId, ServeType type)
     {
-        NetPacket packet = new([new GuestServeAction
+        var action = new GuestServeAction
         {
             GuestUUID = GuestUUID,
             Food = food,
             BeverageId = beverageId,
             FoodType = type
-        }]);
-        SendToHostOrBroadcast(packet);
+        };
+        action.SendToHostOrBroadcast();
     }
 }
 
@@ -170,7 +164,7 @@ public partial class GuestServeAction : NetAction
 // [Warning:MetaMystia] instanceRef send ServBeverage fail, System.NullReferenceException: Object reference not set to an instance of an object.
 // --- BEGIN IL2CPP STACK TRACE ---
 // System.NullReferenceException: Object reference not set to an instance of an object.
-// at NightScene.UI.GuestManagementUtility.WorkSceneServePannel.Send (GameData.Core.Collections.Sellable toSend) [0x00000] in <00000000000000000000000000000000>:0 
+// at NightScene.UI.GuestManagementUtility.WorkSceneServePannel.Send (GameData.Core.Collections.Sellable toSend) [0x00000] in <00000000000000000000000000000000>:0
 // --- END IL2CPP STACK TRACE ---
 // ,    at Il2CppInterop.Runtime.Il2CppException.RaiseExceptionIfNecessary(IntPtr returnedException) in /home/runner/work/Il2CppInterop/Il2CppInterop/Il2CppInterop.Runtime/Il2CppException.cs:line 36
 // at DMD<WorkSceneServePannelPatch::Send_Original>(WorkSceneServePannel __instance, Sellable toSend)

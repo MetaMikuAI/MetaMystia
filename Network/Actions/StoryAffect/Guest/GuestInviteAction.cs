@@ -6,13 +6,13 @@ using MemoryPack;
 namespace MetaMystia;
 
 [MemoryPackable]
-public partial class GuestInviteAction : NetAction
+public partial class GuestInviteAction : SendAffectStoryAction
 {
     public override ActionType Type => ActionType.GUEST_INVITE;
     public List<int> InvitedGuestIDs;
-    public override void OnReceived()
+    
+    public override void OnReceivedDerived()
     {
-        LogActionReceived();
         if (MpManager.IsConnectedHost)
         {
             PluginManager.Instance.RunOnMainThread(() =>
@@ -27,10 +27,10 @@ public partial class GuestInviteAction : NetAction
 
     public static void Send(List<int> invitedGuestIDs)
     {
-        NetPacket packet = new([new GuestInviteAction
+        var action = new GuestInviteAction
         {
             InvitedGuestIDs = invitedGuestIDs
-        }]);
-        SendToHostOrBroadcast(packet);
+        };
+        action.SendToHostOrBroadcast();
     }
 }

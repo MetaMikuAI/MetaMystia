@@ -6,38 +6,38 @@ namespace MetaMystia;
 public partial class MessageAction : NetAction
 {
     public override ActionType Type => ActionType.MESSAGE;
-    
+
     [MemoryPackIgnore]
     private const int maxMessageLen = 1024;
-    public string Message {get; private set; }
-    public override void LogActionSend(bool _onlyAction, string prefix)
-    {
-        LogActionSend(BepInEx.Logging.LogLevel.Message, false, prefix);
-    }
+    public string Message { get; private set; }
+    protected override BepInEx.Logging.LogLevel OnReceiveLogLevel => BepInEx.Logging.LogLevel.Message;
+    protected override BepInEx.Logging.LogLevel OnSendLogLevel => BepInEx.Logging.LogLevel.Message;
 
-    public override void OnReceived()
+    public override void OnReceivedDerived()
     {
-        LogActionReceived(BepInEx.Logging.LogLevel.Message);
         PluginManager.Console.AddPeerMessage(Message);
-        FloatingTextHelper.ShowFloatingTextOnMainThread(KyoukoManager.GetCharacterUnit(), Message);
-        Notify.ShowOnMainThread($"响子: {Message}");
+        if (MystiaManager.MapLabel == PeerManager.MapLabel)
+        {
+            FloatingTextHelper.ShowFloatingTextOnMainThread(PeerManager.GetCharacterUnit(), Message);
+        }
+        Notify.ShowExternOnMainThread($"{MpManager.PeerId}: {Message}");
     }
     private static MessageAction CreateMsgAction(string msg)
     {
         if (msg.Length <= maxMessageLen)
         {
-            return new MessageAction{Message = msg};
-        } 
+            return new MessageAction { Message = msg };
+        }
         else
         {
-            return new MessageAction{Message = msg[..maxMessageLen] };
+            return new MessageAction { Message = msg[..maxMessageLen] };
         }
     }
 
     public static void Send(string message)
     {
         FloatingTextHelper.ShowFloatingTextSelfOnMainThread(message);
-        Notify.ShowOnMainThread($"你: {message}");
-        SendToPeer(new NetPacket([CreateMsgAction(message)]));
+        Notify.ShowExternOnMainThread($"你: {message}");
+        CreateMsgAction(message).SendToHostOrBroadcast();
     }
 }

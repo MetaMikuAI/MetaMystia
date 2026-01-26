@@ -1,5 +1,6 @@
 using System.Linq;
 using DEYU.Utils;
+using GameData.Core.Collections;
 using Il2CppSystem.IO;
 using NightScene.CookingUtility;
 
@@ -23,5 +24,10 @@ public static partial class CookManager
                     where cooker.GridIndex == gridIndex
                     select cooker;
         return query.FirstOrDefault();
+    }
+
+    public static Cooker GetCookerByCookerId(int cookerId)
+    {
+        return CookSystemManager.Instance?.AllCookerControllers?.ToArray().FirstOrDefault((cooker) => cooker.Cooker.Id == cookerId)?.Cooker;
     }
 }

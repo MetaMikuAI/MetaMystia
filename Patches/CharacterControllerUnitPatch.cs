@@ -9,23 +9,33 @@ namespace MetaMystia;
 [AutoLog]
 public partial class CharacterControllerUnitPatch
 {
-    [HarmonyPatch(nameof(CharacterControllerUnit.Initialize))]
-    [HarmonyPrefix]
-    public static void Initialize_Prefix(CharacterControllerUnit __instance, ref bool shouldTurnOnCollider)
-    {
-        // TODO: 使用新 API 方案来替换 KyoukoNames 方案，并设置 IgnoreCollision
-        var kyoukoNames = new List<string>
-        {
+    public static readonly List<string> PeerPlayerNames = [
             "幽谷响子", // CHS
             "幽谷響子", // CHT, JPN
             "Kyouko Kasodani",  // ENG
             "카소다니 쿄코", // KOR
-            KyoukoManager.KYOUKO_ID
-        };
-        if (kyoukoNames.Any(name => __instance.name.Equals(name)))
+            PeerManager.KYOUKO_ID
+        ];
+
+    [HarmonyPatch(nameof(CharacterControllerUnit.Initialize))]
+    [HarmonyPrefix]
+    public static void Initialize_Prefix(CharacterControllerUnit __instance, ref bool shouldTurnOnCollider)
+    {
+        if (PeerPlayerNames.Any(name => __instance.name.Equals(name)))
         {
             shouldTurnOnCollider = true;
             Log.LogMessage($"found {__instance.name}, forcing shouldTurnOnCollider to true");
-        } 
+        }
+    }
+
+    [HarmonyPatch(nameof(CharacterControllerUnit.Initialize))]
+    [HarmonyPostfix]
+    public static void Initialize_Postfix(CharacterControllerUnit __instance)
+    {
+        if (PeerPlayerNames.Any(name => __instance.name.Equals(name)))
+        {
+            PeerManager.EnableCollision(__instance, false);
+            Log.LogMessage($"found {__instance.name}, disable collision");
+        }
     }
 }

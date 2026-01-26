@@ -1,12 +1,11 @@
 using MemoryPack;
 using NightScene.GuestManagementUtility;
-using SgrYuki.Utils;
 
 namespace MetaMystia;
 
 [MemoryPackable]
 [AutoLog]
-public partial class GuestLeaveAction : NetAction
+public partial class GuestLeaveAction : SendAffectStoryAction
 {
     public override ActionType Type => ActionType.GUEST_LEAVE;
 
@@ -14,57 +13,67 @@ public partial class GuestLeaveAction : NetAction
     {
         PayAndLeave,            // Host only
         ExBadLeave,             // Host only
-        RepelAndLeavePay,      // Both ok
-        RepelAndLeaveNoPay,    // Both ok
+        RepelAndLeavePay,       // Both ok
+        RepelAndLeaveNoPay,     // Both ok
         PatientDepletedLeave,   // Host only
-        PlayerRepel,           // Both ok
-        Other                   // LeaveFromDesk as the last function if all above failed, Host only
-        // FIXME: Any other leave method? 
+        PlayerRepel,            // Both ok
+        LeaveFromDesk,          // the last function if all above failed, Host only
+        LeaveFromQueue          // Both ok
+        // FIXME: Any other leave method?
     }
 
     public string GuestUUID { get; set; }
-
     public LeaveType LType { get; set; }
 
-    public override void LogActionSend(bool _onlyAction, string prefix)
-    {
-        LogActionSend(BepInEx.Logging.LogLevel.Info, false, prefix);
-    }
 
-    public override void OnReceived()
+    [CheckScene(Common.UI.Scene.WorkScene)]
+    [ExecuteAfterStory]
+    public override void OnReceivedDerived()
     {
-        LogActionReceived();
-        if (MpManager.LocalScene != Common.UI.Scene.WorkScene)
+        if (WorkSceneManager.CheckStatus(GuestUUID, WorkSceneManager.Status.Left))
         {
+            Log.Info($"{GuestUUID.GetGuestFSM()?.Identifier} already left, skip");
             return;
         }
-
         WorkSceneManager.EnqueueGuestCommand(
             key: GuestUUID,
             executeWhen: () => WorkSceneManager.CheckStatusGreaterOrThrow(GuestUUID, WorkSceneManager.Status.Generated) && !MpManager.InStory,
             executeInfo: $"Leave: guid {GuestUUID}, type {LType}",
             execute: () =>
             {
-                var guest = WorkSceneManager.GetGuest(GuestUUID);
+                var fsm = WorkSceneManager.GetGuestFSM(GuestUUID);
+                var guest = fsm.GuestController;
                 if (WorkSceneManager.CheckStatus(GuestUUID, WorkSceneManager.Status.Left))
                 {
                     return;
                 }
-                WorkSceneManager.SetGuestStatus(GuestUUID, WorkSceneManager.Status.Left);
+
                 if (GuestsManager.instance == null)
                 {
-                    Log.LogError($"GuestsManager.instance is null! Action : {ToString()}");
+                    Log.Error($"GuestsManager.instance is null! Action : {ToString()}");
                     return;
                 }
                 if (guest == null)
                 {
-                    Log.LogError($"guest is null! Action : {ToString()}");
+                    Log.Error($"guest is null! Action : {ToString()}");
+                    return;
+                }
+                if (!fsm.IsGuestValid())
+                {
+                    Log.Error($"{fsm.Identifier} is invalid! Action : {ToString()}");
+                    fsm.RemoveInvalidGuest();
                     return;
                 }
                 var deskcode = guest.DeskCode;
+                fsm.TryLeave();
+
                 switch (LType)
                 {
                     case LeaveType.PayAndLeave:
+                        if (guest.IsFirst)
+                        {
+                            WorkSceneManager.ShowNoMoneyDialog(guest);
+                        }
                         GuestsManagerPatch.PayAndLeave_Original(GuestsManager.instance, guest, true);
                         break;
                     case LeaveType.ExBadLeave:
@@ -79,17 +88,34 @@ public partial class GuestLeaveAction : NetAction
                     case LeaveType.PatientDepletedLeave:
                         GuestsManagerPatch.PatientDepletedLeave_Original(GuestsManager.instance, guest);
                         break;
-                    case LeaveType.Other:
+                    case LeaveType.LeaveFromDesk:
                         GuestsManagerPatch.LeaveFromDesk_Original(GuestsManager.instance, guest, GuestGroupController.LeaveType.Move, null, true);
                         break;
                     case LeaveType.PlayerRepel:
                         GuestsManagerPatch.PlayerRepell_Original(GuestsManager.instance, guest.DeskCode);
                         break;
+                    case LeaveType.LeaveFromQueue:
+                        if (WorkSceneManager.CheckStatus(GuestUUID, WorkSceneManager.Status.Generated))
+                        {
+                            GuestGroupControllerPatch.MoveToSpawn_Original(guest);
+                        }
+                        else
+                        {
+                            Log.Warning($"received {LeaveType.LeaveFromQueue} but {fsm.Identifier} already seated, try repel..");
+                            GuestsManagerPatch.RepellAndLeavePay_Original(GuestsManager.instance, guest, GuestGroupController.LeaveType.Move, true);
+                        }
+                        break;
                 }
                 // Just in case the LeaveFromDesk method fail
-                WorkSceneManager.RemoveOccupiedDesk(deskcode);
-                WorkSceneManager.RemoveOrder(guest);
-                GuestsManager.instance?.registeredCharacterArrivedEvents?.Remove(deskcode);
+                if (WorkSceneManager.GetInDeskGuest(deskcode)?.GetGuestUUID() == GuestUUID)
+                {
+                    // TODO: use LeaveFromDesk impl
+                    Log.Error($"{fsm.Identifier} still in desk, try remove..");
+                    fsm.SafeLeaveFromDesk();
+                    // WorkSceneManager.RemoveOccupiedDesk(deskcode);
+                    // WorkSceneManager.RemoveOrder(guest);
+                    // GuestsManager.instance?.registeredCharacterArrivedEvents?.Remove(deskcode);
+                }
             },
             timeoutSeconds: 15
          );
@@ -97,12 +123,12 @@ public partial class GuestLeaveAction : NetAction
 
     public static void Send(string guest, LeaveType leaveType)
     {
-        NetPacket packet = new([new GuestLeaveAction
+        var action = new GuestLeaveAction
         {
             GuestUUID = guest,
             LType = leaveType
-        }]);
-        SendToHostOrBroadcast(packet);
+        };
+        action.SendToHostOrBroadcast();
     }
 }
 

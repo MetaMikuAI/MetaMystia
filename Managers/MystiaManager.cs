@@ -62,7 +62,7 @@ public static partial class MystiaManager
                     return null;
                 }
                 var characterUnit = inputGenerator.Character;
-                return characterUnit;        
+                return characterUnit;
             case Common.UI.Scene.WorkScene:
                 if (!MystiaManager.CharacterSpawnedAndInitialized)
                 {
@@ -88,14 +88,5 @@ public static partial class MystiaManager
         return rb;
     }
 
-    public static Vector2 GetPosition()
-    {
-        var rb = GetRigidbody2D();
-        if (rb == null)
-        {
-            Log.LogWarning($"GetRigidbody2D returned null");
-            return Vector2.zero;
-        }
-        return rb.position;
-    }
+    public static Vector2 Position => GetRigidbody2D()?.position ?? Vector2.zero;
 }

@@ -5,28 +5,6 @@ using NightScene.EventUtility;
 
 namespace MetaMystia;
 
-[HarmonyPatch(typeof(NightScene.CookingUtility.QTERewardManager))]
-[AutoLog]
-public partial class QTERewardManagerPatch
-{
-    public static volatile bool BuffLocalTrigger = true;
-
-    [HarmonyPatch(nameof(QTERewardManager.OnQTESucceeded))]
-    [HarmonyPrefix]
-    public static void OnQTESucceeded_Prefix(QTERewardManager __instance, int index, bool mustSuccess)
-    {
-        Log.Debug($"OnQTESucceeded Prefix, index {index}, mustSuccess {mustSuccess}");
-    }
-
-    [HarmonyPatch(nameof(QTERewardManager.OnQTESucceeded))]
-    [HarmonyPostfix]
-    public static void OnQTESucceeded_Postfix(QTERewardManager __instance, int index, bool mustSuccess)
-    {
-        Log.Debug($"OnQTESucceeded postfix, index {index}, mustSuccess {mustSuccess}");
-    }
-}
-
-
 
 [HarmonyPatch(typeof(GameData.Profile.MystiaQTEBuffReward))]
 [AutoLog]

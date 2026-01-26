@@ -22,42 +22,21 @@ public partial class PrepAction : NetAction
     }
 
     public Table PrepTable { get; set; } = new Table();
-    public bool Ready { get; set; } = false;
 
-    public override void OnReceived()
+    protected override bool OnSendLogOnlyAction => true;
+    protected override bool OnReceiveLogOnlyAction => true;
+
+    public override void OnReceivedDerived()
     {
-        LogActionReceived(true);
         PrepSceneManager.MergeFromPeer(PrepTable);
-        
-        if (!Ready)
-        {
-            return;
-        }
-
-        PrepSceneManager.remotePlayerReady = true;
-
-        Log.LogInfo("Remote player is ready in prep scene");
-        if (!PrepSceneManager.localPlayerReady)
-        {
-            // 如果 Mystia 未准备好，则应通知对方已经 Ready，然后自己直接 Ready
-            PrepSceneManager.localPlayerReady = true;
-            Send(PrepSceneManager.localPrepTable, true);
-        }
-        PluginManager.Instance.RunOnMainThread(() =>
-        {
-            string[] ExceptPanels = ["WorkSceneTrayPannel(Clone)", "WorkSceneSustainedPannel(Clone)"];  // 白玉楼测验
-            SgrYuki.Utils.Panel.ClosePanelUntil("IzakayaConfigPannelNew(Clone)", ExceptPanels);
-            IzakayaConfigPannelPatch.instanceRef._SolveDailyCompletion_b__61_7();
-        });
     }
 
-    public static void Send(Table prepTable, bool ready = false)
+    public static void Send(Table prepTable)
     {
-        NetPacket packet = new([new PrepAction
+        var action = new PrepAction
         {
-            PrepTable = prepTable,
-            Ready = ready
-        }]);
-        SendToPeer(packet);
+            PrepTable = prepTable
+        };
+        action.SendToHostOrBroadcast();
     }
 }

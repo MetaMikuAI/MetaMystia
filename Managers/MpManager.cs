@@ -54,6 +54,7 @@ public static partial class MpManager
 
     #region SinglePlay GamePlay Getters
     public static Common.UI.Scene LocalScene { get; private set; } = Common.UI.Scene.EmptyScene;
+    public static Common.UI.Scene PeerScene = Common.UI.Scene.EmptyScene;
     public static List<string> ActiveDLCLabel => DLCManager.ActiveDLCLabel;
     public static bool InStory => Common.SceneDirector.Instance.playableDirector.state == UnityEngine.Playables.PlayState.Playing || Common.SceneDirector.Instance.playableDirector.state == UnityEngine.Playables.PlayState.Delayed;
     public static bool ShouldSkipAction => !IsConnected || InStory;
@@ -62,6 +63,8 @@ public static partial class MpManager
     public static string GameVersion => Common.LoadingSceneManager.VersionData;
     public static string ModVersion => MyPluginInfo.PLUGIN_VERSION;
     public static Language Language => Common.UI.EscapeUtility.EscConfigPannel.CurrentSettings.CurrentLanguage.GetLanguage();
+
+    public const string PeerGetCharacterUnitNotNullCommand = "PeerGetCharacterUnitNotNullCommand";
 
     #endregion
     #region Multiplayer GamePlay Getters
@@ -173,7 +176,7 @@ public static partial class MpManager
     {
         Log.LogInfo($"MpManager initialized");
         MystiaManager.Initialize();
-        KyoukoManager.Initialize();
+        PeerManager.Initialize();
     }
 
     public static bool Restart()
@@ -235,9 +238,17 @@ public static partial class MpManager
         HelloAction.Send();
         SceneTransitAction.Send(LocalScene);
         CommandScheduler.EnqueueInterval(SyncActionCommandID, 0.5f, SyncAction.Send);
-        CommandScheduler.Enqueue(
-            executeWhen: () => KyoukoManager.GetCharacterComponent() != null,
-            execute: () => KyoukoManager.GetCharacterComponent()?.UpdateIcon(false),
+        CommandScheduler.EnqueueKey(
+            key: PeerGetCharacterUnitNotNullCommand,
+            executeWhen: () => PeerManager.GetCharacterUnit() != null,
+            execute: () =>
+            {
+                if (!InStory)
+                {
+                    PeerManager.EnableCollision(true);
+                }
+                PeerManager.GetCharacterComponent()?.UpdateIcon(false);
+            },
             timeoutSeconds: 120
         );
         Notify.ShowOnMainThread($"联机系统：已连接！");
@@ -249,11 +260,15 @@ public static partial class MpManager
         PeerAddress = "<Unknown>";
         PeerId = "<Unknown>";
         DLCManager.ClearPeer();
-        CommandScheduler.Enqueue(
-            executeWhen: () => KyoukoManager.GetCharacterComponent() != null,
-            execute: () => KyoukoManager.GetCharacterComponent()?.UpdateIcon(true),
-            timeoutSeconds: 120
-        );
+        CommandScheduler.EnqueueWithNoCondition(() =>
+        {
+            if (PeerManager.GetCharacterUnit() != null)
+            {
+                PeerManager.EnableCollision(false);
+                PeerManager.GetCharacterComponent()?.UpdateIcon(true);
+            }
+        });
+        CommandScheduler.RemoveKeyFromKeyQueue(PeerGetCharacterUnitNotNullCommand);
         CommandScheduler.CancelInterval(SyncActionCommandID);
         Notify.ShowOnMainThread($"联机系统：连接已断开！");
     }
@@ -314,12 +329,7 @@ public static partial class MpManager
         var t = TimestampNow;
         int id = _pingId++;
         pingSendTimes[id] = t;
-        SendToPeer(PingAction.CreatePingPacket(id));
-    }
-
-    public static void SendPong(int id)
-    {
-        SendToPeer(PongAction.CreatePongPacket(id));
+        PingAction.SendToPeer(0, id);
     }
 
     public static void UpdateLatency(int id)
@@ -380,5 +390,32 @@ public static partial class MpManager
         Log.Message($"LocalScene transit from {LocalScene} -> {newScene}");
         SceneTransitAction.Send(newScene);
         LocalScene = newScene;
+    }
+
+    public static void DayOver(long clientId)
+    {
+        if (!IsConnectedHost) return;
+        Log.Message($"{PeerId} dayover");
+        if (PeerManager.IsDayOver && MystiaManager.IsDayOver)
+        {
+            ReadyAction.Broadcast(ReadyType.DayOver);
+
+            // For host who will not receive DayOver allready
+            CommandScheduler.EnqueueWithNoCondition(() => Dialog.ShowReadyDialog(true, DaySceneManagerPatch.OnDayOver));
+        }
+    }
+
+    public static void PrepOver(long clientId)
+    {
+        if (!IsConnectedHost) return;
+        Log.Message($"{PeerId} prep over");
+
+        if (PeerManager.IsPrepOver && MystiaManager.IsPrepOver)
+        {
+            ReadyAction.Broadcast(ReadyType.PrepOver);
+
+            // For host who will not receive PrepOver allready
+            CommandScheduler.EnqueueWithNoCondition(IzakayaConfigPannelPatch.PrepOver);
+        }
     }
 }

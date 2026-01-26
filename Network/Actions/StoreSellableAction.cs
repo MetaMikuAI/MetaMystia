@@ -1,4 +1,3 @@
-using AsmResolver.DotNet;
 using GameData.Core.Collections;
 using MemoryPack;
 
@@ -20,10 +19,12 @@ public partial class StoreSellableAction : NetAction
     public SellableFood Food { get; set; }
     public int BeverageId { get; set; }
     public StoreType FoodType { get; set; }
-    
-    public override void OnReceived()
+
+    protected override bool OnSendLogOnlyAction => true;
+    protected override bool OnReceiveLogOnlyAction => true;
+
+    public override void OnReceivedDerived()
     {
-        LogActionReceived(true);
         Sellable sellable;
         switch (FoodType)
         {
@@ -48,30 +49,30 @@ public partial class StoreSellableAction : NetAction
             CookControllerPatch.Store_Original(cookerController, sellable);
         });
     }
-    
+
     public static void Send(int gridIndex, Sellable sellable)
     {
         switch (sellable.type)
         {
             case Sellable.SellableType.Food:
                 SellableFood food = SellableFood.FromSellable(sellable);
-                NetPacket packet = new([new StoreSellableAction
+                var action = new StoreSellableAction
                 {
                     GridIndex = gridIndex,
                     Food = food,
                     FoodType = StoreType.Food
-                }]);
-                SendToPeer(packet);
+                };
+                action.SendToHostOrBroadcast();
                 break;
             case Sellable.SellableType.Beverage:
                 int beverageId = sellable.id;
-                NetPacket beveragePacket = new([new StoreSellableAction
+                action = new StoreSellableAction
                 {
                     GridIndex = gridIndex,
                     BeverageId = beverageId,
                     FoodType = StoreType.Beverage
-                }]);
-                SendToPeer(beveragePacket);
+                };
+                action.SendToHostOrBroadcast();
                 break;
             default:
                 Log.LogError($"StoreSellableAction.Send called with unsupported sellable type: {sellable.type}");

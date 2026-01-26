@@ -8,8 +8,8 @@ using GameData.Core.Collections.NightSceneUtility;
 using LibCpp2IL;
 using MemoryPack;
 using NightScene.GuestManagementUtility;
+using NightScene.Tiles;
 using SgrYuki.Utils;
-using static NightScene.GuestManagementUtility.GuestsManager;   // OrderBase
 namespace MetaMystia;
 
 [AutoLog]
@@ -19,29 +19,29 @@ public static partial class WorkSceneManager
     /// 1. Host generated a guest, send SendGuestSpawn to client
     ///    Host: Generated
     ///    Client: PendingGenerate -> Generated
-    /// 
+    ///
     /// 2. Client guest trying to seat, prevent (client still in PendingGenerate)
     ///    Client: PendingGenerate
-    /// 
+    ///
     /// 3. Host guest trying to seat, send SendGuestSeated to client
     ///    Both: Generated -> Seated
-    /// 
+    ///
     /// 4. Client guest trying to order, prevent
     ///    Client: Seated(OrderEvaluated) -> PendingOrder
-    /// 
+    ///
     /// 5. Host guest trying to order, send SendGuestGenOrder to client
     ///    Host: Seated -> OrderGenerated
     ///    Client: PendingOrder -> OrderGenerated
-    /// 
+    ///
     /// 6. Any peer trying to serve, send SendGuestServe to peer
     ///    Both: OrderGenerated -> OrderEvaluated
     ///    if more order generated, go back to 4~5
-    /// 
+    ///
     /// 7. Client guest trying to leave, prevent
-    /// 
+    ///
     /// 8. Host guest trying to leave, send SendGuestLeave to client
     ///    Both: Any after Generated -> Left
-    ///    
+    ///
     /// </summary>
     public enum Status
     {
@@ -68,24 +68,18 @@ public static partial class WorkSceneManager
         public UnityEngine.Vector3? OverrideSpawnPosition { get; set; } = null;
         public GuestGroupController.LeaveType LeaveType { get; set; } = GuestGroupController.LeaveType.Move;
     }
-    
-    private static ConcurrentDictionary<string, GuestGroupController> guests = new(); 
-    private static ConcurrentDictionary<string, Status> guestStatus = new(); 
-    private static ConcurrentDictionary<string, int> guestDesks = new(); 
-    private static ConcurrentDictionary<string, int> guestDeskSeats = new(); 
-    private static ConcurrentDictionary<string, GuestInfo> guestInfos = new(); 
-    private static ConcurrentDictionary<IntPtr, string> guestIds = new();
-    private static ConcurrentDictionary<string, (bool, bool)> guestOrderFulfilled = new(); 
-    private static ConcurrentDictionary<string, ConcurrentQueue<(OrderBase, string)>> guestOrders = new();
 
-    public static ConcurrentQueue<int> normalGuestProfilePairIndexQueue = new(); 
+    private static ConcurrentDictionary<IntPtr, string> guestIds = new();
+    private static ConcurrentDictionary<string, GuestFSM> guestFSMs = new();
+
+    public static ConcurrentQueue<int> normalGuestProfilePairIndexQueue = new();
 
     public static Il2CppSystem.Func<int> GetWholeNightTimeOriginal;
 
     public static Func<int> GetWholeNightTimeReplaced = () => MpManager.WorkTimeModifier;
 
-    public static bool InHakugyokurouChallenge => NightScene.NightSceneDirector.ChallengeMode == NightScene.NightSceneDirector.ChallengeType.Story_Basic 
-        || NightScene.NightSceneDirector.ChallengeMode == NightScene.NightSceneDirector.ChallengeType.Story_Advanced 
+    public static bool InHakugyokurouChallenge => NightScene.NightSceneDirector.ChallengeMode == NightScene.NightSceneDirector.ChallengeType.Story_Basic
+        || NightScene.NightSceneDirector.ChallengeMode == NightScene.NightSceneDirector.ChallengeType.Story_Advanced
         || NightScene.NightSceneDirector.ChallengeMode == NightScene.NightSceneDirector.ChallengeType.Story_Yuyuko;
     public static bool InChallenge => NightScene.NightSceneDirector.ChallengeMode != NightScene.NightSceneDirector.ChallengeType.NotChallenge;
 
@@ -105,7 +99,7 @@ public static partial class WorkSceneManager
     {
         NightScene.EventUtility.EventManager.Instance.totalCountDown = time;
         Log.Message($"modified work time to {time}");
-    } 
+    }
 
     public const int PatientAddedSecs = 15;
     private static void AddPatient(GuestGroupController guest, int patientSecs = PatientAddedSecs) => guest?.SetPatient(Math.Min(guest.CurrentPatient + patientSecs, guest.MaxPatient));
@@ -118,7 +112,7 @@ public static partial class WorkSceneManager
         if (uuid == null) return;
         if (CheckStatus(uuid, Status.OrderGenerated))
         {
-            Log.LogInfo($"added patient {patientSecs}s to {uuid}");
+            Log.LogInfo($"added patient {patientSecs}s to {uuid.GetGuestFSM()?.Identifier}");
             AddPatient(guest, patientSecs);
         }
     }
@@ -129,15 +123,15 @@ public static partial class WorkSceneManager
         if (uuid == null) return;
         if (CheckStatus(uuid, Status.OrderGenerated))
         {
-            Log.LogInfo($"added max patient {patientSecs}s to {uuid}");
+            Log.LogInfo($"added max patient {patientSecs}s to {uuid.GetGuestFSM()?.Identifier}");
             AddMaxPatient(guest, patientSecs);
             SetToMaxPatient(guest);
         }
     }
 
-    public static void DelayedSafeAddPatient(GuestGroupController guest, int patientSecs = PatientAddedSecs) 
+    public static void DelayedSafeAddPatient(GuestGroupController guest, int patientSecs = PatientAddedSecs)
         => CommandScheduler.DelayExecute(1, () => SafeAddPatient(guest, patientSecs));
-    public static void DelayedSafeAddMaxPatient(GuestGroupController guest, int patientSecs = PatientAddedSecs) 
+    public static void DelayedSafeAddMaxPatient(GuestGroupController guest, int patientSecs = PatientAddedSecs)
         => CommandScheduler.DelayExecute(1, () => SafeAddMaxPatient(guest, patientSecs));
 
 
@@ -151,15 +145,8 @@ public static partial class WorkSceneManager
 
     public static void Clear()
     {
-        guests.Clear();
-        guestStatus.Clear();
-        guestDesks.Clear();
-        guestDeskSeats.Clear();
-        guestInfos.Clear();
         guestIds.Clear();
-        guestOrderFulfilled.Clear();
-
-        guestOrders.Clear();
+        guestFSMs.Clear();
         normalGuestProfilePairIndexQueue.Clear();
         ClearGuestCommandSchedulerQueue();
     }
@@ -167,25 +154,29 @@ public static partial class WorkSceneManager
     public static string StoreGuest(GuestGroupController guest)
     {
         string uuid = Guid.NewGuid().ToString();
-        guests[uuid] = guest;
-        guestIds[guest.Pointer] = uuid;
-        Log.Message($"stored guest pointer {guest.Pointer} => {uuid}");
+        StoreGuest(guest, uuid);
         return uuid;
-
     }
 
     public static void StoreGuest(GuestGroupController guest, string uuid)
     {
-        guests[uuid] = guest;
+        var fsm = GetOrCreateGuestFSM(uuid);
+        fsm.StoreGuest(guest);
         guestIds[guest.Pointer] = uuid;
         Log.Message($"stored guest pointer {guest.Pointer} => {uuid}");
     }
 
-    public static string GetGuestUUID(this GuestGroupController guest)
+    public static string GetConnectedGuestUUID(this GuestGroupController guest)
+    {
+        if (MpManager.IsConnected) return GetGuestUUID(guest);
+        return "not_connected";
+    }
+
+    public static string GetGuestUUID(this GuestGroupController guest, bool LogError = true)
     {
         if (guest == null)
         {
-            Log.Error($"guest is null!");
+            if (LogError) Log.Error($"guest is null!");
             return "";
         }
         if (guestIds.TryGetValue(guest.Pointer, out var value))
@@ -194,100 +185,35 @@ public static partial class WorkSceneManager
         }
         else
         {
-            Log.Error($"pointer {guest.Pointer} not found");
-            // ShigureYuki.DiagnosticUtils.LogAllProperties(guest);
-            Log.LogStacktrace();
-            return null;
+            if (LogError)
+            {
+                Log.Error($"pointer {guest.Pointer} not found");
+                Log.LogStacktrace();
+            }
         }
+        return "";
     }
 
-    public static GuestGroupController GetGuest(this string uuid) {
-        if (guests.TryGetValue(uuid, out GuestGroupController result))
-        {
-            return result;
-        }
-        SetGuestStatus(uuid, Status.Null);
-        return null;
-    }
-    private static Status GetGuestStatus(string uuid) => guestStatus.GetOrDefault(uuid, Status.Null);
+    private static Status GetGuestStatus(string uuid) => GetGuestFSM(uuid)?.CurrentState ?? Status.Null;
     public static Status GetGuestStatusForLog(string uuid) => GetGuestStatus(uuid);
 
-    public static void SetGuestStatus(string uuid, Status value) {
-        Log.Message($"{uuid} Desk [{GetGuestDeskcodeForLog(uuid)}] status {GetGuestStatus(uuid)} -> {value}");
-        guestStatus[uuid] = value;
-    }
+    /// <summary>
+    /// 获取或创建客人的FSM状态机
+    /// </summary>
+    public static GuestFSM GetOrCreateGuestFSM(string uuid) => guestFSMs.GetOrAdd(uuid, _ => new GuestFSM(uuid));
 
     /// <summary>
-    /// Returns the real desk - 1
+    /// 获取客人的FSM状态机
     /// </summary>
-    /// <param name="uuid"></param>
-    /// <returns></returns>
-    public static int GetGuestDeskcode(string uuid) => guestDesks.GetOrDefault(uuid, -1);
-    public static int GetGuestDeskcodeForLog(string uuid) => guestDesks.GetOrDefault(uuid, -1) + 1;
+    public static GuestFSM GetGuestFSM(this string uuid) => guestFSMs.GetOrDefault(uuid, null);
+    public static GuestFSM GetGuestFSM(this GuestGroupController guest, bool LogError = true) => guestFSMs.GetOrDefault(guest.GetGuestUUID(LogError), null);
 
-    public static void SetGuestDeskcode(string uuid, int desk) => guestDesks[uuid] = desk;
+    public static int GetGuestDeskcode(string uuid) => GetGuestFSM(uuid)?.DeskCode ?? -1;
+    public static void SetGuestDeskcode(string uuid, int desk) => GetGuestFSM(uuid)?.SetDeskCode(desk);
 
-    public static int GetGuestDeskcodeSeat(string uuid) => guestDeskSeats.GetOrDefault(uuid, -1);
+    public static int GetGuestDeskcodeSeat(string uuid) => GetGuestFSM(uuid)?.DeskSeatCode ?? -1;
+    public static void SetGuestDeskcodeSeat(string uuid, int seat) => GetGuestFSM(uuid)?.SetDeskSeatCode(seat);
 
-    public static void SetGuestDeskcodeSeat(string uuid, int seat) => guestDeskSeats[uuid] = seat;
-
-    public static void EnqueueGuestOrder(string uuid, OrderBase order, string orderMessage)
-    {
-        guestOrders.GetOrAdd(uuid, new ConcurrentQueue<(OrderBase, string)>()).Enqueue((order, orderMessage));
-    }
-
-    public static bool DequeueGuestOrder(string uuid, out (OrderBase, string) orderTuple)
-    {
-        return guestOrders.GetOrDefault(uuid, new ConcurrentQueue<(OrderBase, string)>()).TryDequeue(out orderTuple);
-    }
-
-
-    public static void SetGuestOrderServedFood(string uuid)
-    {
-        if (guestOrderFulfilled.TryGetValue(uuid, out var item))
-        {
-            var (_, beverage) = item;
-            guestOrderFulfilled[uuid] = (true, beverage);
-        }
-        else
-        {
-            guestOrderFulfilled[uuid] = (true, false);
-        }
-    }
-
-    public static void SetGuestOrderServedBeverage(string uuid)
-    {
-        if (guestOrderFulfilled.TryGetValue(uuid, out var item))
-        {
-            var (food, _) = item;
-            guestOrderFulfilled[uuid] = (food, true);
-        }
-        else
-        {
-            guestOrderFulfilled[uuid] = (false, true);
-        }
-    }
-
-    public static void SetGuestOrderFullfilled(string uuid) => guestOrderFulfilled[uuid] = (true, true);
-
-    public static void ResetGuestOrderServed(string uuid) => _ = guestOrderFulfilled.TryRemove(uuid, out _);
-
-    public static bool GetGuestOrderServedFood(string uuid) => guestOrderFulfilled.GetOrDefault(uuid, (false, false)).Item1;
-
-    public static bool GetGuestOrderServedBeverage(string uuid) => guestOrderFulfilled.GetOrDefault(uuid, (false, false)).Item2;
-
-    public static bool GetGuestOrderFullfilled(string uuid)
-    {
-        if (guestOrderFulfilled.TryGetValue(uuid, out var item))
-        {
-            var (food, beverage) = item;
-            return food && beverage;
-        }
-        return false;
-    }
-
-    public static void StoreGuestInfo(GuestInfo guest, string uuid) => guestInfos[uuid] = guest;
-    public static GuestInfo GetGuestInfo(string uuid) => guestInfos.GetOrDefault(uuid, null);
 
     public static GuestGroupController SpawnGuestGroup(GuestInfo guestInfo, string UUID)
     {
@@ -318,21 +244,30 @@ public static partial class WorkSceneManager
         {
             Log.Error($"{UUID} is null after executing SpawnNormalGuestGroup_WithArg_Original!");
         }
-        StoreGuestInfo(guestInfo, UUID);
+
         StoreGuest(controller, UUID);
-        SetGuestStatus(UUID, Status.Generated);
+
+        // 通过FSM转移状态
+        var fsm = GetOrCreateGuestFSM(UUID);
+        fsm.ChangeState(Status.Generated);
+        fsm.StoreGuestInfo(guestInfo);
+
         return controller;
     }
 
     private static SpecialGuestsController SpawnSpecialGuestGroup(GuestInfo guestInfo, string UUID)
     {
         var controller = GuestsManagerPatch.SpawnSpecialGuestGroup_Original(
-                GuestsManager.instance, guestInfo.Id, SpecialGuestsController.GuestSpawnType.Normal, 
+                GuestsManager.instance, guestInfo.Id, SpecialGuestsController.GuestSpawnType.Normal,
                 new Il2CppSystem.Nullable<UnityEngine.Vector3>(), leaveType: guestInfo.LeaveType);
 
-        StoreGuestInfo(guestInfo, UUID);
         StoreGuest(controller, UUID);
-        SetGuestStatus(UUID, Status.Generated);
+
+        // 通过FSM转移状态
+        var fsm = GetOrCreateGuestFSM(UUID);
+        fsm.ChangeState(Status.Generated);
+        fsm.StoreGuestInfo(guestInfo);
+
         return controller;
     }
 
@@ -366,43 +301,31 @@ public static partial class WorkSceneManager
                 var current = --characterInMotion;
                 if (current == 0) onMovementFinishCallback.Invoke();
             };
-            
+
             var colliderCollections = __instance.tileManager.GetCollider(seatDir[deskSeat], new Il2CppSystem.Collections.Generic.IReadOnlyList<UnityEngine.Vector3Int>(__instance.tileManager.PasserBorder.Pointer));
 
             Log.Debug($"setting path for {uuid}, desk {deskCode}, seat {deskSeat}");
-            
+
             item?.SetPath(
-                seatDir[deskSeat], 
+                seatDir[deskSeat],
                 colliderCollections,
                 i * 0.2f,
                 onArrive,
                 NightScene.Tiles.TileManager.FindDirection(seatDir[deskSeat], desk.tablePosition),
-                new Il2CppSystem.Nullable<UnityEngine.Vector3>() 
+                new Il2CppSystem.Nullable<UnityEngine.Vector3>()
             );
             seatDir.RemoveAt(deskSeat);
         }
     }
-    public static bool RemoveOccupiedDesk(int deskcode) => GuestsManager.instance.occupiedDesks.Remove(deskcode);
-    
-    public static bool RemoveGuestAndOrder(int deskId)
+
+    public static GuestGroupController GetInDeskGuest(int deskCode) => GuestsManager.Instance.GetInDeskGuest(deskCode);
+    public static bool RemoveOccupiedDesk(int deskcode)
     {
-        var guest = GuestsManager.instance.GetInDeskGuest(deskId);
-        if (IsGuestNull(guest))
-        {
-            Log.LogWarning($"deskId {deskId} guest is null");
-            return false;
-        }
-        else
-        {
-            Log.LogWarning($"removing {GetGuestUUID(guest)} out: DeskId {deskId}");
-            RemoveOrder(guest);
-            GuestsManagerPatch.LeaveFromDesk_Original(GuestsManager.instance, guest, GuestGroupController.LeaveType.Move, null, true);
-            GuestsManager.instance.SetGuestOutDesk(guest);
-            return RemoveOccupiedDesk(deskId);
-        }
+        Log.InfoCaller($"desk {deskcode}, guest {GetInDeskGuest(deskcode)?.GetGuestFSM()?.Identifier}");
+        return GuestsManager.Instance.occupiedDesks.Remove(deskcode);
     }
 
-    public static void RemoveOrder(GuestGroupController guest)
+    private static void RemoveOrder(GuestGroupController guest)
     {
         if (IsGuestNotNull(guest))
         {
@@ -411,14 +334,85 @@ public static partial class WorkSceneManager
                 var prevOrder = guest.PeekOrders();
                 if (prevOrder != null && !prevOrder.IsFullfilled)
                 {
-                    Log.Message($"removed guest {GetGuestUUID(guest)} order");
-                    GuestsManager.instance.RemoveFromOrder(prevOrder);
+                    Log.MessageCaller($"guest {guest.GetGuestFSM()?.Identifier}");
+                    GuestsManager.Instance.RemoveFromOrder(prevOrder);
                 }
             }
         }
     }
 
-    public static bool IsGuestNotNull(string uuid) => IsGuestNotNull(GetGuest(uuid));
+    public static bool RemoveGuestAndOrder(int deskId)
+    {
+        var guest = GetInDeskGuest(deskId);
+        if (IsGuestNull(guest))
+        {
+            Log.LogWarning($"deskId {deskId} guest is null");
+            return false;
+        }
+        else
+        {
+            Log.WarningCaller($"{guest.GetGuestFSM()?.Identifier}: DeskId {deskId}");
+            RemoveOrder(guest);
+            GuestsManagerPatch.LeaveFromDesk_Original(GuestsManager.instance, guest, GuestGroupController.LeaveType.Move, null, true);
+            GuestsManager.Instance.SetGuestOutDesk(guest);
+            GuestsManager.Instance.guestIconManager?.Remove(guest);
+            GuestsManager.Instance.ManualDesksDic?.Remove(deskId);
+            return RemoveOccupiedDesk(deskId);
+        }
+    }
+
+    public static bool RemoveInvalidGuest(this GuestFSM fSM, int overrideDeskCode = -1)
+    {
+        var targetDeskCode = overrideDeskCode == -1 ? fSM.DeskCode : overrideDeskCode;
+        if (targetDeskCode == -1)
+        {
+            Log.WarningCaller($"{fSM.Identifier} target desk is -1, skip");
+            return false;
+        }
+        Log.WarningCaller($"{fSM.Identifier}: DeskId {targetDeskCode}");
+        if (fSM.GuestController != null)
+        {
+            GuestsManager.Instance.SetGuestOutDesk(fSM.GuestController);
+            GuestsManager.Instance.guestIconManager?.Remove(fSM.GuestController);
+            GuestsManager.Instance.ManualDesksDic?.Remove(targetDeskCode);
+        }
+        return RemoveOccupiedDesk(targetDeskCode);
+    }
+
+    public static void SafeLeaveFromDesk(this GuestFSM fSM)
+    {
+        var controller = fSM.GuestController;
+        if (controller == null) return;
+
+        controller.Left = true;
+        controller.guestInstances?.Where(x => x != null).ToList().ForEach(x => x.ExternalStop());
+
+        GuestsManager.Instance.guestIconManager?.Remove(controller);
+
+        Action ConfirmLeave = () =>
+        {
+            GuestsManager.Instance.occupiedDesks?.Remove(controller.DeskCode);
+            GuestsManager.Instance.ManualDesksDic?.Remove(controller.DeskCode);
+            TileManager.Instance.GuestTables[controller.DeskCode]?.tableDisplayer?.ResetValue();
+            NightScene.UI.UIManager.Instance.guestBuffMarkModule?.ClearBuffMarkWhenTargetDeskGuestLeave(controller.DeskCode);
+            GuestsManager.Instance.SetGuestOutDesk(controller);
+            GuestsManager.Instance.SetPlayerCanNotRepelGuest(controller);
+            controller.OnLeaveDeskCallback?.Invoke(controller);
+            controller.TryReleaseAllServedFood();
+            controller.MoveToSpawn();
+            GuestsManager.Instance.CheckAndSendFromQueue();
+        };
+        if (controller.ControllType == GuestsManager.GuestType.Special && controller is SpecialGuestsController sgc)
+        {
+            sgc.TriggerLeaveBuff(ConfirmLeave);
+        }
+        else
+        {
+            ConfirmLeave();
+        }
+    }
+
+    public static bool IsGuestNull(GuestGroupController guest) => !IsGuestNotNull(guest);
     public static bool IsGuestNotNull(GuestGroupController guest)
     {
         if (guest == null) return false;
@@ -426,8 +420,9 @@ public static partial class WorkSceneManager
         if (guest.guestInstances.Any((component) => component == null)) return false;
         return true;
     }
+
     public static bool IsGuestNull(string uuid) => !IsGuestNotNull(uuid);
-    public static bool IsGuestNull(GuestGroupController guest) => !IsGuestNotNull(guest);
+    public static bool IsGuestNotNull(string uuid) => GetGuestFSM(uuid)?.IsGuestValid() ?? false;
 
     public static bool CheckStatus(string uuid, Status targetStatus) => GetGuestStatus(uuid) == targetStatus;
     public static bool CheckStatusIn(string uuid, Status[] targetStatus) => targetStatus.Contains(GetGuestStatus(uuid));
@@ -477,6 +472,17 @@ public static partial class WorkSceneManager
         servePanel.ClosePanel();
         WorkSceneServePannelPatch.ManuallyClosePanel = false;
         Log.Info($"serve panel closed");
+    }
+
+    public static void ShowNoMoneyDialog(GuestGroupController guest)
+    {
+        if (guest == null) return;
+        var evalRes = (GuestGroupController.EvaluationResult)(1 + (guest.ControllType == GuestsManager.GuestType.Special ? 1 : 0));
+        GuestsManager.instance.PlayEvaluateSFX(evalRes);
+        GuestsManager.instance.TryCloseCurrentDialogBox(guest);
+        var evalStr = guest.GetEvaluationDialog(guest.GetNoMoneyDialogIndex(), out var speaker);
+        var dialog = GuestsManager.instance.ShowEvaluationDialog(guest, evalStr, evalRes, speaker);
+        GuestsManager.instance.StartCoroutine_Auto(dialog);
     }
 
     public class GuestInvalidatedException : Exception
