@@ -6,7 +6,6 @@ using Il2CppInterop.Runtime.InteropTypes.Arrays;
 
 using Common.DialogUtility;
 using GameData.CoreLanguage.Collections;
-using GameData.Core.Collections.NightSceneUtility;
 using GameData.Core.Collections.CharacterUtility;
 using GameData.Profile;
 
@@ -14,6 +13,7 @@ using DEYU.Utils;
 using MetaMiku;
 using SgrYuki.Utils;
 using MetaMystia.ResourceEx.Models;
+using MetaMystia.ResourceEx.Mappers;
 
 namespace MetaMystia;
 
@@ -38,7 +38,7 @@ Hook:
     GetPortraitSprite <- DialogPannel.GetSpeakerVisual
     GetPortraitSprite <- SpecialGuestDescriber.Describe
 
-TODO: 
+TODO:
     implement GuestProfilePair totally from ResourceEx, currently only partial implementation.
 */
 
@@ -48,7 +48,7 @@ public static partial class ResourceExManager
     {
         return _characterConfigs.Values;
     }
-    
+
     public static CharacterConfig GetCharacterConfig(int id, string type)
     {
         if (_characterConfigs.TryGetValue((id, type), out var config))
@@ -61,7 +61,7 @@ public static partial class ResourceExManager
     private static void RegisterSpecialPortraits()
     {
         Log.Info($"Registering Special Portraits from ResourceEx...");
-        
+
         foreach (var charConfig in GetAllCharacterConfigs().Where(c => c.portraits != null && c.portraits.Count > 0))
         {
             string desc1 = charConfig.descriptions.Count > 0 ? charConfig.descriptions[0] : "";
@@ -120,42 +120,14 @@ public static partial class ResourceExManager
             return;
         }
 
-        var likeFoodTag = new Il2CppReferenceArray<SpecialGuest.WeightedTag>(
-            config.guest.likeFoodTag.Select(x => new SpecialGuest.WeightedTag(x.tagId, x.weight)).ToArray());
-
-        var likeBevTag = new Il2CppReferenceArray<SpecialGuest.WeightedTag>(
-            config.guest.likeBevTag.Select(x => new SpecialGuest.WeightedTag(x.tagId, x.weight)).ToArray());
-
-        var hateTags = config.guest.hateFoodTag.ToArray();
-
         var template = specialGuests[0];
+        var specialGuest = config.ToRuntimeSpecialGuest(template);
 
-
-        // var templateDialog = _builtDialogPackages["Kizuna__Daiyousei_LV1_Welcome_001"];
-        // var templateDialogArray = new Il2CppReferenceArray<DialogPackage>(1);
-        // templateDialogArray[0] = templateDialog;
-
-        var specialGuest = new SpecialGuest(
-            config.id,
-            config.label,
-            new Vector2Int(config.guest.fundRangeLower, config.guest.fundRangeUpper),
-            hateTags,
-            likeFoodTag,
-            likeBevTag,
-            template.Reaction, template.destination, template.CommisionAreaLabel,
-            // templateDialogArray, templateDialogArray, templateDialogArray, templateDialogArray, templateDialogArray,
-            template.characterKizunaLevel1Welcome, template.characterKizunaLevel2Welcome, template.characterKizunaLevel3Welcome, template.characterKizunaLevel4Welcome, template.characterKizunaLevel5Welcome,
-            template.characterKizunaLevel1ChatData, template.characterKizunaLevel2ChatData, template.characterKizunaLevel3ChatData, template.characterKizunaLevel4ChatData, template.characterKizunaLevel5ChatData,
-            template.characterKizunaLevel2InviteSucceed, template.characterKizunaLevel2InviteFailed, template.characterKizunaLevel3InviteSucceed, template.characterKizunaLevel3InviteFailed, template.characterKizunaLevel4InviteSucceed, template.characterKizunaLevel4InviteFailed, template.characterKizunaLevel5InviteSucceed,
-            template.characterKizunaLevel3RequestIngerdient, template.characterKizunaLevel4RequestIngerdient, template.characterKizunaLevel5RequestIngerdient,
-            template.characterKizunaLevel4RequestBeverage, template.characterKizunaLevel5RequestBeverage,
-            template.characterKizunaLevel5Commision, template.characterKizunaLevel5CommisionFinish,
-            template.hideInAlbum, template.IsParticular, template.IsCollabCharacter, template.SpawnType, template.unifiedSpawnExclusion, template.unifiedSpawnWhereAfterEventOrMission, template.unifiedSpawnProb, template.m_SpecialGuestExtraDialogDataAsset, template.doNotShowInNightByDefault, template.doNotShowInChallenge, template.guestFoodEasterEggData
-        );
-
-        specialGuest.stringId = config.label;
-        specialGuests[config.id] = specialGuest;
-        Log.Info($"Registered Special Guest: {config.name} ({config.id})");
+        if (specialGuest != null)
+        {
+            specialGuests[config.id] = specialGuest;
+            Log.Info($"Registered Special Guest: {config.name} ({config.id})");
+        }
     }
 
     private static void RegisterAllEvaluations()
@@ -207,7 +179,7 @@ public static partial class ResourceExManager
             config.guest.foodRequests.ToDictionary(req => req.tagId, req => req.request).ToIl2CppDictionary());
         Log.Info($"Registered Food Requests for Special Guest: {config.name} ({config.id})");
     }
-    
+
     private static void RegisterAllBevRequests()
     {
         Log.Info($"Registering Beverage Requests from ResourceEx...");
@@ -444,11 +416,11 @@ public static partial class ResourceExManager
 /* 字段猜测
 GameData.Core.Collections.CharacterUtility.DataBaseCharacter.SpecialGuest
 
-public SpecialGuest(int id, 
+public SpecialGuest(int id,
 	string stringId, // 字符串 id，label
 	Vector2Int fundRange, // 资金范围
 	int[] hateFoodTag, // 讨厌的食物标签
-	SpecialGuest.WeightedTag[] likeFoodTag, // 喜欢的食物标签权重 
+	SpecialGuest.WeightedTag[] likeFoodTag, // 喜欢的食物标签权重
 	SpecialGuest.WeightedTag[] likeBevTag,  // 喜欢的饮品标签权重
 	SpecialGuest.Prespective reaction, // ？
 	NPC.Destination destination,  // ？
@@ -463,30 +435,30 @@ public SpecialGuest(int id,
 	string[] characterKizunaLevel3ChatData,
 	string[] characterKizunaLevel4ChatData,
 	string[] characterKizunaLevel5ChatData,
-	DialogPackage[] characterKizunaLevel2InviteSucceed, 
-	DialogPackage[] characterKizunaLevel2InviteFailed, 
-	DialogPackage[] characterKizunaLevel3InviteSucceed, 
-	DialogPackage[] characterKizunaLevel3InviteFailed, 
-	DialogPackage[] characterKizunaLevel4InviteSucceed, 
-	DialogPackage[] characterKizunaLevel4InviteFailed, 
-	DialogPackage[] characterKizunaLevel5InviteSucceed, 
-	DialogPackage[] characterKizunaLevel3RequestIngerdient, 
-	DialogPackage[] characterKizunaLevel4RequestIngerdient, 
-	DialogPackage[] characterKizunaLevel5RequestIngerdient, 
-	DialogPackage[] characterKizunaLevel4RequestBeverage, 
-	DialogPackage[] characterKizunaLevel5RequestBeverage, 
-	DialogPackage[] characterKizunaLevel5Commision, 
-	DialogPackage[] characterKizunaLevel5CommisionFinish, 
-	bool hideInAlbum, 
-	bool isParticular, 
-	bool isCollabCharacter, 
-	SpecialGuest.WorkSceneSpawnType spawnType, 
-	string[] unifiedSpawnExclusion, 
-	string unifiedSpawnWhereAfterEventOrMission, 
-	float unifiedSpawnProb, 
-	AssetReferenceT<SpecialGuestExtraDialogData> specialGuestExtraDialogData, 
-	bool doNotShowInNightByDefault, 
-	bool doNotShowInChallenge, 
+	DialogPackage[] characterKizunaLevel2InviteSucceed,
+	DialogPackage[] characterKizunaLevel2InviteFailed,
+	DialogPackage[] characterKizunaLevel3InviteSucceed,
+	DialogPackage[] characterKizunaLevel3InviteFailed,
+	DialogPackage[] characterKizunaLevel4InviteSucceed,
+	DialogPackage[] characterKizunaLevel4InviteFailed,
+	DialogPackage[] characterKizunaLevel5InviteSucceed,
+	DialogPackage[] characterKizunaLevel3RequestIngerdient,
+	DialogPackage[] characterKizunaLevel4RequestIngerdient,
+	DialogPackage[] characterKizunaLevel5RequestIngerdient,
+	DialogPackage[] characterKizunaLevel4RequestBeverage,
+	DialogPackage[] characterKizunaLevel5RequestBeverage,
+	DialogPackage[] characterKizunaLevel5Commision,
+	DialogPackage[] characterKizunaLevel5CommisionFinish,
+	bool hideInAlbum,
+	bool isParticular,
+	bool isCollabCharacter,
+	SpecialGuest.WorkSceneSpawnType spawnType,
+	string[] unifiedSpawnExclusion,
+	string unifiedSpawnWhereAfterEventOrMission,
+	float unifiedSpawnProb,
+	AssetReferenceT<SpecialGuestExtraDialogData> specialGuestExtraDialogData,
+	bool doNotShowInNightByDefault,
+	bool doNotShowInChallenge,
 	GuestFoodEasterEggData guestFoodEasterEggData);
 
 */

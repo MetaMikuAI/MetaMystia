@@ -1,6 +1,4 @@
-using MetaMystia.ResourceEx.Models;
-using System.Collections.Generic;
-using System.Linq;
+using GameData.Profile;
 
 namespace MetaMystia;
 
@@ -15,6 +13,15 @@ public static partial class ResourceExManager
     public static CustomDialogList GetDialogPackage(string name)
     {
         if (_dialogPackageConfigs.TryGetValue(name, out var pkg))
+        {
+            return pkg;
+        }
+        return null;
+    }
+
+    public static DialogPackage GetBuiltDialogPackage(string name)
+    {
+        if (_builtDialogPackages.TryGetValue(name, out var pkg))
         {
             return pkg;
         }

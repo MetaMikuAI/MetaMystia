@@ -1,9 +1,10 @@
-using GameData.CoreLanguage;
+using System.Linq;
+
 using GameData.CoreLanguage.Collections;
 using GameData.Core.Collections;
 
 using MetaMystia.ResourceEx.Models;
-using System.Linq;
+using MetaMystia.ResourceEx.Mappers;
 
 namespace MetaMystia;
 
@@ -16,11 +17,8 @@ public static partial class ResourceExManager
 
     private static void RegisterBeverageLanguage(BeverageConfig config)
     {
-        var lang = new ObjectLanguageBase(
-            name: config.name,
-            Description: config.description,
-            GetSprite(config.spritePath, config.ModRoot)
-        );
+        var sprite = GetSprite(config.spritePath, config.ModRoot);
+        var lang = config.ToBeverageLanguage(sprite);
         DataBaseLanguage.Beverages[config.id] = lang; // Beverages 是 private 的，不能用 TryAdd
         Log.Info($"Registered language for beverage {config.id}: {config.name}");
     }
@@ -32,16 +30,7 @@ public static partial class ResourceExManager
 
     private static void RegisterBeverage(BeverageConfig config)
     {
-        var beverage = new Sellable(
-            id: config.id,
-            baseValue: config.baseValue,
-            level: config.level,
-            tags: config.tags.ToArray(),
-            banTags: new int[0],
-            type: Sellable.SellableType.Beverage,
-            additiveTags: new Il2CppSystem.Collections.Generic.List<int>(),
-            isCollab: false
-        );
+        var beverage = config.ToRuntimeBeverage();
         var success = DataBaseCore.Beverages.TryAdd(beverage.Id, beverage);
         Log.Info($"Registered beverage object {config.id}: {config.name}, success={success}");
     }

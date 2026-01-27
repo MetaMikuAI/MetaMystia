@@ -3,6 +3,7 @@ using GameData.CoreLanguage.Collections;
 using GameData.Core.Collections;
 
 using MetaMystia.ResourceEx.Models;
+using MetaMystia.ResourceEx.Mappers;
 using System.Linq;
 
 namespace MetaMystia;
@@ -16,11 +17,8 @@ public static partial class ResourceExManager
 
     private static void RegisterIngredientLanguage(IngredientConfig config)
     {
-        var lang = new ObjectLanguageBase(
-            name: config.name,
-            Description: config.description,
-            GetSprite(config.spritePath, config.ModRoot)
-        );
+        var sprite = GetSprite(config.spritePath, config.ModRoot);
+        var lang = config.ToIngredientLanguage(sprite);
         DataBaseLanguage.Ingredients[config.id] = lang; // Ingredients 是 private 的，不能用 TryAdd
         Log.Info($"Registered language for ingredient {config.id}: {config.name}");
     }
@@ -32,13 +30,7 @@ public static partial class ResourceExManager
 
     private static void RegisterIngredient(IngredientConfig config)
     {
-        var ingredient = new Ingredient(
-            id: config.id,
-            baseValue: config.baseValue,
-            level: config.level,
-            prefix: config.prefix,
-            tags: config.tags.ToArray()
-        );
+        var ingredient = config.ToRuntimeIngredient();
         var success = DataBaseCore.Ingredients.TryAdd(ingredient.Id, ingredient);
         Log.Info($"Registered ingredient object {config.id}: {config.name}, success={success}");
     }
