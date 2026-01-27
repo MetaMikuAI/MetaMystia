@@ -20,20 +20,20 @@ public static partial class ResourceExManager
         }
         return null;
     }
-    
+
     public static void BuildAllDialogPackages()
     {
         foreach (var kvp in _dialogPackageConfigs)
         {
             _builtDialogPackages[kvp.Key] = Dialog.BuildDialogPackage(kvp.Value);
-            Log.Warning($"Built dialog package: {kvp.Key}");
+            Log.Info($"Built dialog package: {kvp.Key}");
         }
     }
-    
+
     public static System.Action<Il2CppSystem.Collections.Generic.Dictionary<int, string>> GetOverrideReplaceTextCallback(GameData.Profile.DialogPackage dialogPackage)
     {
         if (dialogPackage == null) return null;
-        
+
         string name;
         try
         {

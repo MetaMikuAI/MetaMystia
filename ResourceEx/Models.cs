@@ -7,6 +7,7 @@ using static GameData.Core.Collections.DaySceneUtility.Collections.Product;
 using static GameData.Profile.SchedulerNode;
 using static GameData.Profile.SchedulerNode.Trigger;
 using static GameData.Profile.SchedulerNodeCollection.MissionNode.FinishCondition;
+using System;
 
 namespace MetaMystia.ResourceEx.Models;
 
@@ -179,7 +180,9 @@ public class MissionNodeConfig
     public string sender { get; set; }
     public string reciever { get; set; } // ignore typo
     public List<MissionRewardConfig> rewards { get; set; }
+    public List<MissionRewardConfig> postRewards { get; set; }
     public List<MissionFinishConditionConfig> finishConditions { get; set; }
+    public EventDataConfig missionFinishEvent { get; set; }
     public List<string> postMissionsAfterPerformance { get; set; }
     public List<string> postEvents { get; set; }
 }
@@ -207,9 +210,9 @@ public class EventNodeConfig
 {
     public string label { get; set; }
     public string debugLabel { get; set; }
-    public TriggerConfig trigger { get; set; }
-    public string triggerId { get; set; }
+    public ScheduledEventConfig scheduledEvent { get; set; }
     public List<MissionRewardConfig> rewards { get; set; }
+    public List<MissionRewardConfig> postRewards { get; set; }
     public List<string> postMissionsAfterPerformance { get; set; }
     public List<string> postEvents { get; set; }
 }
@@ -218,4 +221,16 @@ public class TriggerConfig
 {
     public TriggerType triggerType { get; set; }
     public string triggerId { get; set; }
+}
+
+public class ScheduledEventConfig
+{
+    public EventDataConfig eventData { get; set; }
+    public TriggerConfig trigger { get; set; }
+}
+
+public class EventDataConfig
+{
+    public Event.EventType eventType { get; set; }
+    public string dialogPackageName { get; set; } // -> SchedulerNode.Event.runtimeDialogPackage: DialogPackage
 }

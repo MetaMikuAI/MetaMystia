@@ -4,16 +4,10 @@ using System.Linq;
 using GameData.Profile;
 using GameData.Profile.SchedulerNodeCollection;
 using GameData.Core.Collections;
-using GameData.CoreLanguage;
-using GameData.CoreLanguage.Collections;
 
-using static GameData.Core.Collections.Sellable;
-using static GameData.Profile.SchedulerNodeCollection.MissionNode;
-using static GameData.Core.Collections.DaySceneUtility.Collections.Product;
 using static GameData.Profile.SchedulerNode.Trigger;
 
 using MetaMystia.ResourceEx.Models;
-using DEYU.Utils;
 
 namespace MetaMystia;
 
@@ -44,15 +38,35 @@ public static partial class ResourceExManager
         switch (currentBondLevel)
         {
             case 1:
+                if (GameData.RunTime.Common.RunTimeScheduler.finishedEvents.Contains(config.kizuna.lv1UpgradePrerequisiteEvent))
+                {
+                    Log.Info($"Kizuna event node for character {config.name}({config.id}) at bond level 1 already finished.");
+                    return;
+                }
                 scheduledEvents[-1].Add(config.kizuna.lv1UpgradePrerequisiteEvent);
                 break;
             case 2:
+                if (GameData.RunTime.Common.RunTimeScheduler.finishedEvents.Contains(config.kizuna.lv2UpgradePrerequisiteEvent))
+                {
+                    Log.Info($"Kizuna event node for character {config.name}({config.id}) at bond level 2 already finished.");
+                    return;
+                }
                 scheduledEvents[-1].Add(config.kizuna.lv2UpgradePrerequisiteEvent);
                 break;
             case 3:
+                if (GameData.RunTime.Common.RunTimeScheduler.finishedEvents.Contains(config.kizuna.lv3UpgradePrerequisiteEvent))
+                {
+                    Log.Info($"Kizuna event node for character {config.name}({config.id}) at bond level 3 already finished.");
+                    return;
+                }
                 scheduledEvents[-1].Add(config.kizuna.lv3UpgradePrerequisiteEvent);
                 break;
             case 4:
+                if (GameData.RunTime.Common.RunTimeScheduler.finishedEvents.Contains(config.kizuna.lv4UpgradePrerequisiteEvent))
+                {
+                    Log.Info($"Kizuna event node for character {config.name}({config.id}) at bond level 4 already finished.");
+                    return;
+                }
                 scheduledEvents[-1].Add(config.kizuna.lv4UpgradePrerequisiteEvent);
                 break;
             case 5:
@@ -70,10 +84,8 @@ public static partial class ResourceExManager
         eventNode.name = config.label;
         eventNode.label = config.label;
         eventNode.debugLabel = config.debugLabel;
-        eventNode.scheduledEvent = new SchedulerNode.ScheduledEvent()
-        {
-            trigger = BuildEventTrigger(config.trigger, config.debugLabel)
-        };
+
+        eventNode.scheduledEvent = BuildScheduledEvent(config.scheduledEvent, config.debugLabel);
 
         if (config.rewards != null)
         {
@@ -83,9 +95,13 @@ public static partial class ResourceExManager
                 eventNode.rewards[i] = BuildMissionReward(config.rewards[i]);
             }
         }
-        else
+        if (config.postRewards != null)
         {
-            eventNode.rewards = new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<MissionNode.Reward>(0);
+            eventNode.postRewards = new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<MissionNode.Reward>(config.postRewards.Count);
+            for (int i = 0; i < config.postRewards.Count; i++)
+            {
+                eventNode.postRewards[i] = BuildMissionReward(config.postRewards[i]);
+            }
         }
 
         eventNode.postMissionsAfterPerformance = new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStringArray(config.postMissionsAfterPerformance.Count);
@@ -106,19 +122,57 @@ public static partial class ResourceExManager
 
     private static SchedulerNode.Trigger BuildEventTrigger(TriggerConfig config, string debugLabel)
     {
+        if (config == null) return new SchedulerNode.Trigger();
+
         var trigger = new SchedulerNode.Trigger();
-        if (config == null) return trigger;
 
         trigger.triggerType = config.triggerType;
         switch (config.triggerType)
         {
             case TriggerType.KizunaCheckPoint:
                 trigger.triggerId = config.triggerId; // TODO: make sure triggerId in allCharacters
+                Log.Warning($"EventNode {debugLabel} using KizunaCheckPoint trigger with id {config.triggerId}, make sure it's correct.");
                 break;
             default:
                 Log.Error($"Unsupported event trigger type {config.triggerType} for event {debugLabel}");
                 break;
         }
+        Log.Warning($"Built trigger for EventNode {debugLabel}: Type {trigger.triggerType}, Id {trigger.triggerId}");
         return trigger;
+    }
+
+    private static SchedulerNode.ScheduledEvent BuildScheduledEvent(ScheduledEventConfig config, string debugLabel = "")
+    {
+        if (config == null) return new SchedulerNode.ScheduledEvent();
+
+        var scheduledEvent = new SchedulerNode.ScheduledEvent()
+        {
+            trigger = BuildEventTrigger(config.trigger, debugLabel),
+            eventData = BuildEventData(config.eventData, debugLabel),
+        };
+        return scheduledEvent;
+    }
+
+    private static SchedulerNode.Event BuildEventData(EventDataConfig config, string debugLabel = "")
+    {
+        if (config == null) return new SchedulerNode.Event();
+
+        switch (config.eventType)
+        {
+            case SchedulerNode.Event.EventType.Dialog:
+                if (!_builtDialogPackages.ContainsKey(config.dialogPackageName))
+                {
+                    Log.Error($"Dialog package {config.dialogPackageName} not found for event {debugLabel}");
+                    return null;
+                }
+                return new SchedulerNode.Event()
+                {
+                    eventType = config.eventType,
+                    runtimeDialogPackage = _builtDialogPackages[config.dialogPackageName]
+                };
+            default:
+                Log.Error($"Unsupported event type {config.eventType} for event {debugLabel}");
+                return null;
+        }
     }
 }

@@ -37,6 +37,9 @@ public static partial class ResourceExManager
         PreloadAllImages();
     }
 
+    // 加载逻辑
+    // DataBaseCore -> DataBaseScheduler -> DataBaseCharacter -> DataBaseLanguage -> DataBaseDay
+
     public static void OnDataBaseCoreInitialized()
     {
         RegisterAllSpawnConfigs();
@@ -65,6 +68,9 @@ public static partial class ResourceExManager
         BuildAllDialogPackages();
         RegisterAllSpecialGuestPairs();
         RegisterAllSpecialGuests();
+
+        RegisterAllMissionNodes(); // 依赖 Dialog
+        RegisterAllEventNodes(); // 依赖 Dialog
     }
 
     public static void OnDataBaseAchievementInitialized()
@@ -73,8 +79,8 @@ public static partial class ResourceExManager
     }
     public static void OnDataBaseSchedulerInitialized()
     {
-        RegisterAllMissionNodes();
-        RegisterAllEventNodes();
+        // RegisterAllMissionNodes(); // 依赖 Dialog
+        // RegisterAllEventNodes(); // 依赖 Dialog
     }
     public static void OnNightSceneLanguageInitialized()
     {
@@ -335,8 +341,4 @@ public static partial class ResourceExManager
             }
         }
     }
-
-
-
-
 }

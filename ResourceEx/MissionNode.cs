@@ -63,6 +63,8 @@ public static partial class ResourceExManager
         missionNode.reciever = config.reciever; // ignore typo
         missionNode.hasReciever = !string.IsNullOrEmpty(config.reciever); // ignore typo
 
+        missionNode.missionFinishEvent = BuildEventData(config.missionFinishEvent, config.debugLabel);
+
         missionNode.postMissionsAfterPerformance = new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStringArray(config.postMissionsAfterPerformance.Count);
         for (int i = 0; i < config.postMissionsAfterPerformance.Count; i++)
         {
@@ -77,8 +79,6 @@ public static partial class ResourceExManager
 
         var success = DataBaseScheduler.allNodes.TryAdd(missionNode.label, missionNode);
         Log.Info($"Registered MissionNode {config.title}({config.label}): Success: {success}");
-
-
     }
 
     private static MissionNode.Reward BuildMissionReward(MissionRewardConfig config)
