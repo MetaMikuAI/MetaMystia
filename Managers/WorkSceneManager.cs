@@ -9,6 +9,7 @@ using LibCpp2IL;
 using MemoryPack;
 using NightScene.GuestManagementUtility;
 using NightScene.Tiles;
+using SgrYuki;
 using SgrYuki.Utils;
 namespace MetaMystia;
 

@@ -3,7 +3,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using SgrYuki.Utils;
+using MetaMystia.Network;
+using SgrYuki;
 
 namespace MetaMystia;
 
@@ -273,7 +274,7 @@ public static partial class MpManager
         Notify.ShowOnMainThread($"联机系统：连接已断开！");
     }
 
-    public static void OnAction(NetAction action)
+    public static void OnAction(Network.Action action)
     {
         action.OnReceived();
     }

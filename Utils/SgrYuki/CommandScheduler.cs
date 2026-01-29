@@ -5,7 +5,7 @@ using System.Threading;
 using BepInEx;
 using LibCpp2IL;
 
-namespace SgrYuki.Utils;
+namespace SgrYuki;
 
 using KeyCommandQueue = ConcurrentDictionary<string, ConcurrentQueue<CommandScheduler.Command>>;
 

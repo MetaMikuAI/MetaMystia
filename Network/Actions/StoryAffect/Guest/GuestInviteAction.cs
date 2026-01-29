@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using MemoryPack;
 
-namespace MetaMystia;
+namespace MetaMystia.Network;
 
 [MemoryPackable]
 public partial class GuestInviteAction : SendAffectStoryAction
 {
     public override ActionType Type => ActionType.GUEST_INVITE;
     public List<int> InvitedGuestIDs;
-    
+
     public override void OnReceivedDerived()
     {
         if (MpManager.IsConnectedHost)

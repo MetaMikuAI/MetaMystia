@@ -1,6 +1,7 @@
 using GameData.Core.Collections;
 using GameData.RunTime.NightSceneUtility;
 using HarmonyLib;
+using MetaMystia.Network;
 
 namespace MetaMystia;
 
@@ -11,7 +12,7 @@ public partial class IzakayaConfigurePatch
     // MetaMiku 注:
     //     下面分别是 IzakayaConfigure 中 菜单/酒水/厨具 注册与注销 的 hook
     //     但是其中对于 厨具，厨具无论是注册还是注销，都会触发 RegisterToCookers，而只有在注销时才会触发 LogOffFromCookers
-    
+
     [HarmonyPatch(nameof(IzakayaConfigure.RegisterToDailyRecipes))]
     [HarmonyPrefix]
     public static bool RegisterToDailyRecipes_Prefix(int id)
@@ -28,7 +29,7 @@ public partial class IzakayaConfigurePatch
         PrepAction.Send(PrepSceneManager.localPrepTable);
         return true;
     }
-    
+
     [HarmonyPatch(nameof(IzakayaConfigure.RegisterToDailyBeverages))]
     [HarmonyPrefix]
     public static bool RegisterToDailyBeverages_Prefix(int id)
@@ -105,7 +106,7 @@ public partial class IzakayaConfigurePatch
         IzakayaConfigure.Instance.StoreFood(sellable, messageSender);
         _skipPatchStoreFood = false;
     }
-    
+
     [HarmonyPatch(nameof(IzakayaConfigure.StoreFood))]
     [HarmonyPrefix]
     public static void StoreFood_Prefix(Sellable sellable)
@@ -117,5 +118,5 @@ public partial class IzakayaConfigurePatch
         var food = SellableFood.FromSellable(sellable);
         StoreFoodAction.Send(food);
     }
-    
+
 }

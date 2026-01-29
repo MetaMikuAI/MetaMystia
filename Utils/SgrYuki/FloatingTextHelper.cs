@@ -1,8 +1,9 @@
 using BepInEx.Unity.IL2CPP.Utils;
+using MetaMystia;
 using TMPro;
 using UnityEngine;
 
-namespace MetaMystia;
+namespace SgrYuki;
 
 public static class FloatingTextHelper
 {
@@ -22,10 +23,10 @@ public static class FloatingTextHelper
         tmp.color = Color.white;
 
         tmp.fontMaterial.EnableKeyword("OUTLINE_ON");      // 描边
-        tmp.outlineColor = Color.black;                   
+        tmp.outlineColor = Color.black;
         tmp.outlineWidth = 0.075f;                         // 描边粗细，范围 0~1
 
-        return go;  
+        return go;
     }
     private static void ShowFloatingText(Common.CharacterUtility.CharacterControllerUnit comp, string text, float duration = 5f)
     {
@@ -37,7 +38,7 @@ public static class FloatingTextHelper
         {
             return;
         }
-        activeTextPeer = MakeFloatingText(comp.transform, text);                        
+        activeTextPeer = MakeFloatingText(comp.transform, text);
         comp.StartCoroutine(FadeAndDestroy(activeTextPeer.GetComponent<TextMeshPro>(), duration));
     }
 
@@ -53,7 +54,7 @@ public static class FloatingTextHelper
         {
             return;
         }
-        activeTextSelf = MakeFloatingText(character.transform, text);         
+        activeTextSelf = MakeFloatingText(character.transform, text);
         character.StartCoroutine(FadeAndDestroy(activeTextSelf.GetComponent<TextMeshPro>(), duration));
     }
 

@@ -1,7 +1,7 @@
 using MemoryPack;
 using static MetaMystia.WorkSceneManager;
 
-namespace MetaMystia;
+namespace MetaMystia.Network;
 
 
 [MemoryPackable]

@@ -2,6 +2,7 @@ using Common.CharacterUtility;
 using DayScene.Interactables.Collections.ConditionComponents;
 using GameData.RunTime.DaySceneUtility;
 using Il2CppSystem.Collections.Generic;
+using MetaMystia.Network;
 using UnityEngine;
 
 
@@ -127,7 +128,7 @@ public static partial class PeerManager
                 if (!Common.SceneDirector.Instance.characterCollection.ContainsKey(KYOUKO_ID))
                 {
                     Log.LogWarning($"Character '{KYOUKO_ID}' not found in character collection, try respawn..");
-                    SgrYuki.Utils.CommandScheduler.Enqueue(
+                    SgrYuki.CommandScheduler.Enqueue(
                         executeWhen: () => MystiaManager.CharacterSpawnedAndInitialized,
                         executeInfo: $"respawn night kyouko",
                         execute: () => SpawnNightKyouko(MystiaManager.Position, true, true)

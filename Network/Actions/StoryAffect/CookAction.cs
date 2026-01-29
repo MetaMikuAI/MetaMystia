@@ -1,7 +1,7 @@
 using GameData.Core.Collections;
 using MemoryPack;
 
-namespace MetaMystia;
+namespace MetaMystia.Network;
 
 [MemoryPackable]
 [AutoLog]
@@ -9,7 +9,7 @@ public partial class CookAction : AffectStoryAction
 {
     public override ActionType Type => ActionType.COOK;
     public int GridIndex { get; set; }
-    public int RecipeId {get; set; }
+    public int RecipeId { get; set; }
     public SellableFood Food { get; set; }
 
     [CheckScene(Common.UI.Scene.WorkScene)]
@@ -31,7 +31,7 @@ public partial class CookAction : AffectStoryAction
             }
 
             var food = Food.ToSellable();
-            
+
             var cookerController = CookManager.GetCookerControllerByIndex(GridIndex);
             if (cookerController == null)
             {

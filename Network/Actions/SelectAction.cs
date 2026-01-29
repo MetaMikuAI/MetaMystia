@@ -1,9 +1,9 @@
 using MemoryPack;
 
-namespace MetaMystia;
+namespace MetaMystia.Network;
 
 [MemoryPackable]
-public partial class SelectAction : NetAction
+public partial class SelectAction : Action
 {
     public override ActionType Type => ActionType.SELECT;
     public string MapLabel { get; set; } = "";

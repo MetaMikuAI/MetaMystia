@@ -1,7 +1,7 @@
 using Common.UI;
 using HarmonyLib;
 using NightScene;
-using SgrYuki.Utils;
+using SgrYuki;
 
 namespace MetaMystia;
 

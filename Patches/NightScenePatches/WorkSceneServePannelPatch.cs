@@ -1,6 +1,7 @@
 using HarmonyLib;
+using MetaMystia.Network;
 using NightScene.UI.GuestManagementUtility;
-using SgrYuki.Utils;
+using SgrYuki;
 
 namespace MetaMystia;
 

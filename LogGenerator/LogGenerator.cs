@@ -68,7 +68,7 @@ namespace LogGenerator
             sb.AppendLine($"public partial class {className}");
             sb.AppendLine("{");
             sb.AppendLine($"        [MemoryPack.MemoryPackIgnore]");
-            sb.AppendLine($"        private static SgrYuki.Utils.LogWrapper Log => new ({LogSource}, nameof({className}));");
+            sb.AppendLine($"        private static SgrYuki.LogWrapper Log => new ({LogSource}, nameof({className}));");
             sb.AppendLine("}");
 
             if (ns != null)

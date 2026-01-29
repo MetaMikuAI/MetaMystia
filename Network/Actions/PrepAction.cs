@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using MemoryPack;
 
-namespace MetaMystia;
+namespace MetaMystia.Network;
 
 [MemoryPackable]
 [AutoLog]
-public partial class PrepAction : NetAction
+public partial class PrepAction : Action
 {
     public override ActionType Type => ActionType.PREP;
 

@@ -4,7 +4,9 @@ using GameData.Core.Collections.CharacterUtility;
 using GameData.Core.Collections.NightSceneUtility;
 using HarmonyLib;
 using Il2CppSystem.IO;
+using MetaMystia.Network;
 using NightScene.GuestManagementUtility;
+using SgrYuki;
 using SgrYuki.Utils;
 
 namespace MetaMystia;

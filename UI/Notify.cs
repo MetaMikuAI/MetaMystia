@@ -53,7 +53,7 @@ public static partial class Notify
 
     public static void ShowOnNextAvailableScene(string text, Action afterShow = null)
     {
-        SgrYuki.Utils.CommandScheduler.Enqueue(
+        CommandScheduler.Enqueue(
             executeWhen: CanNotify,
             execute: () =>
             {

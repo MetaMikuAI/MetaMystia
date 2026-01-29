@@ -1,13 +1,12 @@
 using System.Collections.Generic;
 using Common.UI;
 using MemoryPack;
-using SgrYuki.Utils;
 
-namespace MetaMystia;
+namespace MetaMystia.Network;
 
 [MemoryPackable]
 [AutoLog]
-public partial class HelloAction : NetAction
+public partial class HelloAction : Action
 {
     public override ActionType Type => ActionType.HELLO;
     public string PeerId { get; set; } = "";

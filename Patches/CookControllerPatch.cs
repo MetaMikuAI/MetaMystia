@@ -1,6 +1,7 @@
 using System;
 using GameData.Core.Collections;
 using HarmonyLib;
+using MetaMystia.Network;
 using NightScene.CookingUtility;
 
 namespace MetaMystia;
@@ -23,7 +24,7 @@ public partial class CookControllerPatch
         }
         return true;
     }
-    
+
 
     [HarmonyPatch(nameof(CookController.SetCook))]
     [HarmonyReversePatch]
@@ -36,7 +37,7 @@ public partial class CookControllerPatch
     [HarmonyPostfix]
     public static void SetCook_Postfix(CookController __instance, Sellable thisResult, Recipe recipe, bool thisCouldReturnIngredients)
     {
-        // Log.LogDebug($"SetCook_Postfix called for food:\n {thisResult.ToString()}\n\nrecipe:\n {recipe.ToString()}\n\nthisCouldReturnIngredients: {thisCouldReturnIngredients}"); 
+        // Log.LogDebug($"SetCook_Postfix called for food:\n {thisResult.ToString()}\n\nrecipe:\n {recipe.ToString()}\n\nthisCouldReturnIngredients: {thisCouldReturnIngredients}");
         var gridIndex = __instance.GridIndex;
         var recipeId = recipe.Id;
         SellableFood food = SellableFood.FromSellable(thisResult);

@@ -1,11 +1,9 @@
-using GameData.Core.Collections.CharacterUtility;
-using BepInEx;
 using System.IO;
-using UnityEngine;
-using System.Linq;
-using Il2CppSystem.Configuration;
-using System.Text.Json;
 using System.Text.Encodings.Web;
+using System.Text.Json;
+using BepInEx;
+using GameData.Core.Collections.CharacterUtility;
+using UnityEngine;
 
 namespace MetaMystia;
 
@@ -20,7 +18,7 @@ public static partial class ExportUtils
 
     public static void ExportAllFoodSprite(string exportDir)
     {
-        
+
         var allFood = GameData.CoreLanguage.Collections.DataBaseLanguage.Foods;
         foreach (var kvp in allFood)
         {
@@ -30,7 +28,7 @@ public static partial class ExportUtils
             {
                 var filename = $"Food_{kvp.Key}_{kvp.Value.BriefName}.png";
                 var filepath = Path.Combine(exportDir, filename);
-                
+
                 TrySaveSprite(sprite, filepath);
                 Log.LogInfo($"Exported: {filepath}");
             }
@@ -57,7 +55,7 @@ public static partial class ExportUtils
         {
             var id = kvp.Key;
             var visualData = kvp.Value;
-            
+
             if (visualData == null || visualData.characterPortrayal == null || visualData.characterPortrayal.defaultPortrayal == null)
                 continue;
 
@@ -93,7 +91,7 @@ public static partial class ExportUtils
 
                     var filename = $"Special_{id}_{i}_{subObjectName}.png";
                     var filepath = Path.Combine(exportDir, filename);
-                    
+
                     TrySaveSprite(sprite, filepath);
                     Log.LogInfo($"Exported: {filepath}");
                 }
@@ -101,7 +99,7 @@ public static partial class ExportUtils
                 {
                     Log.LogWarning($"Failed to load sprite for Special_{id}_{i}");
                 }
-            }       
+            }
         }
     }
 
@@ -141,7 +139,7 @@ public static partial class ExportUtils
         {
             var originalTexture = sprite.texture;
             var rect = sprite.textureRect;
-            
+
             // 1. 提取裁剪后的区域 (readableTexture)
             if (!originalTexture.isReadable)
             {
@@ -187,7 +185,7 @@ public static partial class ExportUtils
             int targetWidth = Mathf.RoundToInt(sprite.rect.width);
             int targetHeight = Mathf.RoundToInt(sprite.rect.height);
             finalTexture = new Texture2D(targetWidth, targetHeight, TextureFormat.RGBA32, false);
-            
+
             // 填充透明背景
             Color[] transparent = new Color[targetWidth * targetHeight];
             for (int i = 0; i < transparent.Length; i++) transparent[i] = Color.clear;
@@ -240,7 +238,7 @@ public static partial class ExportUtils
             var food = kvp.Value;
             object tags = null;
             try { tags = food.Tags; } catch { }
-            
+
             foodsList.Add(new
             {
                 id = food.Id,
@@ -281,7 +279,7 @@ public static partial class ExportUtils
             object tags = null;
             try { tags = beverage.Tags; } catch { }
 
-            beverageList.Add(new 
+            beverageList.Add(new
             {
                 id = beverage.Id,
                 briefName = beverage.Text.BriefName,
@@ -295,7 +293,7 @@ public static partial class ExportUtils
         var foodTagsList = new System.Collections.Generic.List<object>();
         foreach (var kvp in GameData.CoreLanguage.Collections.DataBaseLanguage.FoodTags)
         {
-            foodTagsList.Add(new 
+            foodTagsList.Add(new
             {
                 id = kvp.Key,
                 name = kvp.Value,
@@ -305,7 +303,7 @@ public static partial class ExportUtils
         var bevTagsList = new System.Collections.Generic.List<object>();
         foreach (var kvp in GameData.CoreLanguage.Collections.DataBaseLanguage.BeverageTags)
         {
-            bevTagsList.Add(new 
+            bevTagsList.Add(new
             {
                 id = kvp.Key,
                 name = kvp.Value,

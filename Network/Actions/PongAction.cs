@@ -1,9 +1,9 @@
 using MemoryPack;
 
-namespace MetaMystia;
+namespace MetaMystia.Network;
 
 [MemoryPackable]
-public partial class PongAction : NetAction
+public partial class PongAction : Action
 {
     public override ActionType Type => ActionType.PONG;
     public int Id { get; set; }

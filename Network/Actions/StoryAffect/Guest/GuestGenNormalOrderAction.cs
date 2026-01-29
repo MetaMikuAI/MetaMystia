@@ -3,7 +3,7 @@ using GameData.Core.Collections.NightSceneUtility;
 using MemoryPack;
 using NightScene.GuestManagementUtility;
 
-namespace MetaMystia;
+namespace MetaMystia.Network;
 
 [MemoryPackable]
 [AutoLog]

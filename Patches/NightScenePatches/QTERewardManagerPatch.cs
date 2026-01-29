@@ -1,6 +1,6 @@
 using HarmonyLib;
 using NightScene.CookingUtility;
-using SgrYuki.Utils;
+using SgrYuki;
 
 namespace MetaMystia;
 

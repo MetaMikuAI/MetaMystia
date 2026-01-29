@@ -1,11 +1,11 @@
 using DayScene.Interactables.Collections.ConditionComponents;
 using MemoryPack;
-using SgrYuki.Utils;
-namespace MetaMystia;
+using SgrYuki;
+namespace MetaMystia.Network;
 
 [MemoryPackable]
 [AutoLog]
-public partial class GetCollectableAction : NetAction
+public partial class GetCollectableAction : Action
 {
     public override ActionType Type => ActionType.GET_COLLECTABLE;
     public string Collectable;
@@ -34,7 +34,8 @@ public partial class GetCollectableAction : NetAction
 
     public static void Send(string collectable)
     {
-        var action = new GetCollectableAction{
+        var action = new GetCollectableAction
+        {
             Collectable = collectable
         };
         action.SendToHostOrBroadcast();

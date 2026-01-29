@@ -1,7 +1,7 @@
+using System.Collections.Generic;
 using Common.DialogUtility;
 using Common.UI;
 using GameData.Profile;
-using System.Collections.Generic;
 
 namespace MetaMystia;
 
@@ -25,7 +25,7 @@ public static partial class Dialog
         for (int i = 0; i < length; i++)
         {
             var dialog = dialogList[i];
-            
+
             var meta = new DialogMeta();
 
             var si = new SpeakerIdentity();
@@ -33,7 +33,7 @@ public static partial class Dialog
             si.speakerId = dialog.characterId;
             si.speakerPortrayalVariationId = dialog.speakerPortrayalVariationId;
             meta.speakerIdentity = si;
-            
+
             meta.dialogId = i;
             meta.speakerPosition = dialog.position;
 
@@ -102,7 +102,7 @@ public static partial class Dialog
         }
     }
 
-    public static void ShowReadyDialog(bool isReady, System.Action onFinishCallback = null) 
+    public static void ShowReadyDialog(bool isReady, System.Action onFinishCallback = null)
     {
         if (isReady)
         {
@@ -120,26 +120,26 @@ public static partial class Dialog
         } // 文案: 余烬特调
     }
 
-    public static void ShowSelectedDialog(string mapLabelM, System.Action onFinishCallback = null) 
+    public static void ShowSelectedDialog(string mapLabelM, System.Action onFinishCallback = null)
     {
         var mapNameM = Utils.GetMapLabelNameCN(mapLabelM);
-        var textsM = new[] 
+        var textsM = new[]
         {
             $"那么，今天就决定是「{mapNameM}」了！",
             $"今天的目的地就设定在「{mapNameM}」吧！",
         };
         var textM = textsM[UnityEngine.Random.Range(0, textsM.Length)];
-        
+
         var dialogList = new CustomDialogList();
         dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 16, Position.Right, textM);
         BuildAndShow(dialogList, onFinishCallback);
     }
 
-    public static void ShowInformDialog(string mapLabelK, int mapLevelK, System.Action onFinishCallback = null) 
+    public static void ShowInformDialog(string mapLabelK, int mapLevelK, System.Action onFinishCallback = null)
     {
         var mapNameK = Utils.GetMapLabelNameCN(mapLabelK);
         var levelNameK = Utils.GetMapLevelNameCN(mapLevelK);
-        var textsK = new[] 
+        var textsK = new[]
         {
             $"让我想想……「{mapNameK} {levelNameK}」好像是个好主意！",
             $"就决定是这里啦！「{mapNameK} {levelNameK}」！",
@@ -152,10 +152,10 @@ public static partial class Dialog
 
     }
 
-    public static void ShowRejectDialog(string mapLabelM, string mapLabelK, System.Action onFinishCallback = null) 
+    public static void ShowRejectDialog(string mapLabelM, string mapLabelK, System.Action onFinishCallback = null)
     {
         var mapNameM = Utils.GetMapLabelNameCN(mapLabelM);
-        var textsM = new[] 
+        var textsM = new[]
         {
             $"所以，今天的计划如何？关于去「{mapNameM}」这件事。",
             $"就这么决定了！目标，「{mapNameM}」，出发！",
@@ -163,7 +163,7 @@ public static partial class Dialog
         var textM = textsM[UnityEngine.Random.Range(0, textsM.Length)];
 
         var mapNameK = Utils.GetMapLabelNameCN(mapLabelK);
-        var textsK = new[] 
+        var textsK = new[]
         {
             $"不过米斯琪，「{mapNameK}」会不会好些呢？",
             $"不如还是「{mapNameK}」吧，听着就有趣！",
@@ -176,17 +176,17 @@ public static partial class Dialog
         BuildAndShow(dialogList, onFinishCallback);
     }
 
-    public static void ShowConfirmDialog(string mapLabel, System.Action onFinishCallback = null) 
+    public static void ShowConfirmDialog(string mapLabel, System.Action onFinishCallback = null)
     {
         var mapName = Utils.GetMapLabelNameCN(mapLabel); // Confirm 中不分 M/K
-        var textsM = new[] 
+        var textsM = new[]
         {
             $"所以，今天的计划如何？关于去「{mapName}」这件事。",
             $"就这么决定了！目标，「{mapName}」，出发！",
         };
         var textM = textsM[UnityEngine.Random.Range(0, textsM.Length)];
 
-        var textsK = new[] 
+        var textsK = new[]
         {
             $"好呀好呀，我们现在就出发吧！",
             $"好——我们现在就走吧——",
@@ -199,8 +199,8 @@ public static partial class Dialog
         BuildAndShow(dialogList, onFinishCallback);
 
     }
-    
-    public static void ShowTestDialog(System.Action onFinishCallback = null) 
+
+    public static void ShowTestDialog(System.Action onFinishCallback = null)
     {
         var dialogList = new CustomDialogList();
         dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 2, Position.Right, "你为什么上来就粉评啊，夜雀食堂不是这样的啊！");
@@ -266,12 +266,12 @@ public class CustomDialogList
     {
         dialogs.Add(dialog);
     }
-    
+
     public int Count
     {
         get { return dialogs.Count; }
     }
-    
+
     public CustomDialog this[int index]
     {
         get { return dialogs[index]; }

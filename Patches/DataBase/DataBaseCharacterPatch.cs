@@ -1,9 +1,8 @@
 using DEYU.Utils;
 using GameData.Core.Collections.CharacterUtility;
 using GameData.Profile;
-using UnityEngine;
 using HarmonyLib;
-using Mono.Cecil;
+using UnityEngine;
 
 namespace MetaMystia;
 
@@ -25,24 +24,24 @@ public partial class DataBaseCharacterPatch
     public static bool GetNPCLabel_Prefix(ref string __result, SchedulerNode.Character identity)
     {
         // Log.LogWarning($"GetNPCLabel_Prefix called for identity: {identity} result: {__result}");
-        
+
         var config = ResourceExManager.GetCharacterConfig(identity.characterId, identity.characterIdentity.ToString());
         if (config != null)
         {
             __result = config.label;
             return false;
         }
-        
+
         return true;
     }
 
     [HarmonyPatch(nameof(DataBaseCharacter.RefNormalGuestVisual))]
     [HarmonyPrefix]
-    public static bool RefNormalGuestVisual_Prefix(ref GuestProfilePair  __result, ref int id)
+    public static bool RefNormalGuestVisual_Prefix(ref GuestProfilePair __result, ref int id)
     {
-        if(MpManager.IsConnectedClient && WorkSceneManager.normalGuestProfilePairIndexQueue.TryDequeue(out int index))
+        if (MpManager.IsConnectedClient && WorkSceneManager.normalGuestProfilePairIndexQueue.TryDequeue(out int index))
         {
-            var compacts = DataBaseCharacter.NormalGuestVisual.Get(id, new[] {DataBaseCharacter.FallbackCompactPixel});
+            var compacts = DataBaseCharacter.NormalGuestVisual.Get(id, new[] { DataBaseCharacter.FallbackCompactPixel });
             var compact = compacts[index];
             Log.LogMessage($"RefNormalGuestVisual_Prefix called, get index {index} => {compact.ToString()}");
             var guestProfilePair = new GuestProfilePair(id, DataBaseCharacter.UnifiedNormalGuestBGColor, DataBaseCharacter.UnifiedNormalGuestTextColor, null, ScriptableObject.CreateInstance<CharacterSkinSets>());

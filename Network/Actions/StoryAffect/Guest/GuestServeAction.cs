@@ -3,7 +3,7 @@ using MemoryPack;
 using NightScene.GuestManagementUtility;
 using NightScene.Tiles;
 
-namespace MetaMystia;
+namespace MetaMystia.Network;
 
 [MemoryPackable]
 [AutoLog]

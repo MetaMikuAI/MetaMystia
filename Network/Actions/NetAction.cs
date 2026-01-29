@@ -2,9 +2,9 @@ using System;
 using System.Reflection;
 using BepInEx.Logging;
 using MemoryPack;
-using SgrYuki.Utils;
+using SgrYuki;
 
-namespace MetaMystia;
+namespace MetaMystia.Network;
 
 public enum ActionType : ushort
 {
@@ -69,7 +69,7 @@ public enum ActionType : ushort
 [MemoryPackUnion((ushort)ActionType.GET_COLLECTABLE, typeof(GetCollectableAction))]
 [AutoLog]
 
-public abstract partial class NetAction
+public abstract partial class Action
 {
     public abstract ActionType Type { get; }
     public long TimestampMs { get; protected set; }
@@ -96,7 +96,7 @@ public abstract partial class NetAction
     [MemoryPackIgnore]
     private const string OnReceivedDerivedAfterStoryOverCommand = "OnReceivedDerivedAfterStoryOver";
 
-    protected NetAction()
+    protected Action()
     {
         TimestampMs = MpManager.TimestampNow;
         SenderId = 0;
@@ -146,7 +146,7 @@ public abstract partial class NetAction
     }
 
 
-    private void ExecuteAfterStoryOver(Action action)
+    private void ExecuteAfterStoryOver(System.Action action)
     {
         CommandScheduler.EnqueueKey(
             key: OnReceivedDerivedAfterStoryOverCommand,
@@ -247,8 +247,8 @@ public abstract partial class NetAction
 
     public static void RegisterAllFormatter()
     {
-        if (!MemoryPackFormatterProvider.IsRegistered<NetAction>()) MemoryPackFormatterProvider.Register(new NetActionFormatter());
-        if (!MemoryPackFormatterProvider.IsRegistered<NetAction[]>()) MemoryPackFormatterProvider.Register(new MemoryPack.Formatters.ArrayFormatter<NetAction>());
+        if (!MemoryPackFormatterProvider.IsRegistered<Action>()) MemoryPackFormatterProvider.Register(new ActionFormatter());
+        if (!MemoryPackFormatterProvider.IsRegistered<Action[]>()) MemoryPackFormatterProvider.Register(new MemoryPack.Formatters.ArrayFormatter<Action>());
     }
 
     [AttributeUsage(AttributeTargets.Method)]

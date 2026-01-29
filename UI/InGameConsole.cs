@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Common.UI;
 using Il2CppInterop.Runtime;
-using SgrYuki.Utils;
+using MetaMystia.Network;
 using UnityEngine;
 using UnityEngine.EventSystems;
 

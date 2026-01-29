@@ -1,6 +1,6 @@
 using MemoryPack;
 
-namespace MetaMystia;
+namespace MetaMystia.Network;
 
 // public enum Scene
 // {
@@ -17,7 +17,7 @@ namespace MetaMystia;
 
 [MemoryPackable]
 [AutoLog]
-public partial class SceneTransitAction : NetAction
+public partial class SceneTransitAction : Action
 {
     public override ActionType Type => ActionType.SCENE_TRANSIT;
 

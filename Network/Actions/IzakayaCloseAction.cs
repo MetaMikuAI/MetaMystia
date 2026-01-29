@@ -1,11 +1,11 @@
 using MemoryPack;
-using SgrYuki.Utils;
+using SgrYuki;
 
-namespace MetaMystia;
+namespace MetaMystia.Network;
 
 [MemoryPackable]
 [AutoLog]
-public partial class IzakayaCloseAction : NetAction
+public partial class IzakayaCloseAction : Action
 {
     public override ActionType Type => ActionType.IZAKAYA_CLOSE;
 

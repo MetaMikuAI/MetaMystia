@@ -1,11 +1,11 @@
 using GameData.Core.Collections;
 using MemoryPack;
 
-namespace MetaMystia;
+namespace MetaMystia.Network;
 
 [MemoryPackable]
 [AutoLog]
-public partial class StoreSellableAction : NetAction
+public partial class StoreSellableAction : Action
 {
     public override ActionType Type => ActionType.STORE_SELLABLE;
 

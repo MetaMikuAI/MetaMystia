@@ -1,9 +1,10 @@
 using MemoryPack;
+using SgrYuki;
 
-namespace MetaMystia;
+namespace MetaMystia.Network;
 
 [MemoryPackable]
-public partial class MessageAction : NetAction
+public partial class MessageAction : Action
 {
     public override ActionType Type => ActionType.MESSAGE;
 

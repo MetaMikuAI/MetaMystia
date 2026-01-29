@@ -4,7 +4,7 @@ using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
-using SgrYuki.Utils;
+using SgrYuki;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -33,7 +33,6 @@ public class Plugin : BasePlugin
         // DayScene Patches
         typeof(DaySceneUtilityPatch),
         typeof(StatusTrackerPatch),
-        typeof(RunTimeSchedulerPatch),
         typeof(CharacterControllerUnitPatch),
         typeof(CharacterInputPatch),
         typeof(DayScenePlayerInputPatch),
@@ -121,7 +120,7 @@ public class Plugin : BasePlugin
             MinHook_SpawnNormalGuestGroup.InstallHook();
 
             // ShigureYuki.DebugClassPatcher.PatchAllInnerClass(ref harmony, typeof(ShigureYuki.DebugConsolePatch));
-            NetAction.RegisterAllFormatter();
+            Network.Action.RegisterAllFormatter();
 
             ResourceExManager.Initialize();
 

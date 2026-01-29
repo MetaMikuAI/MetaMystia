@@ -1,6 +1,7 @@
 
 using GameData.RunTime.DaySceneUtility.Collection;
 using HarmonyLib;
+using MetaMystia.Network;
 namespace MetaMystia;
 
 [HarmonyPatch]

@@ -6,13 +6,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using MemoryPack;
 
-namespace MetaMystia;
+namespace MetaMystia.Network;
 
 // ---------------- NetPacket ----------------
 [MemoryPackable]
 public partial class NetPacket
 {
-    public NetAction[] Actions { get; set; } = [];
+    public Action[] Actions { get; set; } = [];
 
     public byte[] ToBytesWithLength()
     {
@@ -28,7 +28,7 @@ public partial class NetPacket
         return MemoryPackSerializer.Deserialize<NetPacket>(data)!;
     }
 
-    public NetAction GetFirstAction()
+    public Action GetFirstAction()
     {
         if (Actions.Length > 0)
         {
@@ -37,12 +37,12 @@ public partial class NetPacket
         throw new Exception("No action in this packet!");
     }
 
-    public NetPacket(NetAction[] Actions)
+    public NetPacket(Action[] Actions)
     {
         this.Actions = Actions;
     }
 
-    public static NetPacket FromSingleAction(NetAction action) => new([action]);
+    public static NetPacket FromSingleAction(Action action) => new([action]);
 }
 
 // ---------------- PacketBuffer ----------------

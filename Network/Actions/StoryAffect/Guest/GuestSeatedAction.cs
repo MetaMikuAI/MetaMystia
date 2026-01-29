@@ -1,7 +1,7 @@
 using MemoryPack;
 using NightScene.GuestManagementUtility;
 
-namespace MetaMystia;
+namespace MetaMystia.Network;
 
 [MemoryPackable]
 [AutoLog]

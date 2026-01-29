@@ -1,9 +1,7 @@
 using System.Linq;
-
 using GameData.Core.Collections;
-
-using MetaMystia.ResourceEx.Models;
 using MetaMystia.ResourceEx.Mappers;
+using MetaMystia.ResourceEx.Models;
 
 namespace MetaMystia;
 

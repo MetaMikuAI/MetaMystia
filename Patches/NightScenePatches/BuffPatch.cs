@@ -1,7 +1,6 @@
 using GameData.Profile;
 using HarmonyLib;
-using NightScene.CookingUtility;
-using NightScene.EventUtility;
+using MetaMystia.Network;
 
 namespace MetaMystia;
 

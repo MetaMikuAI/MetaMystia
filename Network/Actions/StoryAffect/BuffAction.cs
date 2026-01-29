@@ -1,7 +1,7 @@
 using MemoryPack;
-using SgrYuki.Utils;
+using SgrYuki;
 
-namespace MetaMystia;
+namespace MetaMystia.Network;
 
 public enum QTEBuff
 {

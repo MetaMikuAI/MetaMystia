@@ -3,7 +3,7 @@ using GameData.Core.Collections.NightSceneUtility;
 using MemoryPack;
 using static NightScene.GuestManagementUtility.GuestsManager;
 
-namespace MetaMystia;
+namespace MetaMystia.Network;
 
 [MemoryPackable]
 public partial class GuestOrder

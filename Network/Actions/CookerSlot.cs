@@ -1,6 +1,6 @@
 using MemoryPack;
 
-namespace MetaMystia;
+namespace MetaMystia.Network;
 
 [MemoryPackable]
 public partial class CookerSlot

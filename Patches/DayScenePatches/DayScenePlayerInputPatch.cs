@@ -1,5 +1,6 @@
 using DayScene.Input;
 using HarmonyLib;
+using MetaMystia.Network;
 
 namespace MetaMystia;
 
@@ -11,7 +12,7 @@ public partial class DayScenePlayerInputPatch
     [HarmonyPrefix]
     public static bool OnSprintPerformed_Prefix()
     {
-        if (PluginManager.Console != null && PluginManager.Console.IsOpen) 
+        if (PluginManager.Console != null && PluginManager.Console.IsOpen)
         {
             return false;
         }
@@ -36,7 +37,7 @@ public partial class DayScenePlayerInputPatch
         {
             return false;
         }
-        if (MystiaManager.IsDayOver) 
+        if (MystiaManager.IsDayOver)
         {
             return false;
         }

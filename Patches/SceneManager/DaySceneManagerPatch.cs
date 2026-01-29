@@ -1,6 +1,8 @@
 using Common.UI;
 using DayScene;
 using HarmonyLib;
+using MetaMystia.Network;
+using SgrYuki;
 using SgrYuki.Utils;
 
 namespace MetaMystia;
@@ -79,7 +81,7 @@ public partial class DaySceneManagerPatch
     [HarmonyPrefix]
     public static bool SwapMap_Prefix(SceneManager __instance, string targetMapLabel, string targetMarkerName, int travelCount, ref Il2CppSystem.Action onSwapFinish)
     {
-        Log.Info($"SwapMap_Prefix called, targetMapLabel {targetMapLabel}, targetMarkerName {targetMarkerName}");
+        Log.InfoCaller($"targetMapLabel {targetMapLabel}, targetMarkerName {targetMarkerName}");
         if (!MpManager.ShouldSkipAction && MystiaManager.IsDayOver) return false;
         var added = () =>
         {
@@ -97,7 +99,7 @@ public partial class DaySceneManagerPatch
     [HarmonyPostfix]
     public static void SwapMap_Postfix(SceneManager __instance, string targetMapLabel, string targetMarkerName, int travelCount)
     {
-        Log.Debug($"SwapMap_Postfix called, targetMapLabel {targetMapLabel}, targetMarkerName {targetMarkerName}");
+        Log.DebugCaller($"targetMapLabel {targetMapLabel}, targetMarkerName {targetMarkerName}");
         MystiaManager.MapLabel = targetMapLabel;
     }
 }

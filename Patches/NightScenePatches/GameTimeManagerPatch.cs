@@ -1,5 +1,5 @@
 using HarmonyLib;
-using SgrYuki.Utils;
+using SgrYuki;
 
 namespace MetaMystia;
 

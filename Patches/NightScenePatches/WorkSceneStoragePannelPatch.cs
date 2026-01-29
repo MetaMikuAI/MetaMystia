@@ -1,5 +1,6 @@
 using GameData.Core.Collections;
 using HarmonyLib;
+using MetaMystia.Network;
 using NightScene.UI.CookingUtility;
 
 namespace MetaMystia;
@@ -28,7 +29,7 @@ public partial class WorkSceneStoragePannelPatch
         instanceRef = null;
     }
 
-    
+
     [HarmonyPatch(nameof(WorkSceneStoragePannel.Extract))]
     [HarmonyPrefix]
     public static bool OnExtract_Prefix(Sellable toExtract)

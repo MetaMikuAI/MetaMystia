@@ -5,7 +5,7 @@ using GameData.Core.Collections;
 using Il2CppSystem.IO;
 using MemoryPack;
 
-namespace MetaMystia;
+namespace MetaMystia.Network;
 
 
 // optimize & TODO: 实现整个 GameData.Core.Collections.Sellable 即使之包含 Beverage 而不仅仅是 Food
@@ -37,7 +37,7 @@ public partial class SellableFood
         {
             var b = NightScene.CookingUtility.CookSystemManager.Instance?.registeredSellables.TryAdd(food.RunTimeGUID.Unbox<Il2CppSystem.Guid>(), cooker);
             Log.Info($"registeredSellables tryadd {food.RunTimeGUID.Unbox<Il2CppSystem.Guid>()} => {cooker?.Id}, result {b}");
-        } 
+        }
         return food;
     }
     public static SellableFood FromSellable(Sellable sellable)
@@ -61,12 +61,12 @@ public partial class SellableFood
     {
         var storedFoods = GameData.RunTime.NightSceneUtility.IzakayaConfigure.Instance.GetStoredFoods();
         var matchingFood = from food in storedFoods.ToArray()
-                          where food.Id == FoodId &&
-                                food.level == Level &&
-                                food.modifier.SequenceEqual(ModifierIds) &&
-                                food.additiveTags.ToArray().SequenceEqual(AdditiveTags.ToArray())
-                          select food;
-        
+                           where food.Id == FoodId &&
+                                 food.level == Level &&
+                                 food.modifier.SequenceEqual(ModifierIds) &&
+                                 food.additiveTags.ToArray().SequenceEqual(AdditiveTags.ToArray())
+                           select food;
+
         return matchingFood.FirstOrDefault();
     }
 }

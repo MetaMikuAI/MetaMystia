@@ -1,8 +1,8 @@
 using MemoryPack;
 using NightScene.EventUtility;
-using SgrYuki.Utils;
+using SgrYuki;
 
-namespace MetaMystia;
+namespace MetaMystia.Network;
 
 public enum GuestPayType
 {

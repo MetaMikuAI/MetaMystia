@@ -1,7 +1,7 @@
 using MemoryPack;
-using SgrYuki.Utils;
+using SgrYuki;
 
-namespace MetaMystia;
+namespace MetaMystia.Network;
 
 public enum ReadyType
 {
@@ -11,7 +11,7 @@ public enum ReadyType
 
 [MemoryPackable]
 [AutoLog]
-public partial class ReadyAction : NetAction
+public partial class ReadyAction : Action
 {
     public override ActionType Type => ActionType.READY;
     public ReadyType ReadyType;

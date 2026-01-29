@@ -7,7 +7,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using MetaMystia;
 
-namespace SgrYuki.Utils;
+namespace SgrYuki;
 
 [AutoLog]
 public static partial class MetricsReporter

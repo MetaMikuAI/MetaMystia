@@ -1,9 +1,9 @@
 using MemoryPack;
 
-namespace MetaMystia;
+namespace MetaMystia.Network;
 
 [MemoryPackable]
-public partial class PingAction : NetAction
+public partial class PingAction : Action
 {
     public override ActionType Type => ActionType.PING;
     public int Id { get; set; }
