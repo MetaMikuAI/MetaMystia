@@ -280,33 +280,15 @@ public static partial class Mappers
     {
         if (config.guest == null) return null;
 
-        var likeFoodTag = new Il2CppReferenceArray<SpecialGuest.WeightedTag>(
-            config.guest.likeFoodTag?.Select(x => new SpecialGuest.WeightedTag(x.tagId, x.weight)).ToArray() ?? new SpecialGuest.WeightedTag[0]);
-
-        var likeBevTag = new Il2CppReferenceArray<SpecialGuest.WeightedTag>(
-            config.guest.likeBevTag?.Select(x => new SpecialGuest.WeightedTag(x.tagId, x.weight)).ToArray() ?? new SpecialGuest.WeightedTag[0]);
-
-        var hateTags = config.guest.hateFoodTag?.ToArray() ?? new int[0];
-
-        var specialGuest = new SpecialGuest(
-            config.id,
-            config.label,
-            new Vector2Int(config.guest.fundRangeLower, config.guest.fundRangeUpper),
-            hateTags,
-            likeFoodTag,
-            likeBevTag,
-            template.Reaction, template.destination, template.CommisionAreaLabel,
-            template.characterKizunaLevel1Welcome, template.characterKizunaLevel2Welcome, template.characterKizunaLevel3Welcome, template.characterKizunaLevel4Welcome, template.characterKizunaLevel5Welcome,
-            template.characterKizunaLevel1ChatData, template.characterKizunaLevel2ChatData, template.characterKizunaLevel3ChatData, template.characterKizunaLevel4ChatData, template.characterKizunaLevel5ChatData,
-            template.characterKizunaLevel2InviteSucceed, template.characterKizunaLevel2InviteFailed, template.characterKizunaLevel3InviteSucceed, template.characterKizunaLevel3InviteFailed, template.characterKizunaLevel4InviteSucceed, template.characterKizunaLevel4InviteFailed, template.characterKizunaLevel5InviteSucceed,
-            template.characterKizunaLevel3RequestIngerdient, template.characterKizunaLevel4RequestIngerdient, template.characterKizunaLevel5RequestIngerdient, // ignore typo
-            template.characterKizunaLevel4RequestBeverage, template.characterKizunaLevel5RequestBeverage,
-            template.characterKizunaLevel5Commision, template.characterKizunaLevel5CommisionFinish,
-            template.hideInAlbum, template.IsParticular, template.IsCollabCharacter, template.SpawnType, template.unifiedSpawnExclusion, template.unifiedSpawnWhereAfterEventOrMission, template.unifiedSpawnProb, template.m_SpecialGuestExtraDialogDataAsset, template.doNotShowInNightByDefault, template.doNotShowInChallenge, template.guestFoodEasterEggData
-        );
-
-        specialGuest.stringId = config.label;
-        return specialGuest;
+        return SpecialGuestBuilder
+            .FromTemplate(template)
+            .WithId(config.id)
+            .WithStringId(config.label)
+            .WithFundRange(config.guest.fundRangeLower, config.guest.fundRangeUpper)
+            .WithHateFoodTags(config.guest.hateFoodTag)
+            .WithLikeFoodTags(config.guest.likeFoodTag)
+            .WithLikeBevTags(config.guest.likeBevTag)
+            .Build();
     }
 
     #endregion
