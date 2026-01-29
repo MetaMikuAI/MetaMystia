@@ -298,6 +298,7 @@ public partial class InGameConsole
                     break;
                 case "enable_bepin_console":
                     BepInEx.ConsoleManager.CreateConsole();
+                    System.Console.OutputEncoding = System.Text.Encoding.UTF8;
                     LogToConsole("BepinEX console enabled");
                     break;
                 default:
