@@ -392,7 +392,7 @@ public static partial class ResourceExManager
     private static void InitializeAllDaySpawnConfigs()
     {
         GetAllCharacterConfigs()
-            .Where(c => c.guest != null)
+            .Where(c => c.spawnMarker != null)
             .ToList()
             .ForEach(InitializeDaySpawnConfig);
     }
@@ -402,6 +402,7 @@ public static partial class ResourceExManager
         // TODO: 实现更合适的白天生成配置
         if (config.spawnMarker == null) return;
         GameData.RunTime.DaySceneUtility.RunTimeDayScene.MoveCharacter(config.label, config.spawnMarker.mapLabel, new Vector2(config.spawnMarker.x, config.spawnMarker.y), (int)config.spawnMarker.rotation, out var oldNPCData);
+        GameData.RunTime.DaySceneUtility.RunTimeDayScene.ReturnCharacter(config.label);
         Log.Info($"Initialized Day Scene Spawn Config for Special Guest: {config.name} ({config.id})");
     }
 
