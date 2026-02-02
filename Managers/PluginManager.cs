@@ -32,7 +32,6 @@ public partial class PluginManager : MonoBehaviour
     private readonly ConcurrentQueue<Action> _mainThreadQueue = new ConcurrentQueue<Action>();
     private readonly List<(Action action, Func<bool> condition)> _conditionalActions = new List<(Action, Func<bool>)>();
     public static bool DEBUG => Plugin.ConfigDebug.Value;
-    public static bool DetachConsoleAfterLoad => Plugin.ConfigDetachConsoleAfterLoad.Value;
 
     public PluginManager(IntPtr ptr) : base(ptr)
     {
@@ -111,19 +110,9 @@ public partial class PluginManager : MonoBehaviour
                 }
             }
 
-            if (Input.GetKeyDown(KeyCode.F7)) BepInEx.ConsoleManager.DetachConsole();
-            if (Input.GetKeyDown(KeyCode.F8))
-            {
-                BepInEx.ConsoleManager.CreateConsole();
-                System.Console.OutputEncoding = System.Text.Encoding.UTF8;
-            }
             if (Input.GetKeyDown(KeyCode.F9))
             {
                 WorkSceneManager.CloseIzakayaIfPossible();
-            }
-            if (Input.GetKeyDown(KeyCode.F10))
-            {
-                WorkSceneManager.ModifyWorkTimeLeft(3);
             }
             if (Input.GetKeyDown(KeyCode.F11))
             {

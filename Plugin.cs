@@ -15,7 +15,6 @@ public class Plugin : BasePlugin
 {
     public static Plugin Instance;
     public static ConfigEntry<bool> ConfigDebug;
-    public static ConfigEntry<bool> ConfigDetachConsoleAfterLoad;
     public Action<Scene, LoadSceneMode> LoadAction;
     public static bool FirstEnterMain = true;
 
@@ -83,7 +82,6 @@ public class Plugin : BasePlugin
     private void InitConfigs()
     {
         ConfigDebug = Config.Bind("General", "Debug", false, "Enable debug features and hotkeys\n启用调试功能和热键");
-        ConfigDetachConsoleAfterLoad = Config.Bind("General", "DetachConsoleAfterLoad", true, "Detach the console window after the plugin finishes loading\n插件加载完成后分离控制台窗口");
     }
 
     public override void Load()
@@ -124,14 +122,12 @@ public class Plugin : BasePlugin
             NativeDllExtractor.Extract("MetaMystia.Patches.Native.Runtime.MinHook.x64.dll", MinHook.DLLFilename);
             MinHook_SpawnNormalGuestGroup.InstallHook();
 
-            ShigureYuki.DebugClassPatcher.PatchAllInnerClass(ref harmony, typeof(ShigureYuki.DebugConsolePatch));
+            // ShigureYuki.DebugClassPatcher.PatchAllInnerClass(ref harmony, typeof(ShigureYuki.DebugConsolePatch));
             Network.Action.RegisterAllFormatter();
 
             ResourceExManager.Initialize();
 
             MetricsReporter.OnPluginInitialized();
-
-            if (PluginManager.DetachConsoleAfterLoad) ConsoleManager.DetachConsole();
         }
         catch (Exception ex)
         {

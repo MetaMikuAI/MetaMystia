@@ -51,7 +51,9 @@ public static partial class MetricsReporter
     {
         try
         {
+#pragma warning disable CA1416 // 验证平台兼容性
             var value = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Cryptography", "MachineGuid", null) as string;
+#pragma warning restore CA1416 // 验证平台兼容性
             if (!string.IsNullOrEmpty(value)) return value.Trim();
         }
         catch (Exception ex)
