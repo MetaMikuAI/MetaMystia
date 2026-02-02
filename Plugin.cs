@@ -90,7 +90,11 @@ public class Plugin : BasePlugin
     {
         InitConfigs();
 
-        Console.OutputEncoding = System.Text.Encoding.UTF8;
+        try
+        {
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+        }
+        catch { }
         Log.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
 
         try
@@ -120,7 +124,7 @@ public class Plugin : BasePlugin
             NativeDllExtractor.Extract("MetaMystia.Patches.Native.Runtime.MinHook.x64.dll", MinHook.DLLFilename);
             MinHook_SpawnNormalGuestGroup.InstallHook();
 
-            // ShigureYuki.DebugClassPatcher.PatchAllInnerClass(ref harmony, typeof(ShigureYuki.DebugConsolePatch));
+            ShigureYuki.DebugClassPatcher.PatchAllInnerClass(ref harmony, typeof(ShigureYuki.DebugConsolePatch));
             Network.Action.RegisterAllFormatter();
 
             ResourceExManager.Initialize();
