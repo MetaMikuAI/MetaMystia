@@ -32,7 +32,7 @@
         "hakurei",
         "idsite",
         "imgui",
-        "Ingerdient",
+        "ingredient",
         "interactable",
         "interactables",
         "izakaya",
@@ -71,6 +71,7 @@
         "seatable",
         "sellables",
         "serv",
+        "shigure",
         "shigureyuki",
         "shinki",
         "steamapps",
@@ -80,6 +81,6 @@
         "yagokoroeirin",
         "youkai",
         "yuki",
-        "yuyuko",
+        "yuyuko"
     ]
 }

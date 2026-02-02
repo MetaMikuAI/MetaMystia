@@ -47,29 +47,6 @@ public static partial class MetricsReporter
         Timeout = TimeSpan.FromSeconds(10)
     };
 
-    private static string GetActiveMacAddress()
-    {
-        try
-        {
-            foreach (var nic in NetworkInterface.GetAllNetworkInterfaces()
-                .Where(n => n.OperationalStatus == OperationalStatus.Up)
-                .Where(n => n.NetworkInterfaceType != NetworkInterfaceType.Loopback))
-            {
-                var props = nic.GetIPProperties();
-                if (props.UnicastAddresses.Any(u => u.Address.AddressFamily == AddressFamily.InterNetwork))
-                {
-                    var macAddress = nic.GetPhysicalAddress().ToString().Trim();
-                    if (!string.IsNullOrEmpty(macAddress)) return macAddress;
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Log.Warning($"Failed to get MAC address: {ex.Message}");
-        }
-        return null;
-    }
-
     private static string ReadMachineGuidFromRegistry()
     {
         try
@@ -283,6 +260,7 @@ public static partial class MetricsReporter
                     var latestVer = await GetPluginLatestTagAsync();
 
                     Log.Message($"当前 Mod 版本为 {currentVer}，最新版为 {latestVer}");
+
                     if (currentVer.Equals(latestVer))
                     {
                         Notify.ShowOnNextAvailableScene($"您的 Mod 版本为 {currentVer}，您正在使用最新版");
@@ -291,6 +269,7 @@ public static partial class MetricsReporter
                     {
                         Notify.ShowOnNextAvailableScene($"您的 Mod 版本为 {currentVer}，最新版为 {latestVer}，建议更新到最新版！");
                     }
+
                     if (!PluginManager.DEBUG)
                     {
                         _ = ReportEvent("Client", "Run", currentVer);
