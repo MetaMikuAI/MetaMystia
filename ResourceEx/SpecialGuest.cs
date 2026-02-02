@@ -400,7 +400,8 @@ public static partial class ResourceExManager
     private static void InitializeDaySpawnConfig(CharacterConfig config)
     {
         // TODO: 实现更合适的白天生成配置
-        // GameData.RunTime.DaySceneUtility.RunTimeDayScene.MoveCharacter(config.label, "BeastForest", new Vector2(114, 514), 0, out var oldNPCData);
+        if (config.spawnMarker == null) return;
+        GameData.RunTime.DaySceneUtility.RunTimeDayScene.MoveCharacter(config.label, config.spawnMarker.mapLabel, new Vector2(config.spawnMarker.x, config.spawnMarker.y), (int)config.spawnMarker.rotation, out var oldNPCData);
         Log.Info($"Initialized Day Scene Spawn Config for Special Guest: {config.name} ({config.id})");
     }
 
