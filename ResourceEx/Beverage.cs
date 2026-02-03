@@ -30,6 +30,7 @@ public static partial class ResourceExManager
     {
         var beverage = config.ToBeverage();
         var success = DataBaseCore.Beverages.TryAdd(beverage.Id, beverage);
-        Log.Info($"Registered beverage object {config.id}: {config.name}, success={success}");
+        var mappingSuccess = DataBaseCore.BeveragesMapping.TryAdd(config.id, "ResourceEx");
+        Log.Info($"Registered beverage object {config.id}: {config.name}, success={success}, mappingSuccess={mappingSuccess}");
     }
 }
