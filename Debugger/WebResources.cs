@@ -1,322 +1,47 @@
+using System.IO;
+using System.Reflection;
+
 namespace MetaMystia.Debugger
 {
     public static class WebResources
     {
-        public const string LoginHtmlContent = @"
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset=""UTF-8"">
-    <title>MetaMystia Debugger Login</title>
-    <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #1e1e1e; color: #d4d4d4; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .login-box { background: #252526; padding: 30px; border-radius: 5px; border: 1px solid #3e3e42; text-align: center; }
-        input { padding: 8px; background: #3c3c3c; color: #cccccc; border: 1px solid #3e3e42; margin-bottom: 10px; width: 200px; }
-        button { background: #0e639c; color: white; border: none; padding: 8px 20px; cursor: pointer; }
-        button:hover { background: #1177bb; }
-    </style>
-</head>
-<body>
-    <div class=""login-box"">
-        <h2>Login Required</h2>
-        <form action=""/"" method=""get"">
-            <input type=""text"" name=""token"" placeholder=""Enter Token"" required>
-            <br>
-            <button type=""submit"">Login</button>
-        </form>
-    </div>
-</body>
-</html>";
+        private static string _loginHtmlContent;
+        private static string _htmlContent;
 
-        public const string HtmlContent = @"
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset=""UTF-8"">
-    <title>MetaMystia Debugger</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; background: #1e1e1e; color: #d4d4d4; }
-        h1, h2 { color: #569cd6; margin: 0; font-size: 1.2em; }
-        .container { display: flex; flex-direction: column; gap: 20px; }
-        .panel { background: #252526; border-radius: 5px; border: 1px solid #3e3e42; overflow: hidden; }
-        .panel-header { display: flex; justify-content: space-between; align-items: center; background: #333; padding: 10px; user-select: none; }
-        .panel-header .title-group { display: flex; align-items: center; cursor: pointer; flex-grow: 1; }
-        .panel-header:hover { background: #3e3e42; }
-        .panel-content { padding: 15px; }
-        .collapsed .panel-content { display: none; }
-        .panel.fullscreen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1000; border-radius: 0; margin: 0; }
-        .panel.fullscreen .panel-content { height: calc(100vh - 50px); display: block !important; overflow: auto; }
-
-        input[type=""text""], textarea { width: 100%; padding: 8px; font-size: 14px; background: #3c3c3c; color: #cccccc; border: 1px solid #3e3e42; box-sizing: border-box; }
-        button { background: #0e639c; color: white; border: none; padding: 8px 15px; cursor: pointer; margin-top: 5px; }
-        button:hover { background: #1177bb; }
-
-        #console-output, #lua-output { margin-top: 10px; font-family: Consolas, monospace; min-height: 100px; max-height: 500px; overflow-y: auto; background: #1e1e1e; padding: 10px; border: 1px solid #3e3e42; }
-
-        .tree-item { display: flex; align-items: center; padding: 2px 0; }
-        .toggle { cursor: pointer; width: 16px; display: inline-block; user-select: none; color: #858585; }
-        .name { color: #9cdcfe; margin-right: 5px; }
-        .type { color: #4ec9b0; margin-right: 5px; font-size: 0.9em; }
-        .value { color: #ce9178; }
-        .address { color: #808080; font-size: 0.8em; margin-left: 8px; }
-        .error-text { color: #f48771; }
-        .watch-item { display: flex; align-items: center; padding: 5px; border-bottom: 1px solid #3e3e42; }
-        .watch-expr { font-family: Consolas, monospace; color: #9cdcfe; flex: 1; margin-left: 10px; }
-        .watch-val { font-family: Consolas, monospace; color: #ce9178; margin-left: 10px; flex: 1; text-align: right; }
-        .watch-controls { display: flex; gap: 5px; margin-right: 10px; }
-        .icon-btn { background: #3e3e42; color: #d4d4d4; border: 1px solid #555; padding: 2px 8px; font-size: 12px; cursor: pointer; margin-top: 0; }
-        .icon-btn:hover { background: #505050; }
-        #thread-list table { width: 100%; border-collapse: collapse; font-family: Consolas, monospace; font-size: 0.9em; }
-        #thread-list th, #thread-list td { text-align: left; padding: 5px; border-bottom: 1px solid #3e3e42; }
-        #thread-list th { color: #569cd6; }
-
-        .lua-toolbar { display: flex; align-items: center; margin-top: 5px; gap: 10px; }
-        .lua-log-item { margin-bottom: 8px; border-bottom: 1px solid #333; padding-bottom: 4px; }
-        .lua-timestamp { color: #6a9955; font-size: 0.85em; margin-right: 8px; }
-        .lua-result { color: #ce9178; white-space: pre-wrap; margin-top: 2px; }
-    </style>
-</head>
-<body>
-    <h1 style=""margin-bottom: 20px; font-size: 2em;"">MetaMystia Debugger</h1>
-    <div class=""container"">
-        <!-- Process Info (1) -->
-        <div class=""panel"" id=""panel-process"">
-            <div class=""panel-header"">
-                <div class=""title-group"" onclick=""togglePanel('panel-process')""><h2>Process Info</h2></div>
-                <button class=""icon-btn"" onclick=""toggleFullscreen('panel-process')"">⛶</button>
-            </div>
-            <div class=""panel-content"">
-                <div id=""process-info"" style=""font-family: Consolas, monospace; color: #4ec9b0;"">Loading...</div>
-            </div>
-        </div>
-
-        <!-- Watch List (2) -->
-        <div class=""panel"" id=""panel-watch"">
-            <div class=""panel-header"">
-                <div class=""title-group"" onclick=""togglePanel('panel-watch')""><h2>Watch List</h2></div>
-                <button class=""icon-btn"" onclick=""toggleFullscreen('panel-watch')"">⛶</button>
-            </div>
-            <div class=""panel-content"">
-                <input type=""text"" id=""watch-input"" placeholder=""Add expression to watch..."" onkeydown=""if(event.key==='Enter') addWatch()"">
-                <button onclick=""addWatch()"">Add</button>
-                <div id=""watch-list"" style=""margin-top: 15px;""></div>
-            </div>
-        </div>
-
-        <!-- Threads (3) -->
-        <div class=""panel collapsed"" id=""panel-threads"">
-            <div class=""panel-header"">
-                <div class=""title-group"" onclick=""togglePanel('panel-threads')""><h2>Thread Pool</h2></div>
-                <button class=""icon-btn"" onclick=""toggleFullscreen('panel-threads')"">⛶</button>
-            </div>
-            <div class=""panel-content"">
-                <div id=""thread-stats"" style=""margin-bottom: 10px; font-weight: bold; color: #4ec9b0;"">Loading...</div>
-                <div id=""thread-list""></div>
-                <button onclick=""refreshThreads()"">Refresh</button>
-            </div>
-        </div>
-
-        <!-- Scene Hierarchy (4) -->
-        <div class=""panel collapsed"" id=""panel-scene"">
-            <div class=""panel-header"">
-                <div class=""title-group"" onclick=""togglePanel('panel-scene')""><h2>Scene Hierarchy</h2></div>
-                <button class=""icon-btn"" onclick=""toggleFullscreen('panel-scene')"">⛶</button>
-            </div>
-            <div class=""panel-content"">
-                <button onclick=""refreshSceneHierarchy()"">Refresh</button>
-                <div id=""scene-list"" style=""margin-top: 10px;""></div>
-            </div>
-        </div>
-
-        <!-- C# Console (5 - Second Last) -->
-        <div class=""panel"" id=""panel-csharp"">
-            <div class=""panel-header"">
-                <div class=""title-group"" onclick=""togglePanel('panel-csharp')""><h2>C# Console</h2></div>
-                <button class=""icon-btn"" onclick=""toggleFullscreen('panel-csharp')"">⛶</button>
-            </div>
-            <div class=""panel-content"">
-                <input type=""text"" id=""expr"" placeholder=""Enter C# expression..."" onkeydown=""if(event.key==='Enter') evalConsole()"">
-                <div style=""margin-top: 5px;"">
-                    <button onclick=""evalConsole()"">Evaluate</button>
-                    <button onclick=""addConsoleToWatch()"">Add to Watch</button>
-                </div>
-                <div id=""console-output""></div>
-            </div>
-        </div>
-
-        <!-- Lua Console (6 - Last) -->
-        <div class=""panel"" id=""panel-lua"">
-            <div class=""panel-header"">
-                <div class=""title-group"" onclick=""togglePanel('panel-lua')""><h2>Lua Console</h2></div>
-                <button class=""icon-btn"" onclick=""toggleFullscreen('panel-lua')"">⛶</button>
-            </div>
-            <div class=""panel-content"">
-                <textarea id=""lua-expr"" placeholder=""Enter Lua script... (Ctrl+Enter to Run)"" rows=""5""></textarea>
-                <div class=""lua-toolbar"">
-                    <button onclick=""evalLua()"" title=""Ctrl+Enter"">Run Script</button>
-                    <label style=""display: flex; align-items: center; cursor: pointer;"">
-                        <input type=""checkbox"" id=""lua-clear-input"" checked style=""width: auto; margin-right: 5px;""> Clear input after run
-                    </label>
-                    <button onclick=""document.getElementById('lua-output').innerHTML=''"" style=""margin-left: auto; background-color: #a1260d;"">Clear Output</button>
-                </div>
-                <div id=""lua-output""></div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const token = ""[[TOKEN]]"";
-
-        function escapeHtml(text) {
-            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '""': '&quot;', ""'"": '&#039;' };
-            return String(text).replace(/[&<>""']/g, m => map[m]);
-        }
-
-        function togglePanel(id) {
-            document.getElementById(id).classList.toggle('collapsed');
-        }
-
-        function toggleFullscreen(id) {
-            document.getElementById(id).classList.toggle('fullscreen');
-        }
-
-        function getTimestamp() {
-            const now = new Date();
-            return now.toLocaleTimeString() + '.' + String(now.getMilliseconds()).padStart(3, '0');
-        }
-
-        // C# Console
-        async function evalConsole() {
-            const expr = document.getElementById('expr').value;
-            const out = document.getElementById('console-output');
-            try {
-                const res = await fetch('/eval?token=' + token, { method: 'POST', body: expr });
-                const data = await res.json();
-                out.innerHTML = '<pre>' + escapeHtml(JSON.stringify(data, null, 2)) + '</pre>';
-            } catch(e) {
-                out.innerHTML = '<div class=""error-text"">Error: ' + e.message + '</div>';
-            }
-        }
-
-        async function addConsoleToWatch() {
-            const expr = document.getElementById('expr').value.trim();
-            if (expr) addWatch(expr);
-        }
-
-        // Lua Console
-        async function evalLua() {
-            const input = document.getElementById('lua-expr');
-            const expr = input.value;
-            if (!expr.trim()) return;
-
-            const out = document.getElementById('lua-output');
-            const time = getTimestamp();
-
-            // Create container for this log entry
-            const entryDiv = document.createElement('div');
-            entryDiv.className = 'lua-log-item';
-
-            const header = `<div style=""color: #d4d4d4;""><span class=""lua-timestamp"">[${time}]</span> &gt; ${escapeHtml(expr)}</div>`;
-            entryDiv.innerHTML = header;
-
-            try {
-                const res = await fetch('/eval-lua?token=' + token, { method: 'POST', body: expr });
-                const text = await res.text();
-                entryDiv.innerHTML += `<div class=""lua-result"">${escapeHtml(text)}</div>`;
-
-                // Clear input if checkbox is checked
-                if (document.getElementById('lua-clear-input').checked) {
-                    input.value = '';
+        public static string LoginHtmlContent
+        {
+            get
+            {
+                if (_loginHtmlContent == null)
+                {
+                    _loginHtmlContent = LoadEmbeddedResource("MetaMystia.Debugger.login.html");
                 }
-            } catch(e) {
-                entryDiv.innerHTML += `<div class=""error-text"">Error: ${e.message}</div>`;
-            }
-
-            // Prepend result (add to top)
-            if (out.firstChild) {
-                out.insertBefore(entryDiv, out.firstChild);
-            } else {
-                out.appendChild(entryDiv);
+                return _loginHtmlContent;
             }
         }
 
-        // Ctrl+Enter shortcut for Lua
-        document.getElementById('lua-expr').addEventListener('keydown', function(event) {
-            if (event.ctrlKey && event.key === 'Enter') {
-                evalLua();
-                event.preventDefault();
-            }
-        });
-
-        // Watch List
-        let watches = [];
-
-        function renderWatches() {
-            const container = document.getElementById('watch-list');
-            container.innerHTML = '';
-            watches.forEach((expr, idx) => {
-                const div = document.createElement('div');
-                div.className = 'watch-item';
-                div.innerHTML = '<span class=""watch-expr"">' + escapeHtml(expr) + '</span>' +
-                    '<span class=""watch-val"" id=""val-' + idx + '"">...</span>' +
-                    '<button class=""icon-btn"" onclick=""watches.splice(' + idx + ', 1); renderWatches()"">X</button>';
-                container.appendChild(div);
-            });
-        }
-
-        function addWatch(expr) {
-            if (expr && !watches.includes(expr)) {
-                watches.push(expr);
-                renderWatches();
+        public static string HtmlContent
+        {
+            get
+            {
+                if (_htmlContent == null)
+                {
+                    _htmlContent = LoadEmbeddedResource("MetaMystia.Debugger.index.html");
+                }
+                return _htmlContent;
             }
         }
 
-        // Threads
-        async function refreshThreads() {
-            try {
-                const res = await fetch('/threads?token=' + token);
-                const data = await res.json();
-                document.getElementById('thread-stats').textContent = data.Stats;
-
-                let html = '<table><tr><th>ID</th><th>State</th><th>Priority</th></tr>';
-                data.Threads.forEach(t => {
-                    html += '<tr><td>' + t.Id + '</td><td>' + t.State + '</td><td>' + t.Priority + '</td></tr>';
-                });
-                html += '</table>';
-                document.getElementById('thread-list').innerHTML = html;
-            } catch(e) {
-                document.getElementById('thread-stats').textContent = 'Error: ' + e.message;
+        private static string LoadEmbeddedResource(string resourceName)
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            using var stream = assembly.GetManifestResourceStream(resourceName);
+            if (stream == null)
+            {
+                throw new FileNotFoundException($"Embedded resource '{resourceName}' not found.");
             }
+            using var reader = new StreamReader(stream);
+            return reader.ReadToEnd();
         }
-
-        // Scene
-        async function refreshSceneHierarchy() {
-            try {
-                const res = await fetch('/scene-hierarchy?token=' + token);
-                const scenes = await res.json();
-                let html = '';
-                scenes.forEach(scene => {
-                    html += '<div style=""color: #569cd6; font-weight: bold;"">' + scene.name + '</div>';
-                    if (scene.objects) {
-                        scene.objects.forEach(obj => {
-                            html += '<div style=""margin-left: 20px; color: #ce9178;"">' + obj.name + ' [' + obj.address + ']</div>';
-                        });
-                    }
-                });
-                document.getElementById('scene-list').innerHTML = html;
-            } catch(e) {
-                document.getElementById('scene-list').innerHTML = '<div class=""error-text"">Error: ' + e.message + '</div>';
-            }
-        }
-
-        // Init
-        window.onload = function() {
-            renderWatches();
-            refreshThreads();
-            refreshSceneHierarchy();
-        };
-    </script>
-</body>
-</html>";
     }
 }

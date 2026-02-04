@@ -47,6 +47,8 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Patches\Native\Runtime\MinHook.x64.dll" />
+    <EmbeddedResource Include="Debugger\login.html" />
+    <EmbeddedResource Include="Debugger\index.html" />
   </ItemGroup>
 
   <ItemGroup>
