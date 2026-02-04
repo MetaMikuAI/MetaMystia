@@ -1,21 +1,26 @@
 using System.Collections.Generic;
 using System.Linq;
+
 using Common.DialogUtility;
-using DEYU.Utils;
-using GameData.Core.Collections.CharacterUtility;
 using GameData.CoreLanguage.Collections;
-using GameData.Profile;
+using GameData.Core.Collections.CharacterUtility;
 using GameData.Core.Collections.DaySceneUtility;
+using GameData.Profile;
+using GameData.RunTime.DaySceneUtility;
+using GameData.RunTime.Common;
+
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using UnityEngine;
+
+using DEYU.Utils;
+
 using MetaMiku;
 using MetaMystia.ResourceEx.Mappers;
-using DayScene.Interactables;
 using MetaMystia.ResourceEx.Models;
 using SgrYuki.Utils;
-using UnityEngine;
-using UnityEngine.InputSystem.Utilities;
 
 namespace MetaMystia;
+
 
 /*
 Register or Injection:
@@ -58,6 +63,11 @@ public static partial class ResourceExManager
             return config;
         }
         return null;
+    }
+
+    public static CharacterConfig GetCharacterConfig(string stringId, string type = "Special")
+    {
+        return _characterConfigs.Values.FirstOrDefault(c => c.label == stringId && c.type == type);
     }
 
     private static void RegisterSpecialPortraits()
@@ -439,6 +449,47 @@ public static partial class ResourceExManager
                 .ToArray();
 
             newGroups.ForEach(g => Log.Info($"Registered Spawn Config for GroupId {g.GroupId} in Izakaya {izakayaId}"));
+        }
+    }
+
+    // 如果使用过旧版 mod，存档内的 NPC 对话可能仍是 Wriggle 未更新，导致对话缺失或错误
+    // 这里手动重置所有已追踪的扩展的 NPC 的对话内容，以确保对话正确
+    // 不过当游戏触发羁绊升级时，也会正确更新对话内容
+    // 未来也许可以考虑直接删除此逻辑（？）
+    private static void ResetTrackedNpcDialog()
+    {
+        foreach (var trackedNPCsDict in RunTimeDayScene.trackedNPCs.Values)
+        {
+            foreach (var kvp in trackedNPCsDict)
+            {
+                var stringId = kvp.Key;
+                if (stringId.IsResourceExSpecialGuest())
+                {
+                    var config = GetCharacterConfig(stringId);
+
+                    var runTimeData = RunTimeAlbum.RefOrGenerateSpecialRunTimeData(config.id);
+                    if (runTimeData == null) continue;
+
+                    int level = runTimeData.CurrentBondLevel;
+                    var chatData = level switch
+                    {
+                        1 => config?.kizuna?.lv1ChatData,
+                        2 => config?.kizuna?.lv2ChatData,
+                        3 => config?.kizuna?.lv3ChatData,
+                        4 => config?.kizuna?.lv4ChatData,
+                        5 => config?.kizuna?.lv5ChatData,
+                        _ => null
+                    };
+
+                    if (chatData != null && chatData.Count > 0)
+                    {
+                        var dialogs = new Il2CppStringArray(chatData.Where(x => !string.IsNullOrEmpty(x)).ToArray());
+
+                        RunTimeDayScene.SetNPCDialog(stringId, "Wriggle", dialogs);
+                        Log.Info($"Reset dialog for tracked NPC: {config.name} ({stringId}) at Lv {level}");
+                    }
+                }
+            }
         }
     }
 }

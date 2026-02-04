@@ -100,6 +100,7 @@ public static partial class ResourceExManager
         RefreshAllDayNpcs();
         CheckAndReloadSchedulerData();
         ActivateAllKizunaEventNodes(); // 依赖 CheckAndReloadSchedulerData
+        ResetTrackedNpcDialog();
     }
 
     /// <summary>
