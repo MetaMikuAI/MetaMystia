@@ -8,6 +8,7 @@ using System.Text.Json.Serialization;
 using DEYU.AdpUISystem.Utils;
 using GameData.Core.Collections;
 using GameData.Core.Collections.NightSceneUtility;
+using GameData.CoreLanguage.Collections;
 using Il2CppSystem.Linq;
 using LibCpp2IL;
 using MemoryPack;
@@ -227,7 +228,19 @@ public static partial class WorkSceneManager
 
     public static string OrderDescription(this GuestsManager.OrderBase order)
     {
+        if (order is GuestsManager.NormalOrder no) return no.OrderDescription();
+        else if (order is GuestsManager.SpecialOrder so) return so.OrderDescription();
+        return "";
+    }
+
+    public static string OrderDescription(this GuestsManager.NormalOrder order)
+    {
         return $"Food {order.foodRequest.RefFood()?.Text?.Name}, Bev {order.beverageRequest.RefBeverage()?.Text?.Name}";
+    }
+
+    public static string OrderDescription(this GuestsManager.SpecialOrder order)
+    {
+        return $"Food {order.foodRequest.GetFoodTag()}, Bev {order.beverageRequest.GetBeverageTag()}";
     }
 
     static WorkSceneManager()
