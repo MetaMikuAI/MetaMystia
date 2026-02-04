@@ -285,8 +285,44 @@ public static partial class Mappers
             .WithHateFoodTags(config.guest.hateFoodTag)
             .WithLikeFoodTags(config.guest.likeFoodTag)
             .WithLikeBevTags(config.guest.likeBevTag)
+            .WithCommisionAreaLabel(config.kizuna?.commisionAreaLabel)
             // .WithDestination(config.label) // DO NOT ENABLE
+            .WithCharacterKizunaLevel1Welcome(GetDialogPackagesFromNames(config.kizuna?.lv1Welcome))
+            .WithCharacterKizunaLevel2Welcome(GetDialogPackagesFromNames(config.kizuna?.lv2Welcome))
+            .WithCharacterKizunaLevel3Welcome(GetDialogPackagesFromNames(config.kizuna?.lv3Welcome))
+            .WithCharacterKizunaLevel4Welcome(GetDialogPackagesFromNames(config.kizuna?.lv4Welcome))
+            .WithCharacterKizunaLevel5Welcome(GetDialogPackagesFromNames(config.kizuna?.lv5Welcome))
+            .WithCharacterKizunaLevel1ChatData(config.kizuna?.lv1ChatData)
+            .WithCharacterKizunaLevel2ChatData(config.kizuna?.lv2ChatData)
+            .WithCharacterKizunaLevel3ChatData(config.kizuna?.lv3ChatData)
+            .WithCharacterKizunaLevel4ChatData(config.kizuna?.lv4ChatData)
+            .WithCharacterKizunaLevel5ChatData(config.kizuna?.lv5ChatData)
+            .WithCharacterKizunaLevel2InviteSucceed(GetDialogPackagesFromNames(config.kizuna?.lv2InviteSucceed))
+            .WithCharacterKizunaLevel2InviteFailed(GetDialogPackagesFromNames(config.kizuna?.lv2InviteFailed))
+            .WithCharacterKizunaLevel3InviteSucceed(GetDialogPackagesFromNames(config.kizuna?.lv3InviteSucceed))
+            .WithCharacterKizunaLevel3InviteFailed(GetDialogPackagesFromNames(config.kizuna?.lv3InviteFailed))
+            .WithCharacterKizunaLevel4InviteSucceed(GetDialogPackagesFromNames(config.kizuna?.lv4InviteSucceed))
+            .WithCharacterKizunaLevel4InviteFailed(GetDialogPackagesFromNames(config.kizuna?.lv4InviteFailed))
+            .WithCharacterKizunaLevel5InviteSucceed(GetDialogPackagesFromNames(config.kizuna?.lv5InviteSucceed))
+            .WithCharacterKizunaLevel3RequestIngerdient(GetDialogPackagesFromNames(config.kizuna?.lv3RequestIngerdient))
+            .WithCharacterKizunaLevel4RequestIngerdient(GetDialogPackagesFromNames(config.kizuna?.lv4RequestIngerdient))
+            .WithCharacterKizunaLevel5RequestIngerdient(GetDialogPackagesFromNames(config.kizuna?.lv5RequestIngerdient))
+            .WithCharacterKizunaLevel4RequestBeverage(GetDialogPackagesFromNames(config.kizuna?.lv4RequestBeverage))
+            .WithCharacterKizunaLevel5RequestBeverage(GetDialogPackagesFromNames(config.kizuna?.lv5RequestBeverage))
+            .WithCharacterKizunaLevel5Commision(GetDialogPackagesFromNames(config.kizuna?.lv5Commision))
+            .WithCharacterKizunaLevel5CommisionFinish(GetDialogPackagesFromNames(config.kizuna?.lv5CommisionFinish))
             .Build();
+    }
+
+    private static System.Collections.Generic.List<DialogPackage> GetDialogPackagesFromNames(System.Collections.Generic.List<string> packageNames)
+    {
+        if (packageNames == null || packageNames.Count == 0)
+            return new System.Collections.Generic.List<DialogPackage>();
+
+        return packageNames
+            .Select(name => ResourceExManager.GetBuiltDialogPackage(name))
+            .Where(package => package != null)
+            .ToList();
     }
 
     #endregion

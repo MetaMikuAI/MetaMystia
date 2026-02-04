@@ -39,6 +39,35 @@ public class KizunaEventConfig
     public string lv2UpgradePrerequisiteEvent { get; set; }
     public string lv3UpgradePrerequisiteEvent { get; set; }
     public string lv4UpgradePrerequisiteEvent { get; set; }
+
+    public List<string> lv1Welcome { get; set; }
+    public List<string> lv2Welcome { get; set; }
+    public List<string> lv3Welcome { get; set; }
+    public List<string> lv4Welcome { get; set; }
+    public List<string> lv5Welcome { get; set; }
+
+    public List<string> lv1ChatData { get; set; }
+    public List<string> lv2ChatData { get; set; }
+    public List<string> lv3ChatData { get; set; }
+    public List<string> lv4ChatData { get; set; }
+    public List<string> lv5ChatData { get; set; }
+
+    public List<string> lv2InviteSucceed { get; set; }
+    public List<string> lv2InviteFailed { get; set; }
+    public List<string> lv3InviteSucceed { get; set; }
+    public List<string> lv3InviteFailed { get; set; }
+    public List<string> lv4InviteSucceed { get; set; }
+    public List<string> lv4InviteFailed { get; set; }
+    public List<string> lv5InviteSucceed { get; set; }
+
+    public List<string> lv3RequestIngerdient { get; set; } // ignore typo
+    public List<string> lv4RequestIngerdient { get; set; } // ignore typo
+    public List<string> lv5RequestIngerdient { get; set; } // ignore typo
+    public List<string> lv4RequestBeverage { get; set; }
+    public List<string> lv5RequestBeverage { get; set; }
+    public List<string> lv5Commision { get; set; }
+    public List<string> lv5CommisionFinish { get; set; }
+    public string commisionAreaLabel { get; set; } // ignore typo
 }
 
 public class GuestConfig

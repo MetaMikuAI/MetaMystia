@@ -1,4 +1,5 @@
 using GameData.Profile;
+using GameData.Core.Collections.DaySceneUtility;
 
 namespace MetaMystia;
 
@@ -25,15 +26,26 @@ public static partial class ResourceExManager
         {
             return pkg;
         }
+        Log.Warning($"Dialog package not built: {name}");
         return null;
     }
 
-    public static void BuildAllDialogPackages()
+    private static void BuildAllDialogPackages()
     {
         foreach (var kvp in _dialogPackageConfigs)
         {
             _builtDialogPackages[kvp.Key] = Dialog.BuildDialogPackage(kvp.Value);
+            // DataBaseDay.allDialogPackages[kvp.Key] = _builtDialogPackages[kvp.Key]; // 尚未初始化
             Log.Info($"Built dialog package: {kvp.Key}");
+        }
+    }
+
+    private static void RegisterAllDialogPackages()
+    {
+        foreach (var kvp in _builtDialogPackages)
+        {
+            DataBaseDay.allDialogPackages[kvp.Key] = kvp.Value;
+            Log.Info($"Registered dialog package to DataBaseDay: {kvp.Key}");
         }
     }
 

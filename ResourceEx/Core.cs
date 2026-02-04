@@ -47,6 +47,8 @@ public static partial class ResourceExManager
     }
     public static void OnDataBaseDayInitialized()
     {
+        RegisterAllDialogPackages();
+
         RegisterNPCs();
         // RegisterAllSpawnMarkers(); // DO NOT DELETE
     }
@@ -65,7 +67,7 @@ public static partial class ResourceExManager
     {
         BuildAllDialogPackages();
         RegisterAllSpecialGuestPairs();
-        RegisterAllSpecialGuests();
+        RegisterAllSpecialGuests(); // 依赖 Dialog
 
         RegisterAllMissionNodes(); // 依赖 Dialog
         RegisterAllEventNodes(); // 依赖 Dialog
