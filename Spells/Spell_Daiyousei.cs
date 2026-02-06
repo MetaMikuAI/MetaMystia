@@ -2,16 +2,13 @@ using System;
 using GameData.Core.Collections.NightSceneUtility;
 using GameData.CoreLanguage.Collections;
 using NightScene.EventUtility;
+using UnityEngine;
 
 namespace MetaMystia;
 
 using Spell_Daiyousei_Info = SpellExProvider<Spell_Daiyousei>;
-public class Spell_Daiyousei : SpellEx
+public class Spell_Daiyousei : SpellBase, ISpellEx
 {
-    public Spell_Daiyousei()
-    {
-    }
-
     public Spell_Daiyousei(IntPtr pointer) : base(pointer)
     {
     }
@@ -55,8 +52,12 @@ public class Spell_Daiyousei : SpellEx
         Spell_Daiyousei_Info.PositiveBuffDescription = new("Sgr符「爆肝mod」", "Sgr太好了，会送你十四夜喝", EventManager.BuffType.Murasa_Positive.RefBuffLang().Visual);
         Spell_Daiyousei_Info.PositiveBuffType = ExtendedBuff.Type.Daiyousei;
 
-        Spell_Daiyousei_Info.Register(charConfig);
+        (SpellHandle, PositiveSpellPortrayal, NegativeSpellPortrayal) = Spell_Daiyousei_Info.Register(charConfig);
     }
+
+    public static DEYU.AssetHandleUtility.IAssetHandle<SpellBase> SpellHandle;
+    public static DEYU.AssetHandleUtility.IAssetHandle<Sprite> PositiveSpellPortrayal;
+    public static DEYU.AssetHandleUtility.IAssetHandle<Sprite> NegativeSpellPortrayal;
 
     public static void DeRegister() => Spell_Daiyousei_Info.DeRegisterAssetHandle();
     public static bool Registered => Spell_Daiyousei_Info.Registered;

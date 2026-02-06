@@ -3,9 +3,9 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <LangVersion>14</LangVersion>
-    <AssemblyName>MetaMystia</AssemblyName>
-    <Product>MetaMystia</Product>
-    <Version>0.18.0</Version>
+    <AssemblyName>SgrMystia</AssemblyName>
+    <Product>SgrMystia</Product>
+    <Version>0.20.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RestoreAdditionalProjectSources>
       https://api.nuget.org/v3/index.json;
