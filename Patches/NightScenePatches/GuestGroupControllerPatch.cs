@@ -1,3 +1,4 @@
+using GameData.CoreLanguage.Collections;
 using HarmonyLib;
 using MetaMystia.Network;
 using NightScene.GuestManagementUtility;
@@ -87,5 +88,23 @@ public partial class GuestGroupControllerPatch
     public static void MoveToSpawn_Original(GuestGroupController __instance)
     {
         throw new System.NotImplementedException();
+    }
+}
+
+
+[HarmonyPatch]
+[AutoLog]
+public partial class SpecialGuestsControllerPatch
+{
+    [HarmonyPatch(typeof(SpecialGuestsController), nameof(SpecialGuestsController.GetOrderFoodText))]
+    [HarmonyPostfix]
+    public static void GetOrderFoodTextPostfix(GuestsManager.SpecialOrder specialOrder, ref string __result)
+    {
+        if (Spell_Koakuma.CheckBuff())
+        {
+            var ret = $"{__result} ({specialOrder.foodRequest.GetFoodTag()})";
+            Log.InfoCaller($"id={specialOrder.foodRequest}, original={__result}, ret={ret}");
+            __result = ret;
+        }
     }
 }

@@ -645,6 +645,7 @@ public partial class GuestsManagerPatch
             Log.InfoCaller($"for {guestGroup.GetGuestFSM()?.Identifier}");
             WorkSceneManager.DelayedSafeAddMaxPatient(guestGroup);
         }
+        Spell_Koakuma.TryTriggerPositiveBuffEffect(guestGroup);
     }
 
     [HarmonyPatch(nameof(GuestsManager.SetNormalManualControlledOrder))]
