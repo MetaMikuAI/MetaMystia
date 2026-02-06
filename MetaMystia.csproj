@@ -5,7 +5,7 @@
     <LangVersion>14</LangVersion>
     <AssemblyName>MetaMystia</AssemblyName>
     <Product>MetaMystia</Product>
-    <Version>0.15.2</Version>
+    <Version>0.18.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RestoreAdditionalProjectSources>
       https://api.nuget.org/v3/index.json;
@@ -142,6 +142,10 @@
       <HintPath>$(GamePath)\BepInEx\interop\Il2CppSystem.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Il2CppSystem.Data">
+      <HintPath>$(GamePath)\BepInEx\interop\Il2CppSystem.Data.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Il2CppSystem.Net.Http">
       <HintPath>$(GamePath)\BepInEx\interop\Il2CppSystem.Net.Http.dll</HintPath>
       <Private>False</Private>
@@ -232,6 +236,10 @@
     </Reference>
     <Reference Include="DEYU.AdpUISystemUniTaskExtension">
       <HintPath>$(GamePath)\BepInEx\interop\DEYU.AdpUISystemUniTaskExtension.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="DEYU.ObjectSpawner">
+      <HintPath>$(GamePath)\BepInEx\interop\DEYU.ObjectSpawner.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Omt.GamePlatformAPI">

@@ -56,6 +56,8 @@ public class Plugin : BasePlugin
         typeof(MystiaQTEBuffRewardPatch),
         typeof(GameTimeManagerPatch),
         typeof(NightScene_SceneManager__c__DisplayClass62_0_Patch),
+        typeof(DataBaseNightPatch),
+        typeof(SpecialGuestsControllerPatch),
 
         // ResourceEx Patches
         typeof(DataBaseCharacterPatch),
@@ -98,6 +100,9 @@ public class Plugin : BasePlugin
         try
         {
             ClassInjector.RegisterTypeInIl2Cpp<PluginManager>();
+
+            ClassInjector.RegisterTypeInIl2Cpp<Spell_Daiyousei>();
+            ClassInjector.RegisterTypeInIl2Cpp<Spell_Koakuma>();
             Log.LogInfo("Registered C# Types in Il2Cpp");
         }
         catch (Exception ex)

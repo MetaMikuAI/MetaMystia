@@ -102,7 +102,7 @@ public partial class PluginManager : MonoBehaviour
             {
                 WorkSceneManager.CloseIzakayaIfPossible();
             }
-            if (Input.GetKeyDown(KeyCode.F11))
+            if (Input.GetKeyDown(KeyCode.F10))
             {
                 Debugger ??= new Debugger.WebDebugger();
                 Debugger?.Start();
