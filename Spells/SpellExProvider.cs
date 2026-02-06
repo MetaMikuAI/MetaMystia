@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace MetaMystia;
 
-public static class SpellExProvider<T> where T : SpellEx
+public static class SpellExProvider<T> where T : SpellBase, ISpellEx
 {
     public static bool Registered { get; private set; } = false;
     public static int GuestId;
@@ -27,12 +27,13 @@ public static class SpellExProvider<T> where T : SpellEx
     private static ShigureIAssetHandleHelper<Sprite> PositiveSpellPortrayal;
     private static ShigureIAssetHandleHelper<Sprite> NegativeSpellPortrayal;
 
-    public static void Register(ResourceEx.Models.CharacterConfig charConfig)
+    public static (DEYU.AssetHandleUtility.IAssetHandle<SpellBase>, DEYU.AssetHandleUtility.IAssetHandle<Sprite>, DEYU.AssetHandleUtility.IAssetHandle<Sprite>) Register(ResourceEx.Models.CharacterConfig charConfig)
     {
         RegisterSpell();
         RegisterSpellLang();
         RegisterSpellPortrayal(charConfig);
         Registered = true;
+        return (SpellAsset, PositiveSpellPortrayal, NegativeSpellPortrayal);
     }
 
     private static void RegisterSpell()

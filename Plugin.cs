@@ -103,6 +103,7 @@ public class Plugin : BasePlugin
 
             ClassInjector.RegisterTypeInIl2Cpp<Spell_Daiyousei>();
             ClassInjector.RegisterTypeInIl2Cpp<Spell_Koakuma>();
+
             Log.LogInfo("Registered C# Types in Il2Cpp");
         }
         catch (Exception ex)

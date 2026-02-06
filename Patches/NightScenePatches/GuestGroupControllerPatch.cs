@@ -1,3 +1,4 @@
+using GameData.Core.Collections.NightSceneUtility;
 using GameData.CoreLanguage.Collections;
 using HarmonyLib;
 using MetaMystia.Network;
@@ -107,4 +108,43 @@ public partial class SpecialGuestsControllerPatch
             __result = ret;
         }
     }
+
+    [HarmonyPatch(typeof(SpecialGuestsController), nameof(SpecialGuestsController.TriggerPositiveBuff))]
+    [HarmonyPrefix]
+    public static bool TriggerPositiveBuffPrefix(SpecialGuestsController __instance)
+    {
+        if (__instance.SpecialGuest.Id == 9000)
+        {
+            Log.InfoCaller($"triggered Spell_Daiyousei");
+            Spell_Daiyousei.SpellHandle.Asset.SchedulePositiveBuffExecution(__instance.GetSpellExecutionContext(null, true));
+            return false;
+        }
+        if (__instance.SpecialGuest.Id == 9001)
+        {
+            Log.InfoCaller($"triggered Spell_Koakuma");
+            Spell_Koakuma.SpellHandle.Asset.SchedulePositiveBuffExecution(__instance.GetSpellExecutionContext(null, true));
+            return false;
+        }
+        return true;
+    }
+
+    [HarmonyPatch(typeof(SpecialGuestsController), nameof(SpecialGuestsController.TriggerNegativeBuff))]
+    [HarmonyPrefix]
+    public static bool TriggerNegativeBuffPrefix(SpecialGuestsController __instance)
+    {
+        if (__instance.SpecialGuest.Id == 9000)
+        {
+            Log.InfoCaller($"triggered Spell_Daiyousei");
+            Spell_Daiyousei.SpellHandle.Asset.ScheduleNegativeBuffExecution(__instance.GetSpellExecutionContext(null, true));
+            return false;
+        }
+        if (__instance.SpecialGuest.Id == 9001)
+        {
+            Log.InfoCaller($"triggered Spell_Koakuma");
+            Spell_Koakuma.SpellHandle.Asset.ScheduleNegativeBuffExecution(__instance.GetSpellExecutionContext(null, true));
+            return false;
+        }
+        return true;
+    }
+
 }
