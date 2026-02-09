@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using BepInEx;
+using GameData.Core.Collections.DaySceneUtility.Collections;
 using GameData.Profile;
 using MetaMystia.ResourceEx.AssetManagement;
 using MetaMystia.ResourceEx.Models;
@@ -20,6 +21,7 @@ public static partial class ResourceExManager
     private static Dictionary<(int id, string type), CharacterConfig> _characterConfigs = new Dictionary<(int id, string type), CharacterConfig>();
     private static Dictionary<string, CustomDialogList> _dialogPackageConfigs = new Dictionary<string, CustomDialogList>();
     private static Dictionary<string, DialogPackage> _builtDialogPackages = new Dictionary<string, DialogPackage>();
+    private static Dictionary<string, Merchant> _builtMerchants = new Dictionary<string, Merchant>();
 
     private static Dictionary<int, IngredientConfig> IngredientConfigs = new Dictionary<int, IngredientConfig>();
     private static Dictionary<int, FoodConfig> FoodConfigs = new Dictionary<int, FoodConfig>();
@@ -27,6 +29,7 @@ public static partial class ResourceExManager
     private static Dictionary<int, RecipeConfig> RecipeConfigs = new Dictionary<int, RecipeConfig>();
     private static List<MissionNodeConfig> MissionNodeConfigs = new List<MissionNodeConfig>();
     private static List<EventNodeConfig> EventNodeConfigs = new List<EventNodeConfig>();
+    private static Dictionary<string, MerchantConfig> MerchantConfigs = new Dictionary<string, MerchantConfig>();
 
     public static void Initialize()
     {
@@ -51,6 +54,7 @@ public static partial class ResourceExManager
 
         RegisterNPCs();
         // RegisterAllSpawnMarkers(); // DO NOT DELETE
+        BuildAllMerchants();
     }
     public static void OnDataBaseLanguageInitialized()
     {
@@ -101,6 +105,7 @@ public static partial class ResourceExManager
         CheckAndReloadSchedulerData();
         ActivateAllKizunaEventNodes(); // 依赖 CheckAndReloadSchedulerData
         ResetTrackedNpcDialog();
+        RegisterAllTrackedMerchant();
     }
 
     /// <summary>
@@ -210,6 +215,15 @@ public static partial class ResourceExManager
                 // eventNodeConfig.PackageRoot = packageRootInfo;
                 EventNodeConfigs.Add(eventNodeConfig);
                 Log.LogInfo($"[{packageName}] Loaded config for event node {eventNodeConfig.debugLabel}");
+            }
+        }
+
+        if (config?.merchants != null)
+        {
+            foreach (var merchantConfig in config.merchants)
+            {
+                MerchantConfigs[merchantConfig.key] = merchantConfig;
+                Log.LogInfo($"[{packageName}] Loaded config for merchant {merchantConfig.key}");
             }
         }
     }

@@ -1,5 +1,7 @@
-using GameData.Core.Collections.DaySceneUtility;
 using HarmonyLib;
+
+using GameData.Core.Collections.DaySceneUtility;
+using GameData.Core.Collections.DaySceneUtility.Collections;
 
 namespace MetaMystia;
 
@@ -16,7 +18,18 @@ public partial class DataBaseDayPatch
         Log.LogInfo("DataBaseDay.Initialize Postfix called.");
         ResourceExManager.OnDataBaseDayInitialized();
     }
+
+    [HarmonyPatch(nameof(DataBaseDay.RefMerchant))]
+    [HarmonyPrefix]
+    public static bool RefMerchant_Prefix(ref Merchant __result, string key)
+    {
+        Log.Info($"DataBaseDay.RefMerchant Prefix called with key: {key}");
+        if (ResourceExManager.TryGetExMerchantData(key, out Merchant merchant))
+        {
+            __result = merchant;
+            Log.Info($"Returned custom merchant for key: {key}");
+            return false;
+        }
+        return true;
+    }
 }
-
-
-

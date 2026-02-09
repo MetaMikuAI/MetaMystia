@@ -11,7 +11,9 @@ using HarmonyLib;
 using Il2CppInterop.Runtime;
 using SgrYuki;
 using SgrYuki.Utils;
+using static SgrYuki.Utils.ContainerExtensions;
 using UnityEngine;
+using Il2CppSystem.Dynamic.Utils;
 
 namespace MetaMystia;
 
@@ -96,11 +98,6 @@ public partial class PluginManager : MonoBehaviour
 
         if (DEBUG)
         {
-            if (Input.GetKeyDown(KeyCode.F1))
-            {
-                ResourceExManager.LogNotLoadedSchedulerData();
-            }
-
             if (Input.GetKeyDown(KeyCode.F9))
             {
                 WorkSceneManager.CloseIzakayaIfPossible();

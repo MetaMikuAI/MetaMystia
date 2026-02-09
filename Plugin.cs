@@ -66,7 +66,8 @@ public class Plugin : BasePlugin
         typeof(SpecialGuestDescriberPatch),
         typeof(DaySceneMapProfilePatch),
         typeof(DialogPannelPatch),
-        typeof(DataBaseSchedulerPatch)
+        typeof(DataBaseSchedulerPatch),
+        typeof(RunTimeDayScenePatch)
 
     ];
 

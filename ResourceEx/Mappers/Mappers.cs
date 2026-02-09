@@ -1,18 +1,24 @@
 using System.Linq;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using UnityEngine;
+
 using GameData.Core.Collections;
+using GameData.Core.Collections.DaySceneUtility.Collections;
 using GameData.Core.Collections.NightSceneUtility;
 using GameData.CoreLanguage;
 using GameData.Profile;
 using GameData.Profile.SchedulerNodeCollection;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using MetaMystia.ResourceEx.Models;
-using UnityEngine;
+using GameData.RunTime.DaySceneUtility.Collection;
+
 using static GameData.Core.Collections.DaySceneUtility.Collections.Product;
 using static GameData.Core.Collections.Sellable;
 using static GameData.Profile.SchedulerNode;
 using static GameData.Profile.SchedulerNode.Trigger;
 using static GameData.Profile.SchedulerNodeCollection.MissionNode;
 using static GameData.Profile.SchedulerNodeCollection.MissionNode.Reward;
+
+using MetaMystia.ResourceEx.Models;
+using SgrYuki.Utils;
 
 namespace MetaMystia.ResourceEx.Mappers;
 
@@ -323,6 +329,42 @@ public static partial class Mappers
             .Select(name => ResourceExManager.GetBuiltDialogPackage(name))
             .Where(package => package != null)
             .ToList();
+    }
+
+    #endregion
+
+    #region Merchant Mappers
+    public static Product ToProduct(this ProductConfig config, int? overrideAmount = null)
+    {
+        return new Product
+        {
+            productType = config.productType,
+            productId = config.productId,
+            productAmount = overrideAmount ?? config.productAmount,
+            productLabel = config.productLabel
+        };
+    }
+    public static Merchant.Merchandise ToMerchandise(this MerchandiseConfig config)
+    {
+        return new Merchant.Merchandise
+        {
+            item = config.item.ToProduct(UnityEngine.Random.Range(config.itemAmountMin, config.itemAmountMax)),
+            sellProbability = config.sellProbability,
+            itemAmountRange = new Vector2Int(config.itemAmountMin, config.itemAmountMax)
+        };
+    }
+
+    public static TrackedMerchant GenTrackedMerchant(this MerchantConfig config)
+    {
+        return new TrackedMerchant()
+        {
+            key = config.key,
+            products = config.merchandise
+                .Where(x => UnityEngine.Random.value <= x.sellProbability)
+                .Select(x => x.item.ToProduct(UnityEngine.Random.Range(x.itemAmountMin, x.itemAmountMax)))
+                .ToIl2CppReferenceArray(),
+            currentPriceMultiplier = UnityEngine.Random.Range(config.priceMultiplierMin, config.priceMultiplierMax),
+        };
     }
 
     #endregion
