@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.NetworkInformation;
-using System.Net.Sockets;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Win32;
@@ -13,15 +11,16 @@ namespace SgrYuki;
 [AutoLog]
 public static partial class MetricsReporter
 {
-    private const string MetaMystiaVersionApiUrl = "https://api.izakaya.cc/version/meta-mystia";
+    private const string TrackingSiteId = "13";
     private const string TrackingServiceEndpoint = "https://track.izakaya.cc/api.php";
+    private const string MetaMystiaVersionApiUrl = "https://api.izakaya.cc/version/meta-mystia";
     public const string UserAgent = "MetaMystia/1.0 (+https://github.com/MetaMikuAI/MetaMystia)";
 
     private static string BuildTrackingUrl(string userId, Dictionary<string, string> parameters)
     {
         var baseParams = new Dictionary<string, string>
         {
-            ["idsite"] = "13",
+            ["idsite"] = TrackingSiteId,
             ["rec"] = "1",
             ["_id"] = userId,
             ["uid"] = userId
@@ -121,11 +120,11 @@ public static partial class MetricsReporter
     {
         try
         {
-            var response = await _githubApiClient.GetAsync($"repos/{owner}/{repo}/releases/latest");
+            using var response = await _githubApiClient.GetAsync($"repos/{owner}/{repo}/releases/latest").ConfigureAwait(false);
 
             if (!response.IsSuccessStatusCode) return null;
 
-            var json = await response.Content.ReadAsStringAsync();
+            var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var dict = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
             // 200: {"tag_name":"v0.11.0"}
             if (dict != null && dict.TryGetValue("tag_name", out var tag))
@@ -144,11 +143,11 @@ public static partial class MetricsReporter
     {
         try
         {
-            var response = await _metricsClient.GetAsync(MetaMystiaVersionApiUrl);
+            using var response = await _metricsClient.GetAsync(MetaMystiaVersionApiUrl).ConfigureAwait(false);
 
             if (!response.IsSuccessStatusCode) return null;
 
-            var json = await response.Content.ReadAsStringAsync();
+            var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var dict = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
             // 200: {"dll":"0.11.0","zip":"0.4.5"}
             if (dict != null && dict.TryGetValue("dll", out var ver))
@@ -178,7 +177,7 @@ public static partial class MetricsReporter
         {
             try
             {
-                await reportAction();
+                await reportAction().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -191,7 +190,7 @@ public static partial class MetricsReporter
     {
         try
         {
-            var response = await _metricsClient.GetAsync(url);
+            using var response = await _metricsClient.GetAsync(url).ConfigureAwait(false);
             var success = response.IsSuccessStatusCode;
 
             if (success)
@@ -234,7 +233,7 @@ public static partial class MetricsReporter
                 parameters["e_n"] = name;
 
             var url = BuildTrackingUrl(userId, parameters);
-            await SendTrackingRequestAsync(url, $"ReportEvent({category}/{action}{(name == null ? "" : $"/{name}")})");
+            await SendTrackingRequestAsync(url, $"ReportEvent({category}/{action}{(name == null ? "" : $"/{name}")}").ConfigureAwait(false);
         }, "ReportEvent");
     }
 
@@ -248,7 +247,7 @@ public static partial class MetricsReporter
                 ["ping"] = "1"
             });
 
-            await SendTrackingRequestAsync(url, "Heartbeat");
+            await SendTrackingRequestAsync(url, "Heartbeat").ConfigureAwait(false);
         }, "SendHeartbeat");
     }
 
@@ -259,11 +258,15 @@ public static partial class MetricsReporter
                 try
                 {
                     var currentVer = MpManager.ModVersion;
-                    var latestVer = await GetPluginLatestTagAsync();
+                    var latestVer = await GetPluginLatestTagAsync().ConfigureAwait(false);
 
                     Log.Message($"当前 Mod 版本为 {currentVer}，最新版为 {latestVer}");
 
-                    if (currentVer.Equals(latestVer))
+                    if (string.IsNullOrEmpty(latestVer))
+                    {
+                        Notify.ShowOnMainThread($"您的 Mod 版本为 {currentVer}，无法获取最新版本信息");
+                    }
+                    else if (currentVer.Equals(latestVer, StringComparison.Ordinal))
                     {
                         Notify.ShowOnMainThread($"您的 Mod 版本为 {currentVer}，您正在使用最新版");
                     }
@@ -279,7 +282,7 @@ public static partial class MetricsReporter
                 }
                 catch (Exception ex)
                 {
-                    Log.Error($"cannot get plugin version, {ex.Message}, {ex.StackTrace}");
+                    Log.Error($"Cannot get plugin version, {ex.Message}, {ex.StackTrace}");
                 }
             });
     }
