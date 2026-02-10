@@ -14,8 +14,11 @@ namespace MetaMystia;
 public class Plugin : BasePlugin
 {
     public static Plugin Instance;
-    public static ConfigEntry<bool> ConfigDebug;
     public Action<Scene, LoadSceneMode> LoadAction;
+
+    public static ConfigEntry<bool> ConfigDebug;
+    public static ConfigEntry<RequestEnableMode> ConfigFoodRequestMode;
+    public static ConfigEntry<RequestEnableMode> ConfigBevRequestMode;
 
     public static Type[] ToBePatched = [
         // SceneManager Patches
@@ -79,9 +82,17 @@ public class Plugin : BasePlugin
         Instance = this;
     }
 
-    private void InitConfigs()
+    public void InitConfigs()
     {
         ConfigDebug = Config.Bind("General", "Debug", false, "Enable debug features and hotkeys\n启用调试功能和热键");
+
+        ConfigFoodRequestMode = Config.Bind("General", "FoodRequestMode", RequestEnableMode.FollowPackage,
+            "Food request enable mode (FollowPackage by default)\n料理点单启用模式(默认跟随资源包)\n" +
+            "ForceDisable: 强制关闭 | FollowPackage: 跟随资源包 | ForceEnable: 强制启用");
+
+        ConfigBevRequestMode = Config.Bind("General", "BevRequestMode", RequestEnableMode.ForceDisable,
+            "Beverage request enable mode (ForceDisable by default)\n酒水点单启用模式(默认关闭)\n" +
+            "ForceDisable: 强制关闭 | FollowPackage: 跟随资源包 | ForceEnable: 强制启用");
     }
 
     public override void Load()

@@ -178,6 +178,12 @@ public static partial class ResourceExManager
 
     private static void RegisterAllFoodRequests()
     {
+        if (Plugin.ConfigFoodRequestMode.Value == RequestEnableMode.ForceDisable)
+        {
+            Log.Info($"Food Requests are force disabled by config, skipping registration.");
+            return;
+        }
+
         Log.Info($"Registering Food Requests from ResourceEx...");
         GetAllCharacterConfigs()
             .Where(c => c.guest != null && c.guest.foodRequests != null)
@@ -188,12 +194,21 @@ public static partial class ResourceExManager
     private static void RegisterFoodRequests(CharacterConfig config)
     {
         DataBaseLanguage.SpecialGuestFoodRequest.TryAdd(config.id,
-            config.guest.foodRequests.Where(req => req.enable).ToDictionary(req => req.tagId, req => req.request).ToIl2CppDictionary());
+            config.guest.foodRequests
+                .Where(req => Plugin.ConfigFoodRequestMode.Value == RequestEnableMode.FollowPackage ? req.enable : Plugin.ConfigFoodRequestMode.Value == RequestEnableMode.ForceEnable)
+                .ToDictionary(req => req.tagId, req => req.request)
+                .ToIl2CppDictionary()
+        );
         Log.Info($"Registered Food Requests for Special Guest: {config.name} ({config.id})");
     }
 
     private static void RegisterAllBevRequests()
     {
+        if (Plugin.ConfigBevRequestMode.Value == RequestEnableMode.ForceDisable)
+        {
+            Log.Info($"Beverage Requests are force disabled by config, skipping registration.");
+            return;
+        }
         Log.Info($"Registering Beverage Requests from ResourceEx...");
         GetAllCharacterConfigs()
             .Where(c => c.guest != null && c.guest.bevRequests != null)
@@ -204,7 +219,11 @@ public static partial class ResourceExManager
     private static void RegisterBevRequests(CharacterConfig config)
     {
         DataBaseLanguage.SpecialGuestBevRequest.TryAdd(config.id,
-            config.guest.bevRequests.Where(req => req.enable).ToDictionary(req => req.tagId, req => req.request).ToIl2CppDictionary());
+            config.guest.bevRequests
+                .Where(req => Plugin.ConfigBevRequestMode.Value == RequestEnableMode.FollowPackage ? req.enable : Plugin.ConfigBevRequestMode.Value == RequestEnableMode.ForceEnable)
+                .ToDictionary(req => req.tagId, req => req.request)
+                .ToIl2CppDictionary()
+        );
         Log.Info($"Registered Beverage Requests for Special Guest: {config.name} ({config.id})");
     }
 
