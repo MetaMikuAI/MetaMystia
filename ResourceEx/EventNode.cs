@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using GameData.Core.Collections;
 using GameData.RunTime.Common;
@@ -87,4 +88,6 @@ public static partial class ResourceExManager
             Log.Error($"Failed to register EventNode mapping for {config.label}: {ex.Message}");
         }
     }
+
+    public static List<string> GetAllEventNodeLabels() => EventNodeConfigs.Select(config => config.label).ToList();
 }

@@ -49,8 +49,30 @@ public static partial class ResourcePackageLoader
             }
         }
 
+        // Validate ID ranges and signatures
+        var validatedCandidates = new List<PackageCandidate>();
+        foreach (var candidate in candidates)
+        {
+            var validation = IdRangeValidator.Validate(candidate.Config, candidate.PackageName);
+
+            foreach (var warning in validation.Warnings)
+                Log.LogWarning(warning);
+
+            if (!validation.IsValid)
+            {
+                foreach (var error in validation.Errors)
+                    Log.LogError(error);
+
+                Log.LogError($"[{candidate.PackageName}] Rejected: ID range validation failed.");
+                Notify.ShowOnNextAvailableScene($"<color=red>资源包 {candidate.PackageName} 未通过 ID 范围验证，已拒绝加载。</color>");
+                continue;
+            }
+
+            validatedCandidates.Add(candidate);
+        }
+
         // Resolve version conflicts
-        var resolvedPackages = ResolveVersionConflicts(candidates);
+        var resolvedPackages = ResolveVersionConflicts(validatedCandidates);
 
         // Convert to final loaded packages
         var result = new List<LoadedResourcePackage>();

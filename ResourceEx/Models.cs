@@ -125,6 +125,10 @@ public class PackInfoConfig
     public List<string> authors { get; set; }
     public string description { get; set; }
     public string version { get; set; }
+    public string license { get; set; }
+    public int? idRangeStart { get; set; }
+    public int? idRangeEnd { get; set; }
+    public string idSignature { get; set; }
 }
 
 public class ResourceConfig

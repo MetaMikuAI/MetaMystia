@@ -80,7 +80,7 @@ public static partial class ResourceExManager
         // reload finishedEvents
         foreach (var finishedEvent in resourceExData.finishedEvents)
         {
-            if (!RunTimeScheduler.finishedEvents.Contains(finishedEvent))
+            if (!RunTimeScheduler.finishedEvents.Contains(finishedEvent) && GetAllEventNodeLabels().Contains(finishedEvent))
             {
                 RunTimeScheduler.finishedEvents.Add(finishedEvent);
                 Log.Info($"Reloaded finishedEvent: {finishedEvent}");
@@ -90,7 +90,7 @@ public static partial class ResourceExManager
         // reload finishedMissions
         foreach (var finishedMission in resourceExData.finishedMissions)
         {
-            if (!RunTimeScheduler.finishedMissions.Contains(finishedMission))
+            if (!RunTimeScheduler.finishedMissions.Contains(finishedMission) && GetAllMissionNodeLabels().Contains(finishedMission))
             {
                 RunTimeScheduler.finishedMissions.Add(finishedMission);
                 Log.Info($"Reloaded finishedMission: {finishedMission}");
@@ -109,7 +109,7 @@ public static partial class ResourceExManager
             var targetList = RunTimeScheduler.scheduledEvents[scheduledEvent.Key];
             foreach (var eventLabel in scheduledEvent.Value)
             {
-                if (!targetList.Contains(eventLabel))
+                if (!targetList.Contains(eventLabel) && GetAllEventNodeLabels().Contains(eventLabel))
                 {
                     targetList.Add(eventLabel);
                     Log.Info($"Reloaded scheduledEvent: {eventLabel} under key: {scheduledEvent.Key}");
