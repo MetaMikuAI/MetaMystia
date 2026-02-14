@@ -50,10 +50,17 @@ public static partial class ResourcePackageLoader
         }
 
         // Validate ID ranges and signatures
+        bool enforceSignature = Plugin.ConfigSignatureCheck.Value;
+        if (!enforceSignature)
+        {
+            Log.LogWarning("[ResourceEx] Signature verification is DISABLED by config.");
+            Notify.ShowOnNextAvailableScene("<color=yellow>资源包签名校验已关闭，ID 段签名将不会被验证。</color>");
+        }
+
         var validatedCandidates = new List<PackageCandidate>();
         foreach (var candidate in candidates)
         {
-            var validation = IdRangeValidator.Validate(candidate.Config, candidate.PackageName);
+            var validation = IdRangeValidator.Validate(candidate.Config, candidate.PackageName, enforceSignature);
 
             foreach (var warning in validation.Warnings)
                 Log.LogWarning(warning);

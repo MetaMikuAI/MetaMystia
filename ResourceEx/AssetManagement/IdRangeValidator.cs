@@ -113,7 +113,7 @@ sQIDAQAB
     /// Validates a resource package's ID declarations against the ID range policy.
     /// Returns a <see cref="ValidationResult"/> with any errors/warnings.
     /// </summary>
-    public static ValidationResult Validate(ResourceConfig config, string packageName)
+    public static ValidationResult Validate(ResourceConfig config, string packageName, bool enforceSignature = true)
     {
         var result = new ValidationResult { IsValid = true };
         var packInfo = config?.packInfo;
@@ -159,7 +159,11 @@ sQIDAQAB
             }
 
             // Signature check
-            if (string.IsNullOrWhiteSpace(packInfo.idSignature))
+            if (!enforceSignature)
+            {
+                Log.LogWarning($"[{packageName}] Signature check is DISABLED by config. Skipping signature verification for [{rangeStart}, {rangeEnd}].");
+            }
+            else if (string.IsNullOrWhiteSpace(packInfo.idSignature))
             {
                 result.AddError($"[{packageName}] Package declares managed ID range [{rangeStart}, {rangeEnd}] but has no idSignature.");
             }
