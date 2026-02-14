@@ -129,7 +129,7 @@ public static partial class ResourceExManager
             var targetList = RunTimeScheduler.trackingMissions[trackingMission.Key];
             foreach (var missionData in trackingMission.Value)
             {
-                if (!targetList.Contains(missionData))
+                if (!targetList.Contains(missionData) && GetAllMissionNodeLabels().Contains(missionData.missionLabel))
                 {
                     targetList.Add(missionData);
                     Log.Info($"Reloaded trackingMission: {missionData.missionLabel} under key: {trackingMission.Key}");
