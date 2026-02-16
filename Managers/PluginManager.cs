@@ -75,7 +75,7 @@ public partial class PluginManager : MonoBehaviour
         {
             var info = new System.Text.StringBuilder();
             info.AppendLine(Label);
-            info.AppendLine(MpManager.GetBriefStatus());
+            info.AppendLine(MpManager.BriefStatus);
             GUI.Label(new Rect(10, Screen.height - 50, 600, 50), info.ToString());
         }
     }

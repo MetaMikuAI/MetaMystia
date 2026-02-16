@@ -120,10 +120,11 @@ public static partial class MpManager
 
     public static bool Start(ROLE r = ROLE.Host)
     {
+        Log.Info($"{DebugText}");
         if (!Plugin.AllPatched)
         {
-            PluginManager.Console.LogToConsole($"Cannot start multiplayer, patch failure!\n{DumpDebugText()}");
-            Log.Fatal($"Cannot start multiplayer, patch failure!\n{DumpDebugText()}");
+            PluginManager.Console.LogToConsole($"Cannot start multiplayer, patch failure!\n{DebugText}");
+            Log.Fatal($"Cannot start multiplayer, patch failure!\n{DebugText}");
             return false;
         }
 
@@ -136,7 +137,7 @@ public static partial class MpManager
         IsRunning = true;
         PeerId = "<Unknown>";
         Role = r;
-        Log.Info(DumpDebugText());
+
         switch (r)
         {
             case ROLE.Host:
@@ -356,35 +357,43 @@ public static partial class MpManager
         return status.ToString();
     }
 
-    public static string GetBriefStatus()
+    public static string BriefStatus
     {
-        if (!Plugin.AllPatched)
+        get
         {
-            return "Patch failure!!! The game will not function normally! Please remove the mod or contact mod developer!";
-        }
-        if (!IsRunning)
-        {
-            return "Multiplayer: Off";
-        }
-        if (IsConnected)
-        {
-            return $"Multiplayer: {RoleTag} Connected to {PeerId} ({PeerAddress}), ping: {Latency} ms";
-        }
-        else
-        {
-            return $"Multiplayer: On (Not connected) as {RoleName}";
+            if (!Plugin.AllPatched)
+            {
+                return $"Patch failure!!! The game will not function normally! {BriefDebugText}";
+            }
+            if (!IsRunning)
+            {
+                return "Multiplayer: Off";
+            }
+            if (IsConnected)
+            {
+                return $"Multiplayer: {RoleTag} Connected to {PeerId} ({PeerAddress}), ping: {Latency} ms";
+            }
+            else
+            {
+                return $"Multiplayer: On (Not connected) as {RoleName}";
+            }
         }
     }
 
-    public static string DumpDebugText()
+    public static string DebugText
     {
-        StringBuilder sb = new();
-        sb.AppendLine($"{DateTimeOffset.Now}, {System.Runtime.InteropServices.RuntimeInformation.OSDescription}, {System.Runtime.InteropServices.RuntimeInformation.OSArchitecture}");
-        sb.AppendLine($"{GameVersion}, {PluginManager.Label}");
-        sb.AppendLine(GetBriefStatus());
-        sb.AppendLine($"DLC: {string.Join(", ", ActiveDLCLabel)}");
-        return sb.ToString();
+        get
+        {
+            StringBuilder sb = new();
+            sb.AppendLine($"{BriefDebugText}");
+            sb.AppendLine($"{BriefStatus}");
+            sb.AppendLine($"DLC: {string.Join(", ", ActiveDLCLabel)}");
+            return sb.ToString();
+        }
     }
+
+    private static string BriefDebugText =>
+        $"{GameVersion}: {ModVersion}, {System.Runtime.InteropServices.RuntimeInformation.OSDescription}, {System.Runtime.InteropServices.RuntimeInformation.OSArchitecture}, {DateTimeOffset.Now}";
 
     public static void OnSceneTransit(Common.UI.Scene newScene)
     {

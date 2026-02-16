@@ -83,7 +83,7 @@ public class Plugin : BasePlugin
         Instance = this;
     }
 
-    public void InitConfigs()
+    private void InitConfigs()
     {
         ConfigDebug = Config.Bind("General", "Debug", false, "Enable debug features and hotkeys\n启用调试功能和热键");
 
@@ -109,7 +109,6 @@ public class Plugin : BasePlugin
         }
         catch { }
         Log.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
-
         try
         {
             ClassInjector.RegisterTypeInIl2Cpp<PluginManager>();
@@ -119,6 +118,8 @@ public class Plugin : BasePlugin
         {
             Log.LogError($"FAILED to Register Il2Cpp Type! {ex.Message}");
         }
+
+        Log.LogInfo(MpManager.DebugText);
 
         try
         {
@@ -153,6 +154,7 @@ public class Plugin : BasePlugin
     {
         DLCManager.Initialize();
         MetricsReporter.OnEnterMainScene();
+        Instance?.Log.LogInfo(MpManager.DebugText);
     }
 
     class BootstrapPatch

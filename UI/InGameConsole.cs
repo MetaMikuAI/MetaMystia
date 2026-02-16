@@ -283,8 +283,8 @@ public partial class InGameConsole
                     CallCommand(args);
                     break;
                 case "debug":
-                    LogToConsole(MpManager.DumpDebugText());
-                    Log.Message(MpManager.DumpDebugText());
+                    LogToConsole(MpManager.DebugText);
+                    Log.Message(MpManager.DebugText);
                     break;
                 case "webdebug":
                     OpenWebDebugger(args);
@@ -400,7 +400,7 @@ public partial class InGameConsole
                 break;
             case "status":
                 LogToConsole(MpManager.GetStatus());
-                LogToConsole(MpManager.DumpDebugText());
+                LogToConsole(MpManager.DebugText);
                 break;
             case "id":
                 if (args.Length < 2)
