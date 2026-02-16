@@ -43,7 +43,9 @@ public enum TextId
     DLCPeerFoodNotAvailable,
 
     MystiaReadyForWork,
-    ReadyForWork
+    ReadyForWork,
+
+    ModPatchFailure
 }
 
 public static class L10n
@@ -187,6 +189,12 @@ public static class L10n
             [Language.English] = "{0} are ready to open for business.",
             [Language.ChineseSimplified] = "{0} 已经准备好营业啦",
         },
+
+        [TextId.ModPatchFailure] = new()
+        {
+            [Language.English] = "Patch failure! The Mod will not function normally! Maybe your game version is not supported, please consider removing the mod!",
+            [Language.ChineseSimplified] = "补丁注入失败！此Mod将不会正常运行！可能是你的游戏版本不受支持？请考虑移除此Mod进行游玩！",
+        }
     };
 
 

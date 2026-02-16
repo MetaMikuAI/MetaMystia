@@ -363,7 +363,7 @@ public static partial class MpManager
         {
             if (!Plugin.AllPatched)
             {
-                return $"Patch failure!!! The game will not function normally! {BriefDebugText}";
+                return $"{TextId.ModPatchFailure.Get()} {BriefDebugText}";
             }
             if (!IsRunning)
             {
