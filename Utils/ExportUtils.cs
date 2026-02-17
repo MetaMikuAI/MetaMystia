@@ -1,8 +1,11 @@
+using System;
 using System.IO;
+using System.Linq;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using BepInEx;
 using GameData.Core.Collections.CharacterUtility;
+using SgrYuki.Utils;
 using UnityEngine;
 
 namespace MetaMystia;
@@ -35,6 +38,35 @@ public static partial class ExportUtils
             else
             {
                 Log.LogWarning($"Food ID {kvp.Key} has no sprite.");
+            }
+        }
+    }
+
+
+    public static void ExportAllSpellSprite(string exportDir)
+    {
+        var allSpellCardLang = GameData.CoreLanguage.Collections.DataBaseLanguage.SpellLang;
+
+        var allSpellCards = GameData.Core.Collections.NightSceneUtility.DataBaseNight.SpecialGuestSpellPortrayal;
+        foreach (var kvp in allSpellCards)
+        {
+            var spellLang = allSpellCardLang.TryGetValue(kvp.Key, out var lang) ? lang : null;
+            string positiveLang = spellLang != null && spellLang.Length > 0 ? spellLang[0]?.Name : "N/A";
+            string negativeLang = spellLang != null && spellLang.Length > 1 ? spellLang[1]?.Name : "N/A";
+            Log.Warning($"SpellCard ID: {kvp.Key} name: {positiveLang}/{negativeLang}");
+            var positiveSpell = kvp.Value.Item1;
+            var negativeSpell = kvp.Value.Item2;
+            var sprite1 = positiveSpell.Asset.TryCast<Sprite>();
+            if (sprite1 != null)
+            {
+                Log.LogInfo($"Exporting SpellCard {kvp.Key} - {positiveLang}");
+                TrySaveSprite(sprite1, Path.Combine(exportDir, $"符卡_{kvp.Key}_奖励_{(positiveLang == "N/A" ? "Unknown" : positiveLang)}.png"));
+            }
+            var sprite2 = negativeSpell.Asset.TryCast<Sprite>();
+            if (sprite2 != null)
+            {
+                Log.LogInfo($"Exporting SpellCard {kvp.Key} - {negativeLang}");
+                TrySaveSprite(sprite2, Path.Combine(exportDir, $"符卡_{kvp.Key}_惩罚_{(negativeLang == "N/A" ? "Unknown" : negativeLang)}.png"));
             }
         }
     }
@@ -342,5 +374,128 @@ public static partial class ExportUtils
 
         Log.LogInfo("Dumped database.");
         return json;
+    }
+
+    public static void ExportAllSelfClothesSprite()
+    {
+        string exportDir = Path.Combine(ExportRoot, "SelfClothes");
+        if (!Directory.Exists(exportDir))
+            Directory.CreateDirectory(exportDir);
+
+
+
+        DumpClothesSprite(DataBaseCharacter.SelfSpriteSet.defaultSkin, exportDir);
+
+        foreach (var clothes in DataBaseCharacter.SelfSpriteSet.explicits)
+        {
+            DumpClothesSprite(clothes, exportDir);
+        }
+    }
+
+    public static void ExportBaseSprite()
+    {
+        Il2CppSystem.Collections.Generic.IReadOnlyList<Sprite> baseSprite = GameData.Core.Collections.CharacterUtility.CharacterSpriteSetFull.BaseSprite; // LENGTH = 12
+        for (int i = 0; i < 12; i++)
+        {
+            var sprite = baseSprite[i];
+            if (sprite != null)
+            {
+                var filename = $"Base_{i / 3}, {i % 3}.png";
+                var filepath = Path.Combine(ExportRoot, filename);
+                Log.Warning($"Exporting base sprite: {filepath}");
+                TrySaveSprite(sprite, filepath);
+            }
+        }
+    }
+    public static void DumpClothesSprite(CharacterSpriteSetCompact clothes, string exportDir)
+    {
+        Sprite[] mainSprites = clothes.MainSprite;
+        Sprite[] eyeSprites = clothes.EyeSprite;
+        Sprite[] hairSprites = clothes.HairSprite;
+        Sprite[] backSprites = clothes.BackSprite;
+        string clothesName = clothes.name;
+        for (int i = 0; i < mainSprites.Length; i++)
+        {
+            var main = mainSprites[i];
+            if (main != null)
+            {
+                var filename = $"{clothesName}/Main_{i / 3}, {i % 3}.png";
+                var filepath = Path.Combine(exportDir, filename);
+                Log.Warning($"Exporting self clothes main sprite: {filepath}");
+                TrySaveSprite(main, filepath);
+            }
+        }
+        for (int i = 0; i < eyeSprites.Length; i++)
+        {
+            var eye = eyeSprites[i];
+            if (eye != null)
+            {
+                var filename = $"{clothesName}/Eyes_{i / 4}, {i % 4}.png";
+                var filepath = Path.Combine(exportDir, filename);
+                Log.Warning($"Exporting self clothes eye sprite: {filepath}");
+                TrySaveSprite(eye, filepath);
+            }
+        }
+        for (int i = 0; i < hairSprites.Length; i++)
+        {
+            var hair = hairSprites[i];
+            if (hair != null)
+            {
+                var filename = $"{clothesName}/Hair_{i / 3}, {i % 3}.png";
+                var filepath = Path.Combine(exportDir, filename);
+                Log.Warning($"Exporting self clothes hair sprite: {filepath}");
+                TrySaveSprite(hair, filepath);
+            }
+        }
+        for (int i = 0; i < backSprites.Length; i++)
+        {
+            var back = backSprites[i];
+            if (back != null)
+            {
+                var filename = $"{clothesName}/Back_{i / 3}, {i % 3}.png";
+                var filepath = Path.Combine(exportDir, filename);
+                Log.Warning($"Exporting self clothes back sprite: {filepath}");
+                TrySaveSprite(back, filepath);
+            }
+        }
+    }
+
+    // 错误的使用
+    public static void ExportAllClothesPortrait()
+    {
+        string exportDir = Path.Combine(ExportRoot, "ClothesPortraits");
+        if (!Directory.Exists(exportDir))
+            Directory.CreateDirectory(exportDir);
+
+        foreach (var clothes in DataBaseCharacter.SelfPortrayalSet.explicitPortrayals)
+        {
+            var sprite = clothes.m_VisualAssetAtlasReference[0].Asset.TryCast<Sprite>();
+            if (sprite != null)
+            {
+                var filename = $"{clothes.name}.png";
+                var filepath = Path.Combine(exportDir, filename);
+                Log.Warning($"Exporting self clothes portrait sprite: {filepath}");
+                TrySaveSprite(sprite, filepath);
+            }
+        }
+    }
+    public static void ExportAllClothesItemIcon()
+    {
+        string exportDir = Path.Combine(ExportRoot, "ClothesItemIcons");
+        if (!Directory.Exists(exportDir))
+            Directory.CreateDirectory(exportDir);
+
+        GameData.Core.Collections.DataBaseCore.Items.ToList().Where(x => x.Value.IsClothes).ToList().ForEach(x =>
+        {
+            var item = x.Value;
+            var sprite = item.Text.Visual;
+            if (sprite != null)
+            {
+                var filename = $"ClothItem_{x.Key}.png";
+                var filepath = Path.Combine(exportDir, filename);
+                Log.Warning($"Exporting cloth item icon: {filepath}");
+                TrySaveSprite(sprite, filepath);
+            }
+        });
     }
 }

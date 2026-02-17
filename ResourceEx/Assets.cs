@@ -64,6 +64,43 @@ public static partial class ResourceExManager
                 }
             }
         }
+
+        // Preload cloth images
+        foreach (var clothConfig in ClothConfigs.Values)
+        {
+            // Preload cloth item sprite
+            if (!string.IsNullOrEmpty(clothConfig.spritePath))
+            {
+                GetSprite(clothConfig.spritePath, clothConfig.PackageRoot);
+                imageCount++;
+            }
+
+            // Preload cloth portrait
+            if (!string.IsNullOrEmpty(clothConfig.portraitPath))
+            {
+                GetSprite(clothConfig.portraitPath, clothConfig.PackageRoot);
+                imageCount++;
+            }
+
+            // Preload cloth pixel sprites
+            if (clothConfig.pixelFullConfig != null)
+            {
+                var pixelConfig = clothConfig.pixelFullConfig;
+                foreach (var paths in new[] { pixelConfig.mainSprite, pixelConfig.eyeSprite, pixelConfig.hairSprite, pixelConfig.backSprite })
+                {
+                    if (paths == null) continue;
+                    foreach (var path in paths)
+                    {
+                        if (!string.IsNullOrEmpty(path))
+                        {
+                            GetSprite(path, clothConfig.PackageRoot, new Vector2(0.5f, 0.0f), 64, 64);
+                            imageCount++;
+                        }
+                    }
+                }
+            }
+        }
+
         Log.LogInfo($"Preloading complete. Loaded {imageCount} images from memory-cached packages.");
     }
 }

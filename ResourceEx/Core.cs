@@ -3,9 +3,11 @@ using System.IO;
 using BepInEx;
 using GameData.Core.Collections.DaySceneUtility.Collections;
 using GameData.Profile;
+using GameData.Core.Collections.CharacterUtility;
+using UnityEngine;
+
 using MetaMystia.ResourceEx.AssetManagement;
 using MetaMystia.ResourceEx.Models;
-
 namespace MetaMystia;
 
 
@@ -19,6 +21,7 @@ public static partial class ResourceExManager
     private static readonly AssetProvider _assetProvider = new AssetProvider();
 
     private static Dictionary<(int id, string type), CharacterConfig> _characterConfigs = new Dictionary<(int id, string type), CharacterConfig>();
+    private static Dictionary<string, CharacterSpriteSetCompact> _characterSpriteSets = new Dictionary<string, CharacterSpriteSetCompact>();
     private static Dictionary<string, CustomDialogList> _dialogPackageConfigs = new Dictionary<string, CustomDialogList>();
     private static Dictionary<string, DialogPackage> _builtDialogPackages = new Dictionary<string, DialogPackage>();
     private static Dictionary<string, Merchant> _builtMerchants = new Dictionary<string, Merchant>();
@@ -30,6 +33,12 @@ public static partial class ResourceExManager
     private static List<MissionNodeConfig> MissionNodeConfigs = new List<MissionNodeConfig>();
     private static List<EventNodeConfig> EventNodeConfigs = new List<EventNodeConfig>();
     private static Dictionary<string, MerchantConfig> MerchantConfigs = new Dictionary<string, MerchantConfig>();
+    private static Dictionary<int, ClothConfig> ClothConfigs = new Dictionary<int, ClothConfig>();
+
+    // Cloth portrait cache: clothId -> Sprite (loaded lazily or during preload)
+    private static Dictionary<int, Sprite> _clothPortraitCache = new Dictionary<int, Sprite>();
+    // Cloth pixel full cache: skinIndex -> CharacterSpriteSetFull (built during character init)
+    private static Dictionary<int, CharacterSpriteSetFull> _clothPixelFullCache = new Dictionary<int, CharacterSpriteSetFull>();
 
     public static void Initialize()
     {
@@ -47,6 +56,8 @@ public static partial class ResourceExManager
         RegisterAllBeverages();
         RegisterAllRecipes();
         RegisterAllFoods();
+        RegisterAllClothItems();
+        RegisterAllClothProfiles();
     }
     public static void OnDataBaseDayInitialized()
     {
@@ -65,6 +76,7 @@ public static partial class ResourceExManager
         RegisterAllBeverageLanguages();
         RegisterAllFoodLanguages();
         RegisterAllMissionNodeLanguages();
+        RegisterAllClothLanguages();
     }
 
     public static void OnDataBaseCharacterInitialized()
@@ -75,6 +87,8 @@ public static partial class ResourceExManager
 
         RegisterAllMissionNodes(); // 依赖 Dialog
         RegisterAllEventNodes(); // 依赖 Dialog
+
+        RegisterAllClothPixelSprites(); // 依赖 DataBaseCharacter
     }
 
     public static void OnDataBaseAchievementInitialized()
@@ -224,6 +238,16 @@ public static partial class ResourceExManager
             {
                 MerchantConfigs[merchantConfig.key] = merchantConfig;
                 Log.LogInfo($"[{packageName}] Loaded config for merchant {merchantConfig.key}");
+            }
+        }
+
+        if (config?.clothes != null)
+        {
+            foreach (var clothConfig in config.clothes)
+            {
+                clothConfig.PackageRoot = packageRoot;
+                ClothConfigs[clothConfig.id] = clothConfig;
+                Log.LogInfo($"[{packageName}] Loaded config for cloth {clothConfig.name} ({clothConfig.id})");
             }
         }
     }

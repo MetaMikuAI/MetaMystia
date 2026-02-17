@@ -72,7 +72,6 @@ public class Plugin : BasePlugin
         typeof(DialogPannelPatch),
         typeof(DataBaseSchedulerPatch),
         typeof(RunTimeDayScenePatch)
-
     ];
 
     public static bool AllPatched => PatchedException == null;

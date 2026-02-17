@@ -112,6 +112,26 @@ public class CharacterSpriteSetCompactConfig
     public List<string> eyeSprite { get; set; }
 }
 
+public class ClothConfig
+{
+    public int id { get; set; }
+    public string name { get; set; }
+    public string description { get; set; }
+    public string spritePath { get; set; }
+    public string portraitPath { get; set; }
+    public CharacterSpriteSetFullConfig pixelFullConfig { get; set; }
+    public string PackageRoot { get; set; }
+}
+
+public class CharacterSpriteSetFullConfig
+{
+    public string name { get; set; }
+    public List<string> mainSprite { get; set; }
+    public List<string> eyeSprite { get; set; }
+    public List<string> hairSprite { get; set; }
+    public List<string> backSprite { get; set; }
+}
+
 public class PortraitConfig
 {
     public int pid { get; set; }
@@ -140,6 +160,7 @@ public class ResourceConfig
     public List<RecipeConfig> recipes { get; set; }
     public List<FoodConfig> foods { get; set; }
     public List<BeverageConfig> beverages { get; set; }
+    public List<ClothConfig> clothes { get; set; }
     public List<MissionNodeConfig> missionNodes { get; set; }
     public List<EventNodeConfig> eventNodes { get; set; }
     public List<MerchantConfig> merchants { get; set; }

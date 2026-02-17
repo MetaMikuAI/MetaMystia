@@ -1,8 +1,10 @@
+using DEYU.AdpUISystem.Utils;
 using DEYU.Utils;
 using GameData.Core.Collections.CharacterUtility;
 using GameData.Profile;
 using HarmonyLib;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace MetaMystia;
 
@@ -50,5 +52,26 @@ public partial class DataBaseCharacterPatch
             return false;
         }
         return true;
+    }
+
+
+    // ResourceEX/Clothes
+    [HarmonyPatch(nameof(DataBaseCharacter.SetupPortrayalVisual))]
+    [HarmonyPrefix]
+    public static void SetupPortrayalVisual_Prefix(ref Image imageComponent)
+    {
+        var currentSkin = GameData.RunTime.Common.RunTimeAlbum.CurrentPlayerSkin;
+        if (ResourceExManager.IsResourceExCloth(currentSkin))
+        {
+            if (ResourceExManager.TryGetClothPortrait(currentSkin, out var sprite))
+            {
+                imageComponent.overrideSprite = sprite;
+                Log.Info($"Applied ResourceEx cloth portrait for skin ID {currentSkin}");
+            }
+            else
+            {
+                Log.Info($"ResourceEx cloth ID {currentSkin} has no portrait configured.");
+            }
+        }
     }
 }
