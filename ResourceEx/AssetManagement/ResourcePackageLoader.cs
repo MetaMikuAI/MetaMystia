@@ -54,7 +54,7 @@ public static partial class ResourcePackageLoader
         if (!enforceSignature)
         {
             Log.LogWarning("[ResourceEx] Signature verification is DISABLED by config.");
-            Notify.ShowOnNextAvailableScene("<color=yellow>资源包签名校验已关闭，ID 段签名将不会被验证。</color>");
+            Notify.ShowOnNextAvailableScene(TextId.SignatureVerificationDisabled.Get());
         }
 
         var validatedCandidates = new List<PackageCandidate>();
@@ -71,7 +71,7 @@ public static partial class ResourcePackageLoader
                     Log.LogError(error);
 
                 Log.LogError($"[{candidate.PackageName}] Rejected: ID range validation failed.");
-                Notify.ShowOnNextAvailableScene($"<color=red>资源包 {candidate.PackageName} 未通过 ID 范围验证，已拒绝加载。</color>");
+                Notify.ShowOnNextAvailableScene(TextId.ResourcePackageValidationFailed.Get(candidate.PackageName));
                 continue;
             }
 
@@ -219,7 +219,7 @@ public static partial class ResourcePackageLoader
             string authors = info.authors != null ? string.Join(", ", info.authors) : "Unknown";
             Log.LogMessage($"Loaded Resource Pack: {info.name} [{info.label}] v{info.version} by {authors}");
 
-            Notify.ShowOnNextAvailableScene($"已加载资源包 {info.name} [{info.label}] v{info.version}");
+            Notify.ShowOnNextAvailableScene(TextId.ResourcePackageLoaded.Get(info.name, info.label, info.version));
         }
         else
         {

@@ -16,7 +16,7 @@ public partial class IzakayaCloseAction : Action
         {
             if (MpManager.IsConnected && !NightScene.GuestManagementUtility.GuestsManager.Instance.isIzakayaClosing)
             {
-                Notify.ShowOnMainThread($"{MpManager.PeerId} 已经打烊啦！");
+                Notify.ShowOnMainThread(TextId.PeerClosedIzakaya.Get(MpManager.PeerId));
                 CommandScheduler.EnqueueWithNoCondition(
                     execute: () =>
                     {

@@ -40,7 +40,7 @@ public partial class HelloAction : Action
         {
             Log.LogError($"Mod version mismatch! Local: {MpManager.ModVersion}, Remote: {Version}");
             MpManager.DisconnectPeer();
-            Notify.ShowOnMainThread("Mod 版本不匹配，连接已断开！");
+            Notify.ShowOnMainThread(TextId.ModVersionMismatch.Get());
             return;
         }
 
@@ -48,7 +48,7 @@ public partial class HelloAction : Action
         {
             Log.LogError($"Game version mismatch! Local: {MpManager.GameVersion}, Remote: {GameVersion}");
             MpManager.DisconnectPeer();
-            Notify.ShowOnMainThread("游戏版本不匹配，连接已断开！");
+            Notify.ShowOnMainThread(TextId.GameVersionMismatch.Get());
             return;
         }
 
@@ -58,7 +58,7 @@ public partial class HelloAction : Action
         {
             Log.LogError($"Scene mismatch! Local: {MpManager.LocalScene}, Remote: {CurrentGameScene}");
             MpManager.DisconnectPeer();
-            Notify.ShowOnMainThread("有玩家不处于白天或主界面，连接已断开");
+            Notify.ShowOnMainThread(TextId.SceneMismatchDisconnected.Get());
             return;
         }
 
@@ -66,7 +66,7 @@ public partial class HelloAction : Action
         {
             Log.LogError($"Already dayOver! Local: {MystiaManager.IsDayOver}, Remote: {PeerManager.IsDayOver}");
             MpManager.DisconnectPeer();
-            Notify.ShowOnMainThread("有玩家不处于白天或主界面，连接已断开");
+            Notify.ShowOnMainThread(TextId.SceneMismatchDisconnected.Get());
             return;
         }
 

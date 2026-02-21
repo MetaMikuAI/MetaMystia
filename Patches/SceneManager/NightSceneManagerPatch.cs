@@ -36,7 +36,7 @@ public static partial class NightSceneManagerPatch
                     executeWhen: () => WorkSceneManager.WorkTimeLeft > 0,
                     execute: () =>
                     {
-                        Notify.ShowExtern($"你今晚的营业时间为 {WorkSceneManager.WorkTimeLeft / 60} 分钟");
+                        Notify.ShowExtern(TextId.TodayBusinessHours.Get(WorkSceneManager.WorkTimeLeft / 60));
                     },
                     timeoutSeconds: 120
                 );

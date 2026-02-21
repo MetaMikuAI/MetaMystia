@@ -61,7 +61,7 @@ public partial class IzakayaSelectorPanelPatch
         if (MpManager.PeerScene == Common.UI.Scene.IzakayaPrepScene || MpManager.PeerScene == Common.UI.Scene.WorkScene)
         {
             Log.Error($"peer already in prep scene, will disconnect");
-            Notify.ShowOnMainThread($"对方已经处于营业或营业准备场景，无法同步营业场馆信息。请在白天重新联机。");
+            Notify.ShowOnMainThread(TextId.PeerAlreadyInScene.Get());
             MpManager.DisconnectPeer();
             return true;
         }
@@ -84,7 +84,7 @@ public partial class IzakayaSelectorPanelPatch
         {
             Log.LogWarning($"Kyouko has not selected an Izakaya yet -> send SELECT and skip");
             SelectAction.Send(izakayaMapLabel, izakayaLevel);
-            Notify.ShowOnMainThread($"你选择了 {mySelect} 作为开店地点");
+            Notify.ShowOnMainThread(TextId.SelectedIzakaya.Get(mySelect));
             return false;
         }
 
@@ -92,7 +92,7 @@ public partial class IzakayaSelectorPanelPatch
         {
             var peerSelect = $"{Utils.GetMapLabelNameCN(PeerManager.IzakayaMapLabel)} {Utils.GetMapLevelNameCN(PeerManager.IzakayaLevel)}";
             Log.LogWarning($"Selected Izakaya does not match Kyouko's selection -> show rejection dialog");
-            Notify.ShowOnMainThread($"你选择了 {mySelect} 作为开店地点，对方选择了 {peerSelect}，你俩得选一样的");
+            Notify.ShowOnMainThread(TextId.SelectedIzakayaMismatch.Get(mySelect, peerSelect));
             return false;
         }
 

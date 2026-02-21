@@ -15,7 +15,7 @@ public partial class SelectAction : Action
             PeerManager.IzakayaMapLabel = MapLabel;
             PeerManager.IzakayaLevel = MapLevel;
 
-            Notify.ShowOnMainThread($"对方选择了 {Utils.GetMapLabelNameCN(MapLabel)} {Utils.GetMapLevelNameCN(MapLevel)} 作为开店地点");
+            Notify.ShowOnMainThread(TextId.PeerSelectedIzakaya.Get($"{Utils.GetMapLabelNameCN(MapLabel)} {Utils.GetMapLevelNameCN(MapLevel)}"));
         });
     }
 

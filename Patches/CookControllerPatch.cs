@@ -19,7 +19,7 @@ public partial class CookControllerPatch
         if (MpManager.IsConnected && (!DLCManager.PeerRecipeAvailable(recipe.Id) || !DLCManager.PeerFoodAvailable(thisResult.id)))
         {
             Log.LogWarning($"Peer does not have recipe {recipe.Id}, skipping SetCook.");
-            Notify.ShowOnMainThread("对方未装载有此食谱的 DLC！");
+            Notify.ShowOnMainThread(TextId.DLCPeerRecipeNotAvailable.Get(recipe.Id));
             return false;
         }
         return true;

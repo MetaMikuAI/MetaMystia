@@ -37,7 +37,7 @@ public partial class WorkSceneStoragePannelPatch
             if (MpManager.IsConnected && !DLCManager.PeerBeverageAvailable(toExtract.id))
             {
                 Log.LogWarning($"Peer does not have beverage {toExtract.id}, cannot extract.");
-                Notify.ShowOnMainThread("对方未装载有此酒水的 DLC！");
+                Notify.ShowOnMainThread(TextId.DLCPeerBeverageNotAvailable.Get(toExtract.id));
                 return false;
             }
         }
@@ -46,7 +46,7 @@ public partial class WorkSceneStoragePannelPatch
             if (MpManager.IsConnected && !DLCManager.PeerFoodAvailable(toExtract.id))
             {
                 Log.LogWarning($"Peer does not have recipe {toExtract.id}, cannot extract.");
-                Notify.ShowOnMainThread("对方未装载有此食物的 DLC！");
+                Notify.ShowOnMainThread(TextId.DLCPeerFoodNotAvailable.Get(toExtract.id));
                 return false;
             }
             SellableFood food = SellableFood.FromSellable(toExtract);

@@ -253,7 +253,7 @@ public static partial class MpManager
             },
             timeoutSeconds: 120
         );
-        Notify.ShowOnMainThread($"联机系统：已连接！");
+        Notify.ShowOnMainThread(TextId.MultiplayerConnected.Get());
     }
 
 
@@ -272,7 +272,7 @@ public static partial class MpManager
         });
         CommandScheduler.RemoveKeyFromKeyQueue(PeerGetCharacterUnitNotNullCommand);
         CommandScheduler.CancelInterval(SyncActionCommandID);
-        Notify.ShowOnMainThread($"联机系统：连接已断开！");
+        Notify.ShowOnMainThread(TextId.MultiplayerDisconnected.Get());
     }
 
     public static void OnAction(Network.Action action)

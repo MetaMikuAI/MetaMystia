@@ -264,15 +264,15 @@ public static partial class MetricsReporter
 
                     if (string.IsNullOrEmpty(latestVer))
                     {
-                        Notify.ShowOnMainThread($"您的 Mod 版本为 {currentVer}，无法获取最新版本信息");
+                        Notify.ShowOnMainThread(TextId.ModVersionUnavailable.Get(currentVer));
                     }
                     else if (currentVer.Equals(latestVer, StringComparison.Ordinal))
                     {
-                        Notify.ShowOnMainThread($"您的 Mod 版本为 {currentVer}，您正在使用最新版");
+                        Notify.ShowOnMainThread(TextId.ModVersionLatest.Get(currentVer));
                     }
                     else
                     {
-                        Notify.ShowOnMainThread($"您的 Mod 版本为 {currentVer}，最新版为 {latestVer}，建议更新到最新版！");
+                        Notify.ShowOnMainThread(TextId.ModVersionOutdated.Get(currentVer, latestVer));
                     }
 
                     if (!PluginManager.DEBUG)

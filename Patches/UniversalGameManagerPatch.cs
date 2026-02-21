@@ -71,7 +71,7 @@ public partial class UniversalGameManagerPatch
         {
             if (MpManager.LocalScene == Scene.DayScene && scene == Scene.WorkScene)
             {
-                Notify.ShowOnMainThread("检测到可能在进行挑战，建议断开连接确保游戏体验!");
+                Notify.ShowOnMainThread(TextId.ChallengeWarning.Get());
             }
         }
         MpManager.OnSceneTransit(Scene.LoadScene);

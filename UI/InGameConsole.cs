@@ -39,7 +39,7 @@ public partial class InGameConsole
 
     public void AddPeerMessage(string message)
     {
-        LogToConsole($"[Peer] {message}");
+        LogToConsole(TextId.PeerMessagePrefix.Get(message));
     }
 
     private void UpdateGameInputState()
@@ -246,7 +246,7 @@ public partial class InGameConsole
     {
         closeConsole = false;
         Log.LogMessage($"Console Command: {cmd}");
-        LogToConsole("> " + cmd);
+        LogToConsole(TextId.CommandPrompt.Get(cmd));
 
         string[] parts = cmd.Split([' '], System.StringSplitOptions.RemoveEmptyEntries);
         if (parts.Length == 0) return;
@@ -291,19 +291,19 @@ public partial class InGameConsole
                     break;
                 case "enable_bepin_console":
                     BepInEx.ConsoleManager.CreateConsole();
+                    LogToConsole(TextId.BepInExConsoleEnabled.Get());
                     System.Console.OutputEncoding = System.Text.Encoding.UTF8;
-                    LogToConsole("BepinEX console enabled");
                     break;
                 case "whereami":
                     if (MpManager.LocalScene != Common.UI.Scene.DayScene)
                     {
-                        LogToConsole("Not in Day Scene");
+                        LogToConsole(TextId.NotInDayScene.Get());
                         break;
                     }
-                    LogToConsole($"label = {MystiaManager.MapLabel}, position = {MystiaManager.Position}");
+                    LogToConsole(TextId.MapInfoDisplay.Get(MystiaManager.MapLabel, MystiaManager.Position));
                     break;
                 default:
-                    LogToConsole("Unknown command: " + command);
+                    LogToConsole(TextId.UnknownCommand.Get(command));
                     HelpCommand();
                     break;
             }
@@ -314,7 +314,7 @@ public partial class InGameConsole
 
     private void HelpCommand()
     {
-        LogToConsole("Available commands: /help, /clear, /get, /mp, /call, /debug, /webdebug, /enable_bepin_console, /whereami");
+        LogToConsole(TextId.AvailableCommands.Get());
     }
 
     private void GetCommand(string[] args)
@@ -322,8 +322,8 @@ public partial class InGameConsole
         var availableFields = "currentactivemaplabel, pos";
         if (args.Length == 0)
         {
-            LogToConsole("Usage: get <field>");
-            LogToConsole($"Available fields: {availableFields}");
+            LogToConsole(TextId.GetUsage.Get());
+            LogToConsole(TextId.AvailableFields.Get(availableFields));
             return;
         }
 
@@ -332,14 +332,14 @@ public partial class InGameConsole
         switch (field)
         {
             case "currentactivemaplabel":
-                LogToConsole($"Current Active Map Label: {MystiaManager.MapLabel}");
+                LogToConsole(TextId.CurrentMapLabel.Get(MystiaManager.MapLabel));
                 break;
             case "pos":
-                LogToConsole($"Mystia position: {MystiaManager.Position}");
+                LogToConsole(TextId.MystiaPosition.Get(MystiaManager.Position));
                 break;
             default:
-                LogToConsole($"Unknown field: {field}");
-                LogToConsole($"Available fields: {availableFields}");
+                LogToConsole(TextId.UnknownField.Get(field));
+                LogToConsole(TextId.AvailableFields.Get(availableFields));
                 break;
         }
     }
@@ -348,8 +348,8 @@ public partial class InGameConsole
     {
         if (args.Length == 0)
         {
-            LogToConsole(L10n.Get(TextId.MpUsageRoot));
-            LogToConsole(L10n.Get(TextId.MpSubcommandHelp));
+            LogToConsole(TextId.MpUsageRoot.Get());
+            LogToConsole(TextId.MpSubcommandHelp.Get());
             return;
         }
 
@@ -389,13 +389,13 @@ public partial class InGameConsole
                 break;
             case "stop":
                 MpManager.Stop();
-                LogToConsole(L10n.Get(TextId.MpStopped));
+                LogToConsole(TextId.MpStopped.Get());
                 break;
 
             case "restart":
                 if (MpManager.Restart())
                 {
-                    LogToConsole(L10n.Get(TextId.MpRestarted));
+                    LogToConsole(TextId.MpRestarted.Get());
                 }
                 break;
             case "status":
@@ -405,18 +405,16 @@ public partial class InGameConsole
             case "id":
                 if (args.Length < 2)
                 {
-                    LogToConsole(L10n.Get(TextId.MpUsageSetId));
+                    LogToConsole(TextId.MpUsageSetId.Get());
                     break;
                 }
                 MpManager.PlayerId = args[1];
-                LogToConsole(
-                    L10n.Get(TextId.MpPlayerIdSet, args[1])
-                );
+                LogToConsole(TextId.MpPlayerIdSet.Get(args[1]));
                 break;
             case "connect":
                 if (args.Length < 2)
                 {
-                    LogToConsole(L10n.Get(TextId.ConnectCommand));
+                    LogToConsole(TextId.ConnectCommand.Get());
                     break;
                 }
                 // args[0]: connect, args[1]: ip or ip:port, args[2]: port
@@ -453,27 +451,27 @@ public partial class InGameConsole
 
                 if (result)
                 {
-                    LogToConsole(L10n.Get(TextId.ConnectCommandConnected, address));
+                    LogToConsole(TextId.ConnectCommandConnected.Get(address));
                 }
                 else
                 {
-                    LogToConsole(L10n.Get(TextId.ConnectCommandFail, address));
+                    LogToConsole(TextId.ConnectCommandFail.Get(address));
                 }
                 break;
             case "disconnect":
                 if (!MpManager.IsConnected)
                 {
-                    LogToConsole(L10n.Get(TextId.MpNoActiveConnection));
+                    LogToConsole(TextId.MpNoActiveConnection.Get());
                 }
                 else
                 {
                     MpManager.DisconnectPeer();
-                    LogToConsole(L10n.Get(TextId.MpDisconnected));
+                    LogToConsole(TextId.MpDisconnected.Get());
                 }
                 break;
             default:
-                LogToConsole(L10n.Get(TextId.MpUnknownSubcommand, subcommand));
-                LogToConsole(L10n.Get(TextId.MpSubcommandHelp));
+                LogToConsole(TextId.MpUnknownSubcommand.Get(subcommand));
+                LogToConsole(TextId.MpSubcommandHelp.Get());
                 break;
         }
     }
@@ -487,7 +485,7 @@ public partial class InGameConsole
         else
         {
             MessageAction.Send(msg);
-            LogToConsole($"Sent {msg}");
+            LogToConsole(TextId.MessageSent.Get(msg));
         }
     }
 
@@ -496,8 +494,8 @@ public partial class InGameConsole
         var availableFields = "getmapsnpcs, movecharacter, try_close_izakaya";
         if (args.Length == 0)
         {
-            LogToConsole("Usage: /call <method> [args]");
-            LogToConsole($"Available methods: {availableFields}");
+            LogToConsole(TextId.CallUsage.Get());
+            LogToConsole(TextId.AvailableMethods.Get(availableFields));
             return;
         }
 
@@ -513,19 +511,19 @@ public partial class InGameConsole
                     // public unsafe static Dictionary<string, TrackedNPC> GetMapNPCs(string mapLabel);
                     foreach (var npc in npcs)
                     {
-                        LogToConsole($"- {npc.Key}"); // TrackedNPC 有 ToString 方法，不过没啥东西
+                        LogToConsole(TextId.NPCListItem.Get(npc.Key));
                     }
-                    LogToConsole($"Total NPCs found: {npcs.Count}");
+                    LogToConsole(TextId.TotalNPCsFound.Get(npcs.Count));
                 }
                 catch (System.Exception e)
                 {
-                    LogToConsole($"Error calling getmapsnpcs: {e.Message}");
+                    LogToConsole(TextId.ErrorGetMapsnpcs.Get(e.Message));
                 }
                 break;
             case "movecharacter":
                 if (args.Length < 6)
                 {
-                    LogToConsole("Usage: call movecharacter <characterKey> <mapLabel> <x> <y> <rot>");
+                    LogToConsole(TextId.MoveCharacterUsage.Get());
                     break;
                 }
                 try
@@ -536,17 +534,17 @@ public partial class InGameConsole
                     float y = float.Parse(args[4]);
                     int rot = int.Parse(args[5]);
                     GameData.RunTime.DaySceneUtility.RunTimeDayScene.MoveCharacter(characterKey, mapLabel, new Vector2(x, y), rot, out var oldNPCData);
-                    LogToConsole($"Moved character '{characterKey}' to position ({x}, {y}) rotation {rot} on map '{mapLabel}'.");
+                    LogToConsole(TextId.CharacterMoved.Get(characterKey, x, y, rot, mapLabel));
                 }
                 catch (System.Exception e)
                 {
-                    LogToConsole($"Error calling movecharacter: {e.Message}");
+                    LogToConsole(TextId.ErrorMovecharacter.Get(e.Message));
                 }
                 break;
             case "scene_move":
                 if (args.Length < 4)
                 {
-                    LogToConsole("Usage: call scene_move <characterKey> <x> <y>");
+                    LogToConsole(TextId.SceneMoveUsage.Get());
                     break;
                 }
                 try
@@ -557,27 +555,27 @@ public partial class InGameConsole
                     var arr = new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<Vector2>(1);
                     arr[0] = new Vector2(x, y);
                     Common.SceneDirector.Instance.MoveCharacter(characterKey, arr, 1.48f, new System.Action(() => { }));
-                    LogToConsole($"Moved character '{characterKey}' to position ({x}, {y})'.");
+                    LogToConsole(TextId.CharacterMovedScene.Get(characterKey, x, y));
                 }
                 catch (System.Exception e)
                 {
-                    LogToConsole($"Error calling scene_move: {e.Message}");
+                    LogToConsole(TextId.ErrorSceneMove.Get(e.Message));
                 }
                 break;
             case "try_close_izakaya":
                 if (MpManager.LocalScene != Scene.WorkScene)
                 {
-                    LogToConsole($"not in work scene, skip");
+                    LogToConsole(TextId.NotInWorkScene.Get());
                 }
                 else
                 {
                     WorkSceneManager.CloseIzakayaIfPossible();
-                    LogToConsole($"called try_close_izakaya");
+                    LogToConsole(TextId.CalledTryCloseIzakaya.Get());
                 }
                 break;
             default:
-                LogToConsole($"Unknown method: {method}");
-                LogToConsole($"Available methods: {availableFields}");
+                LogToConsole(TextId.UnknownMethod.Get(method));
+                LogToConsole(TextId.AvailableMethods.Get(availableFields));
                 break;
         }
     }
@@ -586,19 +584,19 @@ public partial class InGameConsole
     {
         if (args.Length < 2 || args[0].ToLower() != "start")
         {
-            LogToConsole("Usage: /webdebug start <key>");
+            LogToConsole(TextId.WebDebuggerUsage.Get());
             return;
         }
 
         if (args[1] != "我已知晓风险并同意启动Web调试器")
         {
-            LogToConsole("Invalid key.");
+            LogToConsole(TextId.InvalidWebDebuggerKey.Get());
             return;
         }
 
         PluginManager.Debugger ??= new Debugger.WebDebugger();
         PluginManager.Debugger?.Start();
-        LogToConsole("WebDebugger started.");
+        LogToConsole(TextId.WebDebuggerStarted.Get());
     }
 }
 

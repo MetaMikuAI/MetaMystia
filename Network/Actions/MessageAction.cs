@@ -21,7 +21,7 @@ public partial class MessageAction : Action
         {
             FloatingTextHelper.ShowFloatingTextOnMainThread(PeerManager.GetCharacterUnit(), Message);
         }
-        Notify.ShowExternOnMainThread($"{MpManager.PeerId}: {Message}");
+        Notify.ShowExternOnMainThread(TextId.ChatMessagePeer.Get(MpManager.PeerId, Message));
     }
     private static MessageAction CreateMsgAction(string msg)
     {
@@ -38,7 +38,7 @@ public partial class MessageAction : Action
     public static void Send(string message)
     {
         FloatingTextHelper.ShowFloatingTextSelfOnMainThread(message);
-        Notify.ShowExternOnMainThread($"你: {message}");
+        Notify.ShowExternOnMainThread(TextId.ChatMessageSelf.Get(message));
         CreateMsgAction(message).SendToHostOrBroadcast();
     }
 }
