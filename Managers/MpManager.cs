@@ -62,7 +62,25 @@ public static partial class MpManager
     public static bool IsConnected => (TransportRole == ROLE.Host ? server?.HasAliveClient : client?.IsConnected) ?? false;
     public static bool IsConnectedClient => IsConnected && IsClient;
     public static bool IsConnectedHost => IsConnected && IsHost;
-    public static string RoleTag => IsHost ? "[S]" : "[C]";
+    /// <summary>
+    /// Dual-layer role tag: [Transport][Application].
+    /// Transport: S=Server, C=Client. Application: S=Host, C=Client, N=None(follow transport).
+    /// e.g. [SN]=server+no override, [CS]=client+overridden to host, [SC]=server+overridden to client.
+    /// </summary>
+    public static string RoleTag
+    {
+        get
+        {
+            char transport = TransportRole == ROLE.Host ? 'S' : 'C';
+            char app = OverrideRole switch
+            {
+                ROLE.Host => 'S',
+                ROLE.Client => 'C',
+                _ => 'N',
+            };
+            return $"[{transport}{app}]";
+        }
+    }
     public static string RoleName => IsHost ? "Host" : "Client";
 
     private static ConcurrentDictionary<int, long> pingSendTimes = new();

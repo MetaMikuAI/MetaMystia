@@ -35,8 +35,9 @@ public enum ActionType : ushort
     GUEST_LEAVE,
     BUFF,
     IZAKAYA_CLOSE,
-    GET_COLLECTABLE, // disabled
+    GET_COLLECTABLE,
     PLAYER_ID_CHANGE,
+    OVERRIDE_ROLE,
 }
 
 [MemoryPackable]
@@ -69,6 +70,7 @@ public enum ActionType : ushort
 [MemoryPackUnion((ushort)ActionType.IZAKAYA_CLOSE, typeof(IzakayaCloseAction))]
 [MemoryPackUnion((ushort)ActionType.GET_COLLECTABLE, typeof(GetCollectableAction))]
 [MemoryPackUnion((ushort)ActionType.PLAYER_ID_CHANGE, typeof(PlayerIdChangeAction))]
+[MemoryPackUnion((ushort)ActionType.OVERRIDE_ROLE, typeof(OverrideRoleAction))]
 [AutoLog]
 
 public abstract partial class Action

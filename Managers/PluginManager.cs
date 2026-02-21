@@ -80,8 +80,48 @@ public partial class PluginManager : MonoBehaviour
             Log.LogMessage($"Toggled text visibility: " + isTextVisible);
         }
 
+
         if (DEBUG)
         {
+            #region F1-F6: OverrideRole debug controls
+            if (Input.GetKeyDown(KeyCode.F1))
+            {
+                MpManager.OverrideRole = null;
+                Log.LogMessage($"Local OverrideRole -> null (follow transport)");
+                Notify.Show($"本地应用层角色: 跟随传输层 {MpManager.RoleTag}");
+            }
+            if (Input.GetKeyDown(KeyCode.F2))
+            {
+                MpManager.OverrideRole = MpManager.ROLE.Host;
+                Log.LogMessage($"Local OverrideRole -> Host");
+                Notify.Show($"本地应用层角色: Host {MpManager.RoleTag}");
+            }
+            if (Input.GetKeyDown(KeyCode.F3))
+            {
+                MpManager.OverrideRole = MpManager.ROLE.Client;
+                Log.LogMessage($"Local OverrideRole -> Client");
+                Notify.Show($"本地应用层角色: Client {MpManager.RoleTag}");
+            }
+            if (Input.GetKeyDown(KeyCode.F4))
+            {
+                Network.OverrideRoleAction.Send(null);
+                Log.LogMessage($"Remote OverrideRole -> null (follow transport)");
+                Notify.Show($"已发送对方应用层角色: 跟随传输层");
+            }
+            if (Input.GetKeyDown(KeyCode.F5))
+            {
+                Network.OverrideRoleAction.Send(MpManager.ROLE.Host);
+                Log.LogMessage($"Remote OverrideRole -> Host");
+                Notify.Show($"已发送对方应用层角色: Host");
+            }
+            if (Input.GetKeyDown(KeyCode.F6))
+            {
+                Network.OverrideRoleAction.Send(MpManager.ROLE.Client);
+                Log.LogMessage($"Remote OverrideRole -> Client");
+                Notify.Show($"已发送对方应用层角色: Client");
+            }
+            #endregion
+
             if (Input.GetKeyDown(KeyCode.F9))
             {
                 WorkSceneManager.CloseIzakayaIfPossible();
