@@ -5,7 +5,7 @@ using GameData.Core.Collections.DaySceneUtility.Collections;
 using GameData.Profile;
 using GameData.Core.Collections.CharacterUtility;
 using UnityEngine;
-
+using System.Linq;
 using MetaMystia.ResourceEx.AssetManagement;
 using MetaMystia.ResourceEx.Models;
 namespace MetaMystia;
@@ -34,6 +34,13 @@ public static partial class ResourceExManager
     private static List<EventNodeConfig> EventNodeConfigs = new List<EventNodeConfig>();
     private static Dictionary<string, MerchantConfig> MerchantConfigs = new Dictionary<string, MerchantConfig>();
     private static Dictionary<int, ClothConfig> ClothConfigs = new Dictionary<int, ClothConfig>();
+
+    // Public ID set accessors for DLCManager rEx integration
+    public static HashSet<int> LoadedRecipeIds => [.. RecipeConfigs.Keys];
+    public static HashSet<int> LoadedFoodIds => [.. FoodConfigs.Keys];
+    public static HashSet<int> LoadedBeverageIds => [.. BeverageConfigs.Keys];
+    public static HashSet<int> LoadedIngredientIds => [.. IngredientConfigs.Keys];
+    public static HashSet<int> LoadedSpecialGuestIds => [.. _characterConfigs.Where(kv => kv.Key.type == "Special").Select(kv => kv.Key.id)];
 
     // Cloth portrait cache: clothId -> Sprite (loaded lazily or during preload)
     private static Dictionary<int, Sprite> _clothPortraitCache = new Dictionary<int, Sprite>();

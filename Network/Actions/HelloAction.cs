@@ -22,6 +22,12 @@ public partial class HelloAction : Action
     public HashSet<int> PeerDLCNormalGuests { get; set; } = null;
     public HashSet<int> PeerDLCSpecialGuests { get; set; } = null;
 
+    // ResourceEx (rEx) resource sets
+    public HashSet<int> PeerRExRecipes { get; set; } = null;
+    public HashSet<int> PeerRExFoods { get; set; } = null;
+    public HashSet<int> PeerRExBeverages { get; set; } = null;
+    public HashSet<int> PeerRExSpecialGuests { get; set; } = null;
+
     protected override BepInEx.Logging.LogLevel OnReceiveLogLevel => BepInEx.Logging.LogLevel.Message;
     protected override BepInEx.Logging.LogLevel OnSendLogLevel => BepInEx.Logging.LogLevel.Message;
     public new void LogActionSend() => base.LogActionSend();
@@ -71,6 +77,11 @@ public partial class HelloAction : Action
         DLCManager.PeerBeverages = PeerDLCBeverages ?? [];
         DLCManager.PeerNormalGuests = PeerDLCNormalGuests ?? [];
         DLCManager.PeerSpecialGuests = PeerDLCSpecialGuests ?? [];
+
+        DLCManager.PeerRExRecipes = PeerRExRecipes ?? [];
+        DLCManager.PeerRExFoods = PeerRExFoods ?? [];
+        DLCManager.PeerRExBeverages = PeerRExBeverages ?? [];
+        DLCManager.PeerRExSpecialGuests = PeerRExSpecialGuests ?? [];
     }
 
     public static void Send()
@@ -89,6 +100,11 @@ public partial class HelloAction : Action
             PeerDLCNormalGuests = DLCManager.NormalGuests,
             PeerDLCRecipes = DLCManager.Recipes,
             PeerDLCSpecialGuests = DLCManager.SpecialGuests,
+
+            PeerRExRecipes = DLCManager.RExRecipes,
+            PeerRExFoods = DLCManager.RExFoods,
+            PeerRExBeverages = DLCManager.RExBeverages,
+            PeerRExSpecialGuests = DLCManager.RExSpecialGuests,
         }.SendToHostOrBroadcast();
     }
 }

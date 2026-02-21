@@ -42,15 +42,28 @@ public static partial class DLCManager
     public static HashSet<int> PeerNormalGuests { get; set; } = [];
     public static HashSet<int> PeerSpecialGuests { get; set; } = [];
 
-    public static bool RecipeAvailable(int id) => CoreRecipes.Contains(id) || Recipes.Contains(id);
-    public static bool PeerRecipeAvailable(int id) => CoreRecipes.Contains(id) || PeerRecipes.Contains(id);
+    // ResourceEx (rEx) resource sets
+    public static HashSet<int> RExRecipes { get; private set; } = [];
+    public static HashSet<int> RExFoods { get; private set; } = [];
+    public static HashSet<int> RExBeverages { get; private set; } = [];
+    public static HashSet<int> RExSpecialGuests { get; private set; } = [];
+
+    public static HashSet<int> PeerRExRecipes { get; set; } = [];
+    public static HashSet<int> PeerRExFoods { get; set; } = [];
+    public static HashSet<int> PeerRExBeverages { get; set; } = [];
+    public static HashSet<int> PeerRExSpecialGuests { get; set; } = [];
+
+    public static bool RecipeAvailable(int id) => CoreRecipes.Contains(id) || Recipes.Contains(id) || RExRecipes.Contains(id);
+    public static bool PeerRecipeAvailable(int id) => CoreRecipes.Contains(id) || PeerRecipes.Contains(id) || PeerRExRecipes.Contains(id);
     public static bool PeerCookerAvailable(int id) => CoreCookers.Contains(id) || PeerCookers.Contains(id); // 注, -1 为空位, 可能需要特判
-    public static bool PeerFoodAvailable(int id) => CoreFoods.Contains(id) || PeerFoods.Contains(id);
-    public static bool PeerBeverageAvailable(int id) => CoreBeverages.Contains(id) || PeerBeverages.Contains(id);
+    public static bool PeerFoodAvailable(int id) => CoreFoods.Contains(id) || PeerFoods.Contains(id) || PeerRExFoods.Contains(id);
+    public static bool PeerBeverageAvailable(int id) => CoreBeverages.Contains(id) || PeerBeverages.Contains(id) || PeerRExBeverages.Contains(id);
     public static bool PeerNormalGuestAvailable(int id) => CoreNormalGuests.Contains(id) || PeerNormalGuests.Contains(id);
-    public static bool PeerSpecialGuestAvailable(int id) => CoreSpecialGuests.Contains(id) || PeerSpecialGuests.Contains(id);
-    public static bool SpecialGuestAvailable(int id) => CoreSpecialGuests.Contains(id) || SpecialGuests.Contains(id);
+    public static bool PeerSpecialGuestAvailable(int id) => CoreSpecialGuests.Contains(id) || PeerSpecialGuests.Contains(id) || PeerRExSpecialGuests.Contains(id);
+    public static bool SpecialGuestAvailable(int id) => CoreSpecialGuests.Contains(id) || SpecialGuests.Contains(id) || RExSpecialGuests.Contains(id);
     public static bool CollectableAvailable(string id) => CoreCollectables.Contains(id) || Collectables.Contains(id);
+    public static bool FoodAvailable(int id) => CoreFoods.Contains(id) || Foods.Contains(id) || RExFoods.Contains(id);
+    public static bool BeverageAvailable(int id) => CoreBeverages.Contains(id) || Beverages.Contains(id) || RExBeverages.Contains(id);
 
 
     public static void Initialize()
@@ -85,6 +98,13 @@ public static partial class DLCManager
         foreach (var item in CoreDataPack.NormalGuestProfile.Asset?.Cast<NormalGuestProfile>().normalGuests) CoreNormalGuests.Add(item.Id);
         foreach (var item in CoreDataPack.SpecialGuestProfile.Asset?.Cast<SpecialGuestProfile>().specialGuests) CoreSpecialGuests.Add(item.Id);
         foreach (var item in CoreDataPack.CollectableProfile.Asset?.Cast<DayScene.Interactables.Collectable.CollectableProfile>().collectables) CoreCollectables.Add(item.key);
+
+        // Populate ResourceEx (rEx) resource sets
+        RExRecipes = ResourceExManager.LoadedRecipeIds;
+        RExFoods = ResourceExManager.LoadedFoodIds;
+        RExBeverages = ResourceExManager.LoadedBeverageIds;
+        RExSpecialGuests = ResourceExManager.LoadedSpecialGuestIds;
+
         ClearPeer();
     }
 
@@ -96,6 +116,10 @@ public static partial class DLCManager
         PeerBeverages?.Clear();
         PeerNormalGuests?.Clear();
         PeerSpecialGuests?.Clear();
+        PeerRExRecipes?.Clear();
+        PeerRExFoods?.Clear();
+        PeerRExBeverages?.Clear();
+        PeerRExSpecialGuests?.Clear();
         PeerActiveDLCLabel = [];
     }
 
