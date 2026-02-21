@@ -63,7 +63,6 @@ public static partial class MpManager
 
     public static string GameVersion => Common.LoadingSceneManager.VersionData;
     public static string ModVersion => MyPluginInfo.PLUGIN_VERSION;
-    public static Language Language => Common.UI.EscapeUtility.EscConfigPannel.CurrentSettings.CurrentLanguage.GetLanguage();
 
     public const string PeerGetCharacterUnitNotNullCommand = "PeerGetCharacterUnitNotNullCommand";
 

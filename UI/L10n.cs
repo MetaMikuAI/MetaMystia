@@ -781,6 +781,7 @@ public static class L10n
             [Language.English] = TextId.ReadyForWork.Get("You"),
             [Language.ChineseSimplified] = TextId.ReadyForWork.Get("你"),
         };
+        PostInitialized = true;
     }
 
     public static string Get(this TextId key, params object[] args)
@@ -788,7 +789,7 @@ public static class L10n
         if (!Table.TryGetValue(key, out var langMap))
             return $"[L10N_MISSING:{key}]";
 
-        if (!langMap.TryGetValue(MpManager.Language, out var text))
+        if (!langMap.TryGetValue(Language, out var text))
             text = langMap.GetValueOrDefault(Language.English);
 
         return args.Length > 0
@@ -805,5 +806,14 @@ public static class L10n
         GameData.MultiLanguageTextMesh.LoadLanguageType.CNT => Language.ChineseTraditional,
         _ => throw new NotImplementedException(),
     };
+
+    public static Language Language
+    {
+        get
+        {
+            return PostInitialized ? Common.UI.EscapeUtility.EscConfigPannel.CurrentSettings.CurrentLanguage.GetLanguage() : Language.English;
+        }
+    }
+    private static bool PostInitialized = false;
 }
 
