@@ -14,7 +14,7 @@ public static partial class MpManager
     public enum ROLE
     {
         Host,
-        Client
+        Client,
     }
 
     #region Const Values
@@ -36,12 +36,30 @@ public static partial class MpManager
 
     private static TcpServer server = null;
     private static TcpClientWrapper client = null;
-    private static ROLE Role;
+
+    /// <summary>
+    /// 传输层 Role：由 TCP 连接决定（服务器或客户端套接字）。
+    /// 不应用于联机特权检查；请使用 <see cref="IsHost"/>/<see cref="IsClient"/> 进行检查。
+    /// </summary>
+    private static ROLE TransportRole;
+    /// <summary>
+    /// 应用层角色覆盖：当设置时，<see cref="IsHost"/>/<see cref="IsClient"/> 反映此值，而不是 <see cref="TransportRole"/>。设置为 <c>null</c> 以遵循传输层角色。
+    /// </summary>
+    public static ROLE? OverrideRole = null; // public for debug
     public static bool IsRunning { get; private set; }
-    public static bool IsHost => Role == ROLE.Host;
-    public static bool IsClient => Role == ROLE.Client;
+    /// <summary>
+    /// 应用层：当此节点拥有主机权限时为 true（考虑覆盖）。
+    /// </summary>
+    public static bool IsHost => OverrideRole == ROLE.Host || (!OverrideRole.HasValue && TransportRole == ROLE.Host);
+    /// <summary>
+    /// 应用层：当此节点为客户端时为 true（考虑覆盖）。
+    /// </summary>
+    public static bool IsClient => OverrideRole == ROLE.Client || (!OverrideRole.HasValue && TransportRole == ROLE.Client);
     private static bool IsConnecting = false;
-    public static bool IsConnected => (IsHost ? server?.HasAliveClient : client?.IsConnected) ?? false;
+    /// <summary>
+    /// 传输层：底层 TCP 连接是否存活。
+    /// </summary>
+    public static bool IsConnected => (TransportRole == ROLE.Host ? server?.HasAliveClient : client?.IsConnected) ?? false;
     public static bool IsConnectedClient => IsConnected && IsClient;
     public static bool IsConnectedHost => IsConnected && IsHost;
     public static string RoleTag => IsHost ? "[S]" : "[C]";
@@ -96,24 +114,27 @@ public static partial class MpManager
 
     #endregion
 
+    /// <summary>
+    /// 切换传输层角色（TCP 服务器 ↔ 客户端）。这不会改变 <see cref="OverrideRole"/>。
+    /// </summary>
     public static void SwitchRole(bool stop_existed_server = true)
     {
-        Log.Message($"Switching role from {Role} to {(IsHost ? "Client" : "Host")}");
-        if (IsHost)
+        Log.Message($"Switching transport role from {TransportRole} to {(TransportRole == ROLE.Host ? "Client" : "Host")}");
+        if (TransportRole == ROLE.Host)
         {
             if (stop_existed_server)
             {
                 server?.Stop();
                 server = null;
             }
-            Role = ROLE.Client;
+            TransportRole = ROLE.Client;
         }
         else
         {
             client?.Close();
             server = new(TCP_PORT);
             server.Start();
-            Role = ROLE.Host;
+            TransportRole = ROLE.Host;
         }
     }
 
@@ -135,7 +156,8 @@ public static partial class MpManager
 
         IsRunning = true;
         PeerId = "<Unknown>";
-        Role = r;
+        TransportRole = r;
+        OverrideRole = null;
 
         switch (r)
         {
@@ -158,6 +180,7 @@ public static partial class MpManager
 
         Log.LogInfo("Stopping MpManager");
         IsRunning = false;
+        OverrideRole = null;
 
         try
         {
@@ -182,8 +205,9 @@ public static partial class MpManager
 
     public static bool Restart()
     {
+        var r = TransportRole;
         Stop();
-        return Start(Role);
+        return Start(r);
     }
 
     public static async Task<bool> ConnectToPeerAsync(string peerIp, int port = TCP_PORT, bool stop_existed_server = true)
@@ -208,7 +232,7 @@ public static partial class MpManager
         try
         {
             IsConnecting = true;
-            if (IsHost)
+            if (TransportRole == ROLE.Host)
             {
                 SwitchRole(stop_existed_server);
             }
@@ -279,9 +303,12 @@ public static partial class MpManager
         action.OnReceived();
     }
 
+    /// <summary>
+    /// 传输层发送：根据 <see cref="TransportRole"/> 通过服务器或客户端套接字路由数据包。
+    /// </summary>
     public static void SendToHostOrBroadcast(NetPacket packet)
     {
-        if (IsHost)
+        if (TransportRole == ROLE.Host)
         {
             server?.Send(packet);
         }
@@ -291,9 +318,12 @@ public static partial class MpManager
         }
     }
 
+    /// <summary>
+    /// 传输层发送：将数据包通过适当的套接字路由到对等方。
+    /// </summary>
     public static void SendToPeer(NetPacket packet)
     {
-        if (IsHost)
+        if (TransportRole == ROLE.Host)
         {
             server?.Send(packet);
         }
@@ -307,7 +337,7 @@ public static partial class MpManager
     {
         if (IsConnected)
         {
-            if (IsHost)
+            if (TransportRole == ROLE.Host)
             {
                 server.DisconnectClient();
             }
