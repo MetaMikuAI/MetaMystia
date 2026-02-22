@@ -35,7 +35,7 @@ public enum ActionType : ushort
     GUEST_LEAVE,
     BUFF,
     IZAKAYA_CLOSE,
-    GET_COLLECTABLE,
+    GET_COLLECTABLE, // disabled
     PLAYER_ID_CHANGE,
 }
 

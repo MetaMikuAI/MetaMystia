@@ -13,23 +13,23 @@ public partial class GetCollectableAction : Action
     [CheckScene(Common.UI.Scene.DayScene)]
     public override void OnReceivedDerived()
     {
-        CommandScheduler.EnqueueWithNoCondition(() =>
-        {
-            if (!DLCManager.CollectableAvailable(Collectable))
-            {
-                Log.Message($"{Collectable} is not available, skip");
-                return;
-            }
-            var item = GameData.RunTime.DaySceneUtility.RunTimeDayScene.GetTrackedCollectable(Collectable);
-            if (item == null)
-            {
-                Log.Warning($"{Collectable} is null, skip");
-                return;
-            }
-            DaySceneUtilityPatch.Collect_Original(item);
-            EntityConditionComponent.TryUpdateConditionComponent<CollectableConditionComponent>();
-            Log.Message($"collected {Collectable}");
-        });
+        // CommandScheduler.EnqueueWithNoCondition(() =>
+        // {
+        //     if (!DLCManager.CollectableAvailable(Collectable))
+        //     {
+        //         Log.Message($"{Collectable} is not available, skip");
+        //         return;
+        //     }
+        //     var item = GameData.RunTime.DaySceneUtility.RunTimeDayScene.GetTrackedCollectable(Collectable);
+        //     if (item == null)
+        //     {
+        //         Log.Warning($"{Collectable} is null, skip");
+        //         return;
+        //     }
+        //     DaySceneUtilityPatch.Collect_Original(item);
+        //     EntityConditionComponent.TryUpdateConditionComponent<CollectableConditionComponent>();
+        //     Log.Message($"collected {Collectable}");
+        // });
     }
 
     public static void Send(string collectable)
