@@ -75,6 +75,7 @@ public enum TextId
     DLCPeerRecipeNotAvailable,
     DLCPeerBeverageNotAvailable,
     DLCPeerFoodNotAvailable,
+    DLCPeerCookerNotAvailable,
 
     // System Messages
     ModPatchFailure,
@@ -279,29 +280,37 @@ public static class L10n
 
         [TextId.DLCPeerFoodNotAvailable] = new()
         {
-            [Language.English] = "One or more players have not installed the DLC that contains the food item {0}.",
-            [Language.ChineseSimplified] = "有玩家未装载有此食物 {0} 的 DLC",
-            [Language.ChineseTraditional] = "有玩家未裝載有此食物 {0} 的 DLC",
-            [Language.Japanese] = "食材 {0} を含む DLC がインストールされていないプレイヤーがいます。",
-            [Language.Korean] = "식재료 {0}를 포함한 DLC를 설치하지 않은 플레이어가 있습니다.",
+            [Language.English] = "One or more players have not installed the DLC or resource pack that contains the food item {0}.",
+            [Language.ChineseSimplified] = "有玩家未装载有此食物 {0} 的 DLC 或资源包",
+            [Language.ChineseTraditional] = "有玩家未裝載有此食物 {0} 的 DLC 或資源包",
+            [Language.Japanese] = "食材 {0} を含む DLC またはリソースパック がインストールされていないプレイヤーがいます。",
+            [Language.Korean] = "식재료 {0}를 포함한 DLC 또는 리소스 팩을 설치하지 않은 플레이어가 있습니다.",
         },
 
         [TextId.DLCPeerBeverageNotAvailable] = new()
         {
-            [Language.English] = "One or more players have not installed the DLC that contains the beverage item {0}.",
-            [Language.ChineseSimplified] = "有玩家未装载有此酒水 {0} 的 DLC",
-            [Language.ChineseTraditional] = "有玩家未裝載有此酒水 {0} 的 DLC",
-            [Language.Japanese] = "饮率 {0} を含む DLC がインストールされていないプレイヤーがいます。",
-            [Language.Korean] = "음료 {0}를 포함한 DLC를 설치하지 않은 플레이어가 있습니다.",
+            [Language.English] = "One or more players have not installed the DLC or resource pack that contains the beverage item {0}.",
+            [Language.ChineseSimplified] = "有玩家未装载有此酒水 {0} 的 DLC 或资源包",
+            [Language.ChineseTraditional] = "有玩家未裝載有此酒水 {0} 的 DLC 或資源包",
+            [Language.Japanese] = "飲料 {0} を含む DLC またはリソースパック がインストールされていないプレイヤーがいます。",
+            [Language.Korean] = "음료 {0}를 포함한 DLC 또는 리소스 팩을 설치하지 않은 플레이어가 있습니다.",
         },
 
         [TextId.DLCPeerRecipeNotAvailable] = new()
         {
-            [Language.English] = "One or more players have not installed the DLC that contains the recipe item {0}.",
-            [Language.ChineseSimplified] = "有玩家未装载有此食谱 {0} 的 DLC",
-            [Language.ChineseTraditional] = "有玩家未裝載有此食譜 {0} 的 DLC",
-            [Language.Japanese] = "レシピ {0} を含む DLC がインストールされていないプレイヤーがいます。",
-            [Language.Korean] = "레시피 {0}를 포함한 DLC를 설치하지 않은 플레이어가 있습니다.",
+            [Language.English] = "One or more players have not installed the DLC or resource pack that contains the recipe item {0}.",
+            [Language.ChineseSimplified] = "有玩家未装载有此食谱 {0} 的 DLC 或资源包",
+            [Language.ChineseTraditional] = "有玩家未裝載有此食譜 {0} 的 DLC 或資源包",
+            [Language.Japanese] = "レシピ {0} を含む DLC またはリソースパック がインストールされていないプレイヤーがいます。",
+            [Language.Korean] = "레시피 {0}를 포함한 DLC 또는 리소스 팩을 설치하지 않은 플레이어가 있습니다.",
+        },
+        [TextId.DLCPeerCookerNotAvailable] = new()
+        {
+            [Language.English] = "One or more players have not installed the DLC or resource pack that contains the cooker item {0}.",
+            [Language.ChineseSimplified] = "有玩家未装载有此厨具 {0} 的 DLC 或资源包",
+            [Language.ChineseTraditional] = "有玩家未裝載有此廚具 {0} 的 DLC 或資源包",
+            [Language.Japanese] = "調理器具 {0} を含む DLC またはリソースパック がインストールされていないプレイヤーがいます。",
+            [Language.Korean] = "조리기구 {0}를 포함한 DLC 또는 리소스 팩을 설치하지 않은 플레이어가 있습니다.",
         },
 
         [TextId.ReadyForWork] = new()
@@ -342,11 +351,11 @@ public static class L10n
 
         [TextId.SceneMismatchDisconnected] = new()
         {
-            [Language.English] = "One or more players not in daytime or main menu, connection disconnected",
-            [Language.ChineseSimplified] = "有玩家不处于白天或主界面，连接已断开",
-            [Language.ChineseTraditional] = "有玩家不處於白天或主界面，連接已斷開",
-            [Language.Japanese] = "1人以上のプレイヤーが昼間またはメインメニューにいません。接続を切断しました",
-            [Language.Korean] = "하나 이상의 플레이어가 낮 또는 메인 메뉴에 없음, 연결 끊김",
+            [Language.English] = "One or more players are not in the DayScene or MainScene at the same time, connection disconnected!",
+            [Language.ChineseSimplified] = "有玩家不同处于白天或主界面，连接已断开",
+            [Language.ChineseTraditional] = "有玩家不同處於白天或主界面，連接已斷開",
+            [Language.Japanese] = "同時に白昼シーンまたはメインシーンにいないプレイヤーがいます。接続を切断しました！",
+            [Language.Korean] = "동시에 낮 장면 또는 메인 장면에 있지 않은 플레이어가 있습니다. 연결 끊김!",
         },
 
         [TextId.MultiplayerConnected] = new()

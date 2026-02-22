@@ -22,6 +22,7 @@ public partial class IzakayaConfigurePatch
         if (MpManager.IsConnected && !DLCManager.PeerRecipeAvailable(id))
         {
             Log.LogWarning($"Peer does not have recipe {id}, skipping...");
+            Notify.ShowExternOnMainThread(TextId.DLCPeerRecipeNotAvailable.Get(id));
             return false;
         }
 
@@ -38,6 +39,7 @@ public partial class IzakayaConfigurePatch
         if (MpManager.IsConnected && !DLCManager.PeerBeverageAvailable(id))
         {
             Log.LogWarning($"Peer does not have beverage {id}, skipping...");
+            Notify.ShowExternOnMainThread(TextId.DLCPeerBeverageNotAvailable.Get(id));
             return false;
         }
 
@@ -60,6 +62,7 @@ public partial class IzakayaConfigurePatch
         if (id != -1 && MpManager.IsConnected && !DLCManager.PeerCookerAvailable(id))
         {
             Log.LogWarning($"Peer does not have cooker {id}, skipping...");
+            Notify.ShowExternOnMainThread(TextId.DLCPeerCookerNotAvailable.Get(id));
             return false;
         }
 
