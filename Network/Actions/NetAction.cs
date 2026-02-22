@@ -36,6 +36,7 @@ public enum ActionType : ushort
     BUFF,
     IZAKAYA_CLOSE,
     GET_COLLECTABLE,
+    PLAYER_ID_CHANGE,
 }
 
 [MemoryPackable]
@@ -67,6 +68,7 @@ public enum ActionType : ushort
 [MemoryPackUnion((ushort)ActionType.BUFF, typeof(BuffAction))]
 [MemoryPackUnion((ushort)ActionType.IZAKAYA_CLOSE, typeof(IzakayaCloseAction))]
 [MemoryPackUnion((ushort)ActionType.GET_COLLECTABLE, typeof(GetCollectableAction))]
+[MemoryPackUnion((ushort)ActionType.PLAYER_ID_CHANGE, typeof(PlayerIdChangeAction))]
 [AutoLog]
 
 public abstract partial class Action

@@ -32,6 +32,7 @@ public enum TextId
     MpStopped,
     MpRestarted,
     MpPlayerIdSet,
+    PeerPlayerIdChanged,
     MpNoActiveConnection,
     MpConnecting,
     MpDisconnected,
@@ -240,6 +241,14 @@ public static class L10n
             [Language.ChineseTraditional] = "玩家 ID 已設置為 {0}",
             [Language.Japanese] = "プレイヤーIDを {0} に設定しました",
             [Language.Korean] = "플레이어 ID가 {0}으로 설정되었습니다",
+        },
+        [TextId.PeerPlayerIdChanged] = new()
+        {
+            [Language.English] = "Peer changed their ID: {0} -> {1}",
+            [Language.ChineseSimplified] = "对方已更改 ID：{0} -> {1}",
+            [Language.ChineseTraditional] = "對方已更改 ID：{0} -> {1}",
+            [Language.Japanese] = "相手がIDを変更しました：{0} -> {1}",
+            [Language.Korean] = "상대방이 ID를 변경했습니다: {0} -> {1}",
         },
 
         [TextId.MpNoActiveConnection] = new()

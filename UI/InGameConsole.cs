@@ -409,6 +409,7 @@ public partial class InGameConsole
                     break;
                 }
                 MpManager.PlayerId = args[1];
+                PlayerIdChangeAction.Send(args[1]);
                 LogToConsole(TextId.MpPlayerIdSet.Get(args[1]));
                 break;
             case "connect":
