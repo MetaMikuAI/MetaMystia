@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -25,15 +27,7 @@ public static partial class IdRangeValidator
     public const int UnmanagedIdMin = 1073741824;
     public const int UnmanagedIdMax = 2147483647;
 
-    private const string PublicKeyPem = @"-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvI3be1KGxa3ZAodaVWEr
-5DX3nKUHVw6fyPnEGDUse1PZOMeLauM/ZTJWa+wB+wc/vsJW59wBvy8Q7Tbal9cT
-8o1K6NQq6juR1tUxZXQUqsMeAYEZBykR5KmwAKXXQeWCHDP0ZQSOJ5A25ZxCJH+I
-1pVGx1VTPqWL7NpAAxsfZ3EbgOvsolc4YtFb9OqjYEeVXnCMR9TA3rmD7dNYPhO6
-Jy+lsZlCch9Y3GgGbLQ4Mdq3h0FuhkfHUuHsmHcibeNfV+AKatZsHoybG4meFG73
-4hgzy+khLGyZSEcx4CmP/izKuAgoLAnnINNqNiOTltlpRoLaPfGQX8swwmr7nQh1
-sQIDAQAB
------END PUBLIC KEY-----";
+    private const string PublicKeyResourceName = "MetaMystia.ResourceEx.AssetManagement.public_key.pem";
 
     private static RSA _publicKey;
 
@@ -45,11 +39,24 @@ sQIDAQAB
         if (_publicKey != null)
             return _publicKey;
 
+        var pem = LoadEmbeddedPublicKey();
         _publicKey = RSA.Create();
         _publicKey.ImportSubjectPublicKeyInfo(
-            Convert.FromBase64String(ExtractBase64FromPem(PublicKeyPem)),
+            Convert.FromBase64String(ExtractBase64FromPem(pem)),
             out _);
         return _publicKey;
+    }
+
+    /// <summary>
+    /// Loads the PEM public key from the embedded resource.
+    /// </summary>
+    private static string LoadEmbeddedPublicKey()
+    {
+        var assembly = Assembly.GetExecutingAssembly();
+        using var stream = assembly.GetManifestResourceStream(PublicKeyResourceName)
+            ?? throw new InvalidOperationException($"Embedded resource '{PublicKeyResourceName}' not found.");
+        using var reader = new StreamReader(stream);
+        return reader.ReadToEnd();
     }
 
     /// <summary>
