@@ -17,14 +17,7 @@ namespace MetaMystia;
 public partial class PluginManager : MonoBehaviour
 {
     public static PluginManager Instance { get; private set; }
-
-    private const string ChangePluginNameCommand = "ChangePluginNameCommand";
-    private const int ChangePluginNameCommandInterval = 120;
-    private readonly string[] PluginNames = [MyPluginInfo.PLUGIN_NAME, "ShigureMystia"];
-    private static string PluginName = MyPluginInfo.PLUGIN_NAME;
-    private static string LoadedLabel(string pluginName) => $"{pluginName} v{MpManager.ModVersion} loaded";
-    public static string Label => LoadedLabel(PluginName);
-
+    public static readonly string Label = $"{MyPluginInfo.PLUGIN_NAME} v{MyPluginInfo.PLUGIN_VERSION} loaded";
     public static InGameConsole Console { get; private set; }
     public static Debugger.WebDebugger Debugger = null;
     private bool isTextVisible = true;
@@ -56,11 +49,6 @@ public partial class PluginManager : MonoBehaviour
     private void Awake()
     {
         Console = new InGameConsole();
-        CommandScheduler.EnqueueInterval(
-            commandId: ChangePluginNameCommand,
-            intervalSeconds: ChangePluginNameCommandInterval,
-            execute: () => PluginName = PluginNames.GetRandomOne()
-        );
     }
 
     private void OnGUI()
