@@ -3,7 +3,7 @@ name: "🐛 Bug 报告 / Bug Report"
 description: "报告一个错误或问题 / Report a bug or issue"
 title: "[BUG] "
 labels: ["bug"]
-assignees: ["MetaMikuAI", "ShigureYuki"]
+assignees: ["MetaMikuAI"]
 body:
   - type: markdown
     attributes:
@@ -54,7 +54,7 @@ body:
     attributes:
       label: "游戏版本 / Game Version"
       description: "您正在使用的游戏版本 / The version of the game you are using"
-      placeholder: "例如：4.2.1  / e.g., 4.2.1"
+      placeholder: "例如：Release4.3.0c  / e.g., Release4.3.0c"
     validations:
       required: true
 
@@ -75,7 +75,7 @@ body:
       placeholder: "例如：Windows 11 / e.g., Windows 11"
     validations:
       required: true
-      
+
   - type: markdown
     attributes:
       value: |
@@ -100,7 +100,7 @@ body:
         - label: "DLC3"
         - label: "DLC4"
         - label: "DLC5"
-        - label: "MetaMystia资源包 / MetaMystia Resource Pack"
+        - label: "MetaMystia ResourceEx Pack"
 
   - type: textarea
     id: host-logs
@@ -132,7 +132,7 @@ body:
         - label: "DLC3"
         - label: "DLC4"
         - label: "DLC5"
-        - label: "MetaMystia资源包 / MetaMystia Resource Pack"
+        - label: "MetaMystia ResourceEx Pack"
 
   - type: textarea
     id: client-logs
