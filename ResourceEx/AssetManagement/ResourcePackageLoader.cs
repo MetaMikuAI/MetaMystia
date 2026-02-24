@@ -54,7 +54,7 @@ public static partial class ResourcePackageLoader
         if (!enforceSignature)
         {
             Log.LogWarning("[ResourceEx] Signature verification is DISABLED by config.");
-            Notify.ShowOnNextAvailableScene(TextId.SignatureVerificationDisabled.Get());
+            Notify.ShowOnNextAvailableScene(() => TextId.SignatureVerificationDisabled.Get());
         }
 
         var validatedCandidates = new List<PackageCandidate>();
@@ -71,7 +71,7 @@ public static partial class ResourcePackageLoader
                     Log.LogError(error);
 
                 Log.LogError($"[{candidate.PackageName}] Rejected: ID range validation failed.");
-                Notify.ShowOnNextAvailableScene(TextId.ResourcePackageValidationFailed.Get(candidate.PackageName));
+                Notify.ShowOnNextAvailableScene(() => TextId.ResourcePackageValidationFailed.Get(candidate.PackageName));
                 continue;
             }
 
@@ -219,7 +219,7 @@ public static partial class ResourcePackageLoader
             string authors = info.authors != null ? string.Join(", ", info.authors) : "Unknown";
             Log.LogMessage($"Loaded Resource Pack: {info.name} [{info.label}] v{info.version} by {authors}");
 
-            Notify.ShowOnNextAvailableScene(TextId.ResourcePackageLoaded.Get(info.name, info.label, info.version));
+            Notify.ShowOnNextAvailableScene(() => TextId.ResourcePackageLoaded.Get(info.name, info.label, info.version));
         }
         else
         {

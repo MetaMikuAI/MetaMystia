@@ -63,4 +63,17 @@ public static partial class Notify
             timeoutSeconds: 300
         );
     }
+
+    public static void ShowOnNextAvailableScene(Func<string> text, Action afterShow = null)
+    {
+        CommandScheduler.Enqueue(
+            executeWhen: CanNotify,
+            execute: () =>
+            {
+                Show(text.Invoke());
+                afterShow?.Invoke();
+            },
+            timeoutSeconds: 300
+        );
+    }
 }
