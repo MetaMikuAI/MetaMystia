@@ -13,6 +13,7 @@ public static partial class MpManager
 {
     public enum ROLE
     {
+        NULL, // 仅用于 OverrideRole 的默认值，表示跟随传输层角色
         Host,
         Client,
     }
@@ -45,16 +46,16 @@ public static partial class MpManager
     /// <summary>
     /// 应用层角色覆盖：当设置时，<see cref="IsHost"/>/<see cref="IsClient"/> 反映此值，而不是 <see cref="TransportRole"/>。设置为 <c>null</c> 以遵循传输层角色。
     /// </summary>
-    public static ROLE? OverrideRole = null; // public for debug
+    public static ROLE OverrideRole = ROLE.NULL; // public for debug
     public static bool IsRunning { get; private set; }
     /// <summary>
     /// 应用层：当此节点拥有主机权限时为 true（考虑覆盖）。
     /// </summary>
-    public static bool IsHost => OverrideRole == ROLE.Host || (!OverrideRole.HasValue && TransportRole == ROLE.Host);
+    public static bool IsHost => OverrideRole == ROLE.Host || (OverrideRole == ROLE.NULL && TransportRole == ROLE.Host);
     /// <summary>
     /// 应用层：当此节点为客户端时为 true（考虑覆盖）。
     /// </summary>
-    public static bool IsClient => OverrideRole == ROLE.Client || (!OverrideRole.HasValue && TransportRole == ROLE.Client);
+    public static bool IsClient => OverrideRole == ROLE.Client || (OverrideRole == ROLE.NULL && TransportRole == ROLE.Client);
     private static bool IsConnecting = false;
     /// <summary>
     /// 传输层：底层 TCP 连接是否存活。
@@ -175,7 +176,7 @@ public static partial class MpManager
         IsRunning = true;
         PeerId = "<Unknown>";
         TransportRole = r;
-        OverrideRole = null;
+        OverrideRole = ROLE.NULL;
 
         switch (r)
         {
@@ -198,7 +199,7 @@ public static partial class MpManager
 
         Log.LogInfo("Stopping MpManager");
         IsRunning = false;
-        OverrideRole = null;
+        OverrideRole = ROLE.NULL;
 
         try
         {
