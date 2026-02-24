@@ -102,6 +102,12 @@ public class Plugin : BasePlugin
     {
         InitConfigs();
 
+        if (ConfigDebug.Value)
+        {
+            Log.LogWarning("MetaMystia Debug mode is enabled.");
+            Notify.ShowOnNextAvailableScene("MetaMystia 调试模式已启用");
+        }
+
         try
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8;

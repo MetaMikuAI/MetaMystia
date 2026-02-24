@@ -91,19 +91,6 @@ public partial class PluginManager : MonoBehaviour
                 Debugger ??= new Debugger.WebDebugger();
                 Debugger?.Start();
             }
-
-            if (Input.GetKeyDown(KeyCode.RightBracket) || Input.GetKeyDown(KeyCode.KeypadDivide))
-            {
-                _ = MpManager.ConnectToPeerAsync("192.168.1.39", 40815); // 这是 SgrYuki 的主机，测试用
-            }
-            if (Input.GetKeyDown(KeyCode.KeypadMultiply))
-            {
-                MpManager.Start();
-            }
-            if (Input.GetKeyDown(KeyCode.KeypadMinus))
-            {
-                MpManager.Stop();
-            }
         }
     }
 
