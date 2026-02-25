@@ -27,7 +27,7 @@ public static partial class IdRangeValidator
     public const int UnmanagedIdMin = 1073741824;
     public const int UnmanagedIdMax = 2147483647;
 
-    private const string PublicKeyResourceName = "MetaMystia.ResourceEx.AssetManagement.public_key.pem";
+    private const string PublicKeyResourceName = "MetaMystia.ResourceEx.AssetManagement.public.pem";
 
     private static RSA _publicKey;
 
