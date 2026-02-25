@@ -53,7 +53,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="LogGenerator\LogGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="LogGenerator\LogGenerator.csproj" OutputItemType="Analyzer"
+      ReferenceOutputAssembly="false" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="LogGenerator\**" />
