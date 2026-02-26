@@ -71,6 +71,10 @@ public enum TextId
     SignatureVerificationDisabled,
     ResourcePackageValidationFailed,
     ResourcePackageLoaded,
+    ResourcePackageReservedLabel,
+    ResourcePackageMissingDependency,
+    ResourcePackageCircularDependency,
+    ResourcePackageDependencyCheckDisabled,
 
     // DLC Availability Checks
     DLCPeerRecipeNotAvailable,
@@ -518,6 +522,42 @@ public static class L10n
             [Language.ChineseTraditional] = "已加載資源包 {0} [{1}] v{2}",
             [Language.Japanese] = "リソースパッケージ {0} [{1}] v{2} を読み込みました",
             [Language.Korean] = "리소스 패키지 {0} [{1}] v{2} 로드됨",
+        },
+
+        [TextId.ResourcePackageReservedLabel] = new()
+        {
+            [Language.English] = "<color=red>Resource package {0} uses reserved label '{1}', loading rejected.</color>",
+            [Language.ChineseSimplified] = "<color=red>资源包 {0} 使用了保留标签 '{1}'，已拒绝加载。</color>",
+            [Language.ChineseTraditional] = "<color=red>資源包 {0} 使用了保留標籤 '{1}'，已拒絕加載。</color>",
+            [Language.Japanese] = "<color=red>リソースパッケージ {0} は予約済みラベル '{1}' を使用しています。読み込みが拒否されました。</color>",
+            [Language.Korean] = "<color=red>리소스 패키지 {0}가 예약된 레이블 '{1}'을 사용하여 로드가 거부됨.</color>",
+        },
+
+        [TextId.ResourcePackageMissingDependency] = new()
+        {
+            [Language.English] = "<color=red>Resource package {0} requires dependency '{1}' which is not available, loading rejected.</color>",
+            [Language.ChineseSimplified] = "<color=red>资源包 {0} 需要前置依赖 '{1}'，但该依赖不可用，已拒绝加载。</color>",
+            [Language.ChineseTraditional] = "<color=red>資源包 {0} 需要前置依賴 '{1}'，但該依賴不可用，已拒絕加載。</color>",
+            [Language.Japanese] = "<color=red>リソースパッケージ {0} は依存関係 '{1}' が必要ですが利用できません。読み込みが拒否されました。</color>",
+            [Language.Korean] = "<color=red>리소스 패키지 {0}에 필요한 종속성 '{1}'을 사용할 수 없어 로드가 거부됨.</color>",
+        },
+
+        [TextId.ResourcePackageCircularDependency] = new()
+        {
+            [Language.English] = "<color=red>Resource package {0} has a circular dependency chain: {1}, loading rejected.</color>",
+            [Language.ChineseSimplified] = "<color=red>资源包 {0} 存在循环依赖: {1}，已拒绝加载。</color>",
+            [Language.ChineseTraditional] = "<color=red>資源包 {0} 存在循環依賴: {1}，已拒絕加載。</color>",
+            [Language.Japanese] = "<color=red>リソースパッケージ {0} に循環依存があります: {1}。読み込みが拒否されました。</color>",
+            [Language.Korean] = "<color=red>리소스 패키지 {0}에 순환 종속성이 있습니다: {1}. 로드가 거부됨.</color>",
+        },
+
+        [TextId.ResourcePackageDependencyCheckDisabled] = new()
+        {
+            [Language.English] = "<color=yellow>Resource package dependency check disabled, dependencies will not be validated.</color>",
+            [Language.ChineseSimplified] = "<color=yellow>资源包依赖检查已关闭，前置依赖将不会被校验。</color>",
+            [Language.ChineseTraditional] = "<color=yellow>資源包依賴檢查已關閉，前置依賴將不會被校骚。</color>",
+            [Language.Japanese] = "<color=yellow>リソースパッケージの依存関係のチェックが無効です。依存関係の検証は行われません。</color>",
+            [Language.Korean] = "<color=yellow>리소스 패키지 종속성 검사가 비활성화됨. 종속성이 검증되지 않습니다.</color>",
         },
 
         [TextId.PeerMessagePrefix] = new()

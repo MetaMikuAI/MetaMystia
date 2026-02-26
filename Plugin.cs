@@ -18,6 +18,7 @@ public class Plugin : BasePlugin
 
     public static ConfigEntry<bool> ConfigDebug;
     public static ConfigEntry<bool> ConfigSignatureCheck;
+    public static ConfigEntry<bool> ConfigDependencyCheck;
     public static ConfigEntry<RequestEnableMode> ConfigFoodRequestMode;
     public static ConfigEntry<RequestEnableMode> ConfigBevRequestMode;
 
@@ -89,6 +90,9 @@ public class Plugin : BasePlugin
         ConfigSignatureCheck = Config.Bind("General", "SignatureCheck", true,
             "Enable RSA signature verification for resource pack ID ranges\n启用资源包 ID 段 RSA 签名校验");
 
+        ConfigDependencyCheck = Config.Bind("General", "DependencyCheck", true,
+            "Enable dependency validation for resource packages (reserved label check, missing deps, circular deps)\n启用资源包前置依赖校验（保留标签检查、缺失依赖、循环依赖）");
+
         ConfigFoodRequestMode = Config.Bind("General", "FoodRequestMode", RequestEnableMode.FollowPackage,
             "Food request enable mode (FollowPackage by default)\n料理点单启用模式(默认跟随资源包)\n" +
             "ForceDisable: 强制关闭 | FollowPackage: 跟随资源包 | ForceEnable: 强制启用");
@@ -146,6 +150,7 @@ public class Plugin : BasePlugin
             // ShigureYuki.DebugClassPatcher.PatchAllInnerClass(ref harmony, typeof(ShigureYuki.DebugConsolePatch));
             Network.Action.RegisterAllFormatter();
 
+            DLCManager.Initialize();
             ResourceExManager.Initialize();
         }
         catch (Exception ex)
@@ -157,7 +162,6 @@ public class Plugin : BasePlugin
 
     public static void OnEnterMainScene()
     {
-        DLCManager.Initialize();
         MetricsReporter.OnEnterMainScene();
         Instance?.Log.LogInfo(MpManager.DebugText);
     }

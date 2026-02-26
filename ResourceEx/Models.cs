@@ -149,6 +149,7 @@ public class PackInfoConfig
     public int? idRangeStart { get; set; }
     public int? idRangeEnd { get; set; }
     public string idSignature { get; set; }
+    public List<string> dependencies { get; set; }
 }
 
 public class ResourceConfig

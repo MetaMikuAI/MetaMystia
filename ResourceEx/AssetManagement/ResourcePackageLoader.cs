@@ -81,9 +81,23 @@ public static partial class ResourcePackageLoader
         // Resolve version conflicts
         var resolvedPackages = ResolveVersionConflicts(validatedCandidates);
 
+        // Validate dependencies (reserved labels, missing deps, circular deps)
+        bool enforceDependency = Plugin.ConfigDependencyCheck.Value;
+        if (!enforceDependency)
+        {
+            Log.LogWarning("[ResourceEx] Dependency check is DISABLED by config.");
+            Notify.ShowOnNextAvailableScene(() => TextId.ResourcePackageDependencyCheckDisabled.Get());
+        }
+
+        var dependencyCheckedPackages = DependencyValidator.Validate(
+            resolvedPackages,
+            getName: c => c.PackageName,
+            getConfig: c => c.Config,
+            enforceDependency: enforceDependency);
+
         // Convert to final loaded packages
         var result = new List<LoadedResourcePackage>();
-        foreach (var candidate in resolvedPackages)
+        foreach (var candidate in dependencyCheckedPackages)
         {
             try
             {
