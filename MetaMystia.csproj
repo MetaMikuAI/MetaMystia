@@ -78,6 +78,11 @@
     <EmbeddedResource Remove="DebugImpl\**" />
     <None Remove="DebugImpl\**" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="meta-mystia-network\**" />
+    <EmbeddedResource Remove="meta-mystia-network\**" />
+    <None Remove="meta-mystia-network\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.*" IncludeAssets="compile" />
