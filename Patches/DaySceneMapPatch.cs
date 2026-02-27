@@ -12,7 +12,7 @@ using MetaMystia.ResourceEx;
 using GameData.Core.Collections.DaySceneUtility.Collections;
 
 
-namespace MetaMystia;
+namespace MetaMystia.Patch;
 
 [HarmonyPatch(typeof(DayScene.DaySceneMap))]
 [AutoLog]

@@ -6,7 +6,7 @@ using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace MetaMystia;
+namespace MetaMystia.Patch;
 
 
 [HarmonyPatch(typeof(GameData.Core.Collections.CharacterUtility.DataBaseCharacter))]

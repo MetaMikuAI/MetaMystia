@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using MemoryPack;
 
+using MetaMystia.Patch;
+
 namespace MetaMystia.Network;
 
 [MemoryPackable]

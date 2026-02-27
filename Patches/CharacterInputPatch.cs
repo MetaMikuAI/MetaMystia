@@ -5,7 +5,7 @@ using MetaMystia.Network;
 using UnityEngine;
 
 
-namespace MetaMystia;
+namespace MetaMystia.Patch;
 
 [HarmonyPatch(typeof(Common.CharacterUtility.CharacterControllerInputGeneratorComponent))]
 [AutoLog]

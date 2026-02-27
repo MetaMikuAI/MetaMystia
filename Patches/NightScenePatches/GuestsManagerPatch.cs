@@ -10,7 +10,7 @@ using NightScene.GuestManagementUtility;
 using SgrYuki;
 using SgrYuki.Utils;
 
-namespace MetaMystia;
+namespace MetaMystia.Patch;
 
 [HarmonyPatch]
 [AutoLog]

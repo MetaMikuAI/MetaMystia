@@ -2,7 +2,7 @@ using HarmonyLib;
 using NightScene.CookingUtility;
 using SgrYuki;
 
-namespace MetaMystia;
+namespace MetaMystia.Patch;
 
 [HarmonyPatch(typeof(NightScene.CookingUtility.QTERewardManager))]
 [AutoLog]

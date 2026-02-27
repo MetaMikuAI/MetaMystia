@@ -6,7 +6,7 @@ using HarmonyLib;
 // using Cysharp.Threading.Tasks;
 // using Il2CppSystem.Threading;
 
-namespace MetaMystia;
+namespace MetaMystia.Patch;
 
 
 [HarmonyPatch(typeof(GameData.Profile.CharacterPortrayal))]

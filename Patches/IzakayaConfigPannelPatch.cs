@@ -3,7 +3,7 @@ using MetaMystia.Network;
 using PrepNightScene.UI;
 using SgrYuki.Utils;
 
-namespace MetaMystia;
+namespace MetaMystia.Patch;
 
 
 [HarmonyPatch(typeof(PrepNightScene.UI.IzakayaConfigPannel))]

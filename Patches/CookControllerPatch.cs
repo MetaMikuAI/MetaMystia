@@ -4,7 +4,7 @@ using HarmonyLib;
 using MetaMystia.Network;
 using NightScene.CookingUtility;
 
-namespace MetaMystia;
+namespace MetaMystia.Patch;
 
 [HarmonyPatch(typeof(NightScene.CookingUtility.CookController))]
 [AutoLog]

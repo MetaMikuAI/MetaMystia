@@ -2,7 +2,7 @@ using GameData.CoreLanguage.Collections;
 using GameData.RunTime.Common;
 using HarmonyLib;
 
-namespace MetaMystia;
+namespace MetaMystia.Patch;
 
 [HarmonyPatch(typeof(GameData.RunTime.Common.StatusTracker))]
 [AutoLog]
@@ -16,7 +16,7 @@ public static partial class StatusTrackerPatch
     {
         Log.Info($"RecordInvitedGuest_Postfix called, guestId {guestId}, invited {guestId.GetSpecialGuestLang().BriefName}");
     }
-    
+
     [HarmonyPatch(nameof(StatusTracker.RecordInvitedGuest))]
     [HarmonyReversePatch]
     public static void RecordInvitedGuest_Original(StatusTracker __instance, int guestId)

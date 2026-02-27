@@ -3,7 +3,7 @@ using System.Linq;
 using Common.CharacterUtility;
 using HarmonyLib;
 
-namespace MetaMystia;
+namespace MetaMystia.Patch;
 
 [HarmonyPatch(typeof(CharacterControllerUnit))]
 [AutoLog]

@@ -3,7 +3,7 @@ using GameData.Core.Collections.NightSceneUtility;
 using HarmonyLib;
 using Il2CppSystem;
 using Il2CppSystem.Threading;
-namespace MetaMystia;
+namespace MetaMystia.Patch;
 
 // Hearts to ShigureYuki!
 [HarmonyPatch(typeof(Common.UI.SpecialGuestDescriber))]

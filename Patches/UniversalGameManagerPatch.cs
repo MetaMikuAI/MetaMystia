@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Common.UI;
 using HarmonyLib;
 
-namespace MetaMystia;
+namespace MetaMystia.Patch;
 
 
 [HarmonyPatch(typeof(Common.UI.UniversalGameManager))]

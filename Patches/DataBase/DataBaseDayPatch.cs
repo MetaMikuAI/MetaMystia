@@ -3,7 +3,7 @@ using HarmonyLib;
 using GameData.Core.Collections.DaySceneUtility;
 using GameData.Core.Collections.DaySceneUtility.Collections;
 
-namespace MetaMystia;
+namespace MetaMystia.Patch;
 
 
 [HarmonyPatch(typeof(GameData.Core.Collections.DaySceneUtility.DataBaseDay))]

@@ -2,7 +2,7 @@ using Common.DialogUtility;
 using GameData.RunTime.Common;
 using HarmonyLib;
 
-namespace MetaMystia;
+namespace MetaMystia.Patch;
 
 
 [HarmonyPatch(typeof(Common.DialogUtility.DialogPannel))]

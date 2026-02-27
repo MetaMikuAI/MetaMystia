@@ -4,9 +4,11 @@ using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
-using SgrYuki;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+
+using MetaMystia.Patch;
+using SgrYuki;
 
 namespace MetaMystia;
 
@@ -72,6 +74,10 @@ public class Plugin : BasePlugin
         typeof(DialogPannelPatch),
         typeof(DataBaseSchedulerPatch),
         typeof(RunTimeDayScenePatch)
+    ];
+
+    public static Type[] ToBeHooked = [
+        typeof(SpawnNormalGuestGroupHook)
     ];
 
     public static bool AllPatched => PatchedException == null;
@@ -141,16 +147,28 @@ public class Plugin : BasePlugin
             }
 
             NativeDllExtractor.Extract("MetaMystia.Patches.Native.Runtime.MinHook.x64.dll", MinHook.DLLFilename);
-            MinHook_SpawnNormalGuestGroup.InstallHook();
 
-            // ShigureYuki.DebugClassPatcher.PatchAllInnerClass(ref harmony, typeof(ShigureYuki.DebugConsolePatch));
-            Network.Action.RegisterAllFormatter();
-
-            ResourceExManager.Initialize();
+            foreach (var hook in ToBeHooked)
+            {
+                hook.GetMethod("InstallHook").Invoke(null, null);
+                Log.LogInfo($"Installed {hook.Name}");
+            }
         }
         catch (Exception ex)
         {
             Log.LogFatal($"FAILED to Apply Hooks! {ex.Message}");
+            PatchedException = ex;
+        }
+
+        Network.Action.RegisterAllFormatter();
+
+        try
+        {
+            ResourceExManager.Initialize();
+        }
+        catch (Exception ex)
+        {
+            Log.LogFatal($"FAILED to Initialize ResourceEx! {ex.Message}");
             PatchedException = ex;
         }
     }

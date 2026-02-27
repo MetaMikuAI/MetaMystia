@@ -16,7 +16,9 @@ using NightScene.Tiles;
 using SgrYuki;
 using SgrYuki.Utils;
 using UnityEngine;
-using UnityEngine.InputSystem;
+
+using MetaMystia.Patch;
+
 namespace MetaMystia;
 
 [AutoLog]

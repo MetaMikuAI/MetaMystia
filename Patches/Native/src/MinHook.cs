@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace MetaMystia;
+namespace MetaMystia.Patch;
 
 public class MinHook
 {

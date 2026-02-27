@@ -1,7 +1,7 @@
 using HarmonyLib;
 using SgrYuki;
 
-namespace MetaMystia;
+namespace MetaMystia.Patch;
 
 [HarmonyPatch(typeof(Common.TimelineExtestion.GameTimeManager))]
 [AutoLog]

@@ -4,7 +4,7 @@ using HarmonyLib;
 using MetaMystia.Network;
 using NightScene.EventUtility;
 
-namespace MetaMystia;
+namespace MetaMystia.Patch;
 
 [HarmonyPatch(typeof(EventManager))]
 [AutoLog]

@@ -1,7 +1,7 @@
 using GameData.Core.Collections;
 using HarmonyLib;
 
-namespace MetaMystia;
+namespace MetaMystia.Patch;
 
 [HarmonyPatch(typeof(GameData.Core.Collections.DataBaseCore))]
 [AutoLog]

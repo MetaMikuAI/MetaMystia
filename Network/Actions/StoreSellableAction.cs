@@ -1,6 +1,8 @@
-using GameData.Core.Collections;
 using MemoryPack;
 
+using GameData.Core.Collections;
+
+using MetaMystia.Patch;
 namespace MetaMystia.Network;
 
 [MemoryPackable]

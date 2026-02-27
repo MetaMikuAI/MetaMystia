@@ -1,6 +1,6 @@
 using HarmonyLib;
 
-namespace MetaMystia;
+namespace MetaMystia.Patch;
 
 
 [HarmonyPatch(typeof(GameData.Profile.DaySceneMapProfile))]

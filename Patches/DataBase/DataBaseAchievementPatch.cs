@@ -1,7 +1,7 @@
 using GameData.RunTime.Common.AchievementSystem;
 using HarmonyLib;
 
-namespace MetaMystia;
+namespace MetaMystia.Patch;
 
 [HarmonyPatch(typeof(GameData.RunTime.Common.AchievementSystem.DataBaseAchievement))]
 [AutoLog]

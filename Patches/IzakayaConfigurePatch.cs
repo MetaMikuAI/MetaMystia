@@ -3,7 +3,7 @@ using GameData.RunTime.NightSceneUtility;
 using HarmonyLib;
 using MetaMystia.Network;
 
-namespace MetaMystia;
+namespace MetaMystia.Patch;
 
 [HarmonyPatch(typeof(GameData.RunTime.NightSceneUtility.IzakayaConfigure))]
 [AutoLog]

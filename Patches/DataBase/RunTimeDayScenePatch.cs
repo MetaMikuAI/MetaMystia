@@ -10,7 +10,8 @@ using System.Net.Http.Headers;
 using SgrYuki.Utils;
 using System.Linq;
 using GameData.RunTime.Common;
-namespace MetaMystia;
+
+namespace MetaMystia.Patch;
 
 [HarmonyPatch(typeof(GameData.RunTime.DaySceneUtility.RunTimeDayScene))]
 [AutoLog]

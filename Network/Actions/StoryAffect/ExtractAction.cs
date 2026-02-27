@@ -1,5 +1,7 @@
 using MemoryPack;
 
+using MetaMystia.Patch;
+
 namespace MetaMystia.Network;
 
 [MemoryPackable]

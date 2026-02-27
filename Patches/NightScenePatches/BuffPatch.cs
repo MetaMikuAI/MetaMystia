@@ -2,7 +2,7 @@ using GameData.Profile;
 using HarmonyLib;
 using MetaMystia.Network;
 
-namespace MetaMystia;
+namespace MetaMystia.Patch;
 
 
 [HarmonyPatch(typeof(GameData.Profile.MystiaQTEBuffReward))]

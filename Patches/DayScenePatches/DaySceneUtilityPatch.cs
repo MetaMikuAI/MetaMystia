@@ -2,7 +2,7 @@
 using GameData.RunTime.DaySceneUtility.Collection;
 using HarmonyLib;
 using MetaMystia.Network;
-namespace MetaMystia;
+namespace MetaMystia.Patch;
 
 [HarmonyPatch]
 [AutoLog]

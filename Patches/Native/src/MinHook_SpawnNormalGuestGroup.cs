@@ -6,10 +6,10 @@ using MetaMystia.Network;
 using NightScene.GuestManagementUtility;
 using SgrYuki.Utils;
 
-namespace MetaMystia;
+namespace MetaMystia.Patch;
 
 [AutoLog]
-public static partial class MinHook_SpawnNormalGuestGroup
+public static partial class SpawnNormalGuestGroupHook
 {
     public const string GameAssembly = "GameAssembly.dll";
     static HookManager hookManager = new();

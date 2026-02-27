@@ -3,7 +3,7 @@ using HarmonyLib;
 using MetaMystia.Network;
 using NightScene.UI.CookingUtility;
 
-namespace MetaMystia;
+namespace MetaMystia.Patch;
 
 
 [HarmonyPatch(typeof(NightScene.UI.CookingUtility.WorkSceneStoragePannel))]

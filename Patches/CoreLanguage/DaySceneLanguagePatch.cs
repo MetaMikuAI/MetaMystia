@@ -1,7 +1,7 @@
 using GameData.CoreLanguage.Collections;
 using HarmonyLib;
 
-namespace MetaMystia;
+namespace MetaMystia.Patch;
 
 
 [HarmonyPatch(typeof(GameData.CoreLanguage.Collections.NightSceneLanguage))]

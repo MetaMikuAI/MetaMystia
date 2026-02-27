@@ -3,7 +3,7 @@ using MetaMystia.Network;
 using NightScene.GuestManagementUtility;
 using SgrYuki.Utils;
 
-namespace MetaMystia;
+namespace MetaMystia.Patch;
 
 [HarmonyPatch]
 [AutoLog]

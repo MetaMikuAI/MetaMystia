@@ -2,7 +2,7 @@ using DayScene.Input;
 using HarmonyLib;
 using MetaMystia.Network;
 
-namespace MetaMystia;
+namespace MetaMystia.Patch;
 
 [HarmonyPatch(typeof(DayScene.Input.DayScenePlayerInputGenerator))]
 [AutoLog]
