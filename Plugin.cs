@@ -1,11 +1,11 @@
-﻿using System;
-using BepInEx;
+﻿using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System;
 
 using MetaMystia.Patch;
 using SgrYuki;
@@ -41,7 +41,6 @@ public class Plugin : BasePlugin
         typeof(CharacterInputPatch),
         typeof(DayScenePlayerInputPatch),
         typeof(DaySceneMapPatch),
-        // typeof(RunTimeSchedulerPatch),
 
         // PrepScene Patches
         typeof(IzakayaConfigPannelPatch),
@@ -51,8 +50,6 @@ public class Plugin : BasePlugin
         // WorkScene Patches
         typeof(CookControllerPatch),
         typeof(SellablePatch),
-        // typeof(CookerPatch),
-        // typeof(CookSystemManagerGetCookerPatch),
         typeof(GuestsManagerPatch),
         typeof(GuestGroupControllerPatch),
         typeof(WorkSceneServePannelPatch),

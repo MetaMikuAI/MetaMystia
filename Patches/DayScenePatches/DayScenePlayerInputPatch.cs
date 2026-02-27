@@ -1,5 +1,7 @@
-using DayScene.Input;
 using HarmonyLib;
+
+using DayScene.Input;
+
 using MetaMystia.Network;
 
 namespace MetaMystia.Patch;

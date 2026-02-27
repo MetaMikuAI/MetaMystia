@@ -1,15 +1,14 @@
-using GameData.RunTime.DaySceneUtility;
 using HarmonyLib;
 using UnityEngine.InputSystem.Utilities;
+using System.Linq;
 
 using GameData.Core.Collections.DaySceneUtility.Collections;
-using static GameData.Core.Collections.DaySceneUtility.Collections.Merchant;
-using static GameData.Core.Collections.DaySceneUtility.Collections.Product;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using System.Net.Http.Headers;
-using SgrYuki.Utils;
-using System.Linq;
+using GameData.RunTime.DaySceneUtility;
 using GameData.RunTime.Common;
+
+using static GameData.Core.Collections.DaySceneUtility.Collections.Product;
+
+using SgrYuki.Utils;
 
 namespace MetaMystia.Patch;
 

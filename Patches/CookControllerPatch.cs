@@ -1,8 +1,10 @@
 using System;
-using GameData.Core.Collections;
 using HarmonyLib;
-using MetaMystia.Network;
+
+using GameData.Core.Collections;
 using NightScene.CookingUtility;
+
+using MetaMystia.Network;
 
 namespace MetaMystia.Patch;
 

@@ -7,9 +7,6 @@ using Il2CppInterop.Runtime;
 using Common.UI;
 
 using SgrYuki;
-using SgrYuki.Utils;
-
-using static SgrYuki.Utils.ContainerExtensions;
 
 namespace MetaMystia;
 

@@ -1,7 +1,9 @@
+using HarmonyLib;
 using System.Collections.Generic;
 using System.Linq;
+
 using Common.CharacterUtility;
-using HarmonyLib;
+
 
 namespace MetaMystia.Patch;
 

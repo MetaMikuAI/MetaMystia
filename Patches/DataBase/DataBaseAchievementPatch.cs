@@ -1,5 +1,6 @@
-using GameData.RunTime.Common.AchievementSystem;
 using HarmonyLib;
+
+using GameData.RunTime.Common.AchievementSystem;
 
 namespace MetaMystia.Patch;
 

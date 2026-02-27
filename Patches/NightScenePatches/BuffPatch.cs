@@ -1,5 +1,7 @@
-using GameData.Profile;
 using HarmonyLib;
+
+using GameData.Profile;
+
 using MetaMystia.Network;
 
 namespace MetaMystia.Patch;

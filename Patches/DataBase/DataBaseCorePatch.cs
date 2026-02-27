@@ -1,5 +1,6 @@
-using GameData.Core.Collections;
 using HarmonyLib;
+
+using GameData.Core.Collections;
 
 namespace MetaMystia.Patch;
 

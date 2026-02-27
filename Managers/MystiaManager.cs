@@ -1,5 +1,6 @@
-using Common.CharacterUtility;
 using UnityEngine;
+
+using Common.CharacterUtility;
 
 namespace MetaMystia;
 

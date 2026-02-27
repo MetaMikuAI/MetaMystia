@@ -1,7 +1,12 @@
+// MetaMiku: 这是用于 采集同步 的补丁，暂时废弃，后续可能重新启用
+
+
+using HarmonyLib;
 
 using GameData.RunTime.DaySceneUtility.Collection;
-using HarmonyLib;
+
 using MetaMystia.Network;
+
 namespace MetaMystia.Patch;
 
 [HarmonyPatch]

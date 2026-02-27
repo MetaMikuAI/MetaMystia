@@ -1,6 +1,7 @@
+using HarmonyLib;
+
 using Common.DialogUtility;
 using GameData.RunTime.Common;
-using HarmonyLib;
 
 namespace MetaMystia.Patch;
 

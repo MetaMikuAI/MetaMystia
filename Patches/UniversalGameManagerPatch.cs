@@ -1,6 +1,7 @@
-using System.Collections.Generic;
-using Common.UI;
 using HarmonyLib;
+using System.Collections.Generic;
+
+using Common.UI;
 
 namespace MetaMystia.Patch;
 

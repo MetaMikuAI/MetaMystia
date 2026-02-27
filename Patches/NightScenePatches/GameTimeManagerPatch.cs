@@ -1,4 +1,5 @@
 using HarmonyLib;
+
 using SgrYuki;
 
 namespace MetaMystia.Patch;

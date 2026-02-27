@@ -1,6 +1,8 @@
 using HarmonyLib;
-using MetaMystia.Network;
+
 using NightScene.GuestManagementUtility;
+
+using MetaMystia.Network;
 using SgrYuki.Utils;
 
 namespace MetaMystia.Patch;

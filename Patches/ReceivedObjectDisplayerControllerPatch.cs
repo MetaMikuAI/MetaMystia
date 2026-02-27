@@ -1,6 +1,9 @@
-using Common.UI;
 using HarmonyLib;
+
+using Common.UI;
+
 using SgrYuki;
+
 namespace MetaMystia.Patch;
 
 [HarmonyPatch(typeof(Common.UI.ReceivedObjectDisplayerController))]
