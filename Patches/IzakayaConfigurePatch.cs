@@ -19,7 +19,7 @@ public partial class IzakayaConfigurePatch
     {
         Log.LogInfo($"RegisterToDailyRecipes: {id}");
 
-        if (MpManager.IsConnected && !DLCManager.PeerRecipeAvailable(id))
+        if (MpManager.IsConnected && !DLCManager.RecipeAvailable(id))
         {
             Log.LogWarning($"Peer does not have recipe {id}, skipping...");
             Notify.ShowExternOnMainThread(TextId.DLCPeerRecipeNotAvailable.Get(id));
@@ -36,7 +36,7 @@ public partial class IzakayaConfigurePatch
     public static bool RegisterToDailyBeverages_Prefix(int id)
     {
         Log.LogInfo($"RegisterToDailyBeverages: {id}");
-        if (MpManager.IsConnected && !DLCManager.PeerBeverageAvailable(id))
+        if (MpManager.IsConnected && !DLCManager.BeverageAvailable(id))
         {
             Log.LogWarning($"Peer does not have beverage {id}, skipping...");
             Notify.ShowExternOnMainThread(TextId.DLCPeerBeverageNotAvailable.Get(id));
@@ -59,7 +59,7 @@ public partial class IzakayaConfigurePatch
             return false;
         }
 
-        if (id != -1 && MpManager.IsConnected && !DLCManager.PeerCookerAvailable(id))
+        if (id != -1 && MpManager.IsConnected && !DLCManager.CookerAvailable(id))
         {
             Log.LogWarning($"Peer does not have cooker {id}, skipping...");
             Notify.ShowExternOnMainThread(TextId.DLCPeerCookerNotAvailable.Get(id));

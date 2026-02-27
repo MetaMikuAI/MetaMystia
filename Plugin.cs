@@ -157,7 +157,6 @@ public class Plugin : BasePlugin
 
     public static void OnEnterMainScene()
     {
-        DLCManager.Initialize();
         MetricsReporter.OnEnterMainScene();
         Instance?.Log.LogInfo(MpManager.DebugText);
     }

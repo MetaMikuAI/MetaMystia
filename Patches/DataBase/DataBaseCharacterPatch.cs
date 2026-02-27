@@ -19,6 +19,7 @@ public partial class DataBaseCharacterPatch
     {
         Log.LogInfo("DataBaseCharacter.Initialize Postfix called.");
         ResourceExManager.OnDataBaseCharacterInitialized();
+        DLCManager.Initialize();
     }
 
     [HarmonyPatch(nameof(DataBaseCharacter.GetNPCLabel))]

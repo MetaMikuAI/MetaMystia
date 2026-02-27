@@ -5,7 +5,6 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
-using DEYU.AdpUISystem.Utils;
 using GameData.Core.Collections;
 using GameData.Core.Collections.NightSceneUtility;
 using GameData.CoreLanguage.Collections;
@@ -150,7 +149,7 @@ public static partial class WorkSceneManager
             if (field != null) return field;
             field = SpecialGuestPool
                 .ToList()
-                .Where(pair => DLCManager.PeerSpecialGuestAvailable(pair.Key))
+                .Where(pair => DLCManager.SpecialGuestAvailable(pair.Key))
                 .ToDictionary(keySelector: pair => pair.Key, elementSelector: pair => pair.Value);
             return RebuildWeightIntervals(PeerAvailableSpecialGuestPool);
         }

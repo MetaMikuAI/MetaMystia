@@ -107,7 +107,7 @@ public partial class GuestsManagerPatch
                 return true;
             }
             var arr = guestGroups.ToArray();
-            if (arr.All((guest) => DLCManager.PeerNormalGuestAvailable(guest.id)))
+            if (arr.All((guest) => DLCManager.NormalGuestAvailable(guest.id)))
             {
                 _ = SpawnNormalGuestGroup_Original_MinHook(
                             GuestsManager.instance, guestGroups, new Il2CppSystem.Nullable<UnityEngine.Vector3>(), GuestGroupController.LeaveType.Move, -1, true);
@@ -225,7 +225,7 @@ public partial class GuestsManagerPatch
 
         if (MpManager.IsClient) return false;
 
-        if (!DLCManager.PeerSpecialGuestAvailable(id))
+        if (!DLCManager.SpecialGuestAvailable(id))
         {
             var newId = WorkSceneManager.GetRandomSpecialGuestIdFromThisIzakaya();
             if (newId == -1)

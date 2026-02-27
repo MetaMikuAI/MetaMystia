@@ -56,7 +56,6 @@ public static partial class MpManager
     #region SinglePlay GamePlay Getters
     public static Common.UI.Scene LocalScene { get; private set; } = Common.UI.Scene.EmptyScene;
     public static Common.UI.Scene PeerScene = Common.UI.Scene.EmptyScene;
-    public static List<string> ActiveDLCLabel => DLCManager.ActiveDLCLabel;
     public static bool InStory => Common.SceneDirector.Instance.playableDirector.state == UnityEngine.Playables.PlayState.Playing || Common.SceneDirector.Instance.playableDirector.state == UnityEngine.Playables.PlayState.Delayed;
     public static bool ShouldSkipAction => !IsConnected || InStory;
     public static bool InputAvailable => Common.UI.UniversalGameManager.IsInputEnabled;
@@ -386,7 +385,6 @@ public static partial class MpManager
             StringBuilder sb = new();
             sb.AppendLine($"{BriefDebugText}");
             sb.AppendLine($"{BriefStatus}");
-            sb.AppendLine($"DLC: {string.Join(", ", ActiveDLCLabel)}");
             return sb.ToString();
         }
     }

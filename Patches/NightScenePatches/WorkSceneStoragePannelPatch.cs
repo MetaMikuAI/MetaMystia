@@ -34,7 +34,7 @@ public partial class WorkSceneStoragePannelPatch
         Log.InfoCaller($"{toExtract?.id}, {toExtract?.Text?.Name}");
         if (toExtract.type == Sellable.SellableType.Beverage)
         {
-            if (MpManager.IsConnected && !DLCManager.PeerBeverageAvailable(toExtract.id))
+            if (MpManager.IsConnected && !DLCManager.BeverageAvailable(toExtract.id))
             {
                 Log.LogWarning($"Peer does not have beverage {toExtract.id}, cannot extract.");
                 Notify.ShowOnMainThread(TextId.DLCPeerBeverageNotAvailable.Get(toExtract.id));
@@ -43,7 +43,7 @@ public partial class WorkSceneStoragePannelPatch
         }
         else if (toExtract.type == Sellable.SellableType.Food)
         {
-            if (MpManager.IsConnected && !DLCManager.PeerFoodAvailable(toExtract.id))
+            if (MpManager.IsConnected && !DLCManager.FoodAvailable(toExtract.id))
             {
                 Log.LogWarning($"Peer does not have recipe {toExtract.id}, cannot extract.");
                 Notify.ShowOnMainThread(TextId.DLCPeerFoodNotAvailable.Get(toExtract.id));

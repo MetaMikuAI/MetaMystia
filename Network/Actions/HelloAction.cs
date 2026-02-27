@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Common.UI;
 using MemoryPack;
 
@@ -13,20 +12,7 @@ public partial class HelloAction : Action
     public string Version { get; set; } = "";
     public string GameVersion { get; set; } = "";
     public Scene CurrentGameScene { get; set; }
-
-    public List<string> PeerActiveDLCLabel { get; set; }
-    public HashSet<int> PeerDLCRecipes { get; set; } = null;
-    public HashSet<int> PeerDLCCookers { get; set; } = null;
-    public HashSet<int> PeerDLCFoods { get; set; } = null;
-    public HashSet<int> PeerDLCBeverages { get; set; } = null;
-    public HashSet<int> PeerDLCNormalGuests { get; set; } = null;
-    public HashSet<int> PeerDLCSpecialGuests { get; set; } = null;
-
-    // ResourceEx (rEx) resource sets
-    public HashSet<int> PeerRExRecipes { get; set; } = null;
-    public HashSet<int> PeerRExFoods { get; set; } = null;
-    public HashSet<int> PeerRExBeverages { get; set; } = null;
-    public HashSet<int> PeerRExSpecialGuests { get; set; } = null;
+    public ResourceDataBase PeerDataBase { get; set; }
 
     protected override BepInEx.Logging.LogLevel OnReceiveLogLevel => BepInEx.Logging.LogLevel.Message;
     protected override BepInEx.Logging.LogLevel OnSendLogLevel => BepInEx.Logging.LogLevel.Message;
@@ -70,18 +56,7 @@ public partial class HelloAction : Action
             return;
         }
 
-        DLCManager.PeerActiveDLCLabel = PeerActiveDLCLabel ?? [];
-        DLCManager.PeerRecipes = PeerDLCRecipes ?? [];
-        DLCManager.PeerCookers = PeerDLCCookers ?? [];
-        DLCManager.PeerFoods = PeerDLCFoods ?? [];
-        DLCManager.PeerBeverages = PeerDLCBeverages ?? [];
-        DLCManager.PeerNormalGuests = PeerDLCNormalGuests ?? [];
-        DLCManager.PeerSpecialGuests = PeerDLCSpecialGuests ?? [];
-
-        DLCManager.PeerRExRecipes = PeerRExRecipes ?? [];
-        DLCManager.PeerRExFoods = PeerRExFoods ?? [];
-        DLCManager.PeerRExBeverages = PeerRExBeverages ?? [];
-        DLCManager.PeerRExSpecialGuests = PeerRExSpecialGuests ?? [];
+        DLCManager.UpdateRemoteDataBase(PeerDataBase);
     }
 
     public static void Send()
@@ -89,22 +64,12 @@ public partial class HelloAction : Action
         new HelloAction
         {
             PeerId = MpManager.PlayerId,
-            PeerActiveDLCLabel = MpManager.ActiveDLCLabel,
             Version = MyPluginInfo.PLUGIN_VERSION,
             CurrentGameScene = MpManager.LocalScene,
             GameVersion = MpManager.GameVersion,
 
-            PeerDLCBeverages = DLCManager.Beverages,
-            PeerDLCCookers = DLCManager.Cookers,
-            PeerDLCFoods = DLCManager.Foods,
-            PeerDLCNormalGuests = DLCManager.NormalGuests,
-            PeerDLCRecipes = DLCManager.Recipes,
-            PeerDLCSpecialGuests = DLCManager.SpecialGuests,
+            PeerDataBase = DLCManager.localDataBase
 
-            PeerRExRecipes = DLCManager.RExRecipes,
-            PeerRExFoods = DLCManager.RExFoods,
-            PeerRExBeverages = DLCManager.RExBeverages,
-            PeerRExSpecialGuests = DLCManager.RExSpecialGuests,
         }.SendToHostOrBroadcast();
     }
 }
