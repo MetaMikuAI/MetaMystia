@@ -3,6 +3,7 @@ using HarmonyLib;
 using PrepNightScene.UI;
 
 using MetaMystia.Network;
+using MetaMystia.UI;
 using SgrYuki.Utils;
 
 namespace MetaMystia.Patch;

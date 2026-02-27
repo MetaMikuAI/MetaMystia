@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace MetaMystia;
+namespace MetaMystia.UI;
 
 public enum Language
 {

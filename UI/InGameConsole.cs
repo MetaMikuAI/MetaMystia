@@ -1,12 +1,14 @@
+using Il2CppInterop.Runtime;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Common.UI;
-using Il2CppInterop.Runtime;
-using MetaMystia.Network;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace MetaMystia;
+using Common.UI;
+
+using MetaMystia.Network;
+
+namespace MetaMystia.UI;
 
 [AutoLog]
 public partial class InGameConsole

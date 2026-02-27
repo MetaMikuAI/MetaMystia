@@ -2,6 +2,7 @@ using HarmonyLib;
 using System.Collections.Generic;
 
 using MetaMystia.Network;
+using MetaMystia.UI;
 
 namespace MetaMystia.Patch;
 

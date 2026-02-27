@@ -6,6 +6,7 @@ using Il2CppInterop.Runtime;
 
 using Common.UI;
 
+using MetaMystia.UI;
 using SgrYuki;
 
 namespace MetaMystia;

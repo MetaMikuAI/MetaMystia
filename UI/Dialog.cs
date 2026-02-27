@@ -1,9 +1,10 @@
 using System.Collections.Generic;
+
 using Common.DialogUtility;
 using Common.UI;
 using GameData.Profile;
 
-namespace MetaMystia;
+namespace MetaMystia.UI;
 
 [AutoLog]
 public static partial class Dialog

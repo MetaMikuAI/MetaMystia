@@ -4,6 +4,7 @@ using GameData.Core.Collections;
 using NightScene.UI.CookingUtility;
 
 using MetaMystia.Network;
+using MetaMystia.UI;
 
 namespace MetaMystia.Patch;
 

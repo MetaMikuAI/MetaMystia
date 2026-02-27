@@ -8,6 +8,7 @@ using UnityEngine.UI;
 using System;
 
 using MetaMystia.Patch;
+using MetaMystia.UI;
 using SgrYuki;
 
 namespace MetaMystia;

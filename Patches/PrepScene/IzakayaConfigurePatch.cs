@@ -4,6 +4,7 @@ using GameData.Core.Collections;
 using GameData.RunTime.NightSceneUtility;
 
 using MetaMystia.Network;
+using MetaMystia.UI;
 
 namespace MetaMystia.Patch;
 

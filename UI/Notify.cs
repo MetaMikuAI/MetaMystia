@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using Common.UI;
+
 using SgrYuki;
 
-namespace MetaMystia;
+namespace MetaMystia.UI;
 
 [AutoLog]
 public static partial class Notify
