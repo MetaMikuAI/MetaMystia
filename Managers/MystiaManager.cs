@@ -4,6 +4,9 @@ using Common.CharacterUtility;
 
 namespace MetaMystia;
 
+/// <summary>
+/// 管理与本地玩家角色相关的状态和数据
+/// </summary>
 [AutoLog]
 public static partial class MystiaManager
 {
@@ -16,6 +19,7 @@ public static partial class MystiaManager
 
     public static bool IsDayOver = false;
     public static bool IsPrepOver = false;
+    public static Vector2 Position => GetRigidbody2D()?.position ?? Vector2.zero;
 
     public static void Initialize()
     {
@@ -29,64 +33,34 @@ public static partial class MystiaManager
         IsPrepOver = false;
     }
 
-    public static DayScene.Input.DayScenePlayerInputGenerator GetInputGenerator(bool forceRefresh = false)
+    /// <summary>
+    /// 获取玩家角色的CharacterControllerUnit实例
+    /// 注: 可能在角色生成但未完全初始化时返回null, 调用方需做好空值检查
+    /// </summary>
+    /// <returns>玩家角色的CharacterControllerUnit实例, 如果未找到则返回null</returns>
+    public static CharacterControllerUnit GetCharacterUnit()
     {
-        if (_cachedInputGenerator == null || forceRefresh)
+        if (Common.SceneDirector.instance == null)
         {
-            var characters = UnityEngine.Object.FindObjectsOfType<DayScene.Input.DayScenePlayerInputGenerator>();
-            if (characters == null || characters.Length == 0)
-            {
-                Log.LogWarning($"Cannot find DayScenePlayerInputGenerator instance");
-                return null;
-            }
-            if (characters.Length > 1)
-            {
-                Log.LogWarning($"Found {characters.Length} DayScenePlayerInputGenerator instances, using the first one");
-            }
-
-            _cachedInputGenerator = characters[0];
+            Log.LogWarning($"SceneDirector instance is null");
+            return null;
         }
-
-        return _cachedInputGenerator;
-    }
-
-    public static CharacterControllerUnit GetCharacterUnit(bool forceRefresh = false)
-    {
-        switch (MpManager.LocalScene)
+        if (Common.SceneDirector.Instance.characterCollection.TryGetValue("Self", out var characterUnit))
         {
-            case Common.UI.Scene.DayScene:
-                var inputGenerator = GetInputGenerator(forceRefresh);
-                if (inputGenerator == null)
-                {
-                    Log.LogWarning($"GetInputGenerator returned null");
-                    return null;
-                }
-                var characterUnit = inputGenerator.Character;
-                return characterUnit;
-            case Common.UI.Scene.WorkScene:
-                if (!MystiaManager.CharacterSpawnedAndInitialized)
-                {
-                    Log.LogWarning($"Character 'Self' not found in character collection");
-                    return null;
-                }
-                return Common.SceneDirector.Instance.characterCollection["Self"];
-            default:
-                Log.DebugCaller($"invalid scene");
-                return null;
+            return characterUnit;
         }
+        Log.LogWarning($"Cannot find character unit for 'Self'");
+        return null;
     }
 
     private static Rigidbody2D GetRigidbody2D(bool forceRefresh = false)
     {
-        var characterUnit = GetCharacterUnit(forceRefresh);
+        var characterUnit = GetCharacterUnit();
         if (characterUnit == null)
         {
             Log.LogWarning($"GetCharacterUnit returned null");
             return null;
         }
-        var rb = characterUnit.rb2d;
-        return rb;
+        return characterUnit.rb2d;
     }
-
-    public static Vector2 Position => GetRigidbody2D()?.position ?? Vector2.zero;
 }
