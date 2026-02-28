@@ -49,7 +49,7 @@ public static class FloatingTextHelper
             UnityEngine.Object.Destroy(activeTextSelf);
         }
 
-        var character = MystiaManager.GetCharacterUnit();
+        var character = PlayerManager.Local.GetCharacterUnit();
         if (character == null)
         {
             return;

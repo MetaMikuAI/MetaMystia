@@ -19,7 +19,7 @@ public partial class GuestInviteAction : SendAffectStoryAction
         {
             PluginManager.Instance.RunOnMainThread(() =>
             {
-                foreach (var item in InvitedGuestIDs.Where(item => DLCManager.SpecialGuestAvailable(item)))
+                foreach (var item in InvitedGuestIDs.Where(item => PlayerManager.SpecialGuestAvailable(item)))
                 {
                     StatusTrackerPatch.RecordInvitedGuest_Original(GameData.RunTime.Common.StatusTracker.Instance, item);
                 }

@@ -11,7 +11,7 @@ namespace MetaMystia.Patch;
 
 [HarmonyPatch(typeof(Common.CharacterUtility.CharacterControllerInputGeneratorComponent))]
 [AutoLog]
-public partial class CharacterInputPatch
+public partial class CharacterControllerInputGeneratorComponentPatch
 {
     [HarmonyPatch(nameof(CharacterControllerInputGeneratorComponent.UpdateInputDirection))]
     [HarmonyPrefix]
@@ -27,11 +27,6 @@ public partial class CharacterInputPatch
             return;
         }
 
-        // if (PluginManager.Console != null && PluginManager.Console.IsOpen)
-        // {
-        //     inputDirection = Vector2.zero;
-        // }
-
         try
         {
             var characterCollection = Common.SceneDirector.Instance.characterCollection;
@@ -42,7 +37,7 @@ public partial class CharacterInputPatch
             }
             if (__instance.name == characterCollection["Self"].name)
             {
-                MystiaManager.InputDirection = inputDirection;
+                PlayerManager.LocalInputDirection = inputDirection;
                 SyncAction.Send();
             }
         }

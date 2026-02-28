@@ -1,6 +1,4 @@
 using HarmonyLib;
-using System.Collections.Generic;
-using System.Linq;
 
 using Common.CharacterUtility;
 
@@ -11,19 +9,19 @@ namespace MetaMystia.Patch;
 [AutoLog]
 public partial class CharacterControllerUnitPatch
 {
-    public static readonly List<string> PeerPlayerNames = [
-            "幽谷响子", // CHS
-            "幽谷響子", // CHT, JPN
-            "Kyouko Kasodani",  // ENG
-            "카소다니 쿄코", // KOR
-            PeerManager.KYOUKO_ID
-        ];
+    /// <summary>
+    /// 已知的远程玩家角色名称列表（用于识别对端角色）
+    /// </summary>
+    public static bool IsPeerCharacter(string label)
+    {
+        return PlayerManager.IsPeerCharacter(label);
+    }
 
     [HarmonyPatch(nameof(CharacterControllerUnit.Initialize))]
     [HarmonyPrefix]
     public static void Initialize_Prefix(CharacterControllerUnit __instance, ref bool shouldTurnOnCollider)
     {
-        if (PeerPlayerNames.Any(name => __instance.name.Equals(name)))
+        if (IsPeerCharacter(__instance.name))
         {
             shouldTurnOnCollider = true;
             Log.LogMessage($"found {__instance.name}, forcing shouldTurnOnCollider to true");
@@ -34,10 +32,10 @@ public partial class CharacterControllerUnitPatch
     [HarmonyPostfix]
     public static void Initialize_Postfix(CharacterControllerUnit __instance)
     {
-        if (PeerPlayerNames.Any(name => __instance.name.Equals(name)))
+        if (IsPeerCharacter(__instance.name))
         {
-            PeerManager.EnableCollision(__instance, false);
-            Log.LogMessage($"found {__instance.name}, disable collision");
+            PlayerManager.EnablePeerCollision(__instance, true);
+            Log.LogMessage($"found {__instance.name}, enabling collision");
         }
     }
 }

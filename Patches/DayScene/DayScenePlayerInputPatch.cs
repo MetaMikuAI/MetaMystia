@@ -18,7 +18,7 @@ public partial class DayScenePlayerInputPatch
         {
             return false;
         }
-        MystiaManager.IsSprinting = true;
+        PlayerManager.LocalIsSprinting = true;
         SyncAction.Send();
         return true;
     }
@@ -27,7 +27,7 @@ public partial class DayScenePlayerInputPatch
     [HarmonyPrefix]
     public static void OnSprintCanceled_Prefix()
     {
-        MystiaManager.IsSprinting = false;
+        PlayerManager.LocalIsSprinting = false;
         SyncAction.Send();
     }
 
@@ -39,7 +39,7 @@ public partial class DayScenePlayerInputPatch
         {
             return false;
         }
-        if (MystiaManager.IsDayOver)
+        if (PlayerManager.LocalIsDayOver)
         {
             return false;
         }

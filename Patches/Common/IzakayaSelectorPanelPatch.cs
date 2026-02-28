@@ -82,7 +82,7 @@ public partial class IzakayaSelectorPanelPatch
         Log.LogWarning($"Selected Spot: {izakayaMapLabel}, Level: {izakayaLevel}");
 
         var mySelect = $"{Utils.GetMapLabelNameCN(izakayaMapLabel)} {Utils.GetMapLevelNameCN(izakayaLevel)}";
-        if (PeerManager.IzakayaMapLabel == "" || PeerManager.IzakayaLevel == 0)
+        if (PlayerManager.PeerIzakayaMapLabel == "" || PlayerManager.PeerIzakayaLevel == 0)
         {
             Log.LogWarning($"Kyouko has not selected an Izakaya yet -> send SELECT and skip");
             SelectAction.Send(izakayaMapLabel, izakayaLevel);
@@ -90,9 +90,9 @@ public partial class IzakayaSelectorPanelPatch
             return false;
         }
 
-        if (izakayaMapLabel != PeerManager.IzakayaMapLabel || izakayaLevel != PeerManager.IzakayaLevel)
+        if (izakayaMapLabel != PlayerManager.PeerIzakayaMapLabel || izakayaLevel != PlayerManager.PeerIzakayaLevel)
         {
-            var peerSelect = $"{Utils.GetMapLabelNameCN(PeerManager.IzakayaMapLabel)} {Utils.GetMapLevelNameCN(PeerManager.IzakayaLevel)}";
+            var peerSelect = $"{Utils.GetMapLabelNameCN(PlayerManager.PeerIzakayaMapLabel)} {Utils.GetMapLevelNameCN(PlayerManager.PeerIzakayaLevel)}";
             Log.LogWarning($"Selected Izakaya does not match Kyouko's selection -> show rejection dialog");
             Notify.ShowOnMainThread(TextId.SelectedIzakayaMismatch.Get(mySelect, peerSelect));
             return false;

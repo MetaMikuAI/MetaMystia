@@ -14,8 +14,8 @@ public partial class SelectAction : Action
     {
         PluginManager.Instance.RunOnMainThread(() =>
         {
-            PeerManager.IzakayaMapLabel = MapLabel;
-            PeerManager.IzakayaLevel = MapLevel;
+            PlayerManager.PeerIzakayaMapLabel = MapLabel;
+            PlayerManager.PeerIzakayaLevel = MapLevel;
 
             Notify.ShowOnMainThread(TextId.PeerSelectedIzakaya.Get($"{Utils.GetMapLabelNameCN(MapLabel)} {Utils.GetMapLevelNameCN(MapLevel)}"));
         });

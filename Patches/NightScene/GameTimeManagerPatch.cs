@@ -35,11 +35,11 @@ public partial class GameTimeManagerPatch
 
             CommandScheduler.EnqueueKey(
                 key: StoryStartActionKey,
-                executeWhen: () => PeerManager.GetCharacterUnit() != null,
+                executeWhen: () => PlayerManager.Peer?.GetCharacterUnit() != null,
                 execute: () =>
                 {
-                    Log.Info($"story over, enabled collision for {PeerManager.GetCharacterUnit()?.name}");
-                    PeerManager.EnableCollision(true);
+                    Log.Info($"story over, enabled collision for {PlayerManager.Peer?.GetCharacterUnit()?.name}");
+                    PlayerManager.EnablePeerCollision(true);
                 }
             );
             playableDirector.remove_stopped(_onPlayableDirectorStoppedCallback);
@@ -51,11 +51,11 @@ public partial class GameTimeManagerPatch
         CommandScheduler.RemoveKeyFromKeyQueue(StoryStopActionKey);
         CommandScheduler.EnqueueKey(
             key: StoryStartActionKey,
-            executeWhen: () => PeerManager.GetCharacterUnit() != null,
+            executeWhen: () => PlayerManager.Peer?.GetCharacterUnit() != null,
             execute: () =>
             {
-                Log.Info($"story start, disabled collision for {PeerManager.GetCharacterUnit()?.name}");
-                PeerManager.EnableCollision(false);
+                Log.Info($"story start, disabled collision for {PlayerManager.Peer?.GetCharacterUnit()?.name}");
+                PlayerManager.EnablePeerCollision(false);
             }
         );
     }

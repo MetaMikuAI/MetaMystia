@@ -1,0 +1,308 @@
+using System;
+using UnityEngine;
+
+using Common.CharacterUtility;
+using DayScene.Interactables.Collections.ConditionComponents;
+using GameData.RunTime.DaySceneUtility;
+
+using MetaMystia.Network;
+using SgrYuki;
+
+namespace MetaMystia;
+
+/// <summary>
+/// 远程对端玩家实例，管理单个远程连接对象的角色状态和位置同步逻辑
+/// </summary>
+[AutoLog]
+public partial class PeerPlayer : NetPlayer
+{
+    /// <summary>
+    /// 角色在 characterCollection 中的标识符（目前使用 Guid 字符串，计划改为 Uid）
+    /// </summary>
+    public string CharacterId { get; set; }
+
+    /// <summary>
+    /// 角色模型 ID（用于 SpawnCharacter），后续会允许玩家自定义
+    /// </summary>
+    public int CharacterModelId { get; set; } = 14;
+
+    public bool IsSameMapAsLocal => MapLabel == LocalPlayer.MapLabel;
+
+    #region 角色运动速度修正
+    /// <summary>
+    /// 实际的运动速度（由对端同步输入方向计算得出）
+    /// </summary>
+    private Vector2 actualVelocity;
+    /// <summary>
+    /// 位置偏移（用于插值修正瞬移），由 SyncFromPeer 更新，在 FixedUpdate 中逐渐衰减修正
+    /// </summary>
+    private Vector2 positionOffset;
+    /// <summary>
+    /// 当前速度（用于指数衰减模型），在 FixedUpdate 中根据 positionOffset 更新
+    /// 不是直接设置给角色的速度，而是用于计算插值修正的中间变量
+    /// 这样可以实现对位置偏移的平滑修正，避免瞬移感，同时允许对端输入引起的实际运动速度正常作用
+    /// 这个设计是为了在网络同步中平衡响应性和视觉平滑度，尤其是在网络延迟较高时
+    /// 通过调整衰减速率，可以控制修正的快慢，找到适合游戏体验的参数
+    /// </summary>
+    private Vector2 currentVelocity;
+    #endregion
+
+    public string IzakayaMapLabel { get; set; } = "";
+    public int IzakayaLevel { get; set; } = 0;
+    private bool firstSync = true;
+
+    /// <summary>
+    /// 一个足够小的Z值，用于在摄像机中隐藏角色渲染
+    /// </summary>
+    private readonly int LARGE_Z_VALUE = -40815;
+
+    /// <summary>
+    /// 构造函数，接受玩家唯一标识符和可选的资源数据库（如果不提供则使用本地资源数据库）
+    /// </summary>
+    /// <param name="guid">玩家唯一标识符，计划改为 Uid</param>
+    /// <param name="resourceDataBase">可选的资源数据库，如果不提供则使用本地资源数据库</param>
+    public PeerPlayer(Guid guid, ResourceDataBase resourceDataBase = null)
+    {
+        Guid = guid;
+        CharacterId = guid.ToString();
+        DataBase = resourceDataBase ?? new ResourceDataBase().LoadResourceIds();
+    }
+
+    public override void Initialize()
+    {
+        base.Initialize();
+        actualVelocity = Vector2.zero;
+        positionOffset = Vector2.zero;
+        currentVelocity = Vector2.zero;
+        firstSync = true;
+        IzakayaMapLabel = "";
+        IzakayaLevel = 0;
+        Log.LogMessage($"PeerPlayer '{CharacterId}' initialized");
+    }
+
+    #region 角色生命周期
+
+    /// <summary>
+    /// 根据当前场景生成角色并延迟设置（HeightProcessor、碰撞忽略、可见性）。
+    /// 仅在 DayScene / WorkScene 中有效，其他场景不做任何操作。
+    /// </summary>
+    public void SpawnForScene()
+    {
+        var scene = MpManager.LocalScene;
+        var position = PlayerManager.LocalPosition;
+        bool visible;
+
+        switch (scene)
+        {
+            case Common.UI.Scene.DayScene:
+                SpawnCharacter(position);
+                visible = false;
+                CommandScheduler.Enqueue(
+                    executeWhen: () => unit != null
+                        && DayScene.SceneManager.Instance?.CurrentActiveMap != null,
+                    execute: () => PostSpawnSetup(visible),
+                    timeoutSeconds: 30
+                );
+                break;
+            case Common.UI.Scene.WorkScene:
+                SpawnCharacter(position);
+                visible = true;
+                CommandScheduler.Enqueue(
+                    executeWhen: () => unit != null
+                        && NightScene.MapManager.Instance?.height != null,
+                    execute: () => PostSpawnSetup(visible),
+                    timeoutSeconds: 30
+                );
+                break;
+            default:
+                Log.LogDebug($"SpawnForScene called in {scene}, skipping for '{CharacterId}'");
+                return;
+        }
+        Log.LogMessage($"PeerPlayer '{CharacterId}' spawned for {scene}");
+    }
+
+    /// <summary>
+    /// 角色生成后的延迟初始化：高度处理器、碰撞忽略、可见性
+    /// </summary>
+    private void PostSpawnSetup(bool visible)
+    {
+        TryAddHeightProcessor();
+        IgnoreCollisionWithSelf();
+        UpdateVisibleState(visible);
+        Log.LogMessage($"PeerPlayer '{CharacterId}' post-spawn setup done (visible={visible})");
+    }
+
+    private void SpawnCharacter(Vector2 position)
+    {
+        if (Common.SceneDirector.Instance.characterCollection.ContainsKey(CharacterId))
+        {
+            Log.LogInfo($"Character '{CharacterId}' already exists, skip spawning");
+            return;
+        }
+        Common.SceneDirector.Instance.SpawnCharacter(Common.SceneDirector.Identity.Special, CharacterModelId, position, CharacterId);
+        Log.LogMessage($"Spawned character '{CharacterId}' at ({position.x}, {position.y})");
+    }
+
+    private void TryAddHeightProcessor()
+    {
+        if (unit == null) return;
+
+        if (unit.GetComponent<HeightBlendedInputProcessorComponent>() == null)
+            unit.AddInputProcessor<HeightBlendedInputProcessorComponent>();
+
+        var heightProcessor = unit.GetComponent<HeightBlendedInputProcessorComponent>();
+        switch (MpManager.LocalScene)
+        {
+            case Common.UI.Scene.DayScene:
+                heightProcessor.Initialize(DayScene.SceneManager.Instance.CurrentActiveMap.height);
+                break;
+            case Common.UI.Scene.WorkScene:
+                heightProcessor.Initialize(NightScene.MapManager.Instance.height);
+                break;
+        }
+    }
+
+    public void IgnoreCollisionWithSelf(bool ignore = true)
+    {
+        if (unit == null) return;
+        var selfUnit = Common.SceneDirector.Instance?.characterCollection["Self"];
+        if (selfUnit == null) return;
+        Physics2D.IgnoreCollision(unit.cl2d, selfUnit.cl2d, ignore);
+    }
+
+    #endregion
+
+    public override CharacterControllerUnit GetCharacterUnit()
+    {
+        if (Common.SceneDirector.Instance?.characterCollection.TryGetValue(CharacterId, out var characterUnit) ?? false)
+            return characterUnit;
+        return null;
+    }
+
+    public CharacterConditionComponent GetCharacterComponent() =>
+        GetCharacterUnit()?.GetComponent<CharacterConditionComponent>();
+
+    #region FixedUpdate 位置插值
+
+    public void OnFixedUpdate()
+    {
+        if (MpManager.ShouldSkipAction) return;
+
+        var unit = GetCharacterUnit();
+        if (unit == null) return;
+
+        // 指数衰减模型修正位置偏移
+        currentVelocity = positionOffset / 0.5f / 5f;
+        positionOffset -= currentVelocity * Time.fixedDeltaTime * 5f * unit.sprintMultiplier;
+
+        var velocity = actualVelocity + currentVelocity;
+        if (velocity.magnitude < 0.01f)
+        {
+            if (unit.IsMoving) unit.IsMoving = false;
+            if (unit.MoveSpeedMultiplier != 1.48f) unit.MoveSpeedMultiplier = 1.48f;
+            return;
+        }
+
+        if (!unit.IsMoving) unit.IsMoving = true;
+        unit.UpdateInputVelocity(velocity);
+
+        if (MpManager.LocalScene == Common.UI.Scene.DayScene)
+        {
+            var trackedNPC = RunTimeDayScene.GetTrackedNPC(CharacterId);
+            var position = unit.rb2d.position;
+            trackedNPC?.overridePosition?.position = new Il2CppSystem.Collections.Generic.KeyValuePair<float, float>(
+                position.x, position.y
+            ); // TODO: 也许有更优雅的方式？
+        }
+    }
+
+    #endregion
+
+    #region 网络同步
+
+    /// <summary>
+    /// DayScene 同步：接收对端的地图、奔跑、方向、位置
+    /// </summary>
+    public void SyncFromPeer(string mapLabel, bool isSprinting, Vector2 inputDirection, Vector2 position)
+    {
+        if (unit == null)
+        {
+            Log.LogWarning($"SyncFromPeer: character '{CharacterId}' not found, spawning");
+            SpawnForScene();
+            return; // 等待下一次 sync，SpawnForScene 是异步的
+        }
+
+        if (firstSync)
+        {
+            position = new Vector3(position.x, position.y, unit.transform.position.z);
+
+            firstSync = false;
+            Log.LogInfo($"First sync for '{CharacterId}', teleported to ({position.x}, {position.y})");
+        }
+
+        if (mapLabel != MapLabel)
+        {
+            MapLabel = mapLabel;
+            OnMapChanged();
+        }
+
+        // 更新运动状态
+        actualVelocity = inputDirection;
+        InputDirection = inputDirection;
+        unit.IsMoving = inputDirection.magnitude > 0;
+        unit.sprintMultiplier = isSprinting ? 1.5f : 1.0f;
+        IsSprinting = isSprinting;
+
+        // 位置修正
+        UpdateOffsetPosition(unit, position);
+        UpdateVisibleState();
+    }
+
+    /// <summary>
+    /// WorkScene 同步：仅方向和位置
+    /// </summary>
+    public void NightSyncFromPeer(Vector2 inputDirection, Vector2 position)
+    {
+        if (unit == null) return;
+
+        actualVelocity = inputDirection;
+        InputDirection = inputDirection;
+        unit.IsMoving = inputDirection.magnitude > 0;
+
+        UpdateOffsetPosition(unit, position);
+    }
+
+    private void UpdateOffsetPosition(CharacterControllerUnit unit, Vector2 syncPosition)
+    {
+        positionOffset = syncPosition - rb2d.position;
+
+        if (positionOffset.magnitude > 3.0f)
+        {
+            Log.Info($"Position offset too large ({positionOffset.magnitude}), teleporting '{CharacterId}'");
+            rb2d.transform.position = new Vector3(syncPosition.x, syncPosition.y, rb2d.transform.position.z);
+            positionOffset = Vector2.zero;
+        }
+    }
+
+    #endregion
+
+    #region 可见性
+
+    public void UpdateVisibleState(bool? forceVisible = null)
+    {
+        if (unit == null) return;
+
+        bool visible = forceVisible ?? IsSameMapAsLocal;
+        SetZ(visible ? 0 : LARGE_Z_VALUE);
+        unit.cl2d.enabled = visible;
+    }
+
+    private void OnMapChanged()
+    {
+        Log.LogInfo($"{CharacterId} map changed to {MapLabel}");
+        TryAddHeightProcessor();
+        UpdateVisibleState();
+    }
+
+    #endregion
+}

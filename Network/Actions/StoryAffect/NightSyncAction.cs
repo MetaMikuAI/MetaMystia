@@ -19,7 +19,7 @@ public partial class NightSyncAction : AffectStoryAction
     public override void OnReceivedDerived()
     {
         PluginManager.Instance.RunOnMainThread(() =>
-            PeerManager.NightSyncFromPeer(new UnityEngine.Vector2(Vx, Vy), new UnityEngine.Vector2(Px, Py)));
+            PlayerManager.Peer?.NightSyncFromPeer(new UnityEngine.Vector2(Vx, Vy), new UnityEngine.Vector2(Px, Py)));
     }
 
     public static void Send() => SyncAction.Send();

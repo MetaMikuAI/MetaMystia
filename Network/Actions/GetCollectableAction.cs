@@ -15,7 +15,7 @@ public partial class GetCollectableAction : Action
     {
         // CommandScheduler.EnqueueWithNoCondition(() =>
         // {
-        //     if (!DLCManager.CollectableAvailable(Collectable))
+        //     if (!PlayerManager.CollectableAvailable(Collectable))
         //     {
         //         Log.Message($"{Collectable} is not available, skip");
         //         return;

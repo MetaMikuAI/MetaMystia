@@ -3,6 +3,8 @@ using MemoryPack;
 using Common.UI;
 
 using MetaMystia.UI;
+using System;
+using Il2CppSystem.Linq.Expressions.Interpreter;
 
 namespace MetaMystia.Network;
 
@@ -12,6 +14,7 @@ public partial class HelloAction : Action
 {
     public override ActionType Type => ActionType.HELLO;
     public string PeerId { get; set; } = "";
+    public Guid PeerGuid { get; set; }
     public string Version { get; set; } = "";
     public string GameVersion { get; set; } = "";
     public Scene CurrentGameScene { get; set; }
@@ -51,15 +54,16 @@ public partial class HelloAction : Action
             return;
         }
 
-        if (MystiaManager.IsDayOver || PeerManager.IsDayOver)
+        if (PlayerManager.LocalIsDayOver || PlayerManager.PeerIsDayOver)
         {
-            Log.LogError($"Already dayOver! Local: {MystiaManager.IsDayOver}, Remote: {PeerManager.IsDayOver}");
+            Log.LogError($"Already dayOver! Local: {PlayerManager.LocalIsDayOver}, Remote: {PlayerManager.PeerIsDayOver}");
             MpManager.DisconnectPeer();
             Notify.ShowOnMainThread(TextId.SceneMismatchDisconnected.Get());
             return;
         }
 
-        DLCManager.UpdateRemoteDataBase(PeerDataBase);
+        var peer = PlayerManager.AddPeer(PeerGuid, PeerId);
+        peer.DataBase = PeerDataBase;
     }
 
     public static void Send()
@@ -67,11 +71,12 @@ public partial class HelloAction : Action
         new HelloAction
         {
             PeerId = MpManager.PlayerId,
+            PeerGuid = PlayerManager.Local.Guid,
             Version = MyPluginInfo.PLUGIN_VERSION,
             CurrentGameScene = MpManager.LocalScene,
             GameVersion = MpManager.GameVersion,
 
-            PeerDataBase = DLCManager.localDataBase
+            PeerDataBase = PlayerManager.Local.DataBase
 
         }.SendToHostOrBroadcast();
     }

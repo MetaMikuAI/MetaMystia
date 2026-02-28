@@ -34,7 +34,7 @@ public partial class ReadyAction : Action
                     CommandScheduler.EnqueueWithNoCondition(() => Dialog.ShowReadyDialog(true, DaySceneManagerPatch.OnDayOver));
                     return;
                 }
-                PeerManager.IsDayOver = true;
+                PlayerManager.PeerIsDayOver = true;
                 MpManager.DayOver(SenderId);
                 Notify.ShowOnMainThread(TextId.ReadyForWork.Get(MpManager.PeerId));
                 break;
@@ -51,7 +51,7 @@ public partial class ReadyAction : Action
                     CommandScheduler.EnqueueWithNoCondition(IzakayaConfigPannelPatch.PrepOver);
                     return;
                 }
-                PeerManager.IsPrepOver = true;
+                PlayerManager.PeerIsPrepOver = true;
                 MpManager.PrepOver(SenderId);
                 Notify.ShowOnMainThread(TextId.ReadyForWork.Get(MpManager.PeerId));
                 break;

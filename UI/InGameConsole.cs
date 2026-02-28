@@ -302,7 +302,7 @@ public partial class InGameConsole
                         LogToConsole(TextId.NotInDayScene.Get());
                         break;
                     }
-                    LogToConsole(TextId.MapInfoDisplay.Get(MystiaManager.MapLabel, MystiaManager.Position));
+                    LogToConsole(TextId.MapInfoDisplay.Get(PlayerManager.LocalMapLabel, PlayerManager.LocalPosition));
                     break;
                 default:
                     LogToConsole(TextId.UnknownCommand.Get(command));
@@ -334,10 +334,10 @@ public partial class InGameConsole
         switch (field)
         {
             case "currentactivemaplabel":
-                LogToConsole(TextId.CurrentMapLabel.Get(MystiaManager.MapLabel));
+                LogToConsole(TextId.CurrentMapLabel.Get(PlayerManager.LocalMapLabel));
                 break;
             case "pos":
-                LogToConsole(TextId.MystiaPosition.Get(MystiaManager.Position));
+                LogToConsole(TextId.MystiaPosition.Get(PlayerManager.LocalPosition));
                 break;
             default:
                 LogToConsole(TextId.UnknownField.Get(field));
@@ -509,7 +509,7 @@ public partial class InGameConsole
                 try
                 {
 
-                    var mapLabel = args.Length >= 2 ? args[1] : MystiaManager.MapLabel;
+                    var mapLabel = args.Length >= 2 ? args[1] : PlayerManager.LocalMapLabel;
                     var npcs = GameData.RunTime.DaySceneUtility.RunTimeDayScene.GetMapNPCs(mapLabel);
                     // public unsafe static Dictionary<string, TrackedNPC> GetMapNPCs(string mapLabel);
                     foreach (var npc in npcs)

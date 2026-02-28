@@ -22,8 +22,8 @@ public partial class MapDecidedAction : Action
         {
             IzakayaSelectorPanelPatch.cachedSpots.TryGetValue(MapLabel, out var spot);
             var targetLevel = (Common.UI.IzakayaLevel)Level;
-            PeerManager.IzakayaLevel = Level;
-            PeerManager.IzakayaMapLabel = MapLabel;
+            PlayerManager.PeerIzakayaLevel = Level;
+            PlayerManager.PeerIzakayaMapLabel = MapLabel;
 
             Dialog.ShowConfirmDialog(MapLabel, () =>
             {

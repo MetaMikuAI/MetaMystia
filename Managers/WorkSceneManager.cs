@@ -152,7 +152,7 @@ public static partial class WorkSceneManager
             if (field != null) return field;
             field = SpecialGuestPool
                 .ToList()
-                .Where(pair => DLCManager.SpecialGuestAvailable(pair.Key))
+                .Where(pair => PlayerManager.SpecialGuestAvailable(pair.Key))
                 .ToDictionary(keySelector: pair => pair.Key, elementSelector: pair => pair.Value);
             return RebuildWeightIntervals(PeerAvailableSpecialGuestPool);
         }

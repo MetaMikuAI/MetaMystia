@@ -28,7 +28,7 @@ public partial class ResourceDataBase
     public List<int> SpecialGuests { get; private set; } = [];
     public List<int> NormalGuests { get; private set; } = [];
 
-    public void LoadResourceIds()
+    public ResourceDataBase LoadResourceIds()
     {
         Foods = DataBaseCore.Foods.ToList().Select(f => f.Key).ToList();
         Recipes = DataBaseCore.Recipes.ToList().Select(r => r.Key).ToList();
@@ -40,7 +40,23 @@ public partial class ResourceDataBase
 
         SpecialGuests = DataBaseCharacter.SpecialGuest.ToList().Select(s => s.Key).ToList();
         NormalGuests = DataBaseCharacter.NormalGuest.ToList().Select(n => n.Key).ToList();
+
+        return this;
     }
+
+    #region 单实例可用性判断
+
+    public bool FoodAvailable(int id) => Foods.Contains(id);
+    public bool RecipeAvailable(int id) => Recipes.Contains(id);
+    public bool BeverageAvailable(int id) => Beverages.Contains(id);
+    public bool IngredientAvailable(int id) => Ingredients.Contains(id);
+    public bool CookerAvailable(int id) => Cookers.Contains(id);
+    public bool ItemAvailable(int id) => Items.Contains(id);
+    public bool IzakayaAvailable(int id) => Izakayas.Contains(id);
+    public bool NormalGuestAvailable(int id) => NormalGuests.Contains(id);
+    public bool SpecialGuestAvailable(int id) => SpecialGuests.Contains(id);
+
+    #endregion
 
     public void Clear()
     {

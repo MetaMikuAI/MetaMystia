@@ -21,7 +21,7 @@ public partial class CookAction : AffectStoryAction
         Log.LogInfo($"Received COOK: CookerIndex={GridIndex}, FoodId={Food.FoodId}, Modifiers=[{string.Join(",", Food.ModifierIds)}]");
         PluginManager.Instance.RunOnMainThread(() =>
         {
-            if (!DLCManager.RecipeAvailable(RecipeId))
+            if (!PlayerManager.RecipeAvailable(RecipeId))
             {
                 Log.Error($"RecipeId {RecipeId} not available!");
                 return;

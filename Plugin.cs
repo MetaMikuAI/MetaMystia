@@ -35,7 +35,7 @@ public class Plugin : BasePlugin
         typeof(DaySceneUtilityPatch),
         typeof(StatusTrackerPatch),
         typeof(CharacterControllerUnitPatch),
-        typeof(CharacterInputPatch),
+        typeof(CharacterControllerInputGeneratorComponentPatch),
         typeof(DayScenePlayerInputPatch),
         typeof(DaySceneMapPatch),
 

@@ -39,7 +39,7 @@ public static partial class ResourceExManager
     private static Dictionary<string, MerchantConfig> MerchantConfigs = new Dictionary<string, MerchantConfig>();
     private static Dictionary<int, ClothConfig> ClothConfigs = new Dictionary<int, ClothConfig>();
 
-    // Public ID set accessors for DLCManager rEx integration
+    // Public ID set accessors for ResourceDataBase rEx integration
     public static HashSet<int> LoadedRecipeIds => [.. RecipeConfigs.Keys];
     public static HashSet<int> LoadedFoodIds => [.. FoodConfigs.Keys];
     public static HashSet<int> LoadedBeverageIds => [.. BeverageConfigs.Keys];

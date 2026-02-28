@@ -19,9 +19,9 @@ public partial class MessageAction : Action
     public override void OnReceivedDerived()
     {
         PluginManager.Console.AddPeerMessage(Message);
-        if (MystiaManager.MapLabel == PeerManager.MapLabel)
+        if (PlayerManager.LocalMapLabel == PlayerManager.Peer?.MapLabel)
         {
-            FloatingTextHelper.ShowFloatingTextOnMainThread(PeerManager.GetCharacterUnit(), Message);
+            FloatingTextHelper.ShowFloatingTextOnMainThread(PlayerManager.Peer?.GetCharacterUnit(), Message);
         }
         Notify.ShowExternOnMainThread(TextId.ChatMessagePeer.Get(MpManager.PeerId, Message));
     }

@@ -67,7 +67,7 @@ public partial class IzakayaConfigPannelPatch
             Log.LogDebug($"Not in multiplayer session, skipping patch");
             return true;
         }
-        MystiaManager.IsPrepOver = true;
+        PlayerManager.LocalIsPrepOver = true;
         Notify.ShowOnMainThread(TextId.MystiaReadyForWork.Get());
         ReadyAction.Send(ReadyType.PrepOver);
         if (MpManager.IsConnectedHost)

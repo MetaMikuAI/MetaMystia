@@ -80,6 +80,16 @@ public partial class PluginManager : MonoBehaviour
 
         if (DEBUG)
         {
+            if (Input.GetKeyDown(KeyCode.F1))
+            {
+                MpManager.Start(MpManager.ROLE.Host);
+                Notify.ShowOnMainThread("[DEBUG] Started as Host");
+            }
+            if (Input.GetKeyDown(KeyCode.F2))
+            {
+                _ = MpManager.ConnectToPeerAsync("127.0.0.1");
+                Notify.ShowOnMainThread("[DEBUG] Connecting to Self");
+            }
             if (Input.GetKeyDown(KeyCode.F12))
             {
                 Debugger ??= new Debugger.WebDebugger();
@@ -112,10 +122,10 @@ public partial class PluginManager : MonoBehaviour
         switch (MpManager.LocalScene)
         {
             case Scene.DayScene:
-                PeerManager.OnFixedUpdate();
+                PlayerManager.OnFixedUpdate();
                 break;
             case Scene.WorkScene:
-                PeerManager.OnFixedUpdate();
+                PlayerManager.OnFixedUpdate();
                 break;
             default:
                 break;

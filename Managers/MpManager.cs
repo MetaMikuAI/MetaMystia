@@ -32,7 +32,7 @@ public static partial class MpManager
     public static string PeerId { get; set; }
     public static long Latency { get; private set; } = 0;
 
-    public static int ConnectedPlayersCount => IsConnected ? 1 : 0;
+    public static int ConnectedPlayersCount => PlayerManager.Peers.Count;
     public static int AllPlayersCount => ConnectedPlayersCount + 1;
     #endregion
 
@@ -174,13 +174,6 @@ public static partial class MpManager
         Log.LogInfo("MpManager has stopped");
     }
 
-    public static void Initialize()
-    {
-        Log.LogInfo($"MpManager initialized");
-        MystiaManager.Initialize();
-        PeerManager.Initialize();
-    }
-
     public static bool Restart()
     {
         Stop();
@@ -235,24 +228,23 @@ public static partial class MpManager
 
     public static void OnConnected(string ip)
     {
-        // PeerAddress = ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString();
         PeerAddress = ip;
         HelloAction.Send();
         SceneTransitAction.Send(LocalScene);
         CommandScheduler.EnqueueInterval(SyncActionCommandID, 0.5f, SyncAction.Send);
-        CommandScheduler.EnqueueKey(
-            key: PeerGetCharacterUnitNotNullCommand,
-            executeWhen: () => PeerManager.GetCharacterUnit() != null,
-            execute: () =>
-            {
-                if (!InStory)
-                {
-                    PeerManager.EnableCollision(true);
-                }
-                PeerManager.GetCharacterComponent()?.UpdateIcon(false);
-            },
-            timeoutSeconds: 120
-        );
+        // CommandScheduler.EnqueueKey(
+        //     key: PeerGetCharacterUnitNotNullCommand,
+        //     executeWhen: () => PlayerManager.Peer?.GetCharacterUnit() != null,
+        //     execute: () =>
+        //     {
+        //         if (!InStory)
+        //         {
+        //             PlayerManager.EnablePeerCollision(true);
+        //         }
+        //         PlayerManager.Peer?.GetCharacterComponent()?.UpdateIcon(false);
+        //     },
+        //     timeoutSeconds: 120
+        // );
         Notify.ShowOnMainThread(TextId.MultiplayerConnected.Get());
     }
 
@@ -261,13 +253,13 @@ public static partial class MpManager
     {
         PeerAddress = "<Unknown>";
         PeerId = "<Unknown>";
-        DLCManager.ClearPeer();
+        PlayerManager.ClearPeers();
         CommandScheduler.EnqueueWithNoCondition(() =>
         {
-            if (PeerManager.GetCharacterUnit() != null)
+            if (PlayerManager.Peer?.GetCharacterUnit() != null)
             {
-                PeerManager.EnableCollision(false);
-                PeerManager.GetCharacterComponent()?.UpdateIcon(true);
+                PlayerManager.EnablePeerCollision(false);
+                PlayerManager.Peer?.GetCharacterComponent()?.UpdateIcon(true);
             }
         });
         CommandScheduler.RemoveKeyFromKeyQueue(PeerGetCharacterUnitNotNullCommand);
@@ -410,7 +402,7 @@ public static partial class MpManager
     {
         if (!IsConnectedHost) return;
         Log.Message($"{PeerId} dayover");
-        if (PeerManager.IsDayOver && MystiaManager.IsDayOver)
+        if (PlayerManager.PeerIsDayOver && PlayerManager.LocalIsDayOver)
         {
             ReadyAction.Broadcast(ReadyType.DayOver);
 
@@ -424,7 +416,7 @@ public static partial class MpManager
         if (!IsConnectedHost) return;
         Log.Message($"{PeerId} prep over");
 
-        if (PeerManager.IsPrepOver && MystiaManager.IsPrepOver)
+        if (PlayerManager.PeerIsPrepOver && PlayerManager.LocalIsPrepOver)
         {
             ReadyAction.Broadcast(ReadyType.PrepOver);
 

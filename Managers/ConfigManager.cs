@@ -53,7 +53,7 @@ public static partial class ConfigManager
     }
     public static void SetPlayerId(string id)
     {
+        Log.Message($"Player ID {PlayerId.Value} set to: {id}");
         PlayerId.Value = id;
-        Log.Warning($"Player ID set to: {id}");
     }
 }

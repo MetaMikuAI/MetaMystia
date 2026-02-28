@@ -24,36 +24,28 @@ public static partial class NightSceneManagerPatch
         {
             return;
         }
+
         PrepSceneManager.ClearPrepTable();
         WorkSceneManager.Clear();
-        MpManager.Initialize();
+
+        PlayerManager.Initialize();
 
         CommandScheduler.Enqueue(
-            executeWhen: () => MystiaManager.CharacterSpawnedAndInitialized,
-            executeInfo: $"spawn night kyouko and add night time",
+            executeWhen: () => WorkSceneManager.WorkTimeLeft > 0,
             execute: () =>
             {
-                var position = MystiaManager.Position;
-                PeerManager.SpawnNightKyouko(position, true, true);
-                CommandScheduler.Enqueue(
-                    executeWhen: () => WorkSceneManager.WorkTimeLeft > 0,
-                    execute: () =>
-                    {
-                        Notify.ShowExtern(TextId.TodayBusinessHours.Get(WorkSceneManager.WorkTimeLeft / 60));
-                    },
-                    timeoutSeconds: 120
-                );
+                Notify.ShowExtern(TextId.TodayBusinessHours.Get(WorkSceneManager.WorkTimeLeft / 60));
             },
             timeoutSeconds: 120
         );
         CommandScheduler.EnqueueKey(
             key: MpManager.PeerGetCharacterUnitNotNullCommand,
-            executeWhen: () => PeerManager.GetCharacterUnit() != null,
+            executeWhen: () => PlayerManager.Peer?.GetCharacterUnit() != null,
             execute: () =>
             {
                 if (!MpManager.InStory)
                 {
-                    PeerManager.EnableCollision(true);
+                    PlayerManager.EnablePeerCollision(true);
                 }
             },
             timeoutSeconds: 120

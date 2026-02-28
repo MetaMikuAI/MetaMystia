@@ -8,7 +8,7 @@ using MetaMystia.UI;
 using SgrYuki;
 using SgrYuki.Utils;
 
-namespace MetaMystia;
+namespace MetaMystia.Patch;
 
 
 [HarmonyPatch(typeof(DayScene.SceneManager))]
@@ -20,26 +20,26 @@ public partial class DaySceneManagerPatch
     public static void Awake_Postfix()
     {
         MpManager.OnSceneTransit(Scene.DayScene);
-        MpManager.Initialize();
+        PlayerManager.Initialize();
         ResourceExManager.OnDaySceneAwake();
         PrepSceneManager.ClearPrepTable();
 
-        if (MpManager.IsConnected)
-        {
-            CommandScheduler.EnqueueKey(
-                key: MpManager.PeerGetCharacterUnitNotNullCommand,
-                executeWhen: () => PeerManager.GetCharacterUnit() != null,
-                execute: () =>
-                {
-                    if (!MpManager.InStory)
-                    {
-                        PeerManager.EnableCollision(true);
-                    }
-                    PeerManager.GetCharacterComponent()?.UpdateIcon(false);
-                },
-                timeoutSeconds: 120
-            );
-        }
+        // if (MpManager.IsConnected)
+        // {
+        //     CommandScheduler.EnqueueKey(
+        //         key: MpManager.PeerGetCharacterUnitNotNullCommand,
+        //         executeWhen: () => PlayerManager.Peer?.GetCharacterUnit() != null,
+        //         execute: () =>
+        //         {
+        //             if (!MpManager.InStory)
+        //             {
+        //                 PlayerManager.EnablePeerCollision(true);
+        //             }
+        //             PlayerManager.Peer?.GetCharacterComponent()?.UpdateIcon(false);
+        //         },
+        //         timeoutSeconds: 120
+        //     );
+        // }
     }
 
 
@@ -59,7 +59,7 @@ public partial class DaySceneManagerPatch
     {
         Log.InfoCaller($"called");
 
-        MystiaManager.IsDayOver = true;
+        PlayerManager.LocalIsDayOver = true;
 
         if (!MpManager.IsConnected)
         {
@@ -79,7 +79,6 @@ public partial class DaySceneManagerPatch
         throw new System.NotImplementedException();
     }
 
-    public static volatile bool SwappingMap = false;
     [HarmonyPatch(nameof(SceneManager.SwapMap))]
     [HarmonyPrefix]
     public static bool SwapMap_Prefix(SceneManager __instance, string targetMapLabel, string targetMarkerName, int travelCount, ref Il2CppSystem.Action onSwapFinish)
@@ -89,24 +88,6 @@ public partial class DaySceneManagerPatch
         var refreshAllDayNpcs = ResourceExManager.RefreshAllDayNpcs; // TODO: 以更优雅的方式实现 Day NPC 刷新
         onSwapFinish += refreshAllDayNpcs;
 
-        if (!MpManager.ShouldSkipAction && MystiaManager.IsDayOver) return false;
-        var added = () =>
-        {
-            Log.Info($"SwapMap Finished");
-            SwappingMap = false;
-            CommandScheduler.EnqueueWithNoCondition(() => PeerManager.TryAddHeightProcessor());
-            SyncAction.Send();
-        };
-        onSwapFinish += added;
-        SwappingMap = true;
         return true;
-    }
-
-    [HarmonyPatch(nameof(SceneManager.SwapMap))]
-    [HarmonyPostfix]
-    public static void SwapMap_Postfix(SceneManager __instance, string targetMapLabel, string targetMarkerName, int travelCount)
-    {
-        Log.DebugCaller($"targetMapLabel {targetMapLabel}, targetMarkerName {targetMarkerName}");
-        MystiaManager.MapLabel = targetMapLabel;
     }
 }

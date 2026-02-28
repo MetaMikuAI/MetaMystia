@@ -1,4 +1,6 @@
+using System;
 using MemoryPack;
+using UnityEngine;
 
 namespace MetaMystia.Network;
 
@@ -7,6 +9,7 @@ namespace MetaMystia.Network;
 public partial class SyncAction : AffectStoryAction
 {
     public override ActionType Type => ActionType.SYNC;
+    public Guid guid { get; set; }
     public float Vx { get; set; }
     public float Vy { get; set; }
     public float Px { get; set; }
@@ -21,21 +24,24 @@ public partial class SyncAction : AffectStoryAction
     public override void OnReceivedDerived()
     {
         PluginManager.Instance.RunOnMainThread(() =>
-            PeerManager.SyncFromPeer(MapLabel, IsSprinting,
+            PlayerManager.Peers[guid].SyncFromPeer(MapLabel, IsSprinting, // TODO: 安全一点？
                 new UnityEngine.Vector2(Vx, Vy), new UnityEngine.Vector2(Px, Py)));
     }
 
     // Also send nightsync
     public static void Send()
     {
+        if (!MpManager.IsConnected)
+        {
+            return;
+        }
         if (MpManager.LocalScene != Common.UI.Scene.DayScene && MpManager.LocalScene != Common.UI.Scene.WorkScene)
         {
-            Log.Debug("skipping send");
             return;
         }
 
-        var inputDirection = MystiaManager.InputDirection;
-        var position = MystiaManager.Position;
+        var inputDirection = PlayerManager.LocalInputDirection;
+        var position = PlayerManager.LocalPosition;
 
         if (MpManager.LocalScene == Common.UI.Scene.WorkScene)
         {
@@ -50,11 +56,12 @@ public partial class SyncAction : AffectStoryAction
         }
         else
         {
-            var mapLabel = MystiaManager.MapLabel;
-            var isSprinting = MystiaManager.IsSprinting;
+            var mapLabel = PlayerManager.LocalMapLabel;
+            var isSprinting = PlayerManager.LocalIsSprinting;
 
             var action = new SyncAction
             {
+                guid = PlayerManager.Local.Guid,
                 IsSprinting = isSprinting,
                 Vx = inputDirection.x,
                 Vy = inputDirection.y,
