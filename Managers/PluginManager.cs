@@ -80,17 +80,7 @@ public partial class PluginManager : MonoBehaviour
 
         if (DEBUG)
         {
-            if (Input.GetKeyDown(KeyCode.F1))
-            {
-                var d = new ResourceDataBase();
-                d.LoadResourceIds();
-                d.LogDataBase();
-            }
-            if (Input.GetKeyDown(KeyCode.F9))
-            {
-                WorkSceneManager.CloseIzakayaIfPossible();
-            }
-            if (Input.GetKeyDown(KeyCode.F11))
+            if (Input.GetKeyDown(KeyCode.F12))
             {
                 Debugger ??= new Debugger.WebDebugger();
                 Debugger?.Start();

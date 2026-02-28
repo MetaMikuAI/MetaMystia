@@ -40,8 +40,7 @@ namespace MetaMystia.Debugger
                 _token = GenerateToken();
                 _listener.Start();
                 _isRunning = true;
-                string url = $"http://127.0.0.1:21101/?token={_token}";
-                _log.LogInfo($"Web Debugger started on {url}");
+                _log.LogWarning($"Web Debugger started.");
                 OpenInBrowser();
                 Task.Run(ListenLoop);
             }
