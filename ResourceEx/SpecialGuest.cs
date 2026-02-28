@@ -178,7 +178,7 @@ public static partial class ResourceExManager
 
     private static void RegisterAllFoodRequests()
     {
-        if (Plugin.ConfigFoodRequestMode.Value == RequestEnableMode.ForceDisable)
+        if (ConfigManager.FoodRequestMode.Value == RequestEnableMode.ForceDisable)
         {
             Log.Info($"Food Requests are force disabled by config, skipping registration.");
             return;
@@ -195,7 +195,7 @@ public static partial class ResourceExManager
     {
         DataBaseLanguage.SpecialGuestFoodRequest.TryAdd(config.id,
             config.guest.foodRequests
-                .Where(req => Plugin.ConfigFoodRequestMode.Value == RequestEnableMode.FollowPackage ? req.enable : Plugin.ConfigFoodRequestMode.Value == RequestEnableMode.ForceEnable)
+                .Where(req => ConfigManager.FoodRequestMode.Value == RequestEnableMode.FollowPackage ? req.enable : ConfigManager.FoodRequestMode.Value == RequestEnableMode.ForceEnable)
                 .ToDictionary(req => req.tagId, req => req.request)
                 .ToIl2CppDictionary()
         );
@@ -204,7 +204,7 @@ public static partial class ResourceExManager
 
     private static void RegisterAllBevRequests()
     {
-        if (Plugin.ConfigBevRequestMode.Value == RequestEnableMode.ForceDisable)
+        if (ConfigManager.BevRequestMode.Value == RequestEnableMode.ForceDisable)
         {
             Log.Info($"Beverage Requests are force disabled by config, skipping registration.");
             return;
@@ -220,7 +220,7 @@ public static partial class ResourceExManager
     {
         DataBaseLanguage.SpecialGuestBevRequest.TryAdd(config.id,
             config.guest.bevRequests
-                .Where(req => Plugin.ConfigBevRequestMode.Value == RequestEnableMode.FollowPackage ? req.enable : Plugin.ConfigBevRequestMode.Value == RequestEnableMode.ForceEnable)
+                .Where(req => ConfigManager.BevRequestMode.Value == RequestEnableMode.FollowPackage ? req.enable : ConfigManager.BevRequestMode.Value == RequestEnableMode.ForceEnable)
                 .ToDictionary(req => req.tagId, req => req.request)
                 .ToIl2CppDictionary()
         );

@@ -10,7 +10,6 @@ namespace MetaMystia;
 [AutoLog]
 public static partial class MystiaManager
 {
-    private static DayScene.Input.DayScenePlayerInputGenerator _cachedInputGenerator;
     public static string MapLabel { get; set; } = "";
     public static bool IsSprinting { get; set; } = false;
     public static Vector2 InputDirection { get; set; } = Vector2.zero;
@@ -24,8 +23,6 @@ public static partial class MystiaManager
     public static void Initialize()
     {
         Log.LogInfo($"MystiaManager initialized");
-
-        _cachedInputGenerator = null;
         MapLabel = "";
         IsSprinting = false;
         InputDirection = Vector2.zero;

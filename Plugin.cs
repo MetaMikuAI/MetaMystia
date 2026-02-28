@@ -19,10 +19,6 @@ public class Plugin : BasePlugin
     public static Plugin Instance;
     public Action<Scene, LoadSceneMode> LoadAction;
 
-    public static ConfigEntry<bool> ConfigDebug;
-    public static ConfigEntry<bool> ConfigSignatureCheck;
-    public static ConfigEntry<RequestEnableMode> ConfigFoodRequestMode;
-    public static ConfigEntry<RequestEnableMode> ConfigBevRequestMode;
 
     public static Type[] ToBePatched = [
         // SceneManager Patches
@@ -86,27 +82,11 @@ public class Plugin : BasePlugin
         Instance = this;
     }
 
-    private void InitConfigs()
-    {
-        ConfigDebug = Config.Bind("General", "Debug", false, "Enable debug features and hotkeys\n启用调试功能和热键");
-
-        ConfigSignatureCheck = Config.Bind("General", "SignatureCheck", true,
-            "Enable RSA signature verification for resource pack ID ranges\n启用资源包 ID 段 RSA 签名校验");
-
-        ConfigFoodRequestMode = Config.Bind("General", "FoodRequestMode", RequestEnableMode.FollowPackage,
-            "Food request enable mode (FollowPackage by default)\n料理点单启用模式(默认跟随资源包)\n" +
-            "ForceDisable: 强制关闭 | FollowPackage: 跟随资源包 | ForceEnable: 强制启用");
-
-        ConfigBevRequestMode = Config.Bind("General", "BevRequestMode", RequestEnableMode.ForceDisable,
-            "Beverage request enable mode (ForceDisable by default)\n酒水点单启用模式(默认关闭)\n" +
-            "ForceDisable: 强制关闭 | FollowPackage: 跟随资源包 | ForceEnable: 强制启用");
-    }
-
     public override void Load()
     {
-        InitConfigs();
+        ConfigManager.InitConfigs();
 
-        if (ConfigDebug.Value)
+        if (ConfigManager.Debug.Value)
         {
             Log.LogWarning("MetaMystia Debug mode is enabled.");
             Notify.ShowOnNextAvailableScene("MetaMystia 调试模式已启用");

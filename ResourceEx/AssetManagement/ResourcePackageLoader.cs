@@ -51,7 +51,7 @@ public static partial class ResourcePackageLoader
         }
 
         // Validate ID ranges and signatures
-        bool enforceSignature = Plugin.ConfigSignatureCheck.Value;
+        bool enforceSignature = ConfigManager.SignatureCheck.Value;
         if (!enforceSignature)
         {
             Log.LogWarning("[ResourceEx] Signature verification is DISABLED by config.");

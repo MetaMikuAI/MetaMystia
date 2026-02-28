@@ -27,7 +27,7 @@ public static partial class MpManager
     #endregion
 
     #region Multiplayer Related Values
-    public static string PlayerId { get; set { field = value; Log.Info($"Player ID set to: {value}"); } } = Environment.MachineName;
+    public static string PlayerId { get => ConfigManager.GetPlayerId(); set => ConfigManager.SetPlayerId(value); }
     public static string PeerAddress { get; set; }
     public static string PeerId { get; set; }
     public static long Latency { get; private set; } = 0;
