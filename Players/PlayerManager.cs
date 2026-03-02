@@ -20,9 +20,9 @@ public static partial class PlayerManager
     public static LocalPlayer Local { get; } = new();
 
     /// <summary>
-    /// 所有已连接的远程玩家
+    /// 所有已连接的远程玩家（key = uid）
     /// </summary>
-    public static ConcurrentDictionary<Guid, PeerPlayer> Peers { get; } = new();
+    public static ConcurrentDictionary<int, PeerPlayer> Peers { get; } = new();
 
     /// <summary>
     /// 当前对端玩家（1v1 便捷访问，返回第一个 Peer）
@@ -46,34 +46,85 @@ public static partial class PlayerManager
 
     /// <summary>
     /// 所有对端是否都已完成 Day（聚合判断）
-    /// 设置时作用于 Peer（1v1 兼容）
     /// </summary>
-    public static bool PeerIsDayOver
-    {
-        get => Peers.Count > 0 && Peers.Values.All(p => p.IsDayOver);
-        set { if (Peer != null) Peer.IsDayOver = value; }
-    }
+    public static bool AllPeersDayOver =>
+        Peers.Count > 0 && Peers.Values.All(p => p.IsDayOver);
 
     /// <summary>
     /// 所有对端是否都已完成 Prep（聚合判断）
-    /// 设置时作用于 Peer（1v1 兼容）
     /// </summary>
-    public static bool PeerIsPrepOver
+    public static bool AllPeersPrepOver =>
+        Peers.Count > 0 && Peers.Values.All(p => p.IsPrepOver);
+
+    /// <summary>
+    /// 全员（本地 + 所有对端）是否都已完成 Day
+    /// </summary>
+    public static bool AllDayOver => LocalIsDayOver && AllPeersDayOver;
+
+    /// <summary>
+    /// 全员（本地 + 所有对端）是否都已完成 Prep
+    /// </summary>
+    public static bool AllPrepOver => LocalIsPrepOver && AllPeersPrepOver;
+
+    /// <summary>
+    /// 所有对端是否都已选择了与指定地图/等级一致的居酒屋
+    /// </summary>
+    public static bool AllPeersSelectedSameIzakaya(string mapLabel, int level) =>
+        Peers.Count > 0 && Peers.Values.All(p =>
+            !string.IsNullOrEmpty(p.IzakayaMapLabel) && p.IzakayaLevel != 0
+            && p.IzakayaMapLabel == mapLabel && p.IzakayaLevel == level);
+
+    /// <summary>
+    /// 是否所有对端都已做出选择（不论是否与本地一致）
+    /// </summary>
+    public static bool AllPeersHaveSelected =>
+        Peers.Count > 0 && Peers.Values.All(p =>
+            !string.IsNullOrEmpty(p.IzakayaMapLabel) && p.IzakayaLevel != 0);
+
+    #endregion
+
+    #region Per-Peer 状态修改（通过 SenderUid 定位）
+
+    public static void SetPeerDayOver(int uid)
     {
-        get => Peers.Count > 0 && Peers.Values.All(p => p.IsPrepOver);
-        set { if (Peer != null) Peer.IsPrepOver = value; }
+        if (Peers.TryGetValue(uid, out var peer))
+            peer.IsDayOver = true;
+        else
+            Log.LogWarning($"SetPeerDayOver: peer uid={uid} not found");
     }
 
-    public static string PeerIzakayaMapLabel
+    public static void SetPeerPrepOver(int uid)
     {
-        get => Peer?.IzakayaMapLabel ?? "";
-        set { if (Peer != null) Peer.IzakayaMapLabel = value; }
+        if (Peers.TryGetValue(uid, out var peer))
+            peer.IsPrepOver = true;
+        else
+            Log.LogWarning($"SetPeerPrepOver: peer uid={uid} not found");
     }
 
-    public static int PeerIzakayaLevel
+    public static void SetPeerIzakayaSelection(int uid, string mapLabel, int level)
     {
-        get => Peer?.IzakayaLevel ?? 0;
-        set { if (Peer != null) Peer.IzakayaLevel = value; }
+        if (Peers.TryGetValue(uid, out var peer))
+        {
+            peer.IzakayaMapLabel = mapLabel;
+            peer.IzakayaLevel = level;
+        }
+        else
+            Log.LogWarning($"SetPeerIzakayaSelection: peer uid={uid} not found");
+    }
+
+    /// <summary>
+    /// 获取选择不一致的首个 Peer 的选择描述（用于通知），无不一致则返回 null
+    /// </summary>
+    public static string GetFirstMismatchSelection(string mapLabel, int level)
+    {
+        foreach (var peer in Peers.Values)
+        {
+            if (string.IsNullOrEmpty(peer.IzakayaMapLabel) || peer.IzakayaLevel == 0)
+                return $"{peer.Id}: 未选择";
+            if (peer.IzakayaMapLabel != mapLabel || peer.IzakayaLevel != level)
+                return $"{peer.Id}: {Utils.GetMapLabelNameCN(peer.IzakayaMapLabel)} {Utils.GetMapLevelNameCN(peer.IzakayaLevel)}";
+        }
+        return null;
     }
 
     #endregion
@@ -126,29 +177,29 @@ public static partial class PlayerManager
     }
 
     /// <summary>
-    /// 握手成功后，根据对端 Guid 创建并注册 PeerPlayer
+    /// 握手成功后，根据对端 UID 创建并注册 PeerPlayer
     /// </summary>
-    public static PeerPlayer AddPeer(Guid guid, string peerId, ResourceDataBase resourceDataBase = null)
+    public static PeerPlayer AddPeer(int uid, string peerId, ResourceDataBase resourceDataBase = null)
     {
-        if (Peers.TryGetValue(guid, out var existing))
+        if (Peers.TryGetValue(uid, out var existing))
         {
-            Log.LogWarning($"Peer with guid {guid} already exists (id='{existing.Id}'), replacing");
+            Log.LogWarning($"Peer with uid={uid} already exists (id='{existing.Id}'), replacing");
         }
-        var peer = new PeerPlayer(guid, resourceDataBase) { Id = peerId };
+        var peer = new PeerPlayer(uid, resourceDataBase) { Id = peerId };
         peer.Initialize();
-        Peers[guid] = peer;
-        Log.LogMessage($"Added peer '{peerId}' (guid={guid}, characterId='{peer.CharacterId}')");
+        Peers[uid] = peer;
+        Log.LogMessage($"Added peer '{peerId}' (uid={uid}, characterId='{peer.CharacterId}')");
         return peer;
     }
 
     /// <summary>
     /// 移除一个对端玩家
     /// </summary>
-    public static bool RemovePeer(Guid guid)
+    public static bool RemovePeer(int uid)
     {
-        if (Peers.TryRemove(guid, out var peer))
+        if (Peers.TryRemove(uid, out var peer))
         {
-            Log.LogMessage($"Removed peer '{peer.Id}' (guid={guid})");
+            Log.LogMessage($"Removed peer '{peer.Id}' (uid={uid})");
             return true;
         }
         return false;
@@ -196,7 +247,7 @@ public static partial class PlayerManager
         EnablePeerCollision(Peer?.GetCharacterUnit(), enable);
 
     public static bool IsPeerCharacter(string label) =>
-        Peers.Values.Any(p => p.Guid.ToString() == label);
+        Peers.Values.Any(p => p.CharacterId == label);
 
     #endregion
 }

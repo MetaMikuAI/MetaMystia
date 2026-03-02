@@ -43,10 +43,7 @@ public static partial class NightSceneManagerPatch
             executeWhen: () => PlayerManager.Peer?.GetCharacterUnit() != null,
             execute: () =>
             {
-                if (!MpManager.InStory)
-                {
-                    PlayerManager.EnablePeerCollision(true);
-                }
+                PlayerManager.EnablePeerCollision(true);
             },
             timeoutSeconds: 120
         );

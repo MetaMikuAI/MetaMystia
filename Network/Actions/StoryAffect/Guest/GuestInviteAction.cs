@@ -8,7 +8,8 @@ using MetaMystia.Patch;
 namespace MetaMystia.Network;
 
 [MemoryPackable]
-public partial class GuestInviteAction : SendAffectStoryAction
+[HostRelay]
+public partial class GuestInviteAction : Action
 {
     public override ActionType Type => ActionType.GUEST_INVITE;
     public List<int> InvitedGuestIDs;

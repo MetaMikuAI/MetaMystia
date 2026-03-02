@@ -16,7 +16,8 @@ public enum GuestPayType
 
 [MemoryPackable]
 [AutoLog]
-public partial class GuestPayAction : SendAffectStoryAction
+[Action.HostRelay]
+public partial class GuestPayAction : Action
 {
     public override ActionType Type => ActionType.GUEST_PAY;
     public GuestPayType PayType;

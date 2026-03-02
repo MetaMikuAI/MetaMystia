@@ -259,7 +259,7 @@ public static partial class MetricsReporter
             {
                 try
                 {
-                    var currentVer = MpManager.ModVersion;
+                    var currentVer = Plugin.ModVersion;
                     var latestVer = await GetPluginLatestTagAsync().ConfigureAwait(false);
 
                     Log.Message($"当前 Mod 版本为 {currentVer}，最新版为 {latestVer}");

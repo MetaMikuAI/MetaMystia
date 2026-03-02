@@ -10,13 +10,19 @@ public enum ActionType : ushort
 {
     PING,
     PONG,
+
     HELLO,
+    HELLO_ACK,
+    REJECT,
+    PEER_JOIN,
+    PEER_LEAVE,
+
     SCENE_TRANSIT,
     SYNC,
     READY,
     MESSAGE,
     SELECT,
-    MAP_DECIDED,
+    CONFIRM_SELECT,
     PREP,
     NIGHTSYNC,
     COOK,
@@ -43,12 +49,15 @@ public enum ActionType : ushort
 [MemoryPackUnion((ushort)ActionType.PING, typeof(PingAction))]
 [MemoryPackUnion((ushort)ActionType.PONG, typeof(PongAction))]
 [MemoryPackUnion((ushort)ActionType.HELLO, typeof(HelloAction))]
+[MemoryPackUnion((ushort)ActionType.HELLO_ACK, typeof(HelloAckAction))]
+[MemoryPackUnion((ushort)ActionType.PEER_JOIN, typeof(PeerJoinAction))]
+[MemoryPackUnion((ushort)ActionType.PEER_LEAVE, typeof(PeerLeaveAction))]
 [MemoryPackUnion((ushort)ActionType.SCENE_TRANSIT, typeof(SceneTransitAction))]
 [MemoryPackUnion((ushort)ActionType.SYNC, typeof(SyncAction))]
 [MemoryPackUnion((ushort)ActionType.READY, typeof(ReadyAction))]
 [MemoryPackUnion((ushort)ActionType.MESSAGE, typeof(MessageAction))]
 [MemoryPackUnion((ushort)ActionType.SELECT, typeof(SelectAction))]
-[MemoryPackUnion((ushort)ActionType.MAP_DECIDED, typeof(MapDecidedAction))]
+[MemoryPackUnion((ushort)ActionType.CONFIRM_SELECT, typeof(ConfirmSelectAction))]
 [MemoryPackUnion((ushort)ActionType.PREP, typeof(PrepAction))]
 [MemoryPackUnion((ushort)ActionType.NIGHTSYNC, typeof(NightSyncAction))]
 [MemoryPackUnion((ushort)ActionType.COOK, typeof(CookAction))]
@@ -75,13 +84,10 @@ public abstract partial class Action
 {
     public abstract ActionType Type { get; }
     public long TimestampMs { get; protected set; }
-    public long SenderId { get; protected set; }
-
-    [MemoryPackIgnore]
-    protected virtual bool SkipReceiveOnStory { get; } = false;
-
-    [MemoryPackIgnore]
-    protected virtual bool SkipSendOnStory { get; } = false;
+    /// <summary>
+    /// 发送者的 UID（主机=0，客机=1,2,3...）
+    /// </summary>
+    public int SenderUid { get; set; }
 
     [MemoryPackIgnore]
     protected virtual LogLevel OnReceiveLogLevel { get; } = LogLevel.Info;
@@ -101,7 +107,7 @@ public abstract partial class Action
     protected Action()
     {
         TimestampMs = MpManager.TimestampNow;
-        SenderId = 0;
+        SenderUid = PlayerManager.Local.Uid;
     }
 
 
@@ -109,28 +115,13 @@ public abstract partial class Action
     public void OnReceived()
     {
         LogActionReceived();
-        if (SkipReceiveOnStory && MpManager.ShouldSkipAction)
-        {
-            if (OnReceiveLogLevel != LogLevel.Debug)
-            {
-                Log.Info($"{MpManager.RoleTag} Received Skip {Type}: {ToString()}");
-            }
-            return;
-        }
         var targetScene = GetReceivedScene();
         if (targetScene != null && MpManager.LocalScene != targetScene.Value)
         {
             Log.Info($"{MpManager.RoleTag} Received in invalid scene: {Type}: {ToString()}");
             return;
         }
-        if (GetOnReceivedDerivedExecuteAfterStoryOver())
-        {
-            ExecuteAfterStoryOver(OnReceivedDerived);
-        }
-        else
-        {
-            OnReceivedDerived();
-        }
+        OnReceivedDerived();
     }
 
     private Common.UI.Scene? GetReceivedScene()
@@ -138,29 +129,6 @@ public abstract partial class Action
         var method = this.GetType().GetMethod(nameof(OnReceivedDerived));
         var attr = method.GetCustomAttribute<CheckSceneAttribute>();
         return attr?.Scene;
-    }
-
-    private bool GetOnReceivedDerivedExecuteAfterStoryOver()
-    {
-        var method = this.GetType().GetMethod(nameof(OnReceivedDerived));
-        var attr = method.GetCustomAttribute<ExecuteAfterStoryAttribute>();
-        return attr != null;
-    }
-
-
-    private void ExecuteAfterStoryOver(System.Action action)
-    {
-        CommandScheduler.EnqueueKey(
-            key: OnReceivedDerivedAfterStoryOverCommand,
-            executeWhen: () => !MpManager.ShouldSkipAction,
-            executeInfo: $"OnReceivedDerivedAfterStoryOver {Type}: {ToString()}",
-            execute: action,
-            timeoutSeconds: 300
-        );
-    }
-    public static void RemoveExecuteAfterStoryOver()
-    {
-        CommandScheduler.RemoveKeyFromKeyQueue(OnReceivedDerivedAfterStoryOverCommand);
     }
 
     public override string ToString()
@@ -214,14 +182,6 @@ public abstract partial class Action
 
     protected void SendToHostOrBroadcast()
     {
-        if (SkipSendOnStory && MpManager.ShouldSkipAction)
-        {
-            if (OnSendLogLevel != LogLevel.Debug)
-            {
-                Log.Info($"{MpManager.RoleTag} Will not send Skip {Type}: {ToString()}");
-            }
-            return;
-        }
         if (!MpManager.IsConnected) return;
 
         LogActionSend();
@@ -232,20 +192,31 @@ public abstract partial class Action
 
     protected void SendToPeer(long peerId)
     {
-        if (SkipSendOnStory && MpManager.ShouldSkipAction)
-        {
-            Log.Info($"{MpManager.RoleTag} Will not send Skip {Type}: {ToString()}");
-            return;
-        }
         if (!MpManager.IsConnected) return;
 
         LogActionSend();
 
         var packet = NetPacket.FromSingleAction(this);
-        MpManager.SendToPeer(packet);
+        MpManager.SendToHost(packet);
     }
 
-    public void ChangeSender(long newSender) => SenderId = newSender;
+    /// <summary>
+    /// 主机向指定 uid 的客机发送
+    /// </summary>
+    protected void SendToClient(int uid)
+    {
+        if (!MpManager.IsHost || !MpManager.IsConnected) return;
+        LogActionSend();
+        var packet = NetPacket.FromSingleAction(this);
+        MpManager.SendToClient(uid, packet);
+    }
+
+    /// <summary>
+    /// 标记需要主机转发给其他客机的 Action 类型。
+    /// 当客机发送一个带有此特性的 Action 时，主机处理后会自动转发给其他所有客机。
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Class, Inherited = false)]
+    public class HostRelayAttribute : Attribute { }
 
     public static void RegisterAllFormatter()
     {

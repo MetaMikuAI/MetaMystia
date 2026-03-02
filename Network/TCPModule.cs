@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
@@ -93,27 +94,31 @@ public class PacketBuffer
     }
 }
 
-// ---------------- TCP Server ----------------
+// ---------------- TCP Server (Star Topology: Host) ----------------
 [AutoLog]
 public sealed partial class TcpServer : IDisposable
 {
-
     private readonly TcpListener listener;
-    private TcpClient currentClient;
+    private readonly ConcurrentDictionary<int, TcpClient> clients = new();
+    private int _nextUid = 0;
 
-    private readonly object lockObj = new();
+    private readonly object sendLock = new();
 
     private volatile bool running;
     private Thread heartbeatThread;
 
     private const int HeartbeatLoopInterval = 3000;
     private const int BufferLen = 4096;
-    public string GetRealConnectedIp => ((IPEndPoint)currentClient.Client.RemoteEndPoint).Address.ToString();
 
     public TcpServer(int port)
     {
         listener = new TcpListener(IPAddress.Any, port);
     }
+
+    /// <summary>
+    /// 为新连入的客机分配递增 UID（主机自身为 0）
+    /// </summary>
+    public int AssignNextUid() => Interlocked.Increment(ref _nextUid);
 
     // =========================
     // 生命周期
@@ -121,40 +126,32 @@ public sealed partial class TcpServer : IDisposable
 
     public void Start()
     {
-        lock (lockObj)
-        {
-            if (running) return;
-            running = true;
-        }
+        if (running) return;
+        running = true;
 
         listener.Start();
         Log.LogMessage("[S] Server started.");
 
+        StartHeartbeat();
         BeginAccept();
     }
 
     public void Stop()
     {
-        lock (lockObj)
-        {
-            if (!running) return;
-            running = false;
-        }
+        if (!running) return;
+        running = false;
 
         try { listener.Stop(); } catch { }
 
-        CloseClientInternal();
+        DisconnectAllClients();
 
         Log.LogMessage("[S] Server stopped.");
     }
 
-    public void Dispose()
-    {
-        Stop();
-    }
+    public void Dispose() => Stop();
 
     // =========================
-    // Accept
+    // Accept（支持多客户端）
     // =========================
 
     private void BeginAccept()
@@ -171,11 +168,11 @@ public sealed partial class TcpServer : IDisposable
 
     private void AcceptCallback(IAsyncResult ar)
     {
-        TcpClient client;
+        TcpClient tcp;
 
         try
         {
-            client = listener.EndAcceptTcpClient(ar);
+            tcp = listener.EndAcceptTcpClient(ar);
         }
         catch (ObjectDisposedException)
         {
@@ -184,48 +181,31 @@ public sealed partial class TcpServer : IDisposable
         catch (Exception ex)
         {
             Log.LogWarning($"[S] Accept failed: {ex.Message}");
-            return;
-        }
-
-        bool accepted = false;
-
-        lock (lockObj)
-        {
-            if (!running)
-            {
-                client.Close();
-                return;
-            }
-
-            if (currentClient == null)
-            {
-                currentClient = client;
-                accepted = true;
-            }
-        }
-
-        if (!accepted)
-        {
-            Log.LogMessage("[S] Rejecting connection: already have a client.");
-            client.Close();
             BeginAccept();
             return;
         }
 
-        Log.LogMessage("[S] Client connected.");
-        MpManager.OnConnected(GetRealConnectedIp);
+        if (!running)
+        {
+            tcp.Close();
+            return;
+        }
 
-        StartHeartbeat();
-        StartReceiveLoop(client);
+        int uid = AssignNextUid();
+        clients[uid] = tcp;
 
+        var ip = ((IPEndPoint)tcp.Client.RemoteEndPoint).Address.ToString();
+        Log.LogMessage($"[S] Client uid={uid} connected from {ip}");
+
+        StartReceiveLoop(tcp, uid);
         BeginAccept();
     }
 
     // =========================
-    // 接收循环
+    // 接收循环（每个客户端独立线程）
     // =========================
 
-    private void StartReceiveLoop(TcpClient client)
+    private void StartReceiveLoop(TcpClient client, int uid)
     {
         ThreadPool.QueueUserWorkItem(_ =>
         {
@@ -234,7 +214,7 @@ public sealed partial class TcpServer : IDisposable
 
             try
             {
-                while (IsClientAlive(client))
+                while (running && clients.ContainsKey(uid))
                 {
                     var stream = client.GetStream();
                     int read = stream.Read(recv, 0, recv.Length);
@@ -247,7 +227,7 @@ public sealed partial class TcpServer : IDisposable
                     {
                         foreach (var action in packet.Actions)
                         {
-                            MpManager.OnAction(action);
+                            MpManager.OnActionFromClient(action, uid);
                         }
                     }
                 }
@@ -255,11 +235,11 @@ public sealed partial class TcpServer : IDisposable
             catch (Exception ex)
             {
                 if (running)
-                    Log.LogWarning($"[S] Receive error: {ex.Message}");
+                    Log.LogWarning($"[S] Receive error (uid={uid}): {ex.Message}");
             }
             finally
             {
-                HandleClientDisconnected(client);
+                HandleClientDisconnected(uid);
             }
         });
     }
@@ -272,21 +252,8 @@ public sealed partial class TcpServer : IDisposable
     {
         heartbeatThread = new Thread(() =>
         {
-            while (true)
+            while (running)
             {
-                TcpClient client;
-
-                lock (lockObj)
-                {
-                    if (!running)
-                        break;
-
-                    client = currentClient;
-                }
-
-                if (client == null)
-                    break;
-
                 try
                 {
                     MpManager.SendPing();
@@ -312,77 +279,125 @@ public sealed partial class TcpServer : IDisposable
     // 发送
     // =========================
 
-    public void Send(NetPacket packet)
+    /// <summary>
+    /// 向所有已连接客机广播
+    /// </summary>
+    public void Broadcast(NetPacket packet)
     {
-        TcpClient client;
+        if (!running) return;
+        byte[] data = packet.ToBytesWithLength();
+        List<int> failed = null;
 
-        lock (lockObj)
+        lock (sendLock)
         {
-            if (!running || currentClient == null)
+            foreach (var kvp in clients)
             {
-                Log.LogWarning($"[S] Send failed: not running or currentClient is null");
-                return;
-            }
-
-            client = currentClient;
-        }
-
-        try
-        {
-            var stream = client.GetStream();
-            byte[] data = packet.ToBytesWithLength();
-            stream.Write(data, 0, data.Length);
-        }
-        catch (Exception ex)
-        {
-            Log.LogWarning($"[S] Send failed: {ex.Message}, {ex.StackTrace}");
-            CloseClientInternal();
-        }
-    }
-
-    // =========================
-    // 断开处理（唯一出口）
-    // =========================
-
-    public void DisconnectClient() => CloseClientInternal();
-
-    private void HandleClientDisconnected(TcpClient client)
-    {
-        bool shouldNotify = false;
-
-        lock (lockObj)
-        {
-            if (currentClient == client)
-            {
-                currentClient = null;
-                shouldNotify = true;
+                try
+                {
+                    kvp.Value.GetStream().Write(data, 0, data.Length);
+                }
+                catch (Exception ex)
+                {
+                    Log.LogWarning($"[S] Broadcast to uid={kvp.Key} failed: {ex.Message}");
+                    (failed ??= new()).Add(kvp.Key);
+                }
             }
         }
 
-        try { client.Close(); } catch { }
+        if (failed != null)
+            foreach (var uid in failed)
+                HandleClientDisconnected(uid);
+    }
 
-        if (shouldNotify)
+    /// <summary>
+    /// 向指定 uid 的客机发送
+    /// </summary>
+    public void SendTo(int uid, NetPacket packet)
+    {
+        if (!running || !clients.TryGetValue(uid, out var client)) return;
+
+        lock (sendLock)
         {
-            Log.LogMessage("[S] Client disconnected.");
-            MpManager.OnDisconnected();
+            try
+            {
+                byte[] data = packet.ToBytesWithLength();
+                client.GetStream().Write(data, 0, data.Length);
+            }
+            catch (Exception ex)
+            {
+                Log.LogWarning($"[S] SendTo uid={uid} failed: {ex.Message}");
+                HandleClientDisconnected(uid);
+            }
         }
     }
 
-    private void CloseClientInternal()
+    /// <summary>
+    /// 向除 exceptUid 以外的所有客机发送（主机转发用）
+    /// </summary>
+    public void SendToExcept(int exceptUid, NetPacket packet)
     {
-        TcpClient client = null;
+        if (!running) return;
+        byte[] data = packet.ToBytesWithLength();
+        List<int> failed = null;
 
-        lock (lockObj)
+        lock (sendLock)
         {
-            client = currentClient;
-            currentClient = null;
+            foreach (var kvp in clients)
+            {
+                if (kvp.Key == exceptUid) continue;
+                try
+                {
+                    kvp.Value.GetStream().Write(data, 0, data.Length);
+                }
+                catch (Exception ex)
+                {
+                    Log.LogWarning($"[S] SendToExcept uid={kvp.Key} failed: {ex.Message}");
+                    (failed ??= new()).Add(kvp.Key);
+                }
+            }
         }
 
-        if (client != null)
+        if (failed != null)
+            foreach (var uid in failed)
+                HandleClientDisconnected(uid);
+    }
+
+    // =========================
+    // 断开处理
+    // =========================
+
+    /// <summary>
+    /// 断开指定客机
+    /// </summary>
+    public void DisconnectClient(int uid)
+    {
+        if (clients.TryRemove(uid, out var client))
         {
             try { client.Close(); } catch { }
-            Log.LogMessage("[S] Client disconnected.");
-            MpManager.OnDisconnected();
+            Log.LogMessage($"[S] Client uid={uid} disconnected.");
+            MpManager.OnClientDisconnected(uid);
+        }
+    }
+
+    /// <summary>
+    /// 断开所有客机
+    /// </summary>
+    public void DisconnectAllClients()
+    {
+        foreach (var kvp in clients)
+        {
+            try { kvp.Value.Close(); } catch { }
+        }
+        clients.Clear();
+    }
+
+    private void HandleClientDisconnected(int uid)
+    {
+        if (clients.TryRemove(uid, out var client))
+        {
+            try { client.Close(); } catch { }
+            Log.LogMessage($"[S] Client uid={uid} disconnected.");
+            MpManager.OnClientDisconnected(uid);
         }
     }
 
@@ -390,48 +405,27 @@ public sealed partial class TcpServer : IDisposable
     // 工具
     // =========================
 
-    private bool IsClientAlive(TcpClient client)
+    /// <summary>
+    /// 是否有任何已连接的客机
+    /// </summary>
+    public bool HasAnyClient => !clients.IsEmpty;
+
+    /// <summary>
+    /// 当前已连接客机数
+    /// </summary>
+    public int ClientCount => clients.Count;
+
+    /// <summary>
+    /// 获取指定客机的 IP
+    /// </summary>
+    public string GetClientIp(int uid)
     {
-        lock (lockObj)
+        if (clients.TryGetValue(uid, out var client))
         {
-            return running && currentClient == client;
+            try { return ((IPEndPoint)client.Client.RemoteEndPoint)?.Address.ToString() ?? "?"; }
+            catch { return "?"; }
         }
-    }
-
-    public bool HasAliveClient
-    {
-        get
-        {
-            lock (lockObj)
-            {
-                if (!running || currentClient == null)
-                    return false;
-
-                return IsTcpClientAlive_NoLock(currentClient);
-            }
-        }
-    }
-
-    private bool IsTcpClientAlive_NoLock(TcpClient client)
-    {
-        try
-        {
-            var socket = client.Client;
-
-            // 已关闭
-            if (socket == null || !socket.Connected)
-                return false;
-
-            // 对端已关闭连接（FIN）
-            if (socket.Poll(0, SelectMode.SelectRead) && socket.Available == 0)
-                return false;
-
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
+        return "?";
     }
 }
 

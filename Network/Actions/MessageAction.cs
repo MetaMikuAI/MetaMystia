@@ -6,6 +6,7 @@ using SgrYuki;
 namespace MetaMystia.Network;
 
 [MemoryPackable]
+[Action.HostRelay]
 public partial class MessageAction : Action
 {
     public override ActionType Type => ActionType.MESSAGE;

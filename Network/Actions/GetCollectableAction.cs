@@ -5,6 +5,7 @@ namespace MetaMystia.Network;
 
 [MemoryPackable]
 [AutoLog]
+[Action.HostRelay]
 public partial class GetCollectableAction : Action
 {
     public override ActionType Type => ActionType.GET_COLLECTABLE;

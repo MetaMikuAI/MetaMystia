@@ -26,98 +26,83 @@ public partial class IzakayaSelectorPanelPatch
     [HarmonyPrefix]
     public static bool _OnGuideMapInitialize_b__21_0_Prefix(ref Common.UI.IzakayaSelectorPanel_New __instance)
     {
-        // MetaMiku 注:
-        //     这里原本实际上是选择 Izakaya 的逻辑
-        //     同样采用对称的设计，下面以 A 首先做出选择，B 之后进行确认来描述流程
-        //     一共是四种事件，两件来自玩家，两件来自网络
-        //
-        //     Peer A -> 「前往营业」
-        //            -> 检查对端是否已经选择地图
-        //                 -> 否 -> 发送 SELECT 包并跳过 _OnGuideMapInitialize_b__21_0，展示对话
-        //                 -> 是 -> 对称，略
-        //
-        //     Peer A -> 接收 CONFIRM 包
-        //            -> 检查已有选择，不匹配则应强制修改
-        //            -> 展示「确认」对话
-        //            -> 对话回调中调用 _OnGuideMapInitialize_b__21_0 以结束
-        //
-        //     Peer B -> 接收 SELECT 包，缓存并展示「提示」对话
-        //
-        //     Peer B -> 「前往营业」
-        //            -> 检查对端是否已经选择地图
-        //                -> 否 -> 对称，略
-        //                -> 是 -> 检查 地图/level 是否匹配
-        //                          -> 否 -> 展示「拒绝」对话
-        //                          -> 是 -> 发送 CONFIRM 包
-        //                                -> 展示「确认」对话
-        //                                -> 对话回调中调用 _OnGuideMapInitialize_b__21_0 以结束
+        // N 人联机选店流程:
+        //   1. 每个玩家自由选择地图，点击「前往营业」
+        //   2. 广播 SELECT 通告所有 peer 自己的选择（主机需负责转发）
+        //   3. 主机收到 SELECT 或主机自己选择后，负责检查所有 peer 的选择是否一致
+        //     - 若全员一致，主机广播 CONFIRM_SELECT，客机收到后才执行场景切换
+        //   4. 客机仅发送 SELECT，然后等待主机的 CONFIRM_SELECT
 
-        Log.LogInfo($"_OnGuideMapInitialize_b__21_0 called");
+        Log.Info($"_OnGuideMapInitialize_b__21_0 called");
 
         if (!MpManager.IsConnected)
         {
-            Log.LogWarning($"Not in multiplayer session, skipping patch");
+            Log.Info($"Not in multiplayer session, skipping patch");
             return true;
         }
-
-        if (MpManager.PeerScene == Common.UI.Scene.IzakayaPrepScene || MpManager.PeerScene == Common.UI.Scene.WorkScene)
-        {
-            Log.Error($"peer already in prep scene, will disconnect");
-            Notify.ShowOnMainThread(TextId.PeerAlreadyInScene.Get());
-            MpManager.DisconnectPeer();
-            return true;
-        }
-
-        // 参考 Common.UI.IzakayaLevel
-        // public enum IzakayaLevel
-        // {
-        //     Level1 = 1,
-        //     Level2 = 2,
-        //     Level3 = 3,
-        //     Null = 0
-        // }
 
         var izakayaMapLabel = __instance.m_CurrentSelectedSpot.PrimaryName;
         var izakayaLevel = (int)__instance.m_CurrentSelectedIzakayaLevel;
-        Log.LogWarning($"Selected Spot: {izakayaMapLabel}, Level: {izakayaLevel}");
+        Log.Message($"Selected Spot: {izakayaMapLabel}, Level: {izakayaLevel}");
+
+        // 记录自己的选择
+        PlayerManager.Local.IzakayaMapLabel = izakayaMapLabel;
+        PlayerManager.Local.IzakayaLevel = izakayaLevel;
+
+        // 广播自己的选择
+        SelectAction.Send(izakayaMapLabel, izakayaLevel);
 
         var mySelect = $"{Utils.GetMapLabelNameCN(izakayaMapLabel)} {Utils.GetMapLevelNameCN(izakayaLevel)}";
-        if (PlayerManager.PeerIzakayaMapLabel == "" || PlayerManager.PeerIzakayaLevel == 0)
+
+        if (MpManager.IsClient)
         {
-            Log.LogWarning($"Kyouko has not selected an Izakaya yet -> send SELECT and skip");
-            SelectAction.Send(izakayaMapLabel, izakayaLevel);
-            Notify.ShowOnMainThread(TextId.SelectedIzakaya.Get(mySelect));
+            // 客机：发送 SELECT 后等待主机 CONFIRM
+            Notify.ShowOnMainThread(TextId.WaitingForHostConfirm.Get(mySelect));
             return false;
         }
-
-        if (izakayaMapLabel != PlayerManager.PeerIzakayaMapLabel || izakayaLevel != PlayerManager.PeerIzakayaLevel)
-        {
-            var peerSelect = $"{Utils.GetMapLabelNameCN(PlayerManager.PeerIzakayaMapLabel)} {Utils.GetMapLevelNameCN(PlayerManager.PeerIzakayaLevel)}";
-            Log.LogWarning($"Selected Izakaya does not match Kyouko's selection -> show rejection dialog");
-            Notify.ShowOnMainThread(TextId.SelectedIzakayaMismatch.Get(mySelect, peerSelect));
-            return false;
-        }
-
-        Log.LogWarning($"Selected Izakaya matches Kyouko's selection -> send CONFIRM and show confirmation dialog");
-        MapDecidedAction.Send(izakayaMapLabel, izakayaLevel);
-
-        System.Action closePanelCallback = () =>
-        {
-            cachedSpots.TryGetValue(izakayaMapLabel, out var spot);
-            instanceRef.m_CurrentSelectedSpot = spot;
-            instanceRef.m_CurrentSelectedIzakayaLevel = (Common.UI.IzakayaLevel)izakayaLevel;
-            SgrYuki.Utils.Panel.CloseActivePanelsBeforeSceneTransit();
-            _OnGuideMapInitialize_b__21_0_Original(instanceRef);
-        };
-        Dialog.ShowConfirmDialog(izakayaMapLabel, closePanelCallback);
+        // 主机：检查所有 peer 是否已选择且一致
+        TryConfirmSelection();
         return false;
+    }
+
+    /// <summary>
+    /// 主机侧：检查全员选店是否一致，若一致则广播 CONFIRM_SELECT 并本地执行切换
+    /// </summary>
+    public static void TryConfirmSelection()
+    {
+        var mapLabel = PlayerManager.Local.IzakayaMapLabel;
+        var level = PlayerManager.Local.IzakayaLevel;
+
+        // 主机自己还没选择
+        if (string.IsNullOrEmpty(mapLabel) || level == 0)
+        {
+            Log.Info("Host has not selected izakaya yet, waiting...");
+            return;
+        }
+
+        var mySelect = $"{Utils.GetMapLabelNameCN(mapLabel)} {Utils.GetMapLevelNameCN(level)}";
+
+        if (!PlayerManager.AllPeersSelectedSameIzakaya(mapLabel, level))
+        {
+            var mismatch = PlayerManager.GetFirstMismatchSelection(mapLabel, level);
+            Log.LogWarning($"Selection mismatch: my={mySelect}, peer={mismatch}");
+            Notify.ShowOnMainThread(TextId.SelectedIzakayaMismatch.Get(mySelect, mismatch ?? "???"));
+            return;
+        }
+
+        // 全员一致 → 广播 CONFIRM_SELECT → 本地执行切换
+        Log.LogMessage($"All peers match selection: {mySelect}, broadcasting CONFIRM and proceeding");
+        ConfirmSelectAction.Broadcast(mapLabel, level);
+        Notify.ShowOnMainThread(TextId.SelectedIzakaya.Get(mySelect));
+        SgrYuki.Utils.Panel.CloseActivePanelsBeforeSceneTransit();
+        _OnGuideMapInitialize_b__21_0_Original(instanceRef);
     }
 
     [HarmonyPatch(nameof(Common.UI.IzakayaSelectorPanel_New._OnGuideMapInitialize_b__21_0))]
     [HarmonyReversePatch]
     public static void _OnGuideMapInitialize_b__21_0_Original(Common.UI.IzakayaSelectorPanel_New __instance)
     {
-        throw new System.NotImplementedException("Bad Bad Metamiku");
+        throw new System.NotImplementedException("It's a stub");
     }
 
     [HarmonyPatch(nameof(Common.UI.IzakayaSelectorPanel_New.OnGuideMapSpotSelected))]

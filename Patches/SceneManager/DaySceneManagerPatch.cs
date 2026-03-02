@@ -68,7 +68,7 @@ public partial class DaySceneManagerPatch
 
         Notify.ShowOnMainThread(TextId.MystiaReadyForWork.Get());
         ReadyAction.Send(ReadyType.DayOver);
-        MpManager.DayOver(MpManager.SERVER_ID);
+        MpManager.DayOver();
         return false;
     }
 

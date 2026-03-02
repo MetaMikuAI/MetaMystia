@@ -5,6 +5,7 @@ using MetaMystia.UI;
 namespace MetaMystia.Network;
 
 [MemoryPackable]
+[Action.HostRelay]
 public partial class PlayerIdChangeAction : Action
 {
     public override ActionType Type => ActionType.PLAYER_ID_CHANGE;

@@ -6,7 +6,8 @@ namespace MetaMystia.Network;
 
 [MemoryPackable]
 [AutoLog]
-public partial class QTEAction : AffectStoryAction
+[Action.HostRelay]
+public partial class QTEAction : Action
 {
     public override ActionType Type => ActionType.QTE;
     public int GridIndex { get; set; }

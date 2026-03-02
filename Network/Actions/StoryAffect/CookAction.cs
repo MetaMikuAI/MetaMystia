@@ -8,7 +8,8 @@ namespace MetaMystia.Network;
 
 [MemoryPackable]
 [AutoLog]
-public partial class CookAction : AffectStoryAction
+[HostRelay]
+public partial class CookAction : Action
 {
     public override ActionType Type => ActionType.COOK;
     public int GridIndex { get; set; }

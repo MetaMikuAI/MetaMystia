@@ -47,6 +47,9 @@ public enum TextId
     // Connection Status Notifications
     MultiplayerConnected,
     MultiplayerDisconnected,
+    MpConnected,
+    PeerJoined,
+    PeerLeft,
     ChallengeWarning,
 
     // Business/Shop Related
@@ -54,9 +57,11 @@ public enum TextId
     PeerAlreadyInScene,
     SelectedIzakaya,
     SelectedIzakayaMismatch,
+    WaitingForHostConfirm,
     PeerSelectedIzakaya,
     MystiaReadyForWork,
     ReadyForWork,
+    AllReadyTransition,
     PeerClosedIzakaya,
 
     // Chat System
@@ -341,6 +346,15 @@ public static class L10n
             [Language.Korean] = "당신이 영업을 시작할 준비가 되었습니다.",
         },
 
+        [TextId.AllReadyTransition] = new()
+        {
+            [Language.English] = "All players are ready, transitioning...",
+            [Language.ChineseSimplified] = "全员就绪，即将切换场景…",
+            [Language.ChineseTraditional] = "全員就緒，即將切換場景…",
+            [Language.Japanese] = "全員準備完了、シーン切り替え中…",
+            [Language.Korean] = "전원 준비 완료, 장면 전환 중…",
+        },
+
         [TextId.ModPatchFailure] = new()
         {
             [Language.English] = "Patch failure! The Mod will not function normally! Maybe your game version is not supported, please consider removing the mod!",
@@ -395,6 +409,33 @@ public static class L10n
             [Language.Korean] = "멀티플레이 시스템: 연결 끊김!",
         },
 
+        [TextId.MpConnected] = new()
+        {
+            [Language.English] = "Connected to {0}",
+            [Language.ChineseSimplified] = "已连接到 {0}",
+            [Language.ChineseTraditional] = "已連接到 {0}",
+            [Language.Japanese] = "{0} に接続しました",
+            [Language.Korean] = "{0}에 연결됨",
+        },
+
+        [TextId.PeerJoined] = new()
+        {
+            [Language.English] = "{0} joined the session",
+            [Language.ChineseSimplified] = "{0} 加入了联机",
+            [Language.ChineseTraditional] = "{0} 加入了聯機",
+            [Language.Japanese] = "{0} がセッションに参加しました",
+            [Language.Korean] = "{0}이(가) 세션에 참여했습니다",
+        },
+
+        [TextId.PeerLeft] = new()
+        {
+            [Language.English] = "{0} left the session",
+            [Language.ChineseSimplified] = "{0} 离开了联机",
+            [Language.ChineseTraditional] = "{0} 離開了聯機",
+            [Language.Japanese] = "{0} がセッションを退出しました",
+            [Language.Korean] = "{0}이(가) 세션에서 나갔습니다",
+        },
+
         [TextId.ChallengeWarning] = new()
         {
             [Language.English] = "Possibly in a challenge, recommend disconnecting for better game experience!",
@@ -433,20 +474,29 @@ public static class L10n
 
         [TextId.SelectedIzakayaMismatch] = new()
         {
-            [Language.English] = "You selected {0} as the business location, but the other player selected {1}, you must choose the same one",
-            [Language.ChineseSimplified] = "你选择了 {0} 作为开店地点，对方选择了 {1}，你俩得选一样的",
-            [Language.ChineseTraditional] = "你選擇了 {0} 作為開店地點，對方選擇了 {1}，你倆得選一樣的",
-            [Language.Japanese] = "営業場所として {0} を選択しましたが、相手プレイヤーは {1} を選択しました。同じ場所を選ぶ必要があります",
-            [Language.Korean] = "업소 위치로 {0}를 선택했지만 다른 플레이어는 {1}를 선택했습니다. 같은 위치를 선택해야 합니다",
+            [Language.English] = "You selected {0}, but not all players agree: {1}",
+            [Language.ChineseSimplified] = "你选择了 {0}，但未全员一致：{1}",
+            [Language.ChineseTraditional] = "你選擇了 {0}，但未全員一致：{1}",
+            [Language.Japanese] = "{0} を選択しましたが、全員一致していません：{1}",
+            [Language.Korean] = "{0}을 선택했지만 전원 일치하지 않습니다: {1}",
+        },
+
+        [TextId.WaitingForHostConfirm] = new()
+        {
+            [Language.English] = "Selected {0}, waiting for host to confirm...",
+            [Language.ChineseSimplified] = "已选择 {0}，等待主机确认……",
+            [Language.ChineseTraditional] = "已選擇 {0}，等待主機確認……",
+            [Language.Japanese] = "{0} を選択しました。ホストの確認を待っています…",
+            [Language.Korean] = "{0}을 선택했습니다. 호스트 확인 대기 중...",
         },
 
         [TextId.PeerSelectedIzakaya] = new()
         {
-            [Language.English] = "The other player selected {0} as the business location",
-            [Language.ChineseSimplified] = "对方选择了 {0} 作为开店地点",
-            [Language.ChineseTraditional] = "對方選擇了 {0} 作為開店地點",
-            [Language.Japanese] = "相手プレイヤーが営業場所として {0} を選択しました",
-            [Language.Korean] = "다른 플레이어가 업소 위치로 {0}를 선택했습니다",
+            [Language.English] = "{0} selected a business location: {1}",
+            [Language.ChineseSimplified] = "{0} 选择了开店地点：{1}",
+            [Language.ChineseTraditional] = "{0} 選擇了開店地點：{1}",
+            [Language.Japanese] = "{0} が営業場所を選択しました：{1}",
+            [Language.Korean] = "{0} 업소 위치를 선택했습니다: {1}",
         },
 
         [TextId.ChatMessagePeer] = new()

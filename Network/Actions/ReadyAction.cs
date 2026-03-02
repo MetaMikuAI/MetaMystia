@@ -14,6 +14,7 @@ public enum ReadyType
 
 [MemoryPackable]
 [AutoLog]
+[HostRelay]
 public partial class ReadyAction : Action
 {
     public override ActionType Type => ActionType.READY;
@@ -31,12 +32,17 @@ public partial class ReadyAction : Action
                 }
                 if (AllReady)
                 {
-                    CommandScheduler.EnqueueWithNoCondition(() => Dialog.ShowReadyDialog(true, DaySceneManagerPatch.OnDayOver));
+                    CommandScheduler.EnqueueWithNoCondition(() =>
+                    {
+                        Notify.ShowOnMainThread(TextId.AllReadyTransition.Get());
+                        DaySceneManagerPatch.OnDayOver();
+                    });
                     return;
                 }
-                PlayerManager.PeerIsDayOver = true;
-                MpManager.DayOver(SenderId);
-                Notify.ShowOnMainThread(TextId.ReadyForWork.Get(MpManager.PeerId));
+                PlayerManager.SetPeerDayOver(SenderUid);
+                MpManager.DayOver();
+                PlayerManager.Peers.TryGetValue(SenderUid, out var dayPeer);
+                Notify.ShowOnMainThread(TextId.ReadyForWork.Get(dayPeer?.Id ?? "???"));
                 break;
             case ReadyType.PrepOver:
                 if ((MpManager.LocalScene != Common.UI.Scene.IzakayaPrepScene && MpManager.LocalScene != Common.UI.Scene.WorkScene)
@@ -51,9 +57,10 @@ public partial class ReadyAction : Action
                     CommandScheduler.EnqueueWithNoCondition(IzakayaConfigPannelPatch.PrepOver);
                     return;
                 }
-                PlayerManager.PeerIsPrepOver = true;
-                MpManager.PrepOver(SenderId);
-                Notify.ShowOnMainThread(TextId.ReadyForWork.Get(MpManager.PeerId));
+                PlayerManager.SetPeerPrepOver(SenderUid);
+                MpManager.PrepOver();
+                PlayerManager.Peers.TryGetValue(SenderUid, out var prepPeer);
+                Notify.ShowOnMainThread(TextId.ReadyForWork.Get(prepPeer?.Id ?? "???"));
                 break;
             default:
                 break;

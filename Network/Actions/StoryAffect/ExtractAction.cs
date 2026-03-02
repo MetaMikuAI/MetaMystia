@@ -6,7 +6,8 @@ namespace MetaMystia.Network;
 
 [MemoryPackable]
 [AutoLog]
-public partial class ExtractAction : AffectStoryAction
+[Action.HostRelay]
+public partial class ExtractAction : Action
 {
     public override ActionType Type => ActionType.EXTRACT;
     public int GridIndex { get; set; }

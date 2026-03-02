@@ -1,10 +1,12 @@
 using MemoryPack;
 
+using MetaMystia.Patch;
 using MetaMystia.UI;
 
 namespace MetaMystia.Network;
 
 [MemoryPackable]
+[HostRelay]
 public partial class SelectAction : Action
 {
     public override ActionType Type => ActionType.SELECT;
@@ -14,10 +16,18 @@ public partial class SelectAction : Action
     {
         PluginManager.Instance.RunOnMainThread(() =>
         {
-            PlayerManager.PeerIzakayaMapLabel = MapLabel;
-            PlayerManager.PeerIzakayaLevel = MapLevel;
+            PlayerManager.SetPeerIzakayaSelection(SenderUid, MapLabel, MapLevel);
 
-            Notify.ShowOnMainThread(TextId.PeerSelectedIzakaya.Get($"{Utils.GetMapLabelNameCN(MapLabel)} {Utils.GetMapLevelNameCN(MapLevel)}"));
+            PlayerManager.Peers.TryGetValue(SenderUid, out var senderPeer);
+            var peerName = senderPeer?.Id ?? "???";
+            Notify.ShowOnMainThread(TextId.PeerSelectedIzakaya.Get(
+                $"{peerName}", $"{Utils.GetMapLabelNameCN(MapLabel)} {Utils.GetMapLevelNameCN(MapLevel)}"));
+
+            // 主机收到 SELECT 后自动检查全员是否一致
+            if (MpManager.IsHost)
+            {
+                IzakayaSelectorPanelPatch.TryConfirmSelection();
+            }
         });
     }
 

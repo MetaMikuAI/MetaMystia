@@ -7,7 +7,8 @@ namespace MetaMystia.Network;
 
 [MemoryPackable]
 [AutoLog]
-public partial class GuestGenSPOrderAction : SendAffectStoryAction
+[HostRelay]
+public partial class GuestGenSPOrderAction : Action
 {
     public override ActionType Type => ActionType.GUEST_GEN_SPECIAL_ORDER;
     public string GuestUUID { get; set; }

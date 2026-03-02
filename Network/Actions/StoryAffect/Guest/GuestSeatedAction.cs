@@ -8,7 +8,8 @@ namespace MetaMystia.Network;
 
 [MemoryPackable]
 [AutoLog]
-public partial class GuestSeatedAction : SendAffectStoryAction
+[HostRelay]
+public partial class GuestSeatedAction : Action
 {
     public override ActionType Type => ActionType.GUEST_SEATED;
 

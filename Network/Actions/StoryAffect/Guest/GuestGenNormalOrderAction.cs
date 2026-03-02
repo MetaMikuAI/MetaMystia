@@ -7,7 +7,8 @@ namespace MetaMystia.Network;
 
 [MemoryPackable]
 [AutoLog]
-public partial class GuestGenNormalOrderAction : SendAffectStoryAction
+[HostRelay]
+public partial class GuestGenNormalOrderAction : Action
 {
     public override ActionType Type => ActionType.GUEST_GEN_NORMAL_ORDER;
     public string GuestUUID { get; set; }
@@ -17,7 +18,7 @@ public partial class GuestGenNormalOrderAction : SendAffectStoryAction
 
 
     [CheckScene(Common.UI.Scene.WorkScene)]
-    [ExecuteAfterStory]
+    // [ExecuteAfterStory]
     public override void OnReceivedDerived()
     {
         var fsm = GuestUUID.GetGuestFSM();

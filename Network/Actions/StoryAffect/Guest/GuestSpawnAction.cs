@@ -5,7 +5,8 @@ namespace MetaMystia.Network;
 
 
 [MemoryPackable]
-public partial class GuestSpawnAction : SendAffectStoryAction
+[HostRelay]
+public partial class GuestSpawnAction : Action
 {
     public override ActionType Type => ActionType.GUEST_SPAWN;
 

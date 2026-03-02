@@ -6,7 +6,8 @@ namespace MetaMystia.Network;
 
 [MemoryPackable]
 [AutoLog]
-public partial class StoreFoodAction : AffectStoryAction
+[Action.HostRelay]
+public partial class StoreFoodAction : Action
 {
     public override ActionType Type => ActionType.STORE_FOOD;
     public SellableFood Food { get; set; }

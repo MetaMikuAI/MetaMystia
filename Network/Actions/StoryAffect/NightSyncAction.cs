@@ -4,7 +4,8 @@ namespace MetaMystia.Network;
 
 [MemoryPackable]
 [AutoLog]
-public partial class NightSyncAction : AffectStoryAction
+[Action.HostRelay]
+public partial class NightSyncAction : Action
 {
     public override ActionType Type => ActionType.NIGHTSYNC;
     public float Vx { get; set; }
@@ -19,7 +20,10 @@ public partial class NightSyncAction : AffectStoryAction
     public override void OnReceivedDerived()
     {
         PluginManager.Instance.RunOnMainThread(() =>
-            PlayerManager.Peer?.NightSyncFromPeer(new UnityEngine.Vector2(Vx, Vy), new UnityEngine.Vector2(Px, Py)));
+        {
+            if (PlayerManager.Peers.TryGetValue(SenderUid, out var peer))
+                peer.NightSyncFromPeer(new UnityEngine.Vector2(Vx, Vy), new UnityEngine.Vector2(Px, Py));
+        });
     }
 
     public static void Send() => SyncAction.Send();

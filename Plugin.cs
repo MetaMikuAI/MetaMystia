@@ -17,7 +17,8 @@ namespace MetaMystia;
 public class Plugin : BasePlugin
 {
     public static Plugin Instance;
-    public Action<Scene, LoadSceneMode> LoadAction;
+    public readonly static string GameVersion = Common.LoadingSceneManager.VersionData;
+    public readonly static string ModVersion = MyPluginInfo.PLUGIN_VERSION;
 
 
     public static Type[] ToBePatched = [

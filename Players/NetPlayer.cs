@@ -19,14 +19,9 @@ public abstract partial class NetPlayer
     public string Id { get; set; } = "";
 
     /// <summary>
-    /// 玩家的数值 ID（预留，计划用于区分同一联机房间的全部玩家的唯一标识，计划由主机或服务端下发）
+    /// 玩家的唯一标识符（主机=0，客机=1,2,3...），由主机在 HelloAck 中分配
     /// </summary>
-    public int UserId { get; set; } = 0;
-
-    /// <summary>
-    /// 全局唯一标识符，可用于作为 character unit label 或联机中的唯一玩家标识
-    /// </summary>
-    public Guid Guid { get; set; } = Guid.NewGuid();
+    public int Uid { get; set; } = -1;
 
     #endregion
 
@@ -64,6 +59,16 @@ public abstract partial class NetPlayer
     /// 是否已经结束准备
     /// </summary>
     public bool IsPrepOver { get; set; } = false;
+
+    /// <summary>
+    /// 选择的居酒屋地图标签（选店阶段）
+    /// </summary>
+    public string IzakayaMapLabel { get; set; } = "";
+
+    /// <summary>
+    /// 选择的居酒屋等级（选店阶段）
+    /// </summary>
+    public int IzakayaLevel { get; set; } = 0;
 
     /// <summary>
     /// 是否正在奔跑
@@ -106,5 +111,7 @@ public abstract partial class NetPlayer
         IsPrepOver = false;
         IsSprinting = false;
         InputDirection = Vector2.zero;
+        IzakayaMapLabel = "";
+        IzakayaLevel = 0;
     }
 }

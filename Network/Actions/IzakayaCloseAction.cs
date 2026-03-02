@@ -7,6 +7,7 @@ namespace MetaMystia.Network;
 
 [MemoryPackable]
 [AutoLog]
+[Action.HostRelay]
 public partial class IzakayaCloseAction : Action
 {
     public override ActionType Type => ActionType.IZAKAYA_CLOSE;

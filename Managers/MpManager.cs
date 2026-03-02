@@ -21,8 +21,8 @@ public static partial class MpManager
 
     #region Const Values
     private const int TCP_PORT = 40815;
-    public const long SERVER_ID = 0;
-    public const long NOT_CONNECTED_CLIENT_ID = -1;
+    public const int HOST_UID = 0;
+    public const int UNASSIGNED_UID = -1;
     private const string SyncActionCommandID = "SyncAction";
     #endregion
 
@@ -43,7 +43,7 @@ public static partial class MpManager
     public static bool IsHost => Role == ROLE.Host;
     public static bool IsClient => Role == ROLE.Client;
     private static bool IsConnecting = false;
-    public static bool IsConnected => (IsHost ? server?.HasAliveClient : client?.IsConnected) ?? false;
+    public static bool IsConnected => (IsHost ? server?.HasAnyClient : client?.IsConnected) ?? false;
     public static bool IsConnectedClient => IsConnected && IsClient;
     public static bool IsConnectedHost => IsConnected && IsHost;
     public static string RoleTag => IsHost ? "[S]" : "[C]";
@@ -58,45 +58,18 @@ public static partial class MpManager
     #region SinglePlay GamePlay Getters
     public static Common.UI.Scene LocalScene { get; private set; } = Common.UI.Scene.EmptyScene;
     public static Common.UI.Scene PeerScene = Common.UI.Scene.EmptyScene;
+    #endregion
+
+
+    #region 剧情相关（待删除）
     // public static bool InStory => Common.SceneDirector.Instance.playableDirector.state == UnityEngine.Playables.PlayState.Playing || Common.SceneDirector.Instance.playableDirector.state == UnityEngine.Playables.PlayState.Delayed;
     public static bool InStory => false; // disable
     public static bool ShouldSkipAction => !IsConnected || InStory;
-    public static bool InputAvailable => Common.UI.UniversalGameManager.IsInputEnabled;
-
-    public static string GameVersion => Common.LoadingSceneManager.VersionData;
-    public static string ModVersion => MyPluginInfo.PLUGIN_VERSION;
+    #endregion
 
     public const string PeerGetCharacterUnitNotNullCommand = "PeerGetCharacterUnitNotNullCommand";
 
-    #endregion
-    #region Multiplayer GamePlay Getters
-
-    public static float MultiplayerTipModifier => AllPlayersCount switch
-    {
-        1 => 1.0f,  // 4 min = 4 + time pause
-        2 => 0.8f,  // 9 min = 7.2
-        3 => 0.75f, // 11 min = 8.25
-        4 => 0.68f, // 13 min = 8.84
-        _ => 0.6f
-    };
-    public static float MultiplayerFundModifier => AllPlayersCount switch
-    {
-        1 => 1.0f,  // 4 min = 4 + time pause
-        2 => 0.9f,  // 9 min = 8.1
-        3 => 0.85f, // 11 min = 9.35
-        4 => 0.8f,  // 13 min = 10.4
-        _ => 0.7f
-    };
-    public static int WorkTimeModifier => AllPlayersCount switch
-    {
-        1 => 4 * 60,
-        2 => 9 * 60,
-        3 => 11 * 60,
-        4 => 13 * 60,
-        _ => 15
-    };
-
-    #endregion
+    public static int WorkTimeSecondOverride = 9 * 60;
 
     public static void SwitchRole(bool stop_existed_server = true)
     {
@@ -142,11 +115,13 @@ public static partial class MpManager
         switch (r)
         {
             case ROLE.Host:
+                PlayerManager.Local.Uid = HOST_UID;
                 server = new(TCP_PORT);
                 server.Start();
                 Log.LogInfo("Starting MpManager as host");
                 break;
             case ROLE.Client:
+                PlayerManager.Local.Uid = UNASSIGNED_UID;
                 Log.LogInfo("Starting MpManager as client");
                 break;
         }
@@ -211,7 +186,7 @@ public static partial class MpManager
             Log.LogInfo($"[C] Connecting to {peerIp}:{port}...");
             client = new(peerIp, port);
             await client.StartAsync();
-            OnConnected(client.GetRealConnectedIp);
+            OnClientConnected(client.GetRealConnectedIp);
             Log.LogMessage($"[C] Successfully connected to peer {peerIp}:{port}");
 
             return true;
@@ -227,57 +202,103 @@ public static partial class MpManager
         }
     }
 
-    public static void OnConnected(string ip)
+    /// <summary>
+    /// 客机 TCP 连接建立后调用：发送 Hello 包给主机
+    /// </summary>
+    public static void OnClientConnected(string ip)
     {
         PeerAddress = ip;
         HelloAction.Send();
+    }
+
+    /// <summary>
+    /// 客机收到 HelloAck 后调用：握手完成，启动同步
+    /// </summary>
+    public static void OnHandshakeComplete(string hostId)
+    {
+        PeerId = hostId;
         SceneTransitAction.Send(LocalScene);
         CommandScheduler.EnqueueInterval(SyncActionCommandID, 0.5f, SyncAction.Send);
-        // CommandScheduler.EnqueueKey(
-        //     key: PeerGetCharacterUnitNotNullCommand,
-        //     executeWhen: () => PlayerManager.Peer?.GetCharacterUnit() != null,
-        //     execute: () =>
-        //     {
-        //         if (!InStory)
-        //         {
-        //             PlayerManager.EnablePeerCollision(true);
-        //         }
-        //         PlayerManager.Peer?.GetCharacterComponent()?.UpdateIcon(false);
-        //     },
-        //     timeoutSeconds: 120
-        // );
         Notify.ShowOnMainThread(TextId.MultiplayerConnected.Get());
     }
 
+    /// <summary>
+    /// 主机对新客机握手完成后调用
+    /// </summary>
+    public static void OnPeerHandshakeComplete(int uid, string peerId)
+    {
+        PeerId = peerId;
+        CommandScheduler.EnqueueInterval(SyncActionCommandID, 0.5f, SyncAction.Send);
+    }
 
+    /// <summary>
+    /// 客机断开连接时调用
+    /// </summary>
     public static void OnDisconnected()
     {
         PeerAddress = "<Unknown>";
         PeerId = "<Unknown>";
         PlayerManager.ClearPeers();
-        CommandScheduler.EnqueueWithNoCondition(() =>
-        {
-            if (PlayerManager.Peer?.GetCharacterUnit() != null)
-            {
-                PlayerManager.EnablePeerCollision(false);
-                PlayerManager.Peer?.GetCharacterComponent()?.UpdateIcon(true);
-            }
-        });
+        PlayerManager.Local.Uid = UNASSIGNED_UID;
         CommandScheduler.RemoveKeyFromKeyQueue(PeerGetCharacterUnitNotNullCommand);
         CommandScheduler.CancelInterval(SyncActionCommandID);
         Notify.ShowOnMainThread(TextId.MultiplayerDisconnected.Get());
     }
 
+    /// <summary>
+    /// 主机侧：某个客机断开连接时调用
+    /// </summary>
+    public static void OnClientDisconnected(int uid)
+    {
+        if (PlayerManager.Peers.TryGetValue(uid, out var peer))
+        {
+            Log.LogMessage($"Client uid={uid} (id='{peer.Id}') disconnected");
+            Network.PeerLeaveAction.BroadcastPeerLeave(uid);
+            PlayerManager.RemovePeer(uid);
+        }
+        if (PlayerManager.Peers.IsEmpty)
+        {
+            CommandScheduler.CancelInterval(SyncActionCommandID);
+        }
+    }
+
+    /// <summary>
+    /// 主机侧：收到客机发来的 Action。主机先处理，如果 Action 标记了 HostRelay 则转发。
+    /// </summary>
+    public static void OnActionFromClient(Network.Action action, int clientUid)
+    {
+        // 注入发送者 UID
+        action.SenderUid = clientUid;
+
+        // 主机先本地处理
+        action.OnReceived();
+
+        // 检查是否需要转发给其他客机
+        if (action.GetType().GetCustomAttributes(typeof(Network.Action.HostRelayAttribute), false).Length > 0)
+        {
+            var packet = NetPacket.FromSingleAction(action);
+            server?.SendToExcept(clientUid, packet);
+        }
+    }
+
+    /// <summary>
+    /// 客机侧：收到主机发来的 Action
+    /// </summary>
     public static void OnAction(Network.Action action)
     {
         action.OnReceived();
     }
 
+    #region 发送方法
+
+    /// <summary>
+    /// 客机→主机，或主机→所有客机广播
+    /// </summary>
     public static void SendToHostOrBroadcast(NetPacket packet)
     {
         if (IsHost)
         {
-            server?.Send(packet);
+            server?.Broadcast(packet);
         }
         else
         {
@@ -285,17 +306,34 @@ public static partial class MpManager
         }
     }
 
-    public static void SendToPeer(NetPacket packet)
+    /// <summary>
+    /// 客机→主机
+    /// </summary>
+    public static void SendToHost(NetPacket packet)
     {
-        if (IsHost)
-        {
-            server?.Send(packet);
-        }
-        else
-        {
-            client?.Send(packet);
-        }
+        if (!IsClient) return;
+        client?.Send(packet);
     }
+
+    /// <summary>
+    /// 主机→指定客机
+    /// </summary>
+    public static void SendToClient(int uid, NetPacket packet)
+    {
+        if (!IsHost) return;
+        server?.SendTo(uid, packet);
+    }
+
+    /// <summary>
+    /// 主机→除了 exceptUid 以外的所有客机
+    /// </summary>
+    public static void SendToAllExcept(int exceptUid, NetPacket packet)
+    {
+        if (!IsHost) return;
+        server?.SendToExcept(exceptUid, packet);
+    }
+
+    #endregion
 
     public static void DisconnectPeer()
     {
@@ -303,14 +341,23 @@ public static partial class MpManager
         {
             if (IsHost)
             {
-                server.DisconnectClient();
+                server.DisconnectAllClients();
             }
             else
             {
                 client.Close();
             }
-            Log.LogMessage("Peer connection disconnected");
+            Log.LogMessage("All peer connections disconnected");
         }
+    }
+
+    /// <summary>
+    /// 主机断开指定客机
+    /// </summary>
+    public static void DisconnectClient(int uid)
+    {
+        if (!IsHost) return;
+        server?.DisconnectClient(uid);
     }
 
     /// <summary>
@@ -324,7 +371,17 @@ public static partial class MpManager
         var t = TimestampNow;
         int id = _pingId++;
         pingSendTimes[id] = t;
-        PingAction.SendToPeer(0, id);
+        if (IsHost)
+        {
+            // 主机向所有客机发 Ping
+            var action = new PingAction { Id = id };
+            var packet = NetPacket.FromSingleAction(action);
+            server?.Broadcast(packet);
+        }
+        else
+        {
+            PingAction.SendPing(id);
+        }
     }
 
     public static void UpdateLatency(int id)
@@ -385,7 +442,7 @@ public static partial class MpManager
     }
 
     private static string BriefDebugText =>
-        $"{GameVersion}: {ModVersion}, {System.Runtime.InteropServices.RuntimeInformation.OSDescription}, {System.Runtime.InteropServices.RuntimeInformation.OSArchitecture}, {DateTimeOffset.Now}";
+        $"{Plugin.GameVersion}: {Plugin.ModVersion}, {System.Runtime.InteropServices.RuntimeInformation.OSDescription}, {System.Runtime.InteropServices.RuntimeInformation.OSArchitecture}, {DateTimeOffset.Now}";
 
     public static void OnSceneTransit(Common.UI.Scene newScene)
     {
@@ -394,30 +451,34 @@ public static partial class MpManager
         LocalScene = newScene;
         if (newScene == Common.UI.Scene.MainScene && IsConnected)
         {
-            Log.Message($"Transit to {newScene}, disconnecting peer");
+            Log.Message($"Transit to {newScene}, disconnecting peers");
             DisconnectPeer();
         }
     }
 
-    public static void DayOver(long clientId)
+    public static void DayOver()
     {
         if (!IsConnectedHost) return;
-        Log.Message($"{PeerId} dayover");
-        if (PlayerManager.PeerIsDayOver && PlayerManager.LocalIsDayOver)
+        Log.Message($"DayOver check: AllDayOver={PlayerManager.AllDayOver}");
+        if (PlayerManager.AllDayOver)
         {
             ReadyAction.Broadcast(ReadyType.DayOver);
 
             // For host who will not receive DayOver allready
-            CommandScheduler.EnqueueWithNoCondition(() => Dialog.ShowReadyDialog(true, DaySceneManagerPatch.OnDayOver));
+            CommandScheduler.EnqueueWithNoCondition(() =>
+            {
+                Notify.ShowOnMainThread(TextId.AllReadyTransition.Get());
+                DaySceneManagerPatch.OnDayOver();
+            });
         }
     }
 
-    public static void PrepOver(long clientId)
+    public static void PrepOver()
     {
         if (!IsConnectedHost) return;
-        Log.Message($"{PeerId} prep over");
+        Log.Message($"PrepOver check: AllPrepOver={PlayerManager.AllPrepOver}");
 
-        if (PlayerManager.PeerIsPrepOver && PlayerManager.LocalIsPrepOver)
+        if (PlayerManager.AllPrepOver)
         {
             ReadyAction.Broadcast(ReadyType.PrepOver);
 

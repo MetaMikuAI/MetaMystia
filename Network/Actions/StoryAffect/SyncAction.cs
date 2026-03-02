@@ -6,10 +6,10 @@ namespace MetaMystia.Network;
 
 [MemoryPackable]
 [AutoLog]
-public partial class SyncAction : AffectStoryAction
+[Action.HostRelay]
+public partial class SyncAction : Action
 {
     public override ActionType Type => ActionType.SYNC;
-    public Guid guid { get; set; }
     public float Vx { get; set; }
     public float Vy { get; set; }
     public float Px { get; set; }
@@ -24,8 +24,11 @@ public partial class SyncAction : AffectStoryAction
     public override void OnReceivedDerived()
     {
         PluginManager.Instance.RunOnMainThread(() =>
-            PlayerManager.Peers[guid].SyncFromPeer(MapLabel, IsSprinting, // TODO: 安全一点？
-                new UnityEngine.Vector2(Vx, Vy), new UnityEngine.Vector2(Px, Py)));
+        {
+            if (PlayerManager.Peers.TryGetValue(SenderUid, out var peer))
+                peer.SyncFromPeer(MapLabel, IsSprinting,
+                    new UnityEngine.Vector2(Vx, Vy), new UnityEngine.Vector2(Px, Py));
+        });
     }
 
     // Also send nightsync
@@ -61,7 +64,6 @@ public partial class SyncAction : AffectStoryAction
 
             var action = new SyncAction
             {
-                guid = PlayerManager.Local.Guid,
                 IsSprinting = isSprinting,
                 Vx = inputDirection.x,
                 Vy = inputDirection.y,

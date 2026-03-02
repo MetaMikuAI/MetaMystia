@@ -17,7 +17,7 @@ namespace MetaMystia;
 public partial class PeerPlayer : NetPlayer
 {
     /// <summary>
-    /// 角色在 characterCollection 中的标识符（目前使用 Guid 字符串，计划改为 Uid）
+    /// 角色在 characterCollection 中的标识符（使用 "peer_{uid}" 格式）
     /// </summary>
     public string CharacterId { get; set; }
 
@@ -47,8 +47,6 @@ public partial class PeerPlayer : NetPlayer
     private Vector2 currentVelocity;
     #endregion
 
-    public string IzakayaMapLabel { get; set; } = "";
-    public int IzakayaLevel { get; set; } = 0;
     private bool firstSync = true;
 
     /// <summary>
@@ -57,14 +55,14 @@ public partial class PeerPlayer : NetPlayer
     private readonly int LARGE_Z_VALUE = -40815;
 
     /// <summary>
-    /// 构造函数，接受玩家唯一标识符和可选的资源数据库（如果不提供则使用本地资源数据库）
+    /// 构造函数，接受玩家 UID 和可选的资源数据库
     /// </summary>
-    /// <param name="guid">玩家唯一标识符，计划改为 Uid</param>
+    /// <param name="uid">玩家 UID，由主机分配</param>
     /// <param name="resourceDataBase">可选的资源数据库，如果不提供则使用本地资源数据库</param>
-    public PeerPlayer(Guid guid, ResourceDataBase resourceDataBase = null)
+    public PeerPlayer(int uid, ResourceDataBase resourceDataBase = null)
     {
-        Guid = guid;
-        CharacterId = guid.ToString();
+        Uid = uid;
+        CharacterId = $"peer_{uid}";
         DataBase = resourceDataBase ?? new ResourceDataBase().LoadResourceIds();
     }
 
@@ -75,8 +73,6 @@ public partial class PeerPlayer : NetPlayer
         positionOffset = Vector2.zero;
         currentVelocity = Vector2.zero;
         firstSync = true;
-        IzakayaMapLabel = "";
-        IzakayaLevel = 0;
         Log.LogMessage($"PeerPlayer '{CharacterId}' initialized");
     }
 
@@ -166,8 +162,15 @@ public partial class PeerPlayer : NetPlayer
     {
         if (unit == null) return;
         var selfUnit = Common.SceneDirector.Instance?.characterCollection["Self"];
-        if (selfUnit == null) return;
-        Physics2D.IgnoreCollision(unit.cl2d, selfUnit.cl2d, ignore);
+        if (selfUnit != null)
+            Physics2D.IgnoreCollision(unit.cl2d, selfUnit.cl2d, ignore);
+
+        // 与所有已有 peer 之间也关闭碰撞
+        foreach (var peer in PlayerManager.Peers.Values)
+        {
+            if (peer == this || peer.unit == null) continue;
+            Physics2D.IgnoreCollision(unit.cl2d, peer.unit.cl2d, ignore);
+        }
     }
 
     #endregion

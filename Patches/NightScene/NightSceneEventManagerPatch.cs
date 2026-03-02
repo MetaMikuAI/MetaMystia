@@ -32,7 +32,8 @@ public static partial class NightSceneEventManagerPatch
         WorkSceneManager.GetWholeNightTimeOriginal = __instance.GetWholeNightTime;
         if (MpManager.IsConnected)
         {
-            __instance.GetWholeNightTime = WorkSceneManager.GetWholeNightTimeReplaced;
+            Func<int> GetWholeNightTime = () => MpManager.WorkTimeSecondOverride;
+            __instance.GetWholeNightTime = GetWholeNightTime;
             Log.Info($"Initialize_Postfix called, replaced GetWholeNightTime");
         }
     }
@@ -70,28 +71,28 @@ public static partial class NightSceneEventManagerPatch
     }
 
 
-    [HarmonyPatch(nameof(EventManager.FundEdit))]
-    [HarmonyPrefix]
-    public static bool FundEdit_Prefix(EventManager __instance, ref float value, EventManager.MathOperation mathOperation)
-    {
-        if (MpManager.IsConnectedHost)
-        {
-            var newValue = (float)Math.Round(value * MpManager.MultiplayerFundModifier);
-            Log.DebugCaller($"value {value} => {newValue}");
-            value = newValue;
-        }
-        if (MpManager.IsConnectedClient && !MpManager.InStory)
-        {
-            if (WorkSceneManager.InChallenge && mathOperation == EventManager.MathOperation.Set)
-            {
-                Log.InfoCaller($"InChallenge and mathOperation set, will not prevent, value {value}");
-                return true;
-            }
-            Log.DebugCaller($"prevented, value {value}");
-            return false;
-        }
-        return true;
-    }
+    // [HarmonyPatch(nameof(EventManager.FundEdit))]
+    // [HarmonyPrefix]
+    // public static bool FundEdit_Prefix(EventManager __instance, ref float value, EventManager.MathOperation mathOperation)
+    // {
+    //     if (MpManager.IsConnectedHost)
+    //     {
+    //         var newValue = (float)Math.Round(value * MpManager.MultiplayerFundModifier);
+    //         Log.DebugCaller($"value {value} => {newValue}");
+    //         value = newValue;
+    //     }
+    //     if (MpManager.IsConnectedClient && !MpManager.InStory)
+    //     {
+    //         if (WorkSceneManager.InChallenge && mathOperation == EventManager.MathOperation.Set)
+    //         {
+    //             Log.InfoCaller($"InChallenge and mathOperation set, will not prevent, value {value}");
+    //             return true;
+    //         }
+    //         Log.DebugCaller($"prevented, value {value}");
+    //         return false;
+    //     }
+    //     return true;
+    // }
 
     [HarmonyPatch(nameof(EventManager.FundEdit))]
     [HarmonyPostfix]
@@ -120,14 +121,7 @@ public static partial class NightSceneEventManagerPatch
     [HarmonyPrefix]
     public static bool TipEdit_Prefix(EventManager __instance, ref int value, EventManager.ServeType serveType)
     {
-        if (MpManager.IsConnectedHost)
-        {
-            int newValue = (int)(value * MpManager.MultiplayerTipModifier);
-            Log.DebugCaller($"value {value} => {newValue}");
-            value = newValue;
-            if (newValue == 0) return false;
-        }
-        if (MpManager.IsConnectedClient && !MpManager.InStory)
+        if (MpManager.IsConnectedClient)
         {
             Log.DebugCaller($"prevented, value {value}, type {serveType}");
             return false;

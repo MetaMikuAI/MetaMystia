@@ -72,7 +72,7 @@ public partial class IzakayaConfigPannelPatch
         ReadyAction.Send(ReadyType.PrepOver);
         if (MpManager.IsConnectedHost)
         {
-            MpManager.PrepOver(MpManager.SERVER_ID);
+            MpManager.PrepOver();
         }
         return false;
     }
