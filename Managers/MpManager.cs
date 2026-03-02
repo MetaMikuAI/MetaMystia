@@ -58,7 +58,8 @@ public static partial class MpManager
     #region SinglePlay GamePlay Getters
     public static Common.UI.Scene LocalScene { get; private set; } = Common.UI.Scene.EmptyScene;
     public static Common.UI.Scene PeerScene = Common.UI.Scene.EmptyScene;
-    public static bool InStory => Common.SceneDirector.Instance.playableDirector.state == UnityEngine.Playables.PlayState.Playing || Common.SceneDirector.Instance.playableDirector.state == UnityEngine.Playables.PlayState.Delayed;
+    // public static bool InStory => Common.SceneDirector.Instance.playableDirector.state == UnityEngine.Playables.PlayState.Playing || Common.SceneDirector.Instance.playableDirector.state == UnityEngine.Playables.PlayState.Delayed;
+    public static bool InStory => false; // disable
     public static bool ShouldSkipAction => !IsConnected || InStory;
     public static bool InputAvailable => Common.UI.UniversalGameManager.IsInputEnabled;
 
