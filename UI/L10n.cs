@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 namespace MetaMystia.UI;
 
@@ -329,6 +330,15 @@ public static class L10n
             [Language.ChineseTraditional] = "{0} 已經準備好營業啦",
             [Language.Japanese] = "{0} は営業を開始する準備ができました。",
             [Language.Korean] = "{0}이(ga) 영업을 시작할 준비가 되었습니다.",
+        },
+
+        [TextId.MystiaReadyForWork] = new()
+        {
+            [Language.English] = "You are ready to open for business.",
+            [Language.ChineseSimplified] = "你已经准备好营业啦",
+            [Language.ChineseTraditional] = "你已經準備好營業啦",
+            [Language.Japanese] = "あなたは営業を開始する準備ができました。",
+            [Language.Korean] = "당신이 영업을 시작할 준비가 되었습니다.",
         },
 
         [TextId.ModPatchFailure] = new()
@@ -794,11 +804,11 @@ public static class L10n
 
     public static void PostInitializeTable()
     {
-        Table[TextId.MystiaReadyForWork] = new()
-        {
-            [Language.English] = TextId.ReadyForWork.Get("You"),
-            [Language.ChineseSimplified] = TextId.ReadyForWork.Get("你"),
-        };
+        // Table[TextId.MystiaReadyForWork] = new()
+        // {
+        //     [Language.English] = TextId.ReadyForWork.Get("You"),
+        //     [Language.ChineseSimplified] = TextId.ReadyForWork.Get("你"),
+        // };
         PostInitialized = true;
     }
 
