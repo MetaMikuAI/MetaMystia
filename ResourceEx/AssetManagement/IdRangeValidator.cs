@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
+#pragma warning disable CA1416
 
 using MetaMystia.ResourceEx.Models;
 
@@ -40,7 +41,12 @@ public static partial class IdRangeValidator
             return _publicKey;
 
         var pem = LoadEmbeddedPublicKey();
-        _publicKey = RSA.Create();
+
+        // Use explicit PROV_RSA_AES (24) for SHA256 support within CSP
+        var cspParams = new CspParameters();
+        cspParams.ProviderType = 24;
+        _publicKey = new RSACryptoServiceProvider(2048, cspParams);
+
         _publicKey.ImportSubjectPublicKeyInfo(
             Convert.FromBase64String(ExtractBase64FromPem(pem)),
             out _);
