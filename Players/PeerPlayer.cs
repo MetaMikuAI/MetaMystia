@@ -55,6 +55,11 @@ public partial class PeerPlayer : NetPlayer
     private readonly int LARGE_Z_VALUE = -40815;
 
     /// <summary>
+    /// 一个足够远的坐标，用于 peer 生成的初始位置，后由位置同步修正到真实位置
+    /// </summary>
+    private readonly float FAR_POS = 40815f;
+
+    /// <summary>
     /// 构造函数，接受玩家 UID 和可选的资源数据库
     /// </summary>
     /// <param name="uid">玩家 UID，由主机分配</param>
@@ -62,7 +67,7 @@ public partial class PeerPlayer : NetPlayer
     public PeerPlayer(int uid, ResourceDataBase resourceDataBase = null)
     {
         Uid = uid;
-        CharacterId = $"peer_{uid}";
+        CharacterId = $"MetaMystia_{uid}";
         DataBase = resourceDataBase ?? new ResourceDataBase().LoadResourceIds();
     }
 
@@ -95,6 +100,8 @@ public partial class PeerPlayer : NetPlayer
     {
         var scene = MpManager.LocalScene;
         bool visible;
+        // 生成在远处，由后续 Sync 位置修正定位；每个 peer 按 uid 偏移 1 格避免碰撞
+        var spawnPos = new Vector2(FAR_POS + Uid, FAR_POS);
 
         switch (scene)
         {
@@ -105,7 +112,7 @@ public partial class PeerPlayer : NetPlayer
                         && DayScene.SceneManager.Instance?.CurrentActiveMap != null,
                     execute: () =>
                     {
-                        SpawnCharacter(PlayerManager.LocalPosition);
+                        SpawnCharacter(spawnPos);
                         CommandScheduler.Enqueue(
                             executeWhen: () => unit != null,
                             execute: () => PostSpawnSetup(visible),
@@ -122,7 +129,7 @@ public partial class PeerPlayer : NetPlayer
                         && NightScene.MapManager.Instance?.height != null,
                     execute: () =>
                     {
-                        SpawnCharacter(PlayerManager.LocalPosition);
+                        SpawnCharacter(spawnPos);
                         CommandScheduler.Enqueue(
                             executeWhen: () => unit != null,
                             execute: () => PostSpawnSetup(visible),
@@ -136,7 +143,7 @@ public partial class PeerPlayer : NetPlayer
                 Log.LogDebug($"SpawnForScene called in {scene}, skipping for '{CharacterId}'");
                 return;
         }
-        Log.LogMessage($"PeerPlayer '{CharacterId}' spawn scheduled for {scene}");
+        Log.LogMessage($"PeerPlayer '{CharacterId}' spawn scheduled for {scene} at ({spawnPos.x}, {spawnPos.y})");
     }
 
     /// <summary>
