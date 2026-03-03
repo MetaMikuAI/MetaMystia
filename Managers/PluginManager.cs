@@ -18,7 +18,7 @@ public partial class PluginManager : MonoBehaviour
     public static readonly string Label = $"{MyPluginInfo.PLUGIN_NAME} v{MyPluginInfo.PLUGIN_VERSION} loaded";
     public static InGameConsole Console { get; private set; }
     public static Debugger.WebDebugger Debugger = null;
-    private bool isTextVisible = true;
+    public static bool IsStatusVisible { get; private set; } = true;
     private readonly ConcurrentQueue<Action> _mainThreadQueue = new ConcurrentQueue<Action>();
     private readonly List<(Action action, Func<bool> condition)> _conditionalActions = new List<(Action, Func<bool>)>();
     public static bool DEBUG => ConfigManager.Debug.Value;
@@ -53,7 +53,7 @@ public partial class PluginManager : MonoBehaviour
     {
         Console?.OnGUI();
 
-        if (isTextVisible)
+        if (IsStatusVisible)
         {
             var info = new System.Text.StringBuilder();
             info.AppendLine(Label);
@@ -74,8 +74,9 @@ public partial class PluginManager : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.Backslash))
         {
-            isTextVisible = !isTextVisible;
-            Log.LogMessage($"Toggled text visibility: " + isTextVisible);
+            IsStatusVisible = !IsStatusVisible;
+            Log.LogMessage($"Toggled text visibility: " + IsStatusVisible);
+            FloatingTextHelper.SetLabelsVisible(IsStatusVisible && MpManager.IsConnected);
         }
 
         if (DEBUG)

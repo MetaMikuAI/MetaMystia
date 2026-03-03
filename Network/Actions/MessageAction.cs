@@ -19,12 +19,13 @@ public partial class MessageAction : Action
 
     public override void OnReceivedDerived()
     {
-        PluginManager.Console.AddPeerMessage(Message);
-        if (PlayerManager.LocalMapLabel == PlayerManager.Peer?.MapLabel)
-        {
-            FloatingTextHelper.ShowFloatingTextOnMainThread(PlayerManager.Peer?.GetCharacterUnit(), Message);
-        }
         var senderName = PlayerManager.GetPeerName(SenderUid);
+        PluginManager.Console.AddPeerMessage(senderName, Message);
+        if (PlayerManager.Peers.TryGetValue(SenderUid, out var senderPeer)
+            && PlayerManager.LocalMapLabel == senderPeer.MapLabel)
+        {
+            FloatingTextHelper.ShowFloatingTextOnMainThread(senderPeer.GetCharacterUnit(), Message);
+        }
         Notify.ShowExternOnMainThread(TextId.ChatMessagePeer.Get(senderName, Message));
     }
     private static MessageAction CreateMsgAction(string msg)

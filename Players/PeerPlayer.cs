@@ -147,13 +147,14 @@ public partial class PeerPlayer : NetPlayer
     }
 
     /// <summary>
-    /// 角色生成后的延迟初始化：高度处理器、碰撞忽略、可见性
+    /// 角色生成后的延迟初始化：高度处理器、碰撞忽略、可见性、头顶标签
     /// </summary>
     private void PostSpawnSetup(bool visible)
     {
         TryAddHeightProcessor();
         IgnoreCollisionWithSelf();
         UpdateVisibleState(visible);
+        FloatingTextHelper.SetPlayerLabel(Uid, Id, unit.transform);
         Log.LogMessage($"PeerPlayer '{CharacterId}' post-spawn setup done (visible={visible})");
     }
 

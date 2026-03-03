@@ -250,11 +250,11 @@ public static class L10n
         },
         [TextId.PeerPlayerIdChanged] = new()
         {
-            [Language.English] = "Peer changed their ID: {0} -> {1}",
-            [Language.ChineseSimplified] = "对方已更改 ID：{0} -> {1}",
-            [Language.ChineseTraditional] = "對方已更改 ID：{0} -> {1}",
-            [Language.Japanese] = "相手がIDを変更しました：{0} -> {1}",
-            [Language.Korean] = "상대방이 ID를 변경했습니다: {0} -> {1}",
+            [Language.English] = "Player changed their ID: {0} -> {1}",
+            [Language.ChineseSimplified] = "玩家已更改 ID：{0} -> {1}",
+            [Language.ChineseTraditional] = "玩家已更改 ID：{0} -> {1}",
+            [Language.Japanese] = "プレイヤーがIDを変更しました：{0} -> {1}",
+            [Language.Korean] = "플레이어가 ID를 변경했습니다: {0} -> {1}",
         },
 
         [TextId.MpNoActiveConnection] = new()
@@ -456,11 +456,11 @@ public static class L10n
 
         [TextId.PeerAlreadyInScene] = new()
         {
-            [Language.English] = "The other player is already in the business or preparation scene, cannot sync business establishment info. Please reconnect during daytime.",
-            [Language.ChineseSimplified] = "对方已经处于营业或营业准备场景，无法同步营业场馆信息。请在白天重新联机。",
-            [Language.ChineseTraditional] = "對方已經處於營業或營業準備場景，無法同步營業場館信息。請在白天重新聯機。",
-            [Language.Japanese] = "相手プレイヤーがすでに営業シーンまたは準備シーンにいます。営業施設情報を同期できません。昼間に再度接続してください。",
-            [Language.Korean] = "다른 플레이어가 이미 영업 또는 준비 장면에 있음. 영업 시설 정보를 동기화할 수 없습니다. 낮에 다시 연결하세요.",
+            [Language.English] = "Some players are already in the business or preparation scene, cannot sync business establishment info. Please reconnect during daytime.",
+            [Language.ChineseSimplified] = "有玩家已经处于营业或营业准备场景，无法同步营业场馆信息。请在白天重新联机。",
+            [Language.ChineseTraditional] = "有玩家已經處於營業或營業準備場景，無法同步營業場館信息。請在白天重新聯機。",
+            [Language.Japanese] = "一部のプレイヤーがすでに営業シーンまたは準備シーンにいます。営業施設情報を同期できません。昼間に再度接続してください。",
+            [Language.Korean] = "일부 플레이어가 이미 영업 또는 준비 장면에 있습니다. 영업 시설 정보를 동기화할 수 없습니다. 낮에 다시 연결하세요.",
         },
 
         [TextId.SelectedIzakaya] = new()
@@ -582,11 +582,11 @@ public static class L10n
 
         [TextId.PeerMessagePrefix] = new()
         {
-            [Language.English] = "[Peer] {0}",
-            [Language.ChineseSimplified] = "[对方] {0}",
-            [Language.ChineseTraditional] = "[對方] {0}",
-            [Language.Japanese] = "[ピア] {0}",
-            [Language.Korean] = "[상대방] {0}",
+            [Language.English] = "[{0}] {1}",
+            [Language.ChineseSimplified] = "[{0}] {1}",
+            [Language.ChineseTraditional] = "[{0}] {1}",
+            [Language.Japanese] = "[{0}] {1}",
+            [Language.Korean] = "[{0}] {1}",
         },
 
         [TextId.CommandPrompt] = new()

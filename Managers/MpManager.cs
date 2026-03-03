@@ -236,6 +236,7 @@ public static partial class MpManager
         PlayerManager.Local.Uid = UNASSIGNED_UID;
         CommandScheduler.RemoveKeyFromKeyQueue(PeerGetCharacterUnitNotNullCommand);
         CommandScheduler.CancelInterval(SyncActionCommandID);
+        SgrYuki.FloatingTextHelper.ClearAllLabels();
         Notify.ShowOnMainThread(TextId.MultiplayerDisconnected.Get());
     }
 
@@ -248,6 +249,7 @@ public static partial class MpManager
         {
             Log.LogMessage($"Client uid={uid} (id='{peer.Id}') disconnected");
             Network.PeerLeaveAction.BroadcastPeerLeave(uid);
+            SgrYuki.FloatingTextHelper.RemovePlayerLabel(uid);
             PlayerManager.RemovePeer(uid);
         }
         if (PlayerManager.Peers.IsEmpty)
@@ -341,6 +343,7 @@ public static partial class MpManager
             {
                 client.Close();
             }
+            SgrYuki.FloatingTextHelper.ClearAllLabels();
             Log.LogMessage("All peer connections disconnected");
         }
     }

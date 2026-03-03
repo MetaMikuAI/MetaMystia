@@ -39,9 +39,9 @@ public partial class InGameConsole
     private const string TextFieldControlName = "ConsoleInput";
     private bool justOpened = false;
 
-    public void AddPeerMessage(string message)
+    public void AddPeerMessage(string senderName, string message)
     {
-        LogToConsole(TextId.PeerMessagePrefix.Get(message));
+        LogToConsole(TextId.PeerMessagePrefix.Get(senderName, message));
     }
 
     private void UpdateGameInputState()

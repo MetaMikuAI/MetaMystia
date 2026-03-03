@@ -1,6 +1,7 @@
 using MemoryPack;
 
 using MetaMystia.UI;
+using SgrYuki;
 
 namespace MetaMystia.Network;
 
@@ -23,6 +24,7 @@ public partial class PeerLeaveAction : Action
         if (PlayerManager.Peers.TryGetValue(PeerUid, out var peer))
         {
             Notify.ShowOnMainThread(TextId.PeerLeft.Get(peer.Id));
+            FloatingTextHelper.RemovePlayerLabel(PeerUid);
             PlayerManager.RemovePeer(PeerUid);
         }
     }

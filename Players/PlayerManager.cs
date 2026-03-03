@@ -182,6 +182,7 @@ public static partial class PlayerManager
     /// <summary>
     /// 为所有 Peer 生成角色（SpawnForScene）并重置运动插值状态。
     /// 在 DayScene / WorkScene 开始时调用。
+    /// 同时为本地玩家创建头顶标签。
     /// </summary>
     public static void SpawnPeers()
     {
@@ -190,6 +191,12 @@ public static partial class PlayerManager
             peer.ResetMotion();
             peer.SpawnForScene();
         }
+        // 为本地玩家也添加头顶标签（等 Local unit 初始化后）
+        SgrYuki.CommandScheduler.Enqueue(
+            executeWhen: () => Local.unit != null,
+            execute: () => SgrYuki.FloatingTextHelper.SetPlayerLabel(Local.Uid, Local.Id, Local.unit.transform),
+            timeoutSeconds: 30
+        );
         Log.LogInfo($"PlayerManager peers spawned (peers: {Peers.Count})");
     }
 
