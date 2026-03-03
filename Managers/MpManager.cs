@@ -111,6 +111,7 @@ public static partial class MpManager
         IsRunning = true;
         PeerId = "<Unknown>";
         Role = r;
+        PlayerManager.Local.Id = PlayerId;
 
         switch (r)
         {
