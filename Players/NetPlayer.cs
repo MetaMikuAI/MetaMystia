@@ -88,7 +88,7 @@ public abstract partial class NetPlayer
     /// <summary>
     /// 玩家角色当前位置
     /// </summary>
-    public Vector2 Position => rb2d?.position ?? Vector2.zero;
+    public Vector2 Position => rb2d?.transform?.position ?? Vector2.zero;
     #endregion
 
     /// <summary>
@@ -102,16 +102,23 @@ public abstract partial class NetPlayer
     }
 
     /// <summary>
-    /// 重置玩家状态
+    /// 重置同步状态标志（DayOver、PrepOver、IzakayaSelection 等）
     /// </summary>
-    public virtual void Initialize()
+    public virtual void ResetState()
     {
         MapLabel = "";
         IsDayOver = false;
         IsPrepOver = false;
-        IsSprinting = false;
-        InputDirection = Vector2.zero;
         IzakayaMapLabel = "";
         IzakayaLevel = 0;
+    }
+
+    /// <summary>
+    /// 重置运动相关状态
+    /// </summary>
+    public virtual void ResetMotion()
+    {
+        IsSprinting = false;
+        InputDirection = Vector2.zero;
     }
 }

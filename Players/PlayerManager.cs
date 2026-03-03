@@ -163,17 +163,29 @@ public static partial class PlayerManager
     #region 生命周期
 
     /// <summary>
-    /// 初始化玩家管理器，包括全部 peer 的运动状态初始化和角色生成
+    /// 重置所有玩家的同步状态（IsDayOver、IsPrepOver、IzakayaSelection 等）。
+    /// 在 Prep 结束 / Work 开始 / 联机初始化时调用，避免后进场景的玩家覆盖先进场景玩家已提交的状态。
     /// </summary>
-    public static void Initialize()
+    public static void ResetState()
     {
-        Local.Initialize();
+        Local.ResetState();
+        foreach (var peer in Peers.Values)
+            peer.ResetState();
+        Log.LogInfo($"PlayerManager state reset (peers: {Peers.Count})");
+    }
+
+    /// <summary>
+    /// 为所有 Peer 生成角色（SpawnForScene）并重置运动插值状态。
+    /// 在 DayScene / WorkScene 开始时调用。
+    /// </summary>
+    public static void SpawnPeers()
+    {
         foreach (var peer in Peers.Values)
         {
-            peer.Initialize();
+            peer.ResetMotion();
             peer.SpawnForScene();
         }
-        Log.LogInfo($"PlayerManager initialized (peers kept: {Peers.Count})");
+        Log.LogInfo($"PlayerManager peers spawned (peers: {Peers.Count})");
     }
 
     /// <summary>
@@ -186,7 +198,8 @@ public static partial class PlayerManager
             Log.LogWarning($"Peer with uid={uid} already exists (id='{existing.Id}'), replacing");
         }
         var peer = new PeerPlayer(uid, resourceDataBase) { Id = peerId };
-        peer.Initialize();
+        peer.ResetState();
+        peer.ResetMotion();
         Peers[uid] = peer;
         Log.LogMessage($"Added peer '{peerId}' (uid={uid}, characterId='{peer.CharacterId}')");
         return peer;

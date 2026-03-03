@@ -66,14 +66,22 @@ public partial class PeerPlayer : NetPlayer
         DataBase = resourceDataBase ?? new ResourceDataBase().LoadResourceIds();
     }
 
-    public override void Initialize()
+    public override void ResetState()
     {
-        base.Initialize();
+        base.ResetState();
+        firstSync = true;
+        Log.LogMessage($"PeerPlayer '{CharacterId}' state reset");
+    }
+
+    /// <summary>
+    /// 重置运动插值相关变量
+    /// </summary>
+    public override void ResetMotion()
+    {
+        base.ResetMotion();
         actualVelocity = Vector2.zero;
         positionOffset = Vector2.zero;
         currentVelocity = Vector2.zero;
-        firstSync = true;
-        Log.LogMessage($"PeerPlayer '{CharacterId}' initialized");
     }
 
     #region 角色生命周期
@@ -81,40 +89,54 @@ public partial class PeerPlayer : NetPlayer
     /// <summary>
     /// 根据当前场景生成角色并延迟设置（HeightProcessor、碰撞忽略、可见性）。
     /// 仅在 DayScene / WorkScene 中有效，其他场景不做任何操作。
+    /// 整个流程会等待 Local unit 初始化完毕后才开始。
     /// </summary>
     public void SpawnForScene()
     {
         var scene = MpManager.LocalScene;
-        var position = PlayerManager.LocalPosition;
         bool visible;
 
         switch (scene)
         {
             case Common.UI.Scene.DayScene:
-                SpawnCharacter(position);
                 visible = false;
                 CommandScheduler.Enqueue(
-                    executeWhen: () => unit != null
+                    executeWhen: () => PlayerManager.Local.unit != null
                         && DayScene.SceneManager.Instance?.CurrentActiveMap != null,
-                    execute: () => PostSpawnSetup(visible),
-                    timeoutSeconds: 30
+                    execute: () =>
+                    {
+                        SpawnCharacter(PlayerManager.LocalPosition);
+                        CommandScheduler.Enqueue(
+                            executeWhen: () => unit != null,
+                            execute: () => PostSpawnSetup(visible),
+                            timeoutSeconds: 30
+                        );
+                    },
+                    timeoutSeconds: 60
                 );
                 break;
             case Common.UI.Scene.WorkScene:
-                SpawnCharacter(position);
                 visible = true;
                 CommandScheduler.Enqueue(
-                    executeWhen: () => unit != null
+                    executeWhen: () => PlayerManager.Local.GetCharacterUnit() != null
                         && NightScene.MapManager.Instance?.height != null,
-                    execute: () => PostSpawnSetup(visible),
-                    timeoutSeconds: 30
+                    execute: () =>
+                    {
+                        SpawnCharacter(PlayerManager.LocalPosition);
+                        CommandScheduler.Enqueue(
+                            executeWhen: () => unit != null,
+                            execute: () => PostSpawnSetup(visible),
+                            timeoutSeconds: 30
+                        );
+                    },
+                    timeoutSeconds: 60
                 );
                 break;
             default:
                 Log.LogDebug($"SpawnForScene called in {scene}, skipping for '{CharacterId}'");
                 return;
         }
-        Log.LogMessage($"PeerPlayer '{CharacterId}' spawned for {scene}");
+        Log.LogMessage($"PeerPlayer '{CharacterId}' spawn scheduled for {scene}");
     }
 
     /// <summary>

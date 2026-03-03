@@ -28,7 +28,8 @@ public static partial class NightSceneManagerPatch
         PrepSceneManager.ClearPrepTable();
         WorkSceneManager.Clear();
 
-        PlayerManager.Initialize();
+        PlayerManager.ResetState();
+        PlayerManager.SpawnPeers();
 
         CommandScheduler.Enqueue(
             executeWhen: () => WorkSceneManager.WorkTimeLeft > 0,

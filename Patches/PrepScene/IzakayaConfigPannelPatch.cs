@@ -87,6 +87,7 @@ public partial class IzakayaConfigPannelPatch
     public static void PrepOver()
     {
         Log.Info("PrepOver called");
+        PlayerManager.ResetState();
         string[] ExceptPanels = ["WorkSceneTrayPannel(Clone)", "WorkSceneSustainedPannel(Clone)"];  // 白玉楼测验
         Panel.ClosePanelUntil("IzakayaConfigPannelNew(Clone)", ExceptPanels);
         WorkSceneManager.Clear();

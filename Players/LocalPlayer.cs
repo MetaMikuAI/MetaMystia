@@ -29,10 +29,10 @@ public partial class LocalPlayer : NetPlayer
         return null;
     }
 
-    public override void Initialize()
+    public override void ResetState()
     {
-        base.Initialize();
-        Log.LogInfo($"LocalPlayer initialized");
+        base.ResetState();
+        Log.LogInfo($"LocalPlayer state reset");
     }
 
     /// <summary>
