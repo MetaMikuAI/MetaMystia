@@ -14,9 +14,12 @@ public partial class PlayerIdChangeAction : Action
 
     public override void OnReceivedDerived()
     {
-        var oldId = MpManager.PeerId;
-        MpManager.PeerId = NewPlayerId;
-        Notify.ShowOnMainThread(TextId.PeerPlayerIdChanged.Get(oldId, NewPlayerId));
+        if (PlayerManager.Peers.TryGetValue(SenderUid, out var peer))
+        {
+            var oldId = peer.Id;
+            peer.Id = NewPlayerId;
+            Notify.ShowOnMainThread(TextId.PeerPlayerIdChanged.Get(oldId, NewPlayerId));
+        }
     }
 
     public static void Send(string newId)

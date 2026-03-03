@@ -29,6 +29,12 @@ public static partial class PlayerManager
     /// </summary>
     public static PeerPlayer Peer => Peers.Values.FirstOrDefault();
 
+    /// <summary>
+    /// 根据 UID 获取对端玩家名字，找不到则返回 "uid={uid}"
+    /// </summary>
+    public static string GetPeerName(int uid) =>
+        Peers.TryGetValue(uid, out var peer) ? peer.Id : $"uid={uid}";
+
     #region Local 便捷属性
 
     public static string LocalMapLabel => LocalPlayer.MapLabel;

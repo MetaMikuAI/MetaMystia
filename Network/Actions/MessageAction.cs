@@ -24,7 +24,8 @@ public partial class MessageAction : Action
         {
             FloatingTextHelper.ShowFloatingTextOnMainThread(PlayerManager.Peer?.GetCharacterUnit(), Message);
         }
-        Notify.ShowExternOnMainThread(TextId.ChatMessagePeer.Get(MpManager.PeerId, Message));
+        var senderName = PlayerManager.GetPeerName(SenderUid);
+        Notify.ShowExternOnMainThread(TextId.ChatMessagePeer.Get(senderName, Message));
     }
     private static MessageAction CreateMsgAction(string msg)
     {

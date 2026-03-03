@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -28,8 +29,6 @@ public static partial class MpManager
 
     #region Multiplayer Related Values
     public static string PlayerId { get => ConfigManager.GetPlayerId(); set => ConfigManager.SetPlayerId(value); }
-    public static string PeerAddress { get; set; }
-    public static string PeerId { get; set; }
     public static long Latency { get; private set; } = 0;
 
     public static int ConnectedPlayersCount => PlayerManager.Peers.Count;
@@ -109,7 +108,6 @@ public static partial class MpManager
         }
 
         IsRunning = true;
-        PeerId = "<Unknown>";
         Role = r;
         PlayerManager.Local.Id = PlayerId;
 
@@ -208,7 +206,6 @@ public static partial class MpManager
     /// </summary>
     public static void OnClientConnected(string ip)
     {
-        PeerAddress = ip;
         HelloAction.Send();
     }
 
@@ -217,7 +214,6 @@ public static partial class MpManager
     /// </summary>
     public static void OnHandshakeComplete(string hostId)
     {
-        PeerId = hostId;
         SceneTransitAction.Send(LocalScene);
         CommandScheduler.EnqueueInterval(SyncActionCommandID, 0.5f, SyncAction.Send);
         Notify.ShowOnMainThread(TextId.MultiplayerConnected.Get());
@@ -228,7 +224,6 @@ public static partial class MpManager
     /// </summary>
     public static void OnPeerHandshakeComplete(int uid, string peerId)
     {
-        PeerId = peerId;
         CommandScheduler.EnqueueInterval(SyncActionCommandID, 0.5f, SyncAction.Send);
     }
 
@@ -237,8 +232,6 @@ public static partial class MpManager
     /// </summary>
     public static void OnDisconnected()
     {
-        PeerAddress = "<Unknown>";
-        PeerId = "<Unknown>";
         PlayerManager.ClearPeers();
         PlayerManager.Local.Uid = UNASSIGNED_UID;
         CommandScheduler.RemoveKeyFromKeyQueue(PeerGetCharacterUnitNotNullCommand);
@@ -394,17 +387,17 @@ public static partial class MpManager
     public static string GetStatus()
     {
         StringBuilder status = new();
-        status.AppendLine($"Mystia ID: {PlayerId}");
-        status.AppendLine($"Local Port: {TCP_PORT}");
-        status.AppendLine($"Running: {(IsRunning ? "Yes" : "No")}");
-        status.AppendLine($"Connected: {(IsConnected ? "Yes" : "No")}");
+        status.AppendLine($"Self: {RoleTag} {PlayerId} (uid={PlayerManager.Local.Uid})");
+        status.AppendLine($"Port: {TCP_PORT} | Running: {(IsRunning ? "Yes" : "No")} | Connected: {(IsConnected ? "Yes" : "No")}");
         if (IsConnected)
         {
-            status.AppendLine($"Kyouko ID: {PeerId}");
-            status.AppendLine($"Kyouko Address: {PeerAddress ?? "<Unknown>"}");
-            status.AppendLine($"Latency: {Latency} ms");
+            status.AppendLine($"Ping: {Latency} ms | Players: {AllPlayersCount}");
+            foreach (var kvp in PlayerManager.Peers)
+            {
+                var role = kvp.Key == HOST_UID ? "[S]" : "[C]";
+                status.AppendLine($"  Peer: {role} {kvp.Value.Id} (uid={kvp.Key})");
+            }
         }
-
         return status.ToString();
     }
 
@@ -422,11 +415,12 @@ public static partial class MpManager
             }
             if (IsConnected)
             {
-                return $"Multiplayer: {RoleTag} Connected to {PeerId} ({PeerAddress}), ping: {Latency} ms";
+                var peerNames = string.Join(", ", PlayerManager.Peers.Values.Select(p => p.Id));
+                return $"MP: {RoleTag} uid={PlayerManager.Local.Uid} | {AllPlayersCount}Players | ping {Latency}ms | {peerNames}";
             }
             else
             {
-                return $"Multiplayer: On (Not connected) as {RoleName}";
+                return $"MP: {RoleName} (not connected)";
             }
         }
     }

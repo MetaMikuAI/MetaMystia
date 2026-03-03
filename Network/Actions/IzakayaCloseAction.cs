@@ -20,7 +20,7 @@ public partial class IzakayaCloseAction : Action
         PluginManager.Instance.RunOnMainThread(() =>
         {
             Log.Message($"Received close command from host");
-            Notify.ShowOnMainThread(TextId.PeerClosedIzakaya.Get(MpManager.PeerId));
+            Notify.ShowOnMainThread(TextId.PeerClosedIzakaya.Get(PlayerManager.GetPeerName(SenderUid)));
             WorkSceneManager.CloseIzakayaIfPossible();
         });
     }
