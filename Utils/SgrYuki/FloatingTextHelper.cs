@@ -24,9 +24,9 @@ public static class FloatingTextHelper
         if (parent == null) return;
         RemovePlayerLabel(uid);
 
-        var go = new GameObject($"PlayerLabel_{uid}");
+        var go = new GameObject($"MetaLabel_{uid}");
         go.transform.SetParent(parent, false);
-        go.transform.localPosition = new Vector3(0, 1.2f, 0);
+        go.transform.localPosition = new Vector3(0, 1.5f, 0);
 
         var tmp = go.AddComponent<TextMeshPro>();
         tmp.text = displayName;
