@@ -20,6 +20,7 @@ public partial class DaySceneManagerPatch
     public static void Awake_Postfix()
     {
         MpManager.OnSceneTransit(Scene.DayScene);
+        PlayerManager.Local.ResetState();
         PlayerManager.SpawnPeers();
         ResourceExManager.OnDaySceneAwake();
         PrepSceneManager.ClearPrepTable();

@@ -4,7 +4,6 @@ using System.Linq;
 using UnityEngine;
 
 using Common.CharacterUtility;
-using DayScene.Interactables.Collections.ConditionComponents;
 
 namespace MetaMystia;
 

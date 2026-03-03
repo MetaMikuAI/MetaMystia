@@ -19,6 +19,7 @@ public static partial class NightSceneManagerPatch
     public static void NightScene_Start_Postfix()
     {
         MpManager.OnSceneTransit(Scene.WorkScene);
+        PlayerManager.Local.ResetState();
 
         if (!MpManager.IsConnected)
         {

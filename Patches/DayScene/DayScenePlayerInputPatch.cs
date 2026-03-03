@@ -37,10 +37,16 @@ public partial class DayScenePlayerInputPatch
     {
         if (PluginManager.Console != null && PluginManager.Console.IsOpen)
         {
+            Log.Warning($"Console is open, skipping interaction");
             return false;
+        }
+        if (!MpManager.IsConnected)
+        {
+            return true;
         }
         if (PlayerManager.LocalIsDayOver)
         {
+            Log.Warning($"Day is over, skipping interaction");
             return false;
         }
         return true;
