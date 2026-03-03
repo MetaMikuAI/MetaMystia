@@ -666,11 +666,31 @@ public partial class GuestsManagerPatch
     }
 
     [HarmonyPatch(nameof(GuestsManager.TryCloseIzakaya))]
+    [HarmonyPrefix]
+    public static bool TryCloseIzakaya_Prefix()
+    {
+        if (!MpManager.IsConnected) return true;
+
+        if (MpManager.IsClient)
+        {
+            // 客机：拦截打烊，只有主机可以打烊
+            Log.Message("Client attempted to close izakaya, blocked");
+            return false;
+        }
+
+        // 主机：正常执行打烊，Postfix 会广播
+        return true;
+    }
+
+    [HarmonyPatch(nameof(GuestsManager.TryCloseIzakaya))]
     [HarmonyPostfix]
     public static void TryCloseIzakaya_Postfix(GuestsManager __instance)
     {
         Log.Message("TryCloseIzakaya called!");
-        IzakayaCloseAction.Send();
+        if (MpManager.IsConnectedHost)
+        {
+            IzakayaCloseAction.Broadcast();
+        }
     }
 
     [HarmonyPatch(nameof(GuestsManager.TryCloseIzakaya))]

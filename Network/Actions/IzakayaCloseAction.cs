@@ -7,35 +7,29 @@ namespace MetaMystia.Network;
 
 [MemoryPackable]
 [AutoLog]
-[Action.HostRelay]
 public partial class IzakayaCloseAction : Action
 {
     public override ActionType Type => ActionType.IZAKAYA_CLOSE;
 
+    /// <summary>
+    /// 客机收到主机广播的打烊命令 → 执行本地打烊
+    /// </summary>
     [CheckScene(Common.UI.Scene.WorkScene)]
     public override void OnReceivedDerived()
     {
-        if (NightScene.GuestManagementUtility.GuestsManager.Instance != null)
+        PluginManager.Instance.RunOnMainThread(() =>
         {
-            if (MpManager.IsConnected && !NightScene.GuestManagementUtility.GuestsManager.Instance.isIzakayaClosing)
-            {
-                Notify.ShowOnMainThread(TextId.PeerClosedIzakaya.Get(MpManager.PeerId));
-                CommandScheduler.EnqueueWithNoCondition(
-                    execute: () =>
-                    {
-                        if (WorkSceneManager.WorkTimeLeft > 0)
-                        {
-                            WorkSceneManager.ModifyWorkTimeLeft(1);
-                        }
-                    }
-                );
-            }
-        }
+            Log.Message($"Received close command from host");
+            Notify.ShowOnMainThread(TextId.PeerClosedIzakaya.Get(MpManager.PeerId));
+            WorkSceneManager.CloseIzakayaIfPossible();
+        });
     }
 
-    public static void Send()
+    /// <summary>
+    /// 主机 → 所有客机：广播打烊命令
+    /// </summary>
+    public static void Broadcast()
     {
-        var action = new IzakayaCloseAction();
-        action.SendToHostOrBroadcast();
+        new IzakayaCloseAction().SendToHostOrBroadcast();
     }
 }
