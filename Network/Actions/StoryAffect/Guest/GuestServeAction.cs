@@ -57,8 +57,16 @@ public partial class GuestServeAction : Action
             execute: () =>
             {
                 var fsm = WorkSceneManager.GetGuestFSM(GuestUUID);
+                if (fsm == null) { Log.Error($"GuestServeAction: fsm null for {GuestUUID}"); return; }
                 var guest = fsm.GuestController;
+                if (guest == null) { Log.Error($"GuestServeAction: guest null for {fsm.Identifier}"); return; }
                 var order = guest.PeekOrders();
+                if (order == null) { Log.Error($"GuestServeAction: PeekOrders null for {fsm.Identifier}"); return; }
+                if (guest.DeskCode < 0 || guest.DeskCode >= TileManager.Instance.GuestTables.Count)
+                {
+                    Log.Error($"GuestServeAction: invalid DeskCode {guest.DeskCode} for {fsm.Identifier}");
+                    return;
+                }
 
                 // setPanelOpenContext();
                 switch (FoodType)

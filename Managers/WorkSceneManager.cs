@@ -606,7 +606,7 @@ public static partial class WorkSceneManager
         GuestsManager.Instance.AddToPatientCountdown(guestGroup, onPatientDepeletedCallback);
 
         var onCharacterArrived = () => GuestsManager.Instance.ShowOrder(guestGroup);
-        GuestsManager.Instance.registeredCharacterArrivedEvents.Add(guestGroup.DeskCode, onCharacterArrived);
+        GuestsManager.Instance.registeredCharacterArrivedEvents[guestGroup.DeskCode] = onCharacterArrived;
     }
 
 

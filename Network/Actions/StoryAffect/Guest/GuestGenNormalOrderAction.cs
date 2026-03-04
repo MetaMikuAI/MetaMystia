@@ -48,8 +48,13 @@ public partial class GuestGenNormalOrderAction : Action
         void executeGenOrder()
         {
             var fsm = WorkSceneManager.GetGuestFSM(GuestUUID);
+            if (fsm == null) { Log.Error($"GenNormalOrder: fsm null for {GuestUUID}"); return; }
             var guest = fsm.GuestController;
-            var array = guest.GetAllGuests().TryCast<Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<GuestBase>>();
+            if (guest == null) { Log.Error($"GenNormalOrder: guest null for {fsm.Identifier}"); return; }
+            var allGuests = guest.GetAllGuests();
+            if (allGuests == null) { Log.Error($"GenNormalOrder: GetAllGuests null for {fsm.Identifier}"); return; }
+            var array = allGuests.TryCast<Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<GuestBase>>();
+            if (array == null || array.Length == 0) { Log.Error($"GenNormalOrder: allGuests cast/empty for {fsm.Identifier}"); return; }
             var normalOrder = Order.ToNormalOrder(array[0]);
             // fsm.EnqueueOrder(normalOrder, Message);
 

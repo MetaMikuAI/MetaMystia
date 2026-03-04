@@ -22,8 +22,13 @@ public partial class GuestGenSPOrderAction : Action
         void executeGenOrder()
         {
             var fsm = WorkSceneManager.GetGuestFSM(GuestUUID);
+            if (fsm == null) { Log.Error($"GenSPOrder: fsm null for {GuestUUID}"); return; }
             var guest = fsm.GuestController;
-            var array = guest.GetAllGuests().TryCast<Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<GuestBase>>();
+            if (guest == null) { Log.Error($"GenSPOrder: guest null for {fsm.Identifier}"); return; }
+            var allGuests = guest.GetAllGuests();
+            if (allGuests == null) { Log.Error($"GenSPOrder: GetAllGuests null for {fsm.Identifier}"); return; }
+            var array = allGuests.TryCast<Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<GuestBase>>();
+            if (array == null || array.Length == 0) { Log.Error($"GenSPOrder: allGuests cast/empty for {fsm.Identifier}"); return; }
             var SPOrder = Order.ToSpecialOrder(array[0].Pointer);
             // fsm.EnqueueOrder(SPOrder, Message);
 

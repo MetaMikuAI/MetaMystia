@@ -51,8 +51,10 @@ public partial class GuestSeatedAction : Action
     public static void Respawn(string GuestUUID)
     {
         var fsm = WorkSceneManager.GetGuestFSM(GuestUUID);
+        if (fsm == null) { Log.Error($"Respawn: fsm null for {GuestUUID}"); return; }
         fsm.SetNull();
         fsm.TryGenerateGuest();
+        if (fsm.GuestInfo == null) { Log.Error($"Respawn: GuestInfo null after TryGenerateGuest for {GuestUUID}"); return; }
         WorkSceneManager.SpawnGuestGroup(fsm.GuestInfo, GuestUUID);
         Log.Warning($"Respawned: guid {GuestUUID}");
     }
