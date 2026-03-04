@@ -472,6 +472,36 @@ public partial class InGameConsole
                     LogToConsole(TextId.MpDisconnected.Get());
                 }
                 break;
+            case "continue":
+                if (!MpManager.IsHost)
+                {
+                    LogToConsole(TextId.MpContinueHostOnly.Get());
+                    break;
+                }
+                if (args.Length < 2)
+                {
+                    LogToConsole(TextId.MpContinueUsage.Get());
+                    break;
+                }
+                switch (args[1].ToLower())
+                {
+                    case "day":
+                        if (MpManager.ContinueDay())
+                            LogToConsole(TextId.MpContinueSuccess.Get("day"));
+                        else
+                            LogToConsole(TextId.MpContinueFailed.Get("day"));
+                        break;
+                    case "prep":
+                        if (MpManager.ContinuePrep())
+                            LogToConsole(TextId.MpContinueSuccess.Get("prep"));
+                        else
+                            LogToConsole(TextId.MpContinueFailed.Get("prep"));
+                        break;
+                    default:
+                        LogToConsole(TextId.MpContinueUsage.Get());
+                        break;
+                }
+                break;
             default:
                 LogToConsole(TextId.MpUnknownSubcommand.Get(subcommand));
                 LogToConsole(TextId.MpSubcommandHelp.Get());

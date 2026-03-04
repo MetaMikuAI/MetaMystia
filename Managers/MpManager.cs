@@ -236,7 +236,6 @@ public static partial class MpManager
         PlayerManager.Local.Uid = UNASSIGNED_UID;
         CommandScheduler.RemoveKeyFromKeyQueue(PeerGetCharacterUnitNotNullCommand);
         CommandScheduler.CancelInterval(SyncActionCommandID);
-        SgrYuki.FloatingTextHelper.ClearAllLabels();
         Notify.ShowOnMainThread(TextId.MultiplayerDisconnected.Get());
     }
 
@@ -245,16 +244,67 @@ public static partial class MpManager
     /// </summary>
     public static void OnClientDisconnected(int uid)
     {
+        string peerId = null;
         if (PlayerManager.Peers.TryGetValue(uid, out var peer))
         {
-            Log.LogMessage($"Client uid={uid} (id='{peer.Id}') disconnected");
+            peerId = peer.Id;
+            Log.LogMessage($"Client uid={uid} (id='{peerId}') disconnected");
             Network.PeerLeaveAction.BroadcastPeerLeave(uid);
-            SgrYuki.FloatingTextHelper.RemovePlayerLabel(uid);
             PlayerManager.RemovePeer(uid);
         }
         if (PlayerManager.Peers.IsEmpty)
         {
             CommandScheduler.CancelInterval(SyncActionCommandID);
+        }
+        // 检查是否可以继续流程
+        CheckContinueAfterDisconnect(uid, peerId);
+    }
+
+    /// <summary>
+    /// 主机侧：peer 断开后检查是否剩余玩家均已就绪，提示用户可以继续
+    /// </summary>
+    private static void CheckContinueAfterDisconnect(int disconnectedUid, string disconnectedName)
+    {
+        if (!IsHost) return;
+        disconnectedName ??= $"uid={disconnectedUid}";
+
+        // 没有剩余 peer 时不提示 continue（单人模式不需要）
+        bool hasPeers = !PlayerManager.Peers.IsEmpty;
+
+        switch (LocalScene)
+        {
+            case Common.UI.Scene.DayScene:
+                // 检查是否在等待 DayOver
+                if (PlayerManager.LocalIsDayOver)
+                {
+                    if (!hasPeers || PlayerManager.AllPeersDayOver)
+                    {
+                        Notify.ShowOnMainThread(TextId.PeerDisconnectedAllReady.Get(
+                            disconnectedName, "/mp continue day"));
+                    }
+                    else
+                    {
+                        Notify.ShowOnMainThread(TextId.PeerDisconnectedWaiting.Get(
+                            disconnectedName));
+                    }
+                }
+                break;
+            case Common.UI.Scene.IzakayaPrepScene:
+                // 检查是否在等待 PrepOver
+                if (PlayerManager.LocalIsPrepOver)
+                {
+                    if (!hasPeers || PlayerManager.AllPeersPrepOver)
+                    {
+                        Notify.ShowOnMainThread(TextId.PeerDisconnectedAllReady.Get(
+                            disconnectedName, "/mp continue prep"));
+                    }
+                    else
+                    {
+                        Notify.ShowOnMainThread(TextId.PeerDisconnectedWaiting.Get(
+                            disconnectedName));
+                    }
+                }
+                break;
         }
     }
 
@@ -343,7 +393,6 @@ public static partial class MpManager
             {
                 client.Close();
             }
-            SgrYuki.FloatingTextHelper.ClearAllLabels();
             Log.LogMessage("All peer connections disconnected");
         }
     }
@@ -483,5 +532,74 @@ public static partial class MpManager
             // For host who will not receive PrepOver allready
             CommandScheduler.EnqueueWithNoCondition(IzakayaConfigPannelPatch.PrepOver);
         }
+    }
+
+    /// <summary>
+    /// 主机强制继续 DayOver 流程（跳过已断开的 peer 的等待）
+    /// </summary>
+    /// <returns>是否成功执行</returns>
+    public static bool ContinueDay()
+    {
+        if (!IsHost)
+        {
+            Log.LogWarning("ContinueDay: only host can execute");
+            return false;
+        }
+        if (LocalScene != Common.UI.Scene.DayScene)
+        {
+            Log.LogWarning($"ContinueDay: not in DayScene (current: {LocalScene})");
+            return false;
+        }
+        if (!PlayerManager.LocalIsDayOver)
+        {
+            Log.LogWarning("ContinueDay: local player has not DayOver'd yet");
+            return false;
+        }
+
+        Log.Message("ContinueDay: forcing DayOver for all remaining players");
+
+        // 将所有在线 peer 标记为 DayOver（防止还有人没标记）
+        foreach (var peer in PlayerManager.Peers.Values)
+            peer.IsDayOver = true;
+
+        ReadyAction.Broadcast(ReadyType.DayOver);
+        CommandScheduler.EnqueueWithNoCondition(() =>
+        {
+            Notify.ShowOnMainThread(TextId.AllReadyTransition.Get());
+            DaySceneManagerPatch.OnDayOver();
+        });
+        return true;
+    }
+
+    /// <summary>
+    /// 主机强制继续 PrepOver 流程（跳过已断开的 peer 的等待）
+    /// </summary>
+    /// <returns>是否成功执行</returns>
+    public static bool ContinuePrep()
+    {
+        if (!IsHost)
+        {
+            Log.LogWarning("ContinuePrep: only host can execute");
+            return false;
+        }
+        if (LocalScene != Common.UI.Scene.IzakayaPrepScene && LocalScene != Common.UI.Scene.WorkScene)
+        {
+            Log.LogWarning($"ContinuePrep: not in PrepScene (current: {LocalScene})");
+            return false;
+        }
+        if (!PlayerManager.LocalIsPrepOver)
+        {
+            Log.LogWarning("ContinuePrep: local player has not PrepOver'd yet");
+            return false;
+        }
+
+        Log.Message("ContinuePrep: forcing PrepOver for all remaining players");
+
+        foreach (var peer in PlayerManager.Peers.Values)
+            peer.IsPrepOver = true;
+
+        ReadyAction.Broadcast(ReadyType.PrepOver);
+        CommandScheduler.EnqueueWithNoCondition(IzakayaConfigPannelPatch.PrepOver);
+        return true;
     }
 }

@@ -34,9 +34,7 @@ public static class FloatingTextHelper
         tmp.alignment = TextAlignmentOptions.Center;
         tmp.color = new Color(1f, 1f, 0.7f, 0.85f);
 
-        tmp.fontMaterial.EnableKeyword("OUTLINE_ON");
-        tmp.outlineColor = Color.black;
-        tmp.outlineWidth = 0.075f;
+        tmp.color = Color.black;
 
         go.SetActive(PluginManager.IsStatusVisible);
 
@@ -95,9 +93,7 @@ public static class FloatingTextHelper
         tmp.alignment = TextAlignmentOptions.Center;
         tmp.color = Color.white;
 
-        tmp.fontMaterial.EnableKeyword("OUTLINE_ON");      // 描边
-        tmp.outlineColor = Color.black;
-        tmp.outlineWidth = 0.075f;                         // 描边粗细，范围 0~1
+        tmp.color = Color.black;
 
         return go;
     }

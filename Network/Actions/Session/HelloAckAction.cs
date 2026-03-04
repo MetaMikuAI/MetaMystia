@@ -50,6 +50,12 @@ public partial class HelloAckAction : Action
             PlayerManager.AddPeer(p.Uid, p.PeerId, p.DataBase);
         }
 
+        // 如果当前在 DayScene（重连），立即为所有 peer 生成角色
+        if (MpManager.LocalScene == Common.UI.Scene.DayScene)
+        {
+            PlayerManager.SpawnPeers();
+        }
+
         MpManager.OnHandshakeComplete(HostInfo.PeerId);
         Notify.ShowOnMainThread(TextId.MpConnected.Get(HostInfo.PeerId));
     }

@@ -26,7 +26,14 @@ public partial class PeerJoinAction : Action
 
         if (!PlayerManager.Peers.ContainsKey(PeerUid))
         {
-            PlayerManager.AddPeer(PeerUid, PeerId, PeerDataBase);
+            var peer = PlayerManager.AddPeer(PeerUid, PeerId, PeerDataBase);
+
+            // 如果当前在 DayScene，立即为新 peer 生成角色
+            if (MpManager.LocalScene == Common.UI.Scene.DayScene)
+            {
+                peer.ResetMotion();
+                peer.SpawnForScene();
+            }
         }
         Notify.ShowOnMainThread(TextId.PeerJoined.Get(PeerId));
     }

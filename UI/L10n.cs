@@ -52,6 +52,15 @@ public enum TextId
     PeerLeft,
     ChallengeWarning,
 
+    // Peer Disconnect & Continue
+    PeerDisconnectedAllReady,
+    PeerDisconnectedWaiting,
+    MpContinueHostOnly,
+    MpContinueUsage,
+    MpContinueSuccess,
+    MpContinueFailed,
+    PrepWorkReconnectBlocked,
+
     // Business/Shop Related
     TodayBusinessHours,
     PeerAlreadyInScene,
@@ -443,6 +452,69 @@ public static class L10n
             [Language.ChineseTraditional] = "檢測到可能在進行挑戰，建議斷開連接確保遊戲體驗!",
             [Language.Japanese] = "チャレンジ中の可能性があります。より良いゲーム体験のため、接続を切断することをお勧めします！",
             [Language.Korean] = "도전 중일 가능성, 더 나은 게임 체험을 위해 연결 끊김 권장!",
+        },
+
+        [TextId.PeerDisconnectedAllReady] = new()
+        {
+            [Language.English] = "{0} disconnected. All remaining players are ready. Use {1} to continue, or wait for reconnection.",
+            [Language.ChineseSimplified] = "{0} 已掉线。剩余玩家均已就绪，可使用 {1} 继续流程，或等待其重连。",
+            [Language.ChineseTraditional] = "{0} 已掉線。剩餘玩家均已就緒，可使用 {1} 繼續流程，或等待其重連。",
+            [Language.Japanese] = "{0} が切断されました。残りのプレイヤーは全員準備完了です。{1} で続行するか、再接続を待ってください。",
+            [Language.Korean] = "{0}의 연결이 끊겼습니다. 나머지 플레이어 모두 준비 완료. {1}로 계속하거나 재연결을 기다리세요.",
+        },
+
+        [TextId.PeerDisconnectedWaiting] = new()
+        {
+            [Language.English] = "{0} disconnected. Some players are still not ready. Wait for others or reconnection.",
+            [Language.ChineseSimplified] = "{0} 已掉线。仍有玩家未就绪，请等待其他玩家或重连。",
+            [Language.ChineseTraditional] = "{0} 已掉線。仍有玩家未就緒，請等待其他玩家或重連。",
+            [Language.Japanese] = "{0} が切断されました。まだ準備ができていないプレイヤーがいます。他のプレイヤーか再接続を待ってください。",
+            [Language.Korean] = "{0}의 연결이 끊겼습니다. 아직 준비되지 않은 플레이어가 있습니다. 다른 플레이어나 재연결을 기다리세요.",
+        },
+
+        [TextId.MpContinueHostOnly] = new()
+        {
+            [Language.English] = "Only the host can use /mp continue",
+            [Language.ChineseSimplified] = "只有主机可以使用 /mp continue",
+            [Language.ChineseTraditional] = "只有主機可以使用 /mp continue",
+            [Language.Japanese] = "/mp continue はホストのみ使用できます",
+            [Language.Korean] = "/mp continue는 호스트만 사용할 수 있습니다",
+        },
+
+        [TextId.MpContinueUsage] = new()
+        {
+            [Language.English] = "Usage: /mp continue <day|prep>",
+            [Language.ChineseSimplified] = "用法：/mp continue <day|prep>",
+            [Language.ChineseTraditional] = "用法：/mp continue <day|prep>",
+            [Language.Japanese] = "使い方：/mp continue <day|prep>",
+            [Language.Korean] = "사용법: /mp continue <day|prep>",
+        },
+
+        [TextId.MpContinueSuccess] = new()
+        {
+            [Language.English] = "Forced continue {0} successful",
+            [Language.ChineseSimplified] = "已强制继续 {0} 流程",
+            [Language.ChineseTraditional] = "已強制繼續 {0} 流程",
+            [Language.Japanese] = "{0} を強制続行しました",
+            [Language.Korean] = "{0} 강제 계속 성공",
+        },
+
+        [TextId.MpContinueFailed] = new()
+        {
+            [Language.English] = "Cannot continue {0} — check scene and ready state",
+            [Language.ChineseSimplified] = "无法继续 {0} — 请检查当前场景和就绪状态",
+            [Language.ChineseTraditional] = "無法繼續 {0} — 請檢查當前場景和就緒狀態",
+            [Language.Japanese] = "{0} を続行できません — シーンと準備状態を確認してください",
+            [Language.Korean] = "{0} 계속할 수 없음 — 장면과 준비 상태를 확인하세요",
+        },
+
+        [TextId.PrepWorkReconnectBlocked] = new()
+        {
+            [Language.English] = "Connection rejected: {0} cannot reconnect during prep/work phase",
+            [Language.ChineseSimplified] = "连接被拒绝: 备菜/营业阶段不允许 {0} 重连",
+            [Language.ChineseTraditional] = "連接被拒絕: 備菜/營業階段不允許 {0} 重連",
+            [Language.Japanese] = "接続拒否: 準備/営業中は {0} の再接続不可",
+            [Language.Korean] = "연결 거부: 준비/영업 중 {0} 재접속 불가",
         },
 
         [TextId.TodayBusinessHours] = new()

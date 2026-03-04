@@ -52,19 +52,12 @@ public partial class HelloAction : Action
             return;
         }
 
-        // // --- 场景校验 ---
-        // var bothInDay = CurrentGameScene == Scene.DayScene && MpManager.LocalScene == Scene.DayScene;
-        // var bothInMain = CurrentGameScene == Scene.MainScene && MpManager.LocalScene == Scene.MainScene;
-        // if (!bothInDay && !bothInMain)
-        // {
-        //     Log.LogError($"Scene mismatch! Local: {MpManager.LocalScene}, Remote: {CurrentGameScene}");
-        //     MpManager.DisconnectClient(SenderUid);
-        //     return;
-        // }
-
-        if (PlayerManager.LocalIsDayOver || PlayerManager.AllPeersDayOver)
+        // --- 备菜/营业阶段不允许重连 ---
+        if (MpManager.LocalScene == Scene.IzakayaPrepScene || MpManager.LocalScene == Scene.WorkScene)
         {
-            Log.LogError($"Already dayOver! Local: {PlayerManager.LocalIsDayOver}, Peers: {PlayerManager.AllPeersDayOver}");
+            Log.LogWarning($"Rejecting connection from '{PeerId}' (uid={SenderUid}): " +
+                $"reconnection not allowed in {MpManager.LocalScene}");
+            Notify.ShowOnMainThread(TextId.PrepWorkReconnectBlocked.Get(PeerId));
             MpManager.DisconnectClient(SenderUid);
             return;
         }
@@ -72,6 +65,13 @@ public partial class HelloAction : Action
         int assignedUid = SenderUid;
 
         var peer = PlayerManager.AddPeer(assignedUid, PeerId, PeerDataBase);
+
+        // 如果主机当前在 DayScene，则为新加入的 peer 立即生成角色
+        if (MpManager.LocalScene == Scene.DayScene)
+        {
+            peer.ResetMotion();
+            peer.SpawnForScene();
+        }
 
         // 向新客机发送 HelloAck（携带分配的 UID + 所有已有 peer 信息）
         HelloAckAction.SendTo(assignedUid, PeerId);
