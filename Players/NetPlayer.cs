@@ -76,9 +76,9 @@ public abstract partial class NetPlayer
     public bool IsSprinting { get; set; } = false;
 
     /// <summary>
-    /// 角色移动速度，该速度与玩家等级有关。暂时无用
+    /// 角色移动速度
     /// </summary>
-    public float Speed { get; set; } = 1.48f;
+    public virtual float Speed { get; set; } = 1f;
 
     /// <summary>
     /// 输入方向向量

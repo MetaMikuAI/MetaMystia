@@ -587,7 +587,7 @@ public partial class InGameConsole
                     float y = float.Parse(args[3]);
                     var arr = new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<Vector2>(1);
                     arr[0] = new Vector2(x, y);
-                    Common.SceneDirector.Instance.MoveCharacter(characterKey, arr, 1.48f, new System.Action(() => { }));
+                    Common.SceneDirector.Instance.MoveCharacter(characterKey, arr, 1f, new System.Action(() => { }));
                     LogToConsole(TextId.CharacterMovedScene.Get(characterKey, x, y));
                 }
                 catch (System.Exception e)

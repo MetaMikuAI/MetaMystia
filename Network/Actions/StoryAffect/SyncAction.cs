@@ -15,6 +15,7 @@ public partial class SyncAction : Action
     public float Px { get; set; }
     public float Py { get; set; }
     public bool IsSprinting { get; set; }
+    public float Speed { get; set; }
     public string MapLabel { get; set; }
 
     protected override BepInEx.Logging.LogLevel OnReceiveLogLevel => BepInEx.Logging.LogLevel.Debug;
@@ -26,7 +27,7 @@ public partial class SyncAction : Action
         PluginManager.Instance.RunOnMainThread(() =>
         {
             if (PlayerManager.Peers.TryGetValue(SenderUid, out var peer))
-                peer.SyncFromPeer(MapLabel, IsSprinting,
+                peer.SyncFromPeer(MapLabel, IsSprinting, Speed,
                     new UnityEngine.Vector2(Vx, Vy), new UnityEngine.Vector2(Px, Py));
         });
     }
@@ -53,7 +54,8 @@ public partial class SyncAction : Action
                 Vx = inputDirection.x,
                 Vy = inputDirection.y,
                 Px = position.x,
-                Py = position.y
+                Py = position.y,
+                Speed = PlayerManager.Local.Speed
             };
             action.SendToHostOrBroadcast();
         }
@@ -61,10 +63,12 @@ public partial class SyncAction : Action
         {
             var mapLabel = PlayerManager.LocalMapLabel;
             var isSprinting = PlayerManager.LocalIsSprinting;
+            var speed = PlayerManager.Local.Speed;
 
             var action = new SyncAction
             {
                 IsSprinting = isSprinting,
+                Speed = speed,
                 Vx = inputDirection.x,
                 Vy = inputDirection.y,
                 MapLabel = mapLabel,

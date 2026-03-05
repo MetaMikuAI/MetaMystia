@@ -12,6 +12,7 @@ public partial class NightSyncAction : Action
     public float Vy { get; set; }
     public float Px { get; set; }
     public float Py { get; set; }
+    public float Speed { get; set; }
 
     protected override BepInEx.Logging.LogLevel OnReceiveLogLevel => BepInEx.Logging.LogLevel.Debug;
     protected override BepInEx.Logging.LogLevel OnSendLogLevel => BepInEx.Logging.LogLevel.Debug;
@@ -22,7 +23,7 @@ public partial class NightSyncAction : Action
         PluginManager.Instance.RunOnMainThread(() =>
         {
             if (PlayerManager.Peers.TryGetValue(SenderUid, out var peer))
-                peer.NightSyncFromPeer(new UnityEngine.Vector2(Vx, Vy), new UnityEngine.Vector2(Px, Py));
+                peer.NightSyncFromPeer(Speed, new UnityEngine.Vector2(Vx, Vy), new UnityEngine.Vector2(Px, Py));
         });
     }
 

@@ -29,6 +29,15 @@ public partial class LocalPlayer : NetPlayer
         return null;
     }
 
+    /// <summary>
+    /// 本地玩家速度直接读取 unit.MoveSpeedMultiplier
+    /// </summary>
+    public override float Speed
+    {
+        get => unit?.MoveSpeedMultiplier ?? 1f;
+        set { if (unit != null) unit.MoveSpeedMultiplier = value; }
+    }
+
     public override void ResetState()
     {
         base.ResetState();

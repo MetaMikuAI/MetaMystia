@@ -232,7 +232,7 @@ public partial class PeerPlayer : NetPlayer
         if (velocity.magnitude < 0.01f)
         {
             if (unit.IsMoving) unit.IsMoving = false;
-            if (unit.MoveSpeedMultiplier != 1.48f) unit.MoveSpeedMultiplier = 1.48f;
+            if (unit.MoveSpeedMultiplier != Speed) unit.MoveSpeedMultiplier = Speed;
             return;
         }
 
@@ -256,7 +256,7 @@ public partial class PeerPlayer : NetPlayer
     /// <summary>
     /// DayScene 同步：接收对端的地图、奔跑、方向、位置
     /// </summary>
-    public void SyncFromPeer(string mapLabel, bool isSprinting, Vector2 inputDirection, Vector2 position)
+    public void SyncFromPeer(string mapLabel, bool isSprinting, float speed, Vector2 inputDirection, Vector2 position)
     {
         if (unit == null)
         {
@@ -280,6 +280,8 @@ public partial class PeerPlayer : NetPlayer
         }
 
         // 更新运动状态
+        Speed = speed;
+        unit.MoveSpeedMultiplier = speed;
         actualVelocity = inputDirection;
         InputDirection = inputDirection;
         unit.IsMoving = inputDirection.magnitude > 0;
@@ -294,10 +296,12 @@ public partial class PeerPlayer : NetPlayer
     /// <summary>
     /// WorkScene 同步：仅方向和位置
     /// </summary>
-    public void NightSyncFromPeer(Vector2 inputDirection, Vector2 position)
+    public void NightSyncFromPeer(float speed, Vector2 inputDirection, Vector2 position)
     {
         if (unit == null) return;
 
+        Speed = speed;
+        unit.MoveSpeedMultiplier = speed;
         actualVelocity = inputDirection;
         InputDirection = inputDirection;
         unit.IsMoving = inputDirection.magnitude > 0;
