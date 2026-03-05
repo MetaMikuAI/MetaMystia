@@ -83,6 +83,7 @@ public partial class HelloAction : Action
         MpManager.OnPeerHandshakeComplete(assignedUid, PeerId);
 
         Notify.ShowOnMainThread(TextId.MpConnected.Get(PeerId));
+        SkinManager.OnPeerJoined();
     }
 
     /// <summary>

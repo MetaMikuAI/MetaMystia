@@ -36,6 +36,7 @@ public partial class PeerJoinAction : Action
             }
         }
         Notify.ShowOnMainThread(TextId.PeerJoined.Get(PeerId));
+        SkinManager.OnPeerJoined();
     }
 
     /// <summary>

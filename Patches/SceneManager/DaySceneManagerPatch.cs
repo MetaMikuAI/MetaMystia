@@ -24,6 +24,7 @@ public partial class DaySceneManagerPatch
         PlayerManager.SpawnPeers();
         ResourceExManager.OnDaySceneAwake();
         PrepSceneManager.ClearPrepTable();
+        SkinManager.OnSceneEnter();
 
         // if (MpManager.IsConnected)
         // {

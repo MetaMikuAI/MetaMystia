@@ -135,6 +135,22 @@ public enum TextId
     CharacterMovedScene,
     CalledTryCloseIzakaya,
     WebDebuggerStarted,
+
+    // Skin Commands
+    SkinUsage,
+    SkinEnabled,
+    SkinDisabled,
+    SkinAlreadyDisabled,
+    SkinSetMystia,
+    SkinSetNpc,
+    SkinInvalidType,
+    SkinInvalidIndex,
+    SkinNpcNotFound,
+    SkinListHeader,
+    SkinListItem,
+    SkinListNpcHint,
+    SkinStatus,
+    SkinStatusDisabled,
 }
 
 public static class L10n
@@ -708,11 +724,11 @@ public static class L10n
 
         [TextId.AvailableCommands] = new()
         {
-            [Language.English] = "Available commands: /help, /clear, /get, /mp, /call, /debug, /webdebug, /enable_bepin_console, /whereami",
-            [Language.ChineseSimplified] = "可用命令：/help、/clear、/get、/mp、/call、/debug、/webdebug、/enable_bepin_console、/whereami",
-            [Language.ChineseTraditional] = "可用命令：/help、/clear、/get、/mp、/call、/debug、/webdebug、/enable_bepin_console、/whereami",
-            [Language.Japanese] = "利用可能なコマンド：/help、/clear、/get、/mp、/call、/debug、/webdebug、/enable_bepin_console、/whereami",
-            [Language.Korean] = "사용 가능한 명령: /help, /clear, /get, /mp, /call, /debug, /webdebug, /enable_bepin_console, /whereami",
+            [Language.English] = "Available commands: /help, /clear, /get, /mp, /call, /skin, /debug, /webdebug, /enable_bepin_console, /whereami",
+            [Language.ChineseSimplified] = "可用命令：/help、/clear、/get、/mp、/call、/skin、/debug、/webdebug、/enable_bepin_console、/whereami",
+            [Language.ChineseTraditional] = "可用命令：/help、/clear、/get、/mp、/call、/skin、/debug、/webdebug、/enable_bepin_console、/whereami",
+            [Language.Japanese] = "利用可能なコマンド：/help、/clear、/get、/mp、/call、/skin、/debug、/webdebug、/enable_bepin_console、/whereami",
+            [Language.Korean] = "사용 가능한 명령: /help, /clear, /get, /mp, /call, /skin, /debug, /webdebug, /enable_bepin_console, /whereami",
         },
 
         [TextId.GetUsage] = new()
@@ -920,6 +936,132 @@ public static class L10n
             [Language.ChineseTraditional] = "Web調試器已啟動。",
             [Language.Japanese] = "Web デバッガーが起動しました。",
             [Language.Korean] = "웹 디버거가 시작되었습니다.",
+        },
+
+        [TextId.SkinUsage] = new()
+        {
+            [Language.English] = "Usage: /skin [on|off|set|list]\n  /skin set Mystia [Default|Explicit|DLC] [index]\n  /skin set <npcName>\n  /skin list\n  /skin off",
+            [Language.ChineseSimplified] = "用法：/skin [on|off|set|list]\n  /skin set Mystia [Default|Explicit|DLC] [索引]\n  /skin set <NPC名>\n  /skin list\n  /skin off",
+            [Language.ChineseTraditional] = "用法：/skin [on|off|set|list]\n  /skin set Mystia [Default|Explicit|DLC] [索引]\n  /skin set <NPC名>\n  /skin list\n  /skin off",
+            [Language.Japanese] = "使用方法: /skin [on|off|set|list]\n  /skin set Mystia [Default|Explicit|DLC] [index]\n  /skin set <NPC名>\n  /skin list\n  /skin off",
+            [Language.Korean] = "사용법: /skin [on|off|set|list]\n  /skin set Mystia [Default|Explicit|DLC] [index]\n  /skin set <NPC名>\n  /skin list\n  /skin off",
+        },
+
+        [TextId.SkinEnabled] = new()
+        {
+            [Language.English] = "Skin override enabled: {0}",
+            [Language.ChineseSimplified] = "皮肤覆盖已启用：{0}",
+            [Language.ChineseTraditional] = "皮膚覆蓋已啟用：{0}",
+            [Language.Japanese] = "スキンオーバーライド有効: {0}",
+            [Language.Korean] = "스킨 오버라이드 활성화: {0}",
+        },
+
+        [TextId.SkinDisabled] = new()
+        {
+            [Language.English] = "Skin override disabled, restored to game default.",
+            [Language.ChineseSimplified] = "皮肤覆盖已关闭，已恢复为游戏存档中的皮肤。",
+            [Language.ChineseTraditional] = "皮膚覆蓋已關閉，已恢復為遊戲存檔中的皮膚。",
+            [Language.Japanese] = "スキンオーバーライド無効化、ゲームデフォルトに復元。",
+            [Language.Korean] = "스킨 오버라이드 비활성화, 게임 기본값으로 복원.",
+        },
+
+        [TextId.SkinAlreadyDisabled] = new()
+        {
+            [Language.English] = "Skin override is not enabled.",
+            [Language.ChineseSimplified] = "皮肤覆盖当前未启用。",
+            [Language.ChineseTraditional] = "皮膚覆蓋當前未啟用。",
+            [Language.Japanese] = "スキンオーバーライドは有効ではありません。",
+            [Language.Korean] = "스킨 오버라이드가 활성화되지 않았습니다.",
+        },
+
+        [TextId.SkinSetMystia] = new()
+        {
+            [Language.English] = "Set skin to Mystia {0} {1}",
+            [Language.ChineseSimplified] = "已设置皮肤为 Mystia {0} {1}",
+            [Language.ChineseTraditional] = "已設置皮膚為 Mystia {0} {1}",
+            [Language.Japanese] = "スキンを Mystia {0} {1} に設定",
+            [Language.Korean] = "스킨을 Mystia {0} {1}로 설정",
+        },
+
+        [TextId.SkinSetNpc] = new()
+        {
+            [Language.English] = "Set skin to NPC: {0}",
+            [Language.ChineseSimplified] = "已设置皮肤为 NPC：{0}",
+            [Language.ChineseTraditional] = "已設置皮膚為 NPC：{0}",
+            [Language.Japanese] = "スキンを NPC: {0} に設定",
+            [Language.Korean] = "스킨을 NPC: {0}로 설정",
+        },
+
+        [TextId.SkinInvalidType] = new()
+        {
+            [Language.English] = "Invalid skin type '{0}'. Use: Default, Explicit, DLC",
+            [Language.ChineseSimplified] = "无效的皮肤类型 '{0}'。可选：Default、Explicit、DLC",
+            [Language.ChineseTraditional] = "無效的皮膚類型 '{0}'。可選：Default、Explicit、DLC",
+            [Language.Japanese] = "無効なスキンタイプ '{0}'。使用可能: Default, Explicit, DLC",
+            [Language.Korean] = "잘못된 스킨 유형 '{0}'. 사용: Default, Explicit, DLC",
+        },
+
+        [TextId.SkinInvalidIndex] = new()
+        {
+            [Language.English] = "Invalid index '{0}' for type {1}.",
+            [Language.ChineseSimplified] = "类型 {1} 的索引 '{0}' 无效。",
+            [Language.ChineseTraditional] = "類型 {1} 的索引 '{0}' 無效。",
+            [Language.Japanese] = "タイプ {1} のインデックス '{0}' が無効です。",
+            [Language.Korean] = "유형 {1}의 인덱스 '{0}'이 유효하지 않습니다.",
+        },
+
+        [TextId.SkinNpcNotFound] = new()
+        {
+            [Language.English] = "NPC '{0}' not found in allNPCs.",
+            [Language.ChineseSimplified] = "NPC '{0}' 在 allNPCs 中未找到。",
+            [Language.ChineseTraditional] = "NPC '{0}' 在 allNPCs 中未找到。",
+            [Language.Japanese] = "NPC '{0}' が allNPCs に見つかりません。",
+            [Language.Korean] = "NPC '{0}'을 allNPCs에서 찾을 수 없습니다.",
+        },
+
+        [TextId.SkinListHeader] = new()
+        {
+            [Language.English] = "=== Mystia Skins ===",
+            [Language.ChineseSimplified] = "=== Mystia 皮肤列表 ===",
+            [Language.ChineseTraditional] = "=== Mystia 皮膚列表 ===",
+            [Language.Japanese] = "=== Mystia スキン一覧 ===",
+            [Language.Korean] = "=== Mystia 스킨 목록 ===",
+        },
+
+        [TextId.SkinListItem] = new()
+        {
+            [Language.English] = "  [{0}] {1} #{2}: {3}",
+            [Language.ChineseSimplified] = "  [{0}] {1} #{2}：{3}",
+            [Language.ChineseTraditional] = "  [{0}] {1} #{2}：{3}",
+            [Language.Japanese] = "  [{0}] {1} #{2}: {3}",
+            [Language.Korean] = "  [{0}] {1} #{2}: {3}",
+        },
+
+        [TextId.SkinListNpcHint] = new()
+        {
+            [Language.English] = "To use NPC skin: /skin set <npcName> (e.g. Kosuzu, Aunn, etc.)",
+            [Language.ChineseSimplified] = "使用 NPC 皮肤：/skin set <NPC名>（如 Kosuzu、Aunn 等）",
+            [Language.ChineseTraditional] = "使用 NPC 皮膚：/skin set <NPC名>（如 Kosuzu、Aunn 等）",
+            [Language.Japanese] = "NPCスキンを使用: /skin set <NPC名>（例: Kosuzu, Aunn など）",
+            [Language.Korean] = "NPC 스킨 사용: /skin set <NPC名> (예: Kosuzu, Aunn 등)",
+        },
+
+        [TextId.SkinStatus] = new()
+        {
+            [Language.English] = "Skin override: ON — {0}",
+            [Language.ChineseSimplified] = "皮肤覆盖：已开启 — {0}",
+            [Language.ChineseTraditional] = "皮膚覆蓋：已開啟 — {0}",
+            [Language.Japanese] = "スキンオーバーライド: ON — {0}",
+            [Language.Korean] = "스킨 오버라이드: 켜짐 — {0}",
+        },
+
+        [TextId.SkinStatusDisabled] = new()
+        {
+            [Language.English] = "Skin override: OFF",
+            [Language.ChineseSimplified] = "皮肤覆盖：已关闭",
+            [Language.ChineseTraditional] = "皮膚覆蓋：已關閉",
+            [Language.Japanese] = "スキンオーバーライド: OFF",
+            [Language.Korean] = "스킨 오버라이드: 꺼짐",
         }
     };
 

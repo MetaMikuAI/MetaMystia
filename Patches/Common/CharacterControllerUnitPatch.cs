@@ -38,4 +38,12 @@ public partial class CharacterControllerUnitPatch
             Log.LogMessage($"found {__instance.name}, enabling collision");
         }
     }
+
+    [HarmonyPatch(nameof(CharacterControllerUnit.UpdateCharacterSprite))]
+    [HarmonyPostfix]
+    public static void UpdateCharacterSprite_Postfix(CharacterControllerUnit __instance)
+    {
+        var isSelf = __instance.name.Equals("PlayerInstance");
+        Log.WarningCaller($"called for {__instance.name}, isSelf: {isSelf}");
+    }
 }

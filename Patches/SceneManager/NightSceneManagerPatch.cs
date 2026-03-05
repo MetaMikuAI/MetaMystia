@@ -49,5 +49,7 @@ public static partial class NightSceneManagerPatch
             },
             timeoutSeconds: 120
         );
+
+        SkinManager.OnSceneEnter();
     }
 }

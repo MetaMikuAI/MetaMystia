@@ -155,6 +155,12 @@ public partial class PeerPlayer : NetPlayer
         IgnoreCollisionWithSelf();
         UpdateVisibleState(visible);
         FloatingTextHelper.SetPlayerLabel(Uid, Id, unit.transform);
+        if (Skin != null)
+        {
+            var compact = SkinManager.ResolveSkin(Skin.Value);
+            if (compact != null)
+                SkinManager.ApplyToUnit(CharacterId, compact);
+        }
         Log.LogMessage($"PeerPlayer '{CharacterId}' post-spawn setup done (visible={visible})");
     }
 

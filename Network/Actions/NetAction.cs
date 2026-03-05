@@ -43,6 +43,7 @@ public enum ActionType : ushort
     IZAKAYA_CLOSE,
     GET_COLLECTABLE, // disabled
     PLAYER_ID_CHANGE,
+    SKIN_CHANGE,
 }
 
 [MemoryPackable]
@@ -78,6 +79,7 @@ public enum ActionType : ushort
 [MemoryPackUnion((ushort)ActionType.IZAKAYA_CLOSE, typeof(IzakayaCloseAction))]
 [MemoryPackUnion((ushort)ActionType.GET_COLLECTABLE, typeof(GetCollectableAction))]
 [MemoryPackUnion((ushort)ActionType.PLAYER_ID_CHANGE, typeof(PlayerIdChangeAction))]
+[MemoryPackUnion((ushort)ActionType.SKIN_CHANGE, typeof(SkinChangeAction))]
 [AutoLog]
 
 public abstract partial class Action
