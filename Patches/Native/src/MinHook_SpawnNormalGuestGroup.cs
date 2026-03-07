@@ -75,7 +75,7 @@ public static partial class SpawnNormalGuestGroupHook
             return IntPtr.Zero;
         }
 
-        if (MpManager.ShouldSkipAction || MpManager.IsClient) return res;
+        if (MpManager.ShouldSkipAction || !MpManager.IsConnectedHost) return res;
 
         var guestGroupControllerCvt = new GuestGroupController(res);
         // var normalGuestsCvt = new Il2CppSystem.Collections.Generic.IEnumerable<NormalGuest>(normalGuests);

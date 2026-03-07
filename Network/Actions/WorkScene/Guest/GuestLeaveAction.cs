@@ -6,6 +6,9 @@ using MetaMystia.Patch;
 
 namespace MetaMystia.Network;
 
+/// <summary>
+/// 任何玩家 → 全体玩家：通告某个顾客离开以及离开的方式。
+/// </summary>
 [MemoryPackable]
 [AutoLog]
 [HostRelay]

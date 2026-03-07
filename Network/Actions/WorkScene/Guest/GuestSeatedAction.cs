@@ -6,9 +6,11 @@ using MetaMystia.Patch;
 
 namespace MetaMystia.Network;
 
+/// <summary>
+/// 房主(主机) → 全体玩家：通告客人落座
+/// </summary>
 [MemoryPackable]
 [AutoLog]
-[HostRelay]
 public partial class GuestSeatedAction : Action
 {
     public override ActionType Type => ActionType.GUEST_SEATED;

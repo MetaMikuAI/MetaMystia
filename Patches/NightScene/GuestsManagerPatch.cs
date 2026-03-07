@@ -223,7 +223,7 @@ public partial class GuestsManagerPatch
         bool IsReimuSpellCardTriggered = Functional.CheckStacktraceContains("InitializeAsGeneralWorkScene");
         if (IsReimuSpellCardTriggered) return true;
 
-        if (MpManager.IsClient) return false;
+        if (!MpManager.IsConnectedHost) return false;
 
         if (!PlayerManager.SpecialGuestAvailable(id))
         {

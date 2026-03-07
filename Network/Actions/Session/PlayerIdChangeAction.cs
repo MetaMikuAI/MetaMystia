@@ -5,8 +5,11 @@ using SgrYuki;
 
 namespace MetaMystia.Network;
 
+/// <summary>
+/// 任何玩家 → 所有玩家：通告玩家 ID 变更
+/// </summary>
 [MemoryPackable]
-[Action.HostRelay]
+[HostRelay]
 public partial class PlayerIdChangeAction : Action
 {
     public override ActionType Type => ActionType.PLAYER_ID_CHANGE;

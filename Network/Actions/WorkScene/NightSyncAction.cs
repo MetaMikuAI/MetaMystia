@@ -2,9 +2,12 @@ using MemoryPack;
 
 namespace MetaMystia.Network;
 
+/// <summary>
+/// 任何玩家 → 全体玩家：夜间角色移动同步
+/// </summary>
 [MemoryPackable]
 [AutoLog]
-[Action.HostRelay]
+[HostRelay]
 public partial class NightSyncAction : Action
 {
     public override ActionType Type => ActionType.NIGHTSYNC;

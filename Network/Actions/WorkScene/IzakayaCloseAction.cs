@@ -1,10 +1,12 @@
 using MemoryPack;
 
 using MetaMystia.UI;
-using SgrYuki;
 
 namespace MetaMystia.Network;
 
+/// <summary>
+/// 主机 → 所有客机：广播打烊
+/// </summary>
 [MemoryPackable]
 [AutoLog]
 public partial class IzakayaCloseAction : Action

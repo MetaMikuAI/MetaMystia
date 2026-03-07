@@ -14,9 +14,12 @@ public enum GuestPayType
     Combo
 }
 
+/// <summary>
+/// 房主(主机) → 全体玩家：通告客人付款与付款类型
+/// </summary>
 [MemoryPackable]
 [AutoLog]
-[Action.HostRelay]
+[HostRelay]
 public partial class GuestPayAction : Action
 {
     public override ActionType Type => ActionType.GUEST_PAY;

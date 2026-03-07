@@ -1,9 +1,12 @@
 using MemoryPack;
+
 using static MetaMystia.WorkSceneManager;
 
 namespace MetaMystia.Network;
 
-
+/// <summary>
+/// 房主(主机) → 全体玩家：通告生成客人
+/// </summary>
 [MemoryPackable]
 [HostRelay]
 public partial class GuestSpawnAction : Action

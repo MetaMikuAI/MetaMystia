@@ -3,9 +3,14 @@ using MemoryPack;
 using SgrYuki;
 namespace MetaMystia.Network;
 
+/// <summary>
+/// 任何玩家 → 所有玩家：采集同步，暂时弃用
+/// 弃用理由：采集同步导致全体资源数 * n，且无法保证采集的游戏时间一致
+/// 反对理由：玩家不方便协同收集资源
+/// </summary>
 [MemoryPackable]
 [AutoLog]
-[Action.HostRelay]
+[HostRelay]
 public partial class GetCollectableAction : Action
 {
     public override ActionType Type => ActionType.GET_COLLECTABLE;

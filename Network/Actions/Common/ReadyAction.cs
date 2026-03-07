@@ -12,6 +12,10 @@ public enum ReadyType
     PrepOver
 }
 
+
+/// <summary>
+/// 任何玩家 → 所有玩家：通告准备状态（DayScene/PrepScene）
+/// </summary>
 [MemoryPackable]
 [AutoLog]
 [HostRelay]

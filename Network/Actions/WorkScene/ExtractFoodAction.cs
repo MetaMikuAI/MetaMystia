@@ -1,12 +1,17 @@
 using MemoryPack;
 
+using GameData.RunTime.NightSceneUtility;
+
 using MetaMystia.Patch;
 
 namespace MetaMystia.Network;
 
+/// <summary>
+/// 任何玩家 → 全体玩家：通告某个料理被从保温箱中取出，与 StoreFood 对应
+/// </summary>
 [MemoryPackable]
 [AutoLog]
-[Action.HostRelay]
+[HostRelay]
 public partial class ExtractFoodAction : Action
 {
     public override ActionType Type => ActionType.EXTRACT_FOOD;
@@ -20,7 +25,7 @@ public partial class ExtractFoodAction : Action
     {
         PluginManager.Instance.RunOnMainThread(() =>
         {
-            GameData.RunTime.NightSceneUtility.IzakayaConfigure.Instance?.RemoveStoredFood(Food.GetFromLocal());
+            IzakayaConfigure.Instance?.RemoveStoredFood(Food.GetFromLocal());
             WorkSceneStoragePannelPatch.instanceRef?.UpdateFoodField();
             WorkSceneStoragePannelPatch.instanceRef?.m_FoodsGroup?.UpdateElements();
         });

@@ -15,7 +15,7 @@ public partial class SellableFood
 {
     public int FoodId { get; set; }
     public int Level { get; set; }
-    public int[] ModifierIds { get; set; } = [];
+    public int[] ModifierIds { get; set; } = []; // 附加原料
     public int[] AdditiveTags { get; set; } = [];
     public int CookId { get; set; }
 

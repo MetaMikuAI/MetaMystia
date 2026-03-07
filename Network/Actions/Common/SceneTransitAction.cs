@@ -14,7 +14,9 @@ namespace MetaMystia.Network;
 //     EmptyScene
 // }
 
-
+/// <summary>
+/// 所有玩家 → 所有玩家：通告自身 Scene 切换
+/// </summary>
 [MemoryPackable]
 [AutoLog]
 [HostRelay]

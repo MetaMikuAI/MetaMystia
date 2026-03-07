@@ -3,6 +3,10 @@ using MemoryPack;
 using GameData.Core.Collections;
 
 using MetaMystia.Patch;
+
+/// <summary>
+/// 任何玩家 → 所有玩家：通告玩家将 Sellable 储存在空厨具上
+/// </summary>
 namespace MetaMystia.Network;
 
 [MemoryPackable]

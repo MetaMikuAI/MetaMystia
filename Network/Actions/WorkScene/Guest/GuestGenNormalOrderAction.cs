@@ -1,10 +1,13 @@
-using System;
-using GameData.Core.Collections.NightSceneUtility;
 using MemoryPack;
-using NightScene.GuestManagementUtility;
+using System;
+
+using GameData.Core.Collections.NightSceneUtility;
 
 namespace MetaMystia.Network;
 
+/// <summary>
+/// 主机(房主) → 全体玩家：通告某个普通顾客生成了普通订单
+/// </summary>
 [MemoryPackable]
 [AutoLog]
 [HostRelay]
@@ -18,7 +21,6 @@ public partial class GuestGenNormalOrderAction : Action
 
 
     [CheckScene(Common.UI.Scene.WorkScene)]
-    // [ExecuteAfterStory]
     public override void OnReceivedDerived()
     {
         var fsm = GuestUUID.GetGuestFSM();

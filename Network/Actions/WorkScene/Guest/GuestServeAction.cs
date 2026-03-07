@@ -8,6 +8,8 @@ using MetaMystia.Patch;
 
 namespace MetaMystia.Network;
 
+// TODO: refactor
+
 [MemoryPackable]
 [AutoLog]
 [HostRelay]

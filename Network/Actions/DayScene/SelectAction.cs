@@ -5,6 +5,9 @@ using MetaMystia.UI;
 
 namespace MetaMystia.Network;
 
+/// <summary>
+/// 任何玩家 → 所有玩家：通告玩家所选店铺地点和等级
+/// </summary>
 [MemoryPackable]
 [HostRelay]
 public partial class SelectAction : Action

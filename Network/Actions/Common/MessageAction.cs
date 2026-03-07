@@ -1,3 +1,4 @@
+using System.Data.Common;
 using MemoryPack;
 
 using MetaMystia.UI;
@@ -5,8 +6,11 @@ using SgrYuki;
 
 namespace MetaMystia.Network;
 
+/// <summary>
+/// 任何玩家 → 所有玩家：发送聊天消息
+/// </summary>
 [MemoryPackable]
-[Action.HostRelay]
+[HostRelay]
 public partial class MessageAction : Action
 {
     public override ActionType Type => ActionType.MESSAGE;

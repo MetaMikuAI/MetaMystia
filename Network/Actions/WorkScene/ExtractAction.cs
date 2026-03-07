@@ -4,9 +4,12 @@ using MetaMystia.Patch;
 
 namespace MetaMystia.Network;
 
+/// <summary>
+/// 任何玩家 → 全体玩家：通告某个厨具(包括空厨具)中的料理被取出
+/// </summary>
 [MemoryPackable]
 [AutoLog]
-[Action.HostRelay]
+[HostRelay]
 public partial class ExtractAction : Action
 {
     public override ActionType Type => ActionType.EXTRACT;

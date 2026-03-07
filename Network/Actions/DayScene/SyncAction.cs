@@ -4,9 +4,12 @@ using UnityEngine;
 
 namespace MetaMystia.Network;
 
+/// <summary>
+/// 任何玩家 → 全体玩家：通告角色移动同步，主要是白天。
+/// </summary>
 [MemoryPackable]
 [AutoLog]
-[Action.HostRelay]
+[HostRelay]
 public partial class SyncAction : Action
 {
     public override ActionType Type => ActionType.SYNC;

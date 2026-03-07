@@ -1,10 +1,15 @@
-using System;
-using GameData.Core.Collections.NightSceneUtility;
 using MemoryPack;
+using System;
+
+using GameData.Core.Collections.NightSceneUtility;
+
 using static NightScene.GuestManagementUtility.GuestsManager;
 
 namespace MetaMystia.Network;
 
+/// <summary>
+/// 储存普客和稀客订单信息
+/// </summary>
 [MemoryPackable]
 public partial class GuestOrder
 {

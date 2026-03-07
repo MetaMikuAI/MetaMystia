@@ -9,8 +9,6 @@ namespace MetaMystia.Patch;
 [AutoLog]
 public static partial class StatusTrackerPatch
 {
-    public static StatusTracker InstanceRef => StatusTracker.Instance;
-
     [HarmonyPatch(nameof(StatusTracker.RecordInvitedGuest))]
     [HarmonyPostfix]
     public static void RecordInvitedGuest_Postfix(int guestId)
