@@ -50,6 +50,12 @@ public static partial class ResourceExManager
             return;
         }
 
+        if (prerequisiteEvent is null || prerequisiteEvent.Equals(""))
+        {
+            Log.Warning($"No prerequisite event defined for character {config.name}({config.id}) at bond level {currentBondLevel}, skipping activation.");
+            return;
+        }
+
         scheduledEvents.Add(prerequisiteEvent);
         Log.Info($"Activated kizuna event node for character {config.name}({config.id}) at bond level {currentBondLevel}");
     }
