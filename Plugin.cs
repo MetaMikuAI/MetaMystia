@@ -56,7 +56,6 @@ public class Plugin : BasePlugin
         typeof(NightSceneEventManagerPatch),
         typeof(MystiaQTEBuffRewardPatch),
         typeof(GameTimeManagerPatch),
-        typeof(NightScene_SceneManager__c__DisplayClass62_0_Patch),
 
         // ResourceEx Patches
         typeof(DataBaseCharacterPatch),

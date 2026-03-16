@@ -5,7 +5,6 @@ using StaffScene;
 namespace MetaMystia;
 
 [HarmonyPatch(typeof(StaffScene.SceneManager))]
-[HarmonyPatch]
 [AutoLog]
 public partial class StaffSceneManagerPatch
 {

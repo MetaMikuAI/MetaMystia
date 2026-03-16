@@ -5,25 +5,11 @@ using System.Linq;
 using GameData.Core.Collections.NightSceneUtility;
 using NightScene.GuestManagementUtility;
 
-using DEYU.Utils;
 using MetaMystia.Network;
 using SgrYuki;
 using SgrYuki.Utils;
 
 namespace MetaMystia.Patch;
-
-[HarmonyPatch]
-[AutoLog]
-public partial class NightScene_SceneManager__c__DisplayClass62_0_Patch
-{
-    [HarmonyPatch(typeof(NightScene.SceneManager.__c__DisplayClass62_0), nameof(NightScene.SceneManager.__c__DisplayClass62_0._InitializeAsGeneralWorkScene_b__0))]
-    [HarmonyPrefix]
-    public static void InitializeAsGeneralWorkScene_Prefix()
-    {
-        // This patch is for Reimu Protection spell card
-        Log.InfoCaller("called");
-    }
-}
 
 [HarmonyPatch(typeof(NightScene.GuestManagementUtility.GuestsManager))]
 [AutoLog]

@@ -5,16 +5,16 @@ using GameData.CoreLanguage.Collections;
 namespace MetaMystia.Patch;
 
 
-[HarmonyPatch(typeof(GameData.CoreLanguage.Collections.DaySceneLanguage))]
+[HarmonyPatch(typeof(GameData.CoreLanguage.Collections.NightSceneLanguage))]
 [AutoLog]
-public partial class DaySceneLanguagePatch
+public partial class NightSceneLanguagePatch
 {
-    [HarmonyPatch(nameof(DaySceneLanguage.Initialize))]
+    [HarmonyPatch(nameof(NightSceneLanguage.Initialize))]
     [HarmonyPostfix]
     public static void Initialize_Postfix()
     {
-        Log.LogInfo("DaySceneLanguage.Initialize Postfix called.");
-        ResourceExManager.OnDaySceneLanguageInitialized();
+        Log.LogInfo("NightSceneLanguage.Initialize Postfix called.");
+        ResourceExManager.OnNightSceneLanguageInitialized();
     }
 }
 
