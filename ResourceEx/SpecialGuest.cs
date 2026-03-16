@@ -246,7 +246,9 @@ public static partial class ResourceExManager
         var pixelSet = ScriptableObject.CreateInstance<CharacterSkinSets>();
         pixelSet.defaultSkin = MakePixel(config.characterSpriteSetCompact, config.PackageRoot);
 
-        dummyPortrayal.name = $"{config.name}_DummyPortrayal";
+        dummyPortrayal.name = $"_ResourceEx_{config.name}_DummyPortrayal";
+        pixelSet.name = $"_ResourceEx_{config.name}_PixelSet";
+
         var pair = new GuestProfilePair(
             id: config.id,
             bgColor: DataBaseCharacter.UnifiedNormalGuestBGColor,
