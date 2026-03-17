@@ -69,23 +69,11 @@ public partial class HelloAckAction : Action
         var existingPeers = new System.Collections.Generic.List<PlayerInfo>();
         foreach (var kvp in PlayerManager.Peers)
         {
-            if (kvp.Key == clientUid) continue; // 不发自己
-            existingPeers.Add(new PlayerInfo
-            {
-                Uid = kvp.Key,
-                PeerId = kvp.Value.Id,
-                DataBase = kvp.Value.DataBase,
-                Skin =  kvp.Value.Skin
-            });
+            if (kvp.Key == clientUid) continue; // 不含新加入者自身
+            existingPeers.Add(PlayerInfo.FromPlayer(kvp.Value));
         }
 
-        var hostInfo = new PlayerInfo
-        {
-            Uid = 0,
-            PeerId = PlayerManager.Local.Id,
-            DataBase = PlayerManager.Local.DataBase,
-            Skin = PlayerManager.Local.Skin
-        };
+        var hostInfo = PlayerInfo.FromPlayer(PlayerManager.Local);
 
         new HelloAckAction
         {

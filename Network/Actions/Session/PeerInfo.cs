@@ -12,4 +12,15 @@ public partial class PlayerInfo
     public string PeerId { get; set; } = "";
     public ResourceDataBase DataBase { get; set; }
     public PlayerSkin Skin { get; set; }
+
+    public static PlayerInfo FromPlayer(NetPlayer player)
+    {
+        return new PlayerInfo
+        {
+            Uid = player.Uid,
+            PeerId = player.Id,
+            DataBase = player.DataBase,
+            Skin = player.Skin
+        };
+    }
 }
