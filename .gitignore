@@ -1,17 +1,19 @@
 .idea
 .vs
 .agent
+*.user
+
 /bin
 /obj
+/LogGenerator/bin/
+/LogGenerator/obj/
+
 /Assembly-CSharp/.vs/
 /Assembly-CSharp/obj/
 /Assembly-CSharp/Assembly-CSharp.csproj
-/DebugImpl/
-/ForDebug/
 /MystiaReverse/
-/MetaMystia-ResourceExample/
-/LogGenerator/bin/
-/LogGenerator/obj/
+/DebugImpl/
+
 /meta-mystia-network/
 
 private.pem
