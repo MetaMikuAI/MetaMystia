@@ -1,6 +1,7 @@
 using UnityEngine;
 
 using Common.CharacterUtility;
+using GameData.RunTime.Common;
 using JetBrains.Annotations;
 
 namespace MetaMystia;
@@ -57,5 +58,14 @@ public partial class LocalPlayer : NetPlayer
             foreach (var peer in PlayerManager.Peers.Values)
                 peer.UpdateVisibleState();
         }
+    }
+
+    /// <summary>
+    /// 从游戏中获取实际皮肤数据
+    /// </summary>
+    public void InitSkin()
+    {
+        var clothes = RunTimeAlbum.GetPlayerClothes();
+        Skin.SetSkin(-1, clothes.skinIndex.selectedType, clothes.skinIndex.index);
     }
 }

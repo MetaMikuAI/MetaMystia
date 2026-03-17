@@ -218,6 +218,11 @@ public static partial class PlayerManager
     }
 
     /// <summary>
+    /// 从游戏中获取实际皮肤数据
+    /// </summary>
+    public static void InitLocalSkin() => Local.InitSkin();
+
+    /// <summary>
     /// 隐藏指定对端玩家的角色（移到不可见层级）并移除头顶标签。
     /// 在移除 peer 之前调用，避免留下"幽灵"角色。
     /// </summary>

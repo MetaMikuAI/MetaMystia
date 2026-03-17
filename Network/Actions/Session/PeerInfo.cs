@@ -11,4 +11,5 @@ public partial class PlayerInfo
     public int Uid { get; set; }
     public string PeerId { get; set; } = "";
     public ResourceDataBase DataBase { get; set; }
+    public PlayerSkin Skin { get; set; }
 }

@@ -284,9 +284,9 @@ public partial class InGameConsole
                 case "call":
                     CallCommand(args);
                     break;
-                case "skin":
-                    SkinCommand(args);
-                    break;
+                // case "skin":
+                //     SkinCommand(args);
+                //     break;
                 case "debug":
                     LogToConsole(MpManager.DebugText);
                     Log.Message(MpManager.DebugText);
@@ -525,117 +525,117 @@ public partial class InGameConsole
         }
     }
 
-    private void SkinCommand(string[] args)
-    {
-        if (args.Length == 0)
-        {
-            // /skin — 显示当前状态
-            if (SkinManager.IsEnabled)
-                LogToConsole(TextId.SkinStatus.Get(SkinManager.CurrentSkin));
-            else
-                LogToConsole(TextId.SkinStatusDisabled.Get());
-            LogToConsole(TextId.SkinUsage.Get());
-            return;
-        }
-
-        string sub = args[0].ToLower();
-        switch (sub)
-        {
-            case "on":
-                if (SkinManager.Enable())
-                    LogToConsole(TextId.SkinEnabled.Get(SkinManager.CurrentSkin));
-                else
-                    LogToConsole(TextId.SkinUsage.Get());
-                break;
-
-            case "off":
-                if (!SkinManager.IsEnabled)
-                {
-                    LogToConsole(TextId.SkinAlreadyDisabled.Get());
-                    break;
-                }
-                SkinManager.Disable();
-                LogToConsole(TextId.SkinDisabled.Get());
-                break;
-
-            case "set":
-                SkinSetCommand(args);
-                break;
-
-            case "list":
-                LogToConsole(TextId.SkinListHeader.Get());
-                var skins = SkinManager.ListMystiaSkins();
-                int idx = 0;
-                foreach (var (type, index, name) in skins)
-                {
-                    LogToConsole(TextId.SkinListItem.Get(idx++, type, index, name));
-                }
-                LogToConsole(TextId.SkinListNpcHint.Get());
-                break;
-
-            default:
-                LogToConsole(TextId.SkinUsage.Get());
-                break;
-        }
-    }
-
-    private void SkinSetCommand(string[] args)
-    {
-        // args[0] = "set", args[1..] = parameters
-        if (args.Length < 2)
-        {
-            LogToConsole(TextId.SkinUsage.Get());
-            return;
-        }
-
-        string target = args[1];
-
-        if (target.Equals("Mystia", System.StringComparison.OrdinalIgnoreCase))
-        {
-            // /skin set Mystia [type] [index]
-            var type = GameData.Core.Collections.CharacterUtility.CharacterSkinSets.SelectedType.Default;
-            int index = 0;
-
-            if (args.Length >= 3)
-            {
-                if (!System.Enum.TryParse<GameData.Core.Collections.CharacterUtility.CharacterSkinSets.SelectedType>(args[2], true, out type))
-                {
-                    LogToConsole(TextId.SkinInvalidType.Get(args[2]));
-                    return;
-                }
-            }
-
-            if (args.Length >= 4)
-            {
-                if (!int.TryParse(args[3], out index))
-                {
-                    LogToConsole(TextId.SkinInvalidIndex.Get(args[3], type));
-                    return;
-                }
-            }
-
-            if (SkinManager.SetMystiaSkin(type, index))
-            {
-                LogToConsole(TextId.SkinSetMystia.Get(type, index));
-            }
-            else
-            {
-                LogToConsole(TextId.SkinInvalidIndex.Get(index, type));
-            }
-        }
-        else
-        {
-            // /skin set <npcName>
-            if (SkinManager.SetNpcSkin(target))
-            {
-                LogToConsole(TextId.SkinSetNpc.Get(target));
-            }
-            else
-            {
-                LogToConsole(TextId.SkinNpcNotFound.Get(target));
-            }
-        }
-    }
+    // private void SkinCommand(string[] args)
+    // {
+    //     if (args.Length == 0)
+    //     {
+    //         // /skin — 显示当前状态
+    //         if (PlayerSkin.IsEnabled)
+    //             LogToConsole(TextId.SkinStatus.Get(PlayerSkin.CurrentSkin));
+    //         else
+    //             LogToConsole(TextId.SkinStatusDisabled.Get());
+    //         LogToConsole(TextId.SkinUsage.Get());
+    //         return;
+    //     }
+    //
+    //     string sub = args[0].ToLower();
+    //     switch (sub)
+    //     {
+    //         case "on":
+    //             if (PlayerSkin.Enable())
+    //                 LogToConsole(TextId.SkinEnabled.Get(PlayerSkin.CurrentSkin));
+    //             else
+    //                 LogToConsole(TextId.SkinUsage.Get());
+    //             break;
+    //
+    //         case "off":
+    //             if (!PlayerSkin.IsEnabled)
+    //             {
+    //                 LogToConsole(TextId.SkinAlreadyDisabled.Get());
+    //                 break;
+    //             }
+    //             PlayerSkin.Disable();
+    //             LogToConsole(TextId.SkinDisabled.Get());
+    //             break;
+    //
+    //         case "set":
+    //             SkinSetCommand(args);
+    //             break;
+    //
+    //         case "list":
+    //             LogToConsole(TextId.SkinListHeader.Get());
+    //             var skins = PlayerSkin.ListMystiaSkins();
+    //             int idx = 0;
+    //             foreach (var (type, index, name) in skins)
+    //             {
+    //                 LogToConsole(TextId.SkinListItem.Get(idx++, type, index, name));
+    //             }
+    //             LogToConsole(TextId.SkinListNpcHint.Get());
+    //             break;
+    //
+    //         default:
+    //             LogToConsole(TextId.SkinUsage.Get());
+    //             break;
+    //     }
+    // }
+    //
+    // private void SkinSetCommand(string[] args)
+    // {
+    //     // args[0] = "set", args[1..] = parameters
+    //     if (args.Length < 2)
+    //     {
+    //         LogToConsole(TextId.SkinUsage.Get());
+    //         return;
+    //     }
+    //
+    //     string target = args[1];
+    //
+    //     if (target.Equals("Mystia", System.StringComparison.OrdinalIgnoreCase))
+    //     {
+    //         // /skin set Mystia [type] [index]
+    //         var type = GameData.Core.Collections.CharacterUtility.CharacterSkinSets.SelectedType.Default;
+    //         int index = 0;
+    //
+    //         if (args.Length >= 3)
+    //         {
+    //             if (!System.Enum.TryParse<GameData.Core.Collections.CharacterUtility.CharacterSkinSets.SelectedType>(args[2], true, out type))
+    //             {
+    //                 LogToConsole(TextId.SkinInvalidType.Get(args[2]));
+    //                 return;
+    //             }
+    //         }
+    //
+    //         if (args.Length >= 4)
+    //         {
+    //             if (!int.TryParse(args[3], out index))
+    //             {
+    //                 LogToConsole(TextId.SkinInvalidIndex.Get(args[3], type));
+    //                 return;
+    //             }
+    //         }
+    //
+    //         if (PlayerSkin.SetMystiaSkin(type, index))
+    //         {
+    //             LogToConsole(TextId.SkinSetMystia.Get(type, index));
+    //         }
+    //         else
+    //         {
+    //             LogToConsole(TextId.SkinInvalidIndex.Get(index, type));
+    //         }
+    //     }
+    //     else
+    //     {
+    //         // /skin set <npcName>
+    //         if (PlayerSkin.SetNpcSkin(target))
+    //         {
+    //             LogToConsole(TextId.SkinSetNpc.Get(target));
+    //         }
+    //         else
+    //         {
+    //             LogToConsole(TextId.SkinNpcNotFound.Get(target));
+    //         }
+    //     }
+    // }
 
     private void CallCommand(string[] args)
     {

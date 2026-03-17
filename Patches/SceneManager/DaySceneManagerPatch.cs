@@ -21,10 +21,10 @@ public partial class DaySceneManagerPatch
     {
         MpManager.OnSceneTransit(Scene.DayScene);
         PlayerManager.Local.ResetState();
+        PlayerManager.InitLocalSkin();
         PlayerManager.SpawnPeers();
         ResourceExManager.OnDaySceneAwake();
         PrepSceneManager.ClearPrepTable();
-        SkinManager.OnSceneEnter();
 
         // if (MpManager.IsConnected)
         // {

@@ -81,9 +81,11 @@ public abstract partial class NetPlayer
     public virtual float Speed { get; set; } = 1f;
 
     /// <summary>
-    /// 当前激活的皮肤覆盖，null 表示使用默认外观
+    /// 皮肤
     /// </summary>
-    public SkinManager.SkinSelection? Skin { get; set; }
+    public PlayerSkin Skin { get; set; } = new();
+
+    public void UpdateCharacterSprite() => Skin?.ApplyToUnit(unit);
 
     /// <summary>
     /// 输入方向向量

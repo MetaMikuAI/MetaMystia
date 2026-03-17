@@ -58,7 +58,6 @@ public partial class HelloAckAction : Action
 
         MpManager.OnHandshakeComplete(HostInfo.PeerId);
         Notify.ShowOnMainThread(TextId.MpConnected.Get(HostInfo.PeerId));
-        SkinManager.OnPeerJoined();
     }
 
     /// <summary>
@@ -75,7 +74,8 @@ public partial class HelloAckAction : Action
             {
                 Uid = kvp.Key,
                 PeerId = kvp.Value.Id,
-                DataBase = kvp.Value.DataBase
+                DataBase = kvp.Value.DataBase,
+                Skin =  kvp.Value.Skin
             });
         }
 
@@ -83,7 +83,8 @@ public partial class HelloAckAction : Action
         {
             Uid = 0,
             PeerId = PlayerManager.Local.Id,
-            DataBase = PlayerManager.Local.DataBase
+            DataBase = PlayerManager.Local.DataBase,
+            Skin = PlayerManager.Local.Skin
         };
 
         new HelloAckAction

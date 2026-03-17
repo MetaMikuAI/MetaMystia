@@ -57,6 +57,9 @@ public class Plugin : BasePlugin
         typeof(MystiaQTEBuffRewardPatch),
         typeof(GameTimeManagerPatch),
 
+
+        typeof(RunTimeAlbumPatch),
+
         // ResourceEx Patches
         typeof(DataBaseCharacterPatch),
         typeof(DataBaseDayPatch),
