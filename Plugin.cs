@@ -39,6 +39,7 @@ public class Plugin : BasePlugin
         typeof(CharacterControllerInputGeneratorComponentPatch),
         typeof(DayScenePlayerInputPatch),
         typeof(DaySceneMapPatch),
+        typeof(NoteBookProfilePannelPatch),
 
         // PrepScene Patches
         typeof(IzakayaConfigPannelPatch),
@@ -56,7 +57,6 @@ public class Plugin : BasePlugin
         typeof(NightSceneEventManagerPatch),
         typeof(MystiaQTEBuffRewardPatch),
         typeof(GameTimeManagerPatch),
-
 
         typeof(RunTimeAlbumPatch),
 

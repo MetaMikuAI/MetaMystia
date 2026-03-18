@@ -233,6 +233,19 @@ public static partial class PlayerManager
     }
 
     /// <summary>
+    /// 刷新 NightScene 中的角色立绘（通过重新触发 SetupPortrayalVisual 前缀钩子）
+    /// </summary>
+    public static void RefreshPortrait()
+    {
+        if (MpManager.LocalScene != Common.UI.Scene.WorkScene) return;
+        var uiManager = NightScene.UI.UIManager.Instance;
+        if (uiManager != null)
+        {
+            uiManager.InitializePlayerPortrayal();
+        }
+    }
+
+    /// <summary>
     /// 隐藏指定对端玩家的角色（移到不可见层级）并移除头顶标签。
     /// 在移除 peer 之前调用，避免留下"幽灵"角色。
     /// </summary>

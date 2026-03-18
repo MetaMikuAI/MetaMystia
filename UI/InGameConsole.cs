@@ -548,6 +548,7 @@ public partial class InGameConsole
                 PlayerManager.Local.UpdateCharacterSprite();
                 if (MpManager.IsConnected)
                     Network.SkinChangeAction.Send(PlayerManager.Local.Skin);
+                PlayerManager.RefreshPortrait();
                 LogToConsole("Skin reset to game default.");
                 break;
 
@@ -595,6 +596,7 @@ public partial class InGameConsole
         PlayerManager.Local.UpdateCharacterSprite();
         if (MpManager.IsConnected)
             Network.SkinChangeAction.Send(PlayerManager.Local.Skin);
+        PlayerManager.RefreshPortrait();
         LogToConsole($"Skin set to: CharacterId={characterId}, Type={selectedType}, Index={skinIndex}");
     }
 

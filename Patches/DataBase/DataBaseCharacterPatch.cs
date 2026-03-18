@@ -57,11 +57,25 @@ public partial class DataBaseCharacterPatch
     }
 
 
-    // ResourceEX/Clothes
+    // /skin 立绘覆盖 > ResourceEX/Clothes 立绘覆盖 > 游戏原逻辑
     [HarmonyPatch(nameof(DataBaseCharacter.SetupPortrayalVisual))]
     [HarmonyPrefix]
-    public static void SetupPortrayalVisual_Prefix(ref Image imageComponent)
+    public static bool SetupPortrayalVisual_Prefix(ref Image imageComponent)
     {
+        // /skin 立绘覆盖
+        if (PlayerManager.Local?.IsCustomSkinOverride == true)
+        {
+            var sprite = PlayerManager.Local.Skin.ResolvePortraitSprite();
+            if (sprite != null)
+            {
+                imageComponent.overrideSprite = null;
+                imageComponent.sprite = sprite;
+                return false;
+            }
+            Log.Warning("Custom skin override active but portrait sprite is null, falling through to game logic.");
+        }
+
+        // ResourceEx 服装立绘覆盖
         var currentSkin = GameData.RunTime.Common.RunTimeAlbum.CurrentPlayerSkin;
         if (ResourceExManager.IsResourceExCloth(currentSkin))
         {
@@ -75,5 +89,7 @@ public partial class DataBaseCharacterPatch
                 Log.Info($"ResourceEx cloth ID {currentSkin} has no portrait configured.");
             }
         }
+
+        return true;
     }
 }

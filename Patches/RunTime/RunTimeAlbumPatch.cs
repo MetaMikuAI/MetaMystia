@@ -15,6 +15,7 @@ public partial class RunTimeAlbumPatch
     public static void ChangePlayerSkin_Postfix(int skinSelectionInfo)
     {
         Log.Info($"Player skin changed to {skinSelectionInfo}");
+        PlayerManager.Local.IsCustomSkinOverride = false;
         PlayerManager.InitLocalSkin();
         SkinChangeAction.Send(PlayerManager.Local.Skin);
     }
