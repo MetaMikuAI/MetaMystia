@@ -19,6 +19,7 @@ public partial class HelloAction : Action
     public string GameVersion { get; set; } = "";
     public Scene CurrentGameScene { get; set; }
     public ResourceDataBase PeerDataBase { get; set; } // TODO: 数据可能过大，考虑做优化
+    public PlayerSkin PeerSkin { get; set; }
 
     protected override BepInEx.Logging.LogLevel OnReceiveLogLevel => BepInEx.Logging.LogLevel.Message;
     protected override BepInEx.Logging.LogLevel OnSendLogLevel => BepInEx.Logging.LogLevel.Message;
@@ -64,7 +65,7 @@ public partial class HelloAction : Action
 
         int assignedUid = SenderUid;
 
-        var peer = PlayerManager.AddPeer(assignedUid, PeerId, PeerDataBase);
+        var peer = PlayerManager.AddPeer(assignedUid, PeerId, PeerDataBase, PeerSkin);
 
         // 如果主机当前在 DayScene，则为新加入的 peer 立即生成角色
         if (MpManager.LocalScene == Scene.DayScene)
@@ -96,7 +97,8 @@ public partial class HelloAction : Action
             Version = Plugin.ModVersion,
             CurrentGameScene = MpManager.LocalScene,
             GameVersion = Plugin.GameVersion,
-            PeerDataBase = PlayerManager.Local.DataBase
+            PeerDataBase = PlayerManager.Local.DataBase,
+            PeerSkin = PlayerManager.Local.Skin
         }.SendToHostOrBroadcast();
     }
 }

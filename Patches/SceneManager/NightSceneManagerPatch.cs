@@ -1,6 +1,7 @@
 using HarmonyLib;
 
 using Common.UI;
+using MetaMystia.Network;
 using NightScene;
 
 using MetaMystia.UI;
@@ -20,11 +21,13 @@ public static partial class NightSceneManagerPatch
     {
         MpManager.OnSceneTransit(Scene.WorkScene);
         PlayerManager.Local.ResetState();
+        PlayerManager.InitLocalSkin();
 
         if (!MpManager.IsConnected)
         {
             return;
         }
+        SkinChangeAction.Send(PlayerManager.Local.Skin);
 
         PrepSceneManager.ClearPrepTable();
         WorkSceneManager.Clear();

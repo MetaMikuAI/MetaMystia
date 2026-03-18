@@ -208,6 +208,7 @@ public static partial class ResourceExManager
             template.TrimBackSpriteFrameSpeed
         );
 
+        pixel.name = pixelConfig.name;
         _characterSpriteSets[pixelConfig.name] = pixel;
         return pixel;
     }

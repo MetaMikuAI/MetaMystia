@@ -15,6 +15,7 @@ public partial class PeerJoinAction : Action
     public int PeerUid { get; set; }
     public string PeerId { get; set; } = "";
     public ResourceDataBase PeerDataBase { get; set; }
+    public PlayerSkin PeerSkin { get; set; }
 
     protected override BepInEx.Logging.LogLevel OnReceiveLogLevel => BepInEx.Logging.LogLevel.Message;
 
@@ -26,7 +27,7 @@ public partial class PeerJoinAction : Action
 
         if (!PlayerManager.Peers.ContainsKey(PeerUid))
         {
-            var peer = PlayerManager.AddPeer(PeerUid, PeerId, PeerDataBase);
+            var peer = PlayerManager.AddPeer(PeerUid, PeerId, PeerDataBase, PeerSkin);
 
             // 如果当前在 DayScene，立即为新 peer 生成角色
             if (MpManager.LocalScene == Common.UI.Scene.DayScene)
@@ -50,7 +51,8 @@ public partial class PeerJoinAction : Action
         {
             PeerUid = newPeerUid,
             PeerId = peerId,
-            PeerDataBase = dataBase
+            PeerDataBase = dataBase,
+            PeerSkin = PlayerManager.Peers.TryGetValue(newPeerUid, out var p) ? p.Skin : new PlayerSkin()
         };
         var packet = NetPacket.FromSingleAction(action);
         MpManager.SendToAllExcept(newPeerUid, packet);

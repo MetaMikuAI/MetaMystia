@@ -61,10 +61,16 @@ public partial class LocalPlayer : NetPlayer
     }
 
     /// <summary>
-    /// 从游戏中获取实际皮肤数据
+    /// 是否通过 /skin set 手动设置了自定义皮肤覆盖
+    /// </summary>
+    public bool IsCustomSkinOverride { get; set; } = false;
+
+    /// <summary>
+    /// 从游戏中获取实际皮肤数据（仅在未手动覆盖时执行）
     /// </summary>
     public void InitSkin()
     {
+        if (IsCustomSkinOverride) return;
         var clothes = RunTimeAlbum.GetPlayerClothes();
         Skin.SetSkin(-1, clothes.skinIndex.selectedType, clothes.skinIndex.index);
     }

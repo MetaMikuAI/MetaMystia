@@ -1,7 +1,7 @@
 using MemoryPack;
 using System;
 using System.Collections.Generic;
-
+using System.Text;
 using Common.CharacterUtility;
 using Cpp2IL.Core.Extensions;
 using GameData.Core.Collections.CharacterUtility;
@@ -78,6 +78,21 @@ public partial class PlayerSkin
     public void ApplyToUnit(CharacterControllerUnit unit)
         => unit?.UpdateCharacterSprite(ResolveSkin());
 
+
+    /// <summary>
+    /// 获取全部可用皮肤的表格字符串，格式为 "name: CharacterId SelectedType SkinIndex"
+    /// </summary>
+    /// <returns></returns>
+    public static string GetAllSkinsTable()
+    {
+        var table = new StringBuilder();
+        foreach (var skin in ListAllSkins())
+        {
+            table.AppendLine($"{skin.name}: {skin.skin.CharacterId} {skin.skin.SelectedType} {skin.skin.SkinIndex}");
+        }
+        return table.ToString();
+    }
+
     /// <summary>
     /// 列举全部可用皮肤
     /// </summary>
@@ -86,7 +101,7 @@ public partial class PlayerSkin
     {
         List<(PlayerSkin, string)> skins = [];
         skins.AddRange(ListSkinsFromSets(DataBaseCharacter.SelfSpriteSet, -1));
-        foreach (var characterId in  DataBaseCharacter.SpecialGuestVisual._keys)
+        foreach (int characterId in  DataBaseCharacter.SpecialGuestVisual.Keys)
         {
             skins.AddRange(ListSkinsFromSets(DataBaseCharacter.SpecialGuestVisual[characterId]?.CharacterPixel, characterId));
         }
@@ -105,7 +120,7 @@ public partial class PlayerSkin
             SelectedType = CharacterSkinSets.SelectedType.Default,
         }, skinSets.defaultSkin?.name ?? "Default"));
 
-        for(var i = 0; i < skinSets.explicits.Length; i++)
+        for(var i = 0; i < skinSets.explicits?.Length; i++)
         {
             var skin = skinSets.explicits[i];
             skins.Add((new PlayerSkin
@@ -116,7 +131,7 @@ public partial class PlayerSkin
             }, skin?.name ?? $"Explicit_{i}"));
         }
 
-        for (var i = 0; i < skinSets.dlcs.Length; i++)
+        for (var i = 0; i < skinSets.dlcs?.Length; i++)
         {
             var skin = skinSets.dlcs[i];
             skins.Add((new PlayerSkin

@@ -42,12 +42,12 @@ public partial class HelloAckAction : Action
         Log.LogMessage($"Assigned UID: {AssignedUid}");
 
         // 注册主机为 peer (uid=0)
-        var hostPeer = PlayerManager.AddPeer(0, HostInfo.PeerId, HostInfo.DataBase);
+        var hostPeer = PlayerManager.AddPeer(0, HostInfo.PeerId, HostInfo.DataBase, HostInfo.Skin);
 
         // 注册已有的其他 peer
         foreach (var p in ExistingPeers)
         {
-            PlayerManager.AddPeer(p.Uid, p.PeerId, p.DataBase);
+            PlayerManager.AddPeer(p.Uid, p.PeerId, p.DataBase, p.Skin);
         }
 
         // 如果当前在 DayScene（重连），立即为所有 peer 生成角色

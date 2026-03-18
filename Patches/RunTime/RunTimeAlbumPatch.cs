@@ -1,6 +1,7 @@
 using HarmonyLib;
 
 using GameData.RunTime.Common;
+using MetaMystia.Network;
 
 
 namespace MetaMystia.Patch;
@@ -15,6 +16,6 @@ public partial class RunTimeAlbumPatch
     {
         Log.Info($"Player skin changed to {skinSelectionInfo}");
         PlayerManager.InitLocalSkin();
-        // TODO: sync
+        SkinChangeAction.Send(PlayerManager.Local.Skin);
     }
 }

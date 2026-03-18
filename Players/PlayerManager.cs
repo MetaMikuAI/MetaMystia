@@ -203,13 +203,14 @@ public static partial class PlayerManager
     /// <summary>
     /// 握手成功后，根据对端 UID 创建并注册 PeerPlayer
     /// </summary>
-    public static PeerPlayer AddPeer(int uid, string peerId, ResourceDataBase resourceDataBase = null)
+    public static PeerPlayer AddPeer(int uid, string peerId, ResourceDataBase resourceDataBase = null, PlayerSkin skin = null)
     {
         if (Peers.TryGetValue(uid, out var existing))
         {
             Log.LogWarning($"Peer with uid={uid} already exists (id='{existing.Id}'), replacing");
         }
         var peer = new PeerPlayer(uid, resourceDataBase) { Id = peerId };
+        if (skin != null) peer.Skin = skin;
         peer.ResetState();
         peer.ResetMotion();
         Peers[uid] = peer;
@@ -218,9 +219,18 @@ public static partial class PlayerManager
     }
 
     /// <summary>
-    /// 从游戏中获取实际皮肤数据
+    /// 从游戏中获取实际皮肤数据，并在角色就绪后应用皮肤
     /// </summary>
-    public static void InitLocalSkin() => Local.InitSkin();
+    public static void InitLocalSkin()
+    {
+        Local.InitSkin();
+        // 场景切换后角色会被重建，需要在 unit 就绪后重新应用皮肤
+        SgrYuki.CommandScheduler.Enqueue(
+            executeWhen: () => Local.unit != null,
+            execute: () => Local.UpdateCharacterSprite(),
+            timeoutSeconds: 30
+        );
+    }
 
     /// <summary>
     /// 隐藏指定对端玩家的角色（移到不可见层级）并移除头顶标签。

@@ -26,6 +26,12 @@ public partial class DaySceneManagerPatch
         ResourceExManager.OnDaySceneAwake();
         PrepSceneManager.ClearPrepTable();
 
+        if (MpManager.IsConnected)
+        {
+            SkinChangeAction.Send(PlayerManager.Local.Skin);
+        }
+
+
         // if (MpManager.IsConnected)
         // {
         //     CommandScheduler.EnqueueKey(
