@@ -4,6 +4,7 @@ using NightScene.UI.GuestManagementUtility;
 
 using MetaMystia.Network;
 using SgrYuki;
+using static MetaMystia.Patch.HarmonyPrefixFlow;
 
 namespace MetaMystia.Patch;
 
@@ -34,9 +35,9 @@ public partial class WorkSceneServePannelPatch
     [HarmonyPrefix]
     public static bool OnPanelClose_Prefix(WorkSceneServePannel __instance)
     {
-        if (ManuallyClosePanel) return true;
-        if (__instance == null) return false;
-        if (MpManager.ShouldSkipAction) return true;
+        if (ManuallyClosePanel) return RunOriginal;
+        if (__instance == null) return SkipOriginal;
+        if (MpManager.ShouldSkipAction) return RunOriginal;
 
         var order = __instance.operatingOrder;
         var guest = __instance.currentGuestController;
@@ -67,17 +68,17 @@ public partial class WorkSceneServePannelPatch
             }
 
             WorkSceneManager.CloseTrayPanel(__instance);
-            return false;
+            return SkipOriginal;
         }
 
         var uuid = WorkSceneManager.GetGuestUUID(guest);
-        if (uuid == null) return true;
+        if (uuid == null) return RunOriginal;
 
         var fsm = WorkSceneManager.GetGuestFSM(uuid);
         if (fsm.IsOrderFulfilled())
         {
             Log.InfoCaller($"{fsm.Identifier} GuestOrder Fulfilled !");
-            return true;
+            return RunOriginal;
         }
 
         // SellableFood food = order.ServFood != null ? SellableFood.FromSellable(order.servFood) : null;
@@ -91,7 +92,7 @@ public partial class WorkSceneServePannelPatch
         if (food == null && beverageId == null)
         {
             Log.DebugCaller($"{fsm.Identifier} food and beverage are null, will not serve");
-            return true;
+            return RunOriginal;
         }
 
         void LogWarningIfNoServe()
@@ -142,7 +143,7 @@ public partial class WorkSceneServePannelPatch
         }
 
         Log.InfoCaller($"{fsm.Identifier} served status: food {fsm.IsOrderFoodServed()}, bev {fsm.IsOrderBeverageServed()}; food {food?.FoodId}, beverage {beverageId}");
-        return true;
+        return RunOriginal;
 
     }
 
@@ -150,13 +151,13 @@ public partial class WorkSceneServePannelPatch
     [HarmonyPrefix]
     public static bool InvokeOrderUpdate_Prefix(WorkSceneServePannel __instance)
     {
-        if (__instance == null || __instance.operatingOrder == null) return false;
+        if (__instance == null || __instance.operatingOrder == null) return SkipOriginal;
         if (MpManager.IsConnected)
         {
             var o = __instance.operatingOrder;
             Log.InfoCaller($"{__instance.currentGuestController?.GetGuestFSM(false)?.Identifier} Fullfilled {o.IsFullfilled}, f {o.ServFood?.Text?.Name}, b {o.ServBeverage?.Text?.Name}, f air {o.ServedFoodInAir?.Text?.Name}, b air {o.ServedBeverageInAir?.Text?.Name}");
         }
-        return true;
+        return RunOriginal;
     }
 
     [HarmonyPatch(nameof(WorkSceneServePannel.Send))]
@@ -175,8 +176,8 @@ public partial class WorkSceneServePannelPatch
             {
                 WorkSceneManager.CloseServePanel(__instance);
             });
-            return false;
+            return SkipOriginal;
         }
-        return true;
+        return RunOriginal;
     }
 }

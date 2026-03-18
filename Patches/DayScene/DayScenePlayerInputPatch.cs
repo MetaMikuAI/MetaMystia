@@ -3,6 +3,7 @@ using HarmonyLib;
 using DayScene.Input;
 
 using MetaMystia.Network;
+using static MetaMystia.Patch.HarmonyPrefixFlow;
 
 namespace MetaMystia.Patch;
 
@@ -16,11 +17,11 @@ public partial class DayScenePlayerInputPatch
     {
         if (PluginManager.Console != null && PluginManager.Console.IsOpen)
         {
-            return false;
+            return SkipOriginal;
         }
         PlayerManager.LocalIsSprinting = true;
         SyncAction.Send();
-        return true;
+        return RunOriginal;
     }
 
     [HarmonyPatch(nameof(DayScenePlayerInputGenerator.OnSprintCanceled))]
@@ -38,17 +39,17 @@ public partial class DayScenePlayerInputPatch
         if (PluginManager.Console != null && PluginManager.Console.IsOpen)
         {
             Log.Warning($"Console is open, skipping interaction");
-            return false;
+            return SkipOriginal;
         }
         if (!MpManager.IsConnected)
         {
-            return true;
+            return RunOriginal;
         }
         if (PlayerManager.LocalIsDayOver)
         {
             Log.Warning($"Day is over, skipping interaction");
-            return false;
+            return SkipOriginal;
         }
-        return true;
+        return RunOriginal;
     }
 }

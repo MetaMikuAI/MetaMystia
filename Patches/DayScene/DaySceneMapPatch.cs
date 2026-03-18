@@ -5,6 +5,8 @@ using DayScene;
 using DayScene.Interactables.Collections.ConditionComponents;
 using GameData.RunTime.DaySceneUtility.Collection;
 
+using static MetaMystia.Patch.HarmonyPrefixFlow;
+
 // using System.Linq;
 // using DayScene.Interactables;
 // using GameData.Core.Collections.DaySceneUtility.Collections;
@@ -32,9 +34,9 @@ public partial class DaySceneMapPatch
             isNPCOnMap = __instance.mapLabel.Equals(spawnMarkerConfig.mapLabel);
             // ResourceExManager.RefreshAllDayNpcs 导致此处有大量重复日志，因此这里注释掉
             // Log.Info($"Placed Special Guest NPC: {npc.key} at ({spawnMarkerConfig.x}, {spawnMarkerConfig.y}) on map: {spawnMarkerConfig.mapLabel}. IsNPCOnMap: {isNPCOnMap}");
-            return false;
+            return SkipOriginal;
         }
-        return true;
+        return RunOriginal;
 
 
         // DO NOT DELETE

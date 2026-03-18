@@ -3,6 +3,8 @@ using HarmonyLib;
 using GameData.Core.Collections.DaySceneUtility;
 using GameData.Core.Collections.DaySceneUtility.Collections;
 
+using static MetaMystia.Patch.HarmonyPrefixFlow;
+
 namespace MetaMystia.Patch;
 
 
@@ -28,8 +30,8 @@ public partial class DataBaseDayPatch
         {
             __result = merchant;
             Log.Info($"Returned custom merchant for key: {key}");
-            return false;
+            return SkipOriginal;
         }
-        return true;
+        return RunOriginal;
     }
 }

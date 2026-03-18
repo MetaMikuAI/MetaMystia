@@ -5,8 +5,8 @@ using DayScene;
 
 using MetaMystia.Network;
 using MetaMystia.UI;
-using SgrYuki;
 using SgrYuki.Utils;
+using static MetaMystia.Patch.HarmonyPrefixFlow;
 
 namespace MetaMystia.Patch;
 
@@ -71,13 +71,13 @@ public partial class DaySceneManagerPatch
 
         if (!MpManager.IsConnected)
         {
-            return true;
+            return RunOriginal;
         }
 
         Notify.ShowOnMainThread(TextId.MystiaReadyForWork.Get());
         ReadyAction.Send(ReadyType.DayOver);
         MpManager.DayOver();
-        return false;
+        return SkipOriginal;
     }
 
     [HarmonyPatch(nameof(SceneManager.OnDayOver))]
@@ -96,6 +96,6 @@ public partial class DaySceneManagerPatch
         var refreshAllDayNpcs = ResourceExManager.RefreshAllDayNpcs; // TODO: 以更优雅的方式实现 Day NPC 刷新
         onSwapFinish += refreshAllDayNpcs;
 
-        return true;
+        return RunOriginal;
     }
 }

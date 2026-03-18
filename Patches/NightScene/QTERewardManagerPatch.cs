@@ -3,6 +3,7 @@ using HarmonyLib;
 using NightScene.CookingUtility;
 
 using SgrYuki;
+using static MetaMystia.Patch.HarmonyPrefixFlow;
 
 namespace MetaMystia.Patch;
 
@@ -27,7 +28,7 @@ public partial class QTERewardManagerPatch
             },
             timeoutSeconds: 10f
         );
-        return false;
+        return SkipOriginal;
     }
 
     [HarmonyPatch(nameof(QTERewardManager.OnQTESucceeded))]

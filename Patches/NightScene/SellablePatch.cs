@@ -2,6 +2,8 @@ using HarmonyLib;
 
 using GameData.Core.Collections;
 
+using static MetaMystia.Patch.HarmonyPrefixFlow;
+
 namespace MetaMystia.Patch;
 
 [HarmonyPatch(typeof(GameData.Core.Collections.Sellable))]
@@ -15,8 +17,8 @@ public partial class SellablePatch
         if (MpManager.IsConnected)
         {
             __result = sourceTag;
-            return false;
+            return SkipOriginal;
         }
-        return true;
+        return RunOriginal;
     }
 }

@@ -5,6 +5,7 @@ using PrepNightScene.UI;
 using MetaMystia.Network;
 using MetaMystia.UI;
 using SgrYuki.Utils;
+using static MetaMystia.Patch.HarmonyPrefixFlow;
 
 namespace MetaMystia.Patch;
 
@@ -65,7 +66,7 @@ public partial class IzakayaConfigPannelPatch
         if (!MpManager.IsConnected)
         {
             Log.LogDebug($"Not in multiplayer session, skipping patch");
-            return true;
+            return RunOriginal;
         }
         PlayerManager.LocalIsPrepOver = true;
         Notify.ShowOnMainThread(TextId.MystiaReadyForWork.Get());
@@ -74,7 +75,7 @@ public partial class IzakayaConfigPannelPatch
         {
             MpManager.PrepOver();
         }
-        return false;
+        return SkipOriginal;
     }
 
     [HarmonyPatch(nameof(IzakayaConfigPannel._SolveDailyCompletion_b__61_7))]

@@ -5,6 +5,7 @@ using HarmonyLib;
 using NightScene.EventUtility;
 
 using MetaMystia.Network;
+using static MetaMystia.Patch.HarmonyPrefixFlow;
 
 namespace MetaMystia.Patch;
 
@@ -124,9 +125,9 @@ public static partial class NightSceneEventManagerPatch
         if (MpManager.IsConnectedClient)
         {
             Log.DebugCaller($"prevented, value {value}, type {serveType}");
-            return false;
+            return SkipOriginal;
         }
-        return true;
+        return RunOriginal;
     }
 
     [HarmonyPatch(nameof(EventManager.TipEdit))]
@@ -155,9 +156,9 @@ public static partial class NightSceneEventManagerPatch
         if (MpManager.IsConnectedClient && !MpManager.InStory)
         {
             Log.DebugCaller($"prevented, value {value}, mathOperation {mathOperation}");
-            return false;
+            return SkipOriginal;
         }
-        return true;
+        return RunOriginal;
     }
 
     [HarmonyPatch(nameof(EventManager.ComboEdit))]

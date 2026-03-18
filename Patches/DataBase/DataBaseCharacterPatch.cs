@@ -6,6 +6,7 @@ using GameData.Core.Collections.CharacterUtility;
 using GameData.Profile;
 
 using DEYU.Utils;
+using static MetaMystia.Patch.HarmonyPrefixFlow;
 
 namespace MetaMystia.Patch;
 
@@ -33,10 +34,10 @@ public partial class DataBaseCharacterPatch
         if (config != null)
         {
             __result = config.label;
-            return false;
+            return SkipOriginal;
         }
 
-        return true;
+        return RunOriginal;
     }
 
     [HarmonyPatch(nameof(DataBaseCharacter.RefNormalGuestVisual))]
@@ -51,9 +52,9 @@ public partial class DataBaseCharacterPatch
             var guestProfilePair = new GuestProfilePair(id, DataBaseCharacter.UnifiedNormalGuestBGColor, DataBaseCharacter.UnifiedNormalGuestTextColor, null, ScriptableObject.CreateInstance<CharacterSkinSets>());
             guestProfilePair.CharacterPixel.Initialize(compact, null, null);
             __result = guestProfilePair;
-            return false;
+            return SkipOriginal;
         }
-        return true;
+        return RunOriginal;
     }
 
 
@@ -70,7 +71,7 @@ public partial class DataBaseCharacterPatch
             {
                 imageComponent.overrideSprite = null;
                 imageComponent.sprite = sprite;
-                return false;
+                return SkipOriginal;
             }
             Log.Warning("Custom skin override active but portrait sprite is null, falling through to game logic.");
         }
@@ -90,6 +91,6 @@ public partial class DataBaseCharacterPatch
             }
         }
 
-        return true;
+        return RunOriginal;
     }
 }
