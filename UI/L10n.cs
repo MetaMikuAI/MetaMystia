@@ -761,10 +761,10 @@ public static class L10n
         [TextId.MystiaPosition] = new()
         {
             [Language.English] = "Mystia position: {0}",
-            [Language.ChineseSimplified] = "魔理沙的位置：{0}",
-            [Language.ChineseTraditional] = "魔理沙的位置：{0}",
-            [Language.Japanese] = "ミスティアの位置：{0}",
-            [Language.Korean] = "미스티아 위치: {0}",
+            [Language.ChineseSimplified] = "Mystia的位置：{0}",
+            [Language.ChineseTraditional] = "Mystia的位置：{0}",
+            [Language.Japanese] = "Mystiaの位置：{0}",
+            [Language.Korean] = "Mystia 위치: {0}",
         },
 
         [TextId.UnknownField] = new()
