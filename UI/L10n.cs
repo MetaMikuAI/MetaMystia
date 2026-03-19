@@ -151,6 +151,48 @@ public enum TextId
     SkinListNpcHint,
     SkinStatus,
     SkinStatusDisabled,
+
+    // Help & Command Descriptions (L10N)
+    HelpHeader,
+    CmdDescHelp,
+    CmdDescClear,
+    CmdDescGet,
+    CmdDescMp,
+    CmdDescCall,
+    CmdDescSkin,
+    CmdDescDebug,
+    CmdDescWebdebug,
+    CmdDescWhereami,
+    CmdDescEnableBepinConsole,
+
+    // Subcommand help headers
+    MpHelpHeader,
+    CallHelpHeader,
+    SkinHelpHeader,
+
+    // Subcommand descriptions (short)
+    MpDescStart,
+    MpDescStop,
+    MpDescRestart,
+    MpDescStatus,
+    MpDescId,
+    MpDescConnect,
+    MpDescDisconnect,
+    MpDescContinue,
+    CallDescGetmapsnpcs,
+    CallDescMovecharacter,
+    CallDescSceneMove,
+    CallDescTryCloseIzakaya,
+    SkinDescSet,
+    SkinDescOff,
+    SkinDescList,
+
+    // Console startup & link
+    ConsoleStarPrompt,
+    ConsoleHelpHint,
+    CmdDescLink,
+    LinkDescMetaMystia,
+    LinkDescIzakaya,
 }
 
 public static class L10n
@@ -1062,7 +1104,289 @@ public static class L10n
             [Language.ChineseTraditional] = "皮膚覆蓋：已關閉",
             [Language.Japanese] = "スキンオーバーライド: OFF",
             [Language.Korean] = "스킨 오버라이드: 꺼짐",
-        }
+        },
+
+        // Help & Command Descriptions
+        [TextId.HelpHeader] = new()
+        {
+            [Language.English] = "Commands",
+            [Language.ChineseSimplified] = "命令列表",
+            [Language.ChineseTraditional] = "命令列表",
+            [Language.Japanese] = "コマンド一覧",
+            [Language.Korean] = "명령 목록",
+        },
+        [TextId.CmdDescHelp] = new()
+        {
+            [Language.English] = "Show this help",
+            [Language.ChineseSimplified] = "显示帮助",
+            [Language.ChineseTraditional] = "顯示幫助",
+            [Language.Japanese] = "ヘルプを表示",
+            [Language.Korean] = "도움말 표시",
+        },
+        [TextId.CmdDescClear] = new()
+        {
+            [Language.English] = "Clear console",
+            [Language.ChineseSimplified] = "清空控制台",
+            [Language.ChineseTraditional] = "清空控制台",
+            [Language.Japanese] = "コンソールをクリア",
+            [Language.Korean] = "콘솔 지우기",
+        },
+        [TextId.CmdDescGet] = new()
+        {
+            [Language.English] = "Query game state",
+            [Language.ChineseSimplified] = "查询游戏状态",
+            [Language.ChineseTraditional] = "查詢遊戲狀態",
+            [Language.Japanese] = "ゲーム状態を照会",
+            [Language.Korean] = "게임 상태 조회",
+        },
+        [TextId.CmdDescMp] = new()
+        {
+            [Language.English] = "Multiplayer commands",
+            [Language.ChineseSimplified] = "联机命令",
+            [Language.ChineseTraditional] = "聯機命令",
+            [Language.Japanese] = "マルチプレイコマンド",
+            [Language.Korean] = "멀티플레이 명령",
+        },
+        [TextId.CmdDescCall] = new()
+        {
+            [Language.English] = "Call game methods",
+            [Language.ChineseSimplified] = "调用游戏方法",
+            [Language.ChineseTraditional] = "調用遊戲方法",
+            [Language.Japanese] = "ゲームメソッドを呼び出し",
+            [Language.Korean] = "게임 메소드 호출",
+        },
+        [TextId.CmdDescSkin] = new()
+        {
+            [Language.English] = "Skin management",
+            [Language.ChineseSimplified] = "皮肤管理",
+            [Language.ChineseTraditional] = "皮膚管理",
+            [Language.Japanese] = "スキン管理",
+            [Language.Korean] = "스킨 관리",
+        },
+        [TextId.CmdDescDebug] = new()
+        {
+            [Language.English] = "Show MP debug info",
+            [Language.ChineseSimplified] = "显示联机调试信息",
+            [Language.ChineseTraditional] = "顯示聯機調試信息",
+            [Language.Japanese] = "MP デバッグ情報を表示",
+            [Language.Korean] = "MP 디버그 정보 표시",
+        },
+        [TextId.CmdDescWebdebug] = new()
+        {
+            [Language.English] = "Web debugger",
+            [Language.ChineseSimplified] = "Web 调试器",
+            [Language.ChineseTraditional] = "Web 調試器",
+            [Language.Japanese] = "Web デバッガー",
+            [Language.Korean] = "웹 디버거",
+        },
+        [TextId.CmdDescWhereami] = new()
+        {
+            [Language.English] = "Show map & position",
+            [Language.ChineseSimplified] = "显示地图和位置",
+            [Language.ChineseTraditional] = "顯示地圖和位置",
+            [Language.Japanese] = "マップと位置を表示",
+            [Language.Korean] = "맵과 위치 표시",
+        },
+        [TextId.CmdDescEnableBepinConsole] = new()
+        {
+            [Language.English] = "Enable BepInEx console",
+            [Language.ChineseSimplified] = "启用 BepInEx 控制台",
+            [Language.ChineseTraditional] = "啟用 BepInEx 控制台",
+            [Language.Japanese] = "BepInEx コンソールを有効化",
+            [Language.Korean] = "BepInEx 콘솔 활성화",
+        },
+        [TextId.MpHelpHeader] = new()
+        {
+            [Language.English] = "Multiplayer",
+            [Language.ChineseSimplified] = "联机",
+            [Language.ChineseTraditional] = "聯機",
+            [Language.Japanese] = "マルチプレイ",
+            [Language.Korean] = "멀티플레이",
+        },
+        [TextId.CallHelpHeader] = new()
+        {
+            [Language.English] = "Game Methods",
+            [Language.ChineseSimplified] = "游戏方法",
+            [Language.ChineseTraditional] = "遊戲方法",
+            [Language.Japanese] = "ゲームメソッド",
+            [Language.Korean] = "게임 메소드",
+        },
+        [TextId.SkinHelpHeader] = new()
+        {
+            [Language.English] = "Skin Management",
+            [Language.ChineseSimplified] = "皮肤管理",
+            [Language.ChineseTraditional] = "皮膚管理",
+            [Language.Japanese] = "スキン管理",
+            [Language.Korean] = "스킨 관리",
+        },
+
+        // ── mp subcommand descriptions ──
+        [TextId.MpDescStart] = new()
+        {
+            [Language.English] = "Start multiplayer",
+            [Language.ChineseSimplified] = "启动联机",
+            [Language.ChineseTraditional] = "啟動聯機",
+            [Language.Japanese] = "マルチプレイを開始",
+            [Language.Korean] = "멀티플레이 시작",
+        },
+        [TextId.MpDescStop] = new()
+        {
+            [Language.English] = "Stop multiplayer",
+            [Language.ChineseSimplified] = "停止联机",
+            [Language.ChineseTraditional] = "停止聯機",
+            [Language.Japanese] = "マルチプレイを停止",
+            [Language.Korean] = "멀티플레이 중지",
+        },
+        [TextId.MpDescRestart] = new()
+        {
+            [Language.English] = "Restart multiplayer",
+            [Language.ChineseSimplified] = "重启联机",
+            [Language.ChineseTraditional] = "重啟聯機",
+            [Language.Japanese] = "マルチプレイを再起動",
+            [Language.Korean] = "멀티플레이 재시작",
+        },
+        [TextId.MpDescStatus] = new()
+        {
+            [Language.English] = "Show connection status",
+            [Language.ChineseSimplified] = "查看连接状态",
+            [Language.ChineseTraditional] = "查看連接狀態",
+            [Language.Japanese] = "接続状態を表示",
+            [Language.Korean] = "연결 상태 확인",
+        },
+        [TextId.MpDescId] = new()
+        {
+            [Language.English] = "Set player ID",
+            [Language.ChineseSimplified] = "设置玩家 ID",
+            [Language.ChineseTraditional] = "設置玩家 ID",
+            [Language.Japanese] = "プレイヤーIDを設定",
+            [Language.Korean] = "플레이어 ID 설정",
+        },
+        [TextId.MpDescConnect] = new()
+        {
+            [Language.English] = "Connect to host",
+            [Language.ChineseSimplified] = "连接到主机",
+            [Language.ChineseTraditional] = "連接到主機",
+            [Language.Japanese] = "ホストに接続",
+            [Language.Korean] = "호스트에 연결",
+        },
+        [TextId.MpDescDisconnect] = new()
+        {
+            [Language.English] = "Disconnect",
+            [Language.ChineseSimplified] = "断开连接",
+            [Language.ChineseTraditional] = "斷開連接",
+            [Language.Japanese] = "切断",
+            [Language.Korean] = "연결 해제",
+        },
+        [TextId.MpDescContinue] = new()
+        {
+            [Language.English] = "Force continue (host)",
+            [Language.ChineseSimplified] = "强制继续 (主机)",
+            [Language.ChineseTraditional] = "強制繼續 (主機)",
+            [Language.Japanese] = "強制続行 (ホスト)",
+            [Language.Korean] = "강제 계속 (호스트)",
+        },
+
+        // ── call subcommand descriptions ──
+        [TextId.CallDescGetmapsnpcs] = new()
+        {
+            [Language.English] = "List NPCs on map",
+            [Language.ChineseSimplified] = "列出地图上的 NPC",
+            [Language.ChineseTraditional] = "列出地圖上的 NPC",
+            [Language.Japanese] = "マップ上のNPCを一覧表示",
+            [Language.Korean] = "맵의 NPC 목록",
+        },
+        [TextId.CallDescMovecharacter] = new()
+        {
+            [Language.English] = "Move character",
+            [Language.ChineseSimplified] = "移动角色",
+            [Language.ChineseTraditional] = "移動角色",
+            [Language.Japanese] = "キャラクターを移動",
+            [Language.Korean] = "캐릭터 이동",
+        },
+        [TextId.CallDescSceneMove] = new()
+        {
+            [Language.English] = "Move to scene",
+            [Language.ChineseSimplified] = "移动到场景",
+            [Language.ChineseTraditional] = "移動到場景",
+            [Language.Japanese] = "シーンに移動",
+            [Language.Korean] = "씬으로 이동",
+        },
+        [TextId.CallDescTryCloseIzakaya] = new()
+        {
+            [Language.English] = "Try close izakaya",
+            [Language.ChineseSimplified] = "尝试关闭居酒屋",
+            [Language.ChineseTraditional] = "嘗試關閉居酒屋",
+            [Language.Japanese] = "居酒屋を閉店する",
+            [Language.Korean] = "이자카야 닫기 시도",
+        },
+
+        // ── skin subcommand descriptions ──
+        [TextId.SkinDescSet] = new()
+        {
+            [Language.English] = "Set character skin",
+            [Language.ChineseSimplified] = "设置角色皮肤",
+            [Language.ChineseTraditional] = "設置角色皮膚",
+            [Language.Japanese] = "キャラスキンを設定",
+            [Language.Korean] = "캐릭터 스킨 설정",
+        },
+        [TextId.SkinDescOff] = new()
+        {
+            [Language.English] = "Reset skin to default",
+            [Language.ChineseSimplified] = "恢复默认皮肤",
+            [Language.ChineseTraditional] = "恢復默認皮膚",
+            [Language.Japanese] = "スキンをデフォルトに",
+            [Language.Korean] = "스킨 초기화",
+        },
+        [TextId.SkinDescList] = new()
+        {
+            [Language.English] = "List available skins",
+            [Language.ChineseSimplified] = "列出可用皮肤",
+            [Language.ChineseTraditional] = "列出可用皮膚",
+            [Language.Japanese] = "利用可能なスキンを一覧",
+            [Language.Korean] = "사용 가능한 스킨 목록",
+        },
+
+        // ── Console startup & link ──
+        [TextId.ConsoleStarPrompt] = new()
+        {
+            [Language.English] = "Welcome to MetaMystia! If you enjoy it, please star us: /link MetaMystia",
+            [Language.ChineseSimplified] = "欢迎使用 MetaMystia mod！如果喜欢，请给项目点个 Star：/link MetaMystia",
+            [Language.ChineseTraditional] = "歡迎使用 MetaMystia mod！如果喜歡，請給專案點個 Star：/link MetaMystia",
+            [Language.Japanese] = "MetaMystia mod へようこそ！気に入ったらStarをお願いします：/link MetaMystia",
+            [Language.Korean] = "MetaMystia mod에 오신 것을 환영합니다! 마음에 드시면 Star를 눌러주세요: /link MetaMystia",
+        },
+        [TextId.ConsoleHelpHint] = new()
+        {
+            [Language.English] = "Type /help for commands. Tab to auto-complete.",
+            [Language.ChineseSimplified] = "输入 /help 查看命令列表，Tab 自动补全。",
+            [Language.ChineseTraditional] = "輸入 /help 查看命令列表，Tab 自動補全。",
+            [Language.Japanese] = "/help でコマンド一覧、Tab で自動補完。",
+            [Language.Korean] = "/help 로 명령어 목록, Tab 으로 자동완성.",
+        },
+        [TextId.CmdDescLink] = new()
+        {
+            [Language.English] = "Open project links",
+            [Language.ChineseSimplified] = "打开项目链接",
+            [Language.ChineseTraditional] = "打開專案連結",
+            [Language.Japanese] = "プロジェクトリンクを開く",
+            [Language.Korean] = "프로젝트 링크 열기",
+        },
+        [TextId.LinkDescMetaMystia] = new()
+        {
+            [Language.English] = "MetaMystia GitHub",
+            [Language.ChineseSimplified] = "MetaMystia GitHub 仓库",
+            [Language.ChineseTraditional] = "MetaMystia GitHub 倉庫",
+            [Language.Japanese] = "MetaMystia GitHub リポジトリ",
+            [Language.Korean] = "MetaMystia GitHub 저장소",
+        },
+        [TextId.LinkDescIzakaya] = new()
+        {
+            [Language.English] = "touhou mystia izakaya assistant",
+            [Language.ChineseSimplified] = "东方夜雀食堂小助手",
+            [Language.ChineseTraditional] = "東方夜雀食堂小助手",
+            [Language.Japanese] = "touhou mystia izakaya assistant",
+            [Language.Korean] = "touhou mystia izakaya assistant",
+        },
     };
 
 

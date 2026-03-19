@@ -6,6 +6,7 @@
       MemoryPack.Core
       NLua
       KeraLua
+      System.CommandLine
     </IncludeAssemblies>
     <Unmanaged64Assemblies>
       lua54

@@ -1,11 +1,12 @@
+#nullable enable
 using Il2CppInterop.Runtime;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 using Common.UI;
 
+using MetaMystia.ConsoleSystem;
 using MetaMystia.Network;
 
 namespace MetaMystia.UI;
@@ -39,9 +40,46 @@ public partial class InGameConsole
     private const string TextFieldControlName = "ConsoleInput";
     private bool justOpened = false;
 
+    // Command system
+    private ConsoleContext _consoleContext = null!;
+    private CompletionEngine _completion = new();
+
+    // IMGUI style cache
+    private GUIStyle? _logStyle;
+    private GUIStyle? _inputStyle;
+    private GUIStyle? _completionStyle;
+    private GUIStyle? _completionSelectedStyle;
+    private GUIStyle? _headerStyle;
+    private Texture2D? _bgTexture;
+    private Texture2D? _inputBgTexture;
+    private Texture2D? _completionBgTexture;
+    private Texture2D? _completionSelTexture;
+    private bool _stylesInitialized = false;
+
+    public InGameConsole()
+    {
+        _consoleContext = new ConsoleContext(LogToConsole);
+        CommandRegistry.Initialize();
+
+        // LogStartUpMessage(); // 延迟到 MainScene Awake 时调用，以确保语言系统已就绪
+    }
+
+    public void LogStartUpMessage()
+    {
+        LogToConsole($"<color=#66CCFF>MetaMystia</color> <color=#888899>v{MyPluginInfo.PLUGIN_VERSION}</color>");
+        LogToConsole($"<color=#888899>{TextId.ConsoleStarPrompt.Get()}</color>");
+        LogToConsole($"<color=#888899>{TextId.ConsoleHelpHint.Get()}</color>");
+    }
+
     public void AddPeerMessage(string senderName, string message)
     {
         LogToConsole(TextId.PeerMessagePrefix.Get(senderName, message));
+    }
+
+    public void ClearLogs()
+    {
+        logs.Clear();
+        inputs.Clear();
     }
 
     private void UpdateGameInputState()
@@ -55,27 +93,20 @@ public partial class InGameConsole
             Log.LogWarning($"Console: Failed to update UniversalGameManager input: {e.Message}");
         }
 
-        // 3. Toggle EventSystem to block UI navigation (Main Menu AD/JK)
-        // We use sendNavigationEvents instead of enabled, because disabling the component
-        // makes EventSystem.current return null, preventing us from re-enabling it later.
         var eventSystem = EventSystem.current;
         if (eventSystem != null)
         {
             eventSystem.sendNavigationEvents = !IsOpen;
-            Log.LogDebug($"Console: EventSystem sendNavigationEvents = {eventSystem.sendNavigationEvents}");
         }
     }
 
     public void Update()
     {
-        // Enforce EventSystem navigation disabled while console is open (handles scene changes)
         if (IsOpen)
         {
             var es = EventSystem.current;
             if (es != null && es.sendNavigationEvents)
-            {
                 es.sendNavigationEvents = false;
-            }
         }
 
         if (justOpened) justOpened = false;
@@ -89,27 +120,126 @@ public partial class InGameConsole
                 focusTextField = true;
                 moveCursor = true;
                 justOpened = true;
+                _completion.Reset();
             }
         }
-
-        // ESC handling is done in OnGUI to ensure event consumption
     }
+
+    #region IMGUI Styles
+
+    private void InitStyles()
+    {
+        if (_stylesInitialized) return;
+        _stylesInitialized = true;
+
+        _bgTexture = MakeTex(1, 1, new Color(0.08f, 0.08f, 0.12f, 0.92f));
+        _inputBgTexture = MakeTex(1, 1, new Color(0.12f, 0.12f, 0.18f, 0.95f));
+        _completionBgTexture = MakeTex(1, 1, new Color(0.15f, 0.15f, 0.22f, 0.98f));
+        _completionSelTexture = MakeTex(1, 1, new Color(0.25f, 0.40f, 0.65f, 0.95f));
+
+        int fontSize = Mathf.Clamp(Screen.height / 40, 16, 28);
+
+        _headerStyle = new GUIStyle(GUI.skin.label)
+        {
+            fontSize = fontSize + 4,
+            fontStyle = FontStyle.Bold,
+            alignment = TextAnchor.MiddleLeft,
+            normal = { textColor = new Color(0.85f, 0.85f, 0.95f) }
+        };
+
+        _logStyle = new GUIStyle(GUI.skin.label)
+        {
+            fontSize = fontSize,
+            wordWrap = true,
+            richText = true,
+            normal = { textColor = new Color(0.9f, 0.9f, 0.9f) },
+        };
+        _logStyle.padding.left = 4;
+        _logStyle.padding.right = 4;
+        _logStyle.padding.top = 1;
+        _logStyle.padding.bottom = 1;
+
+        _inputStyle = new GUIStyle(GUI.skin.textField)
+        {
+            fontSize = fontSize,
+            normal = { textColor = new Color(0.95f, 0.95f, 1f), background = _inputBgTexture },
+            focused = { textColor = Color.white, background = _inputBgTexture },
+        };
+        _inputStyle.padding.left = 8;
+        _inputStyle.padding.right = 8;
+        _inputStyle.padding.top = 7;
+        _inputStyle.padding.bottom = 9;
+        _inputStyle.overflow.bottom = 4;
+
+        _completionStyle = new GUIStyle(GUI.skin.label)
+        {
+            fontSize = fontSize - 2,
+            normal = { textColor = new Color(0.8f, 0.8f, 0.85f), background = _completionBgTexture },
+        };
+        _completionStyle.padding.left = 10;
+        _completionStyle.padding.right = 10;
+        _completionStyle.padding.top = 4;
+        _completionStyle.padding.bottom = 4;
+        _completionStyle.margin.left = 0;
+        _completionStyle.margin.right = 0;
+        _completionStyle.margin.top = 0;
+        _completionStyle.margin.bottom = 0;
+
+        _completionSelectedStyle = new GUIStyle(_completionStyle)
+        {
+            normal = { textColor = Color.white, background = _completionSelTexture },
+            fontStyle = FontStyle.Bold
+        };
+    }
+
+    private static Texture2D MakeTex(int w, int h, Color col)
+    {
+        var tex = new Texture2D(w, h);
+        for (int x = 0; x < w; x++)
+            for (int y = 0; y < h; y++)
+                tex.SetPixel(x, y, col);
+        tex.Apply();
+        tex.hideFlags = HideFlags.HideAndDontSave;
+        return tex;
+    }
+
+    #endregion
 
     public void OnGUI()
     {
         if (!IsOpen) return;
 
+        InitStyles();
+
         Event e = Event.current;
 
-        // Handle Escape to close
+        // Handle Escape
         if (e.type == EventType.KeyDown && e.keyCode == KeyCode.Escape)
         {
-            IsOpen = false;
+            if (_completion.IsActive)
+                _completion.Dismiss();
+            else
+                IsOpen = false;
             e.Use();
             return;
         }
 
-        // Handle Enter key
+        // Handle Tab: Minecraft-style inline cycling
+        if (e.type == EventType.KeyDown && e.keyCode == KeyCode.Tab)
+        {
+            if (_completion.HasCompletions)
+            {
+                var applied = _completion.TabCycle(reverse: e.shift);
+                if (applied != null)
+                {
+                    input = applied;
+                    moveCursor = true;
+                }
+            }
+            e.Use();
+        }
+
+        // Handle Enter: always submit (no completion acceptance)
         bool submit = false;
         if (e.type == EventType.KeyDown && (e.keyCode == KeyCode.Return || e.keyCode == KeyCode.KeypadEnter))
         {
@@ -117,83 +247,91 @@ public partial class InGameConsole
             e.Use();
         }
 
-        // Handle UpArrow key
+        // Handle Up/Down arrows: history navigation only (no dropdown cycling)
         if (e.type == EventType.KeyDown && e.keyCode == KeyCode.UpArrow)
         {
+            if (_completion.IsTabCycling)
+                _completion.Dismiss();
             if (inputsCursor < inputs.Count)
             {
                 inputsCursor++;
-            }
-            if (inputs.Count > 0)
-            {
-                input = inputs[^inputsCursor];
-                focusTextField = false;
-                moveCursor = true;
+                if (inputs.Count > 0)
+                {
+                    input = inputs[^inputsCursor];
+                    moveCursor = true;
+                }
             }
             e.Use();
         }
-
-        // Handle DownArrow key
         if (e.type == EventType.KeyDown && e.keyCode == KeyCode.DownArrow)
         {
+            if (_completion.IsTabCycling)
+                _completion.Dismiss();
             if (inputsCursor > 1)
             {
                 inputsCursor--;
                 input = inputs[^inputsCursor];
             }
             else
-            {
                 input = "";
-            }
-            focusTextField = false;
             moveCursor = true;
             e.Use();
         }
 
-        // Consume Slash key if just opened to prevent typing it in the field
+        // Consume Slash key on justOpened
         if (justOpened && e.type == EventType.KeyDown && e.character == '/')
-        {
             e.Use();
-        }
 
-        // UI Layout & Styles
+        // Layout
         float width = Screen.width * 0.8f;
         float height = Screen.height * 0.7f;
         float x = (Screen.width - width) / 2;
         float y = (Screen.height - height) / 2;
-        float padding = 20f;
-        float inputHeight = 40f;
-        int fontSize = 24;
+        float padding = 16f;
+        float headerHeight = 40f;
+        float inputHeight = 46f;
 
-        GUIStyle labelStyle = new GUIStyle(GUI.skin.label) { fontSize = fontSize };
-        GUIStyle inputStyle = new GUIStyle(GUI.skin.textField) { fontSize = fontSize };
-        GUIStyle boxStyle = new GUIStyle(GUI.skin.box) { fontSize = fontSize };
+        // Background
+        GUI.DrawTexture(new Rect(x, y, width, height), _bgTexture, ScaleMode.StretchToFill);
 
-        // Draw background
-        GUI.Box(new Rect(x, y, width, height), "Console", boxStyle);
+        // Header
+        GUI.Label(new Rect(x + padding, y + 6, width - padding * 2, headerHeight),
+            "MetaMystia Console", _headerStyle);
 
-        // Draw logs
-        GUILayout.BeginArea(new Rect(x + padding, y + 40, width - 2 * padding, height - 40 - inputHeight - padding));
+        // Separator line
+        GUI.DrawTexture(new Rect(x + padding, y + headerHeight + 2, width - padding * 2, 1),
+            MakeTex(1, 1, new Color(0.3f, 0.3f, 0.4f)));
+
+        // Log area
+        float logTop = y + headerHeight + 6;
+        float logHeight = height - headerHeight - inputHeight - padding * 2 - 6;
+
+        GUILayout.BeginArea(new Rect(x + padding, logTop, width - 2 * padding, logHeight));
         scrollPosition = GUILayout.BeginScrollView(scrollPosition);
         foreach (var log in logs)
-        {
-            GUILayout.Label(log, labelStyle);
-        }
+            GUILayout.Label(log, _logStyle);
         GUILayout.EndScrollView();
         GUILayout.EndArea();
 
-        // Draw input field
+        // Input field
+        float inputY = y + height - inputHeight - padding;
         GUI.SetNextControlName(TextFieldControlName);
-        input = GUI.TextField(new Rect(x + padding, y + height - inputHeight - padding, width - 2 * padding, inputHeight), input, inputStyle);
+        string prevInput = input;
+        input = GUI.TextField(new Rect(x + padding, inputY, width - 2 * padding, inputHeight), input, _inputStyle);
+
+        // Detect input text change (typing, not Tab)
+        if (input != prevInput)
+        {
+            _completion.UpdateCompletions(input);
+        }
 
         if (focusTextField)
         {
             GUI.FocusControl(TextFieldControlName);
-            Log.LogInfo("forcing focus control");
             focusTextField = false;
         }
 
-        // Move cursor to the last of input
+        // Move cursor to end
         if (moveCursor && Event.current.type == EventType.Repaint)
         {
             int id = GUIUtility.keyboardControl;
@@ -207,8 +345,11 @@ public partial class InGameConsole
             moveCursor = false;
         }
 
+        // Draw completion dropdown
+        if (_completion.IsActive)
+            DrawCompletionDropdown(x + padding, inputY, width - 2 * padding);
 
-        // Execute command if Enter was pressed
+        // Execute command on submit
         if (submit)
         {
             if (!string.IsNullOrEmpty(input))
@@ -217,6 +358,7 @@ public partial class InGameConsole
                 inputs.Add(input);
                 inputsCursor = 0;
                 input = "";
+                _completion.Reset();
                 if (closeConsole)
                 {
                     IsOpen = false;
@@ -230,10 +372,67 @@ public partial class InGameConsole
             }
         }
 
-        // Consume all other KeyDown events to prevent game from receiving them via IMGUI
+        // Consume all other KeyDown events
         if (e.type == EventType.KeyDown && e.keyCode != KeyCode.None)
-        {
             e.Use();
+    }
+
+    private void DrawCompletionDropdown(float x, float inputY, float width)
+    {
+        float itemHeight = (_completionStyle!.fontSize + 10);
+
+        // Hint mode: show a single non-selectable dim hint
+        if (_completion.HasHint)
+        {
+            float hintHeight = itemHeight + 4;
+            float hintY = inputY - hintHeight;
+            GUI.DrawTexture(new Rect(x, hintY, width, hintHeight), _completionBgTexture, ScaleMode.StretchToFill);
+
+            var hintStyle = new GUIStyle(_completionStyle)
+            {
+                fontStyle = FontStyle.Italic,
+                normal = { textColor = new Color(0.55f, 0.55f, 0.65f) }
+            };
+            GUI.Label(new Rect(x, hintY + 2, width, itemHeight),
+                $"  {_completion.Hint}", hintStyle);
+            return;
+        }
+
+        // Normal completion mode
+        var completions = _completion.Completions;
+        int totalCount = completions.Count;
+        int maxVisible = System.Math.Min(totalCount, CompletionEngine.MaxVisibleItems);
+        float dropdownHeight = maxVisible * itemHeight + 4;
+
+        // Draw above the input field
+        float dropY = inputY - dropdownHeight;
+        GUI.DrawTexture(new Rect(x, dropY, width, dropdownHeight), _completionBgTexture, ScaleMode.StretchToFill);
+
+        int offset = _completion.ScrollOffset;
+        for (int i = 0; i < maxVisible; i++)
+        {
+            int itemIndex = offset + i;
+            if (itemIndex >= totalCount) break;
+
+            bool isSelected = itemIndex == _completion.SelectedIndex;
+            var style = isSelected ? _completionSelectedStyle : _completionStyle;
+            float itemY = dropY + 2 + i * itemHeight;
+
+            // Rich text highlights the matching prefix
+            string displayText = _completion.FormatWithHighlight(completions[itemIndex]);
+            GUI.Label(new Rect(x, itemY, width, itemHeight), displayText, style);
+        }
+
+        // Show scroll indicator if there are hidden items
+        if (totalCount > maxVisible)
+        {
+            string indicator = $"[{offset + 1}-{System.Math.Min(offset + maxVisible, totalCount)}/{totalCount}]";
+            var indicatorStyle = new GUIStyle(_completionStyle)
+            {
+                alignment = TextAnchor.MiddleRight,
+                normal = { textColor = new Color(0.5f, 0.5f, 0.6f) }
+            };
+            GUI.Label(new Rect(x, dropY + dropdownHeight - itemHeight, width - 8, itemHeight), indicator, indicatorStyle);
         }
     }
 
@@ -250,464 +449,25 @@ public partial class InGameConsole
         Log.LogMessage($"Console Command: {cmd}");
         LogToConsole(TextId.CommandPrompt.Get(cmd));
 
-        string[] parts = cmd.Split([' '], System.StringSplitOptions.RemoveEmptyEntries);
-        if (parts.Length == 0) return;
-
-        string command = parts[0].ToLower();
-        string[] args = new string[parts.Length - 1];
-        System.Array.Copy(parts, 1, args, 0, args.Length);
-
-        bool isMessage = command[0] != '/';
+        bool isMessage = cmd[0] != '/';
         if (isMessage)
         {
-            MessageCommand(cmd);
+            // Plain text = chat message
+            if (!MpManager.IsConnected)
+                LogToConsole(TextId.MpNoActiveConnection.Get());
+            else
+            {
+                MessageAction.Send(cmd);
+                LogToConsole(TextId.MessageSent.Get(cmd));
+            }
             closeConsole = true;
         }
         else
         {
-            command = command[1..];
-            switch (command)
-            {
-                case "help":
-                    HelpCommand();
-                    break;
-                case "clear":
-                    logs.Clear();
-                    inputs.Clear();
-                    break;
-                case "get":
-                    GetCommand(args);
-                    break;
-                case "mp":
-                    _ = MultiplayerCommand(args);
-                    break;
-                case "call":
-                    CallCommand(args);
-                    break;
-                case "skin":
-                    SkinCommand(args);
-                    break;
-                case "debug":
-                    LogToConsole(MpManager.DebugText);
-                    Log.Message(MpManager.DebugText);
-                    break;
-                case "webdebug":
-                    OpenWebDebugger(args);
-                    break;
-                case "enable_bepin_console":
-                    BepInEx.ConsoleManager.CreateConsole();
-                    LogToConsole(TextId.BepInExConsoleEnabled.Get());
-                    System.Console.OutputEncoding = System.Text.Encoding.UTF8;
-                    break;
-                case "whereami":
-                    if (MpManager.LocalScene != Common.UI.Scene.DayScene)
-                    {
-                        LogToConsole(TextId.NotInDayScene.Get());
-                        break;
-                    }
-                    LogToConsole(TextId.MapInfoDisplay.Get(PlayerManager.LocalMapLabel, PlayerManager.LocalPosition));
-                    break;
-                default:
-                    LogToConsole(TextId.UnknownCommand.Get(command));
-                    HelpCommand();
-                    break;
-            }
-
+            // Strip leading '/' and delegate to CommandRegistry
+            string commandInput = cmd[1..];
+            closeConsole = CommandRegistry.Execute(commandInput, _consoleContext);
         }
-
-    }
-
-    private void HelpCommand()
-    {
-        LogToConsole(TextId.AvailableCommands.Get());
-    }
-
-    private void GetCommand(string[] args)
-    {
-        var availableFields = "currentactivemaplabel, pos";
-        if (args.Length == 0)
-        {
-            LogToConsole(TextId.GetUsage.Get());
-            LogToConsole(TextId.AvailableFields.Get(availableFields));
-            return;
-        }
-
-        string field = string.Join(" ", args).ToLower();
-
-        switch (field)
-        {
-            case "currentactivemaplabel":
-                LogToConsole(TextId.CurrentMapLabel.Get(PlayerManager.LocalMapLabel));
-                break;
-            case "pos":
-                LogToConsole(TextId.MystiaPosition.Get(PlayerManager.LocalPosition));
-                break;
-            default:
-                LogToConsole(TextId.UnknownField.Get(field));
-                LogToConsole(TextId.AvailableFields.Get(availableFields));
-                break;
-        }
-    }
-
-    private async Task MultiplayerCommand(string[] args)
-    {
-        if (args.Length == 0)
-        {
-            LogToConsole(TextId.MpUsageRoot.Get());
-            LogToConsole(TextId.MpSubcommandHelp.Get());
-            return;
-        }
-
-        string subcommand = args[0].ToLower();
-
-        switch (subcommand)
-        {
-            case "start":
-                if (args.Length < 2)
-                {
-                    LogToConsole(TextId.MpUsageHelp.Get());
-                    break;
-                }
-                if (MpManager.IsRunning)
-                {
-                    LogToConsole(TextId.MpAlreadyStarted.Get(MpManager.RoleName));
-                    break;
-                }
-                if ("server".Equals(args[1].ToLower()))
-                {
-                    if (MpManager.Start(MpManager.ROLE.Host))
-                    {
-                        LogToConsole(TextId.MpStartedAsHost.Get());
-                    }
-                }
-                else if ("client".Equals(args[1].ToLower()))
-                {
-                    if (MpManager.Start(MpManager.ROLE.Client))
-                    {
-                        LogToConsole(TextId.MpStartedAsClient.Get());
-                    }
-                }
-                else
-                {
-                    LogToConsole(TextId.MpUsageHelp.Get());
-                }
-                break;
-            case "stop":
-                MpManager.Stop();
-                LogToConsole(TextId.MpStopped.Get());
-                break;
-
-            case "restart":
-                if (MpManager.Restart())
-                {
-                    LogToConsole(TextId.MpRestarted.Get());
-                }
-                break;
-            case "status":
-                LogToConsole(MpManager.GetStatus());
-                LogToConsole(MpManager.DebugText);
-                break;
-            case "id":
-                if (args.Length < 2)
-                {
-                    LogToConsole(TextId.MpUsageSetId.Get());
-                    break;
-                }
-                MpManager.PlayerId = args[1];
-                PlayerIdChangeAction.Send(args[1]);
-                LogToConsole(TextId.MpPlayerIdSet.Get(args[1]));
-                break;
-            case "connect":
-                if (args.Length < 2)
-                {
-                    LogToConsole(TextId.ConnectCommand.Get());
-                    break;
-                }
-                // args[0]: connect, args[1]: ip or ip:port, args[2]: port
-                string address = args[1];
-
-                string host;
-                bool result;
-
-                if (args.Length == 2)
-                {
-                    int idx = address.LastIndexOf(':');
-                    if (idx > 0 && idx != address.Length - 1)
-                    {
-                        host = address[..idx];
-                        string portStr = address[(idx + 1)..];
-
-                        if (int.TryParse(portStr, out int port))
-                            result = await MpManager.ConnectToPeerAsync(host, port);
-                        else
-                            result = await MpManager.ConnectToPeerAsync(address);
-                    }
-                    else
-                    {
-                        result = await MpManager.ConnectToPeerAsync(address);
-                    }
-                }
-                else
-                {
-                    if (int.TryParse(args[2], out int port))
-                        result = await MpManager.ConnectToPeerAsync(address, port);
-                    else
-                        result = await MpManager.ConnectToPeerAsync(address);
-                }
-
-                if (result)
-                {
-                    LogToConsole(TextId.ConnectCommandConnected.Get(address));
-                }
-                else
-                {
-                    LogToConsole(TextId.ConnectCommandFail.Get(address));
-                }
-                break;
-            case "disconnect":
-                if (!MpManager.IsConnected)
-                {
-                    LogToConsole(TextId.MpNoActiveConnection.Get());
-                }
-                else
-                {
-                    MpManager.DisconnectPeer();
-                    LogToConsole(TextId.MpDisconnected.Get());
-                }
-                break;
-            case "continue":
-                if (!MpManager.IsHost)
-                {
-                    LogToConsole(TextId.MpContinueHostOnly.Get());
-                    break;
-                }
-                if (args.Length < 2)
-                {
-                    LogToConsole(TextId.MpContinueUsage.Get());
-                    break;
-                }
-                switch (args[1].ToLower())
-                {
-                    case "day":
-                        if (MpManager.ContinueDay())
-                            LogToConsole(TextId.MpContinueSuccess.Get("day"));
-                        else
-                            LogToConsole(TextId.MpContinueFailed.Get("day"));
-                        break;
-                    case "prep":
-                        if (MpManager.ContinuePrep())
-                            LogToConsole(TextId.MpContinueSuccess.Get("prep"));
-                        else
-                            LogToConsole(TextId.MpContinueFailed.Get("prep"));
-                        break;
-                    default:
-                        LogToConsole(TextId.MpContinueUsage.Get());
-                        break;
-                }
-                break;
-            default:
-                LogToConsole(TextId.MpUnknownSubcommand.Get(subcommand));
-                LogToConsole(TextId.MpSubcommandHelp.Get());
-                break;
-        }
-    }
-
-    private void MessageCommand(string msg)
-    {
-        if (!MpManager.IsConnected)
-        {
-            LogToConsole(TextId.MpNoActiveConnection.Get());
-        }
-        else
-        {
-            MessageAction.Send(msg);
-            LogToConsole(TextId.MessageSent.Get(msg));
-        }
-    }
-
-    private void SkinCommand(string[] args)
-    {
-        if (args.Length == 0)
-        {
-            LogToConsole("Usage: /skin set <characterId> <Default|Explicit|DLC> <skinIndex>");
-            LogToConsole("       /skin off");
-            LogToConsole("       /skin list");
-            return;
-        }
-
-        string sub = args[0].ToLower();
-        switch (sub)
-        {
-            case "set":
-                SkinSetCommand(args);
-                break;
-
-            case "off":
-                PlayerManager.Local.IsCustomSkinOverride = false;
-                PlayerManager.InitLocalSkin();
-                PlayerManager.Local.UpdateCharacterSprite();
-                if (MpManager.IsConnected)
-                    Network.SkinChangeAction.Send(PlayerManager.Local.Skin);
-                PlayerManager.RefreshPortrait();
-                LogToConsole("Skin reset to game default.");
-                break;
-
-            case "list":
-                LogToConsole(PlayerSkin.GetAllSkinsTable());
-                break;
-
-            default:
-                LogToConsole("Usage: /skin set <characterId> <Default|Explicit|DLC> <skinIndex>");
-                LogToConsole("       /skin off");
-                LogToConsole("       /skin list");
-                break;
-        }
-    }
-
-    private void SkinSetCommand(string[] args)
-    {
-        // args[0] = "set", args[1] = characterId, args[2] = type, args[3] = skinIndex
-        if (args.Length < 4)
-        {
-            LogToConsole("Usage: /skin set <characterId> <Default|Explicit|DLC> <skinIndex>");
-            return;
-        }
-
-        if (!int.TryParse(args[1], out int characterId))
-        {
-            LogToConsole($"Invalid characterId: {args[1]}");
-            return;
-        }
-
-        if (!System.Enum.TryParse<GameData.Core.Collections.CharacterUtility.CharacterSkinSets.SelectedType>(args[2], true, out var selectedType))
-        {
-            LogToConsole($"Invalid type: {args[2]}. Use Default, Explicit, or DLC.");
-            return;
-        }
-
-        if (!int.TryParse(args[3], out int skinIndex))
-        {
-            LogToConsole($"Invalid skinIndex: {args[3]}");
-            return;
-        }
-
-        PlayerManager.Local.Skin.SetSkin(characterId, selectedType, skinIndex);
-        PlayerManager.Local.IsCustomSkinOverride = true;
-        PlayerManager.Local.UpdateCharacterSprite();
-        if (MpManager.IsConnected)
-            Network.SkinChangeAction.Send(PlayerManager.Local.Skin);
-        PlayerManager.RefreshPortrait();
-        LogToConsole($"Skin set to: CharacterId={characterId}, Type={selectedType}, Index={skinIndex}");
-    }
-
-    private void CallCommand(string[] args)
-    {
-        var availableFields = "getmapsnpcs, movecharacter, try_close_izakaya";
-        if (args.Length == 0)
-        {
-            LogToConsole(TextId.CallUsage.Get());
-            LogToConsole(TextId.AvailableMethods.Get(availableFields));
-            return;
-        }
-
-        string method = args[0].ToLower();
-        switch (method)
-        {
-            case "getmapsnpcs":
-                try
-                {
-
-                    var mapLabel = args.Length >= 2 ? args[1] : PlayerManager.LocalMapLabel;
-                    var npcs = GameData.RunTime.DaySceneUtility.RunTimeDayScene.GetMapNPCs(mapLabel);
-                    // public unsafe static Dictionary<string, TrackedNPC> GetMapNPCs(string mapLabel);
-                    foreach (var npc in npcs)
-                    {
-                        LogToConsole(TextId.NPCListItem.Get(npc.Key));
-                    }
-                    LogToConsole(TextId.TotalNPCsFound.Get(npcs.Count));
-                }
-                catch (System.Exception e)
-                {
-                    LogToConsole(TextId.ErrorGetMapsnpcs.Get(e.Message));
-                }
-                break;
-            case "movecharacter":
-                if (args.Length < 6)
-                {
-                    LogToConsole(TextId.MoveCharacterUsage.Get());
-                    break;
-                }
-                try
-                {
-                    string characterKey = args[1];
-                    string mapLabel = args[2];
-                    float x = float.Parse(args[3]);
-                    float y = float.Parse(args[4]);
-                    int rot = int.Parse(args[5]);
-                    GameData.RunTime.DaySceneUtility.RunTimeDayScene.MoveCharacter(characterKey, mapLabel, new Vector2(x, y), rot, out var oldNPCData);
-                    LogToConsole(TextId.CharacterMoved.Get(characterKey, x, y, rot, mapLabel));
-                }
-                catch (System.Exception e)
-                {
-                    LogToConsole(TextId.ErrorMovecharacter.Get(e.Message));
-                }
-                break;
-            case "scene_move":
-                if (args.Length < 4)
-                {
-                    LogToConsole(TextId.SceneMoveUsage.Get());
-                    break;
-                }
-                try
-                {
-                    string characterKey = args[1];
-                    float x = float.Parse(args[2]);
-                    float y = float.Parse(args[3]);
-                    var arr = new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<Vector2>(1);
-                    arr[0] = new Vector2(x, y);
-                    Common.SceneDirector.Instance.MoveCharacter(characterKey, arr, 1f, new System.Action(() => { }));
-                    LogToConsole(TextId.CharacterMovedScene.Get(characterKey, x, y));
-                }
-                catch (System.Exception e)
-                {
-                    LogToConsole(TextId.ErrorSceneMove.Get(e.Message));
-                }
-                break;
-            case "try_close_izakaya":
-                if (MpManager.LocalScene != Scene.WorkScene)
-                {
-                    LogToConsole(TextId.NotInWorkScene.Get());
-                }
-                else
-                {
-                    WorkSceneManager.CloseIzakayaIfPossible();
-                    LogToConsole(TextId.CalledTryCloseIzakaya.Get());
-                }
-                break;
-            default:
-                LogToConsole(TextId.UnknownMethod.Get(method));
-                LogToConsole(TextId.AvailableMethods.Get(availableFields));
-                break;
-        }
-    }
-
-    private void OpenWebDebugger(string[] args)
-    {
-        if (args.Length < 2 || args[0].ToLower() != "start")
-        {
-            LogToConsole(TextId.WebDebuggerUsage.Get());
-            return;
-        }
-
-        if (args[1] != "我已知晓风险并同意启动Web调试器")
-        {
-            LogToConsole(TextId.InvalidWebDebuggerKey.Get());
-            return;
-        }
-
-        PluginManager.Debugger ??= new Debugger.WebDebugger();
-        PluginManager.Debugger?.Start();
-        LogToConsole(TextId.WebDebuggerStarted.Get());
     }
 }
 

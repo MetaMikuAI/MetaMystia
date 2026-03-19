@@ -4,6 +4,7 @@ using Common.UI;
 using MainScene;
 
 using MetaMystia.UI;
+using BepInEx;
 
 namespace MetaMystia;
 
@@ -26,5 +27,7 @@ public partial class MainSceneManagerPatch
             Plugin.OnEnterMainScene();
         }
         FirstEnterMain = false;
+
+        PluginManager.Console.LogStartUpMessage();
     }
 }
