@@ -16,7 +16,6 @@ public partial class PluginManager : MonoBehaviour
 {
     public static PluginManager Instance { get; private set; }
     public static readonly string Label = $"{MyPluginInfo.PLUGIN_NAME} v{MyPluginInfo.PLUGIN_VERSION} loaded";
-    public static InGameConsole Console { get; private set; }
     public static Debugger.WebDebugger Debugger = null;
     public static bool IsStatusVisible { get; private set; } = true;
     private readonly ConcurrentQueue<Action> _mainThreadQueue = new ConcurrentQueue<Action>();
@@ -46,13 +45,13 @@ public partial class PluginManager : MonoBehaviour
 
     private void Awake()
     {
-        Console = new InGameConsole();
+        InGameConsole.Initialize();
         ResourceExManager.FlushPendingConsoleLogs();
     }
 
     private void OnGUI()
     {
-        Console?.OnGUI();
+        InGameConsole.OnGUI();
 
         if (IsStatusVisible)
         {
@@ -67,7 +66,7 @@ public partial class PluginManager : MonoBehaviour
     {
         UpdateRunOnMainThreadQueue();
 
-        Console?.Update();
+        InGameConsole.Update();
 
         if (Input.GetKeyDown(KeyCode.RightShift))
         {

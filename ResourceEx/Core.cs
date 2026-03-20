@@ -42,13 +42,12 @@ public static partial class ResourceExManager
 
     /// <summary>
     /// Flush pending resource pack load messages to InGameConsole's deferred queue.
-    /// Call once after PluginManager.Console is available (e.g. PluginManager.Awake).
+    /// Call once after InGameConsole.Initialize() (e.g. PluginManager.Awake).
     /// </summary>
     public static void FlushPendingConsoleLogs()
     {
-        if (PluginManager.Console == null) return;
         foreach (var factory in _pendingConsoleLogs)
-            PluginManager.Console.LogDeferred(factory);
+            InGameConsole.LogDeferred(factory);
         _pendingConsoleLogs.Clear();
     }
 

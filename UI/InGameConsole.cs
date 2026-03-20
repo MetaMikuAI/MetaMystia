@@ -13,10 +13,10 @@ using MetaMystia.Network;
 namespace MetaMystia.UI;
 
 [AutoLog]
-public partial class InGameConsole
+public static partial class InGameConsole
 {
-    private bool _isOpen = false;
-    public bool IsOpen
+    private static bool _isOpen = false;
+    public static bool IsOpen
     {
         get { return _isOpen; }
         set
@@ -30,38 +30,38 @@ public partial class InGameConsole
         }
     }
 
-    private string input = "";
-    private Vector2 scrollPosition;
-    private List<string> logs = [];
-    private List<string> inputs = [];
-    private int inputsCursor = 0;
+    private static string input = "";
+    private static Vector2 scrollPosition;
+    private static List<string> logs = [];
+    private static List<string> inputs = [];
+    private static int inputsCursor = 0;
     private const int MaxLogs = 1024;
-    private bool focusTextField = true;
-    private bool moveCursor = false;
+    private static bool focusTextField = true;
+    private static bool moveCursor = false;
     private const string TextFieldControlName = "ConsoleInput";
-    private bool justOpened = false;
+    private static bool justOpened = false;
 
     // Command system
-    private ConsoleContext _consoleContext = null!;
-    private CompletionEngine _completion = new();
+    private static ConsoleContext _consoleContext = null!;
+    private static CompletionEngine _completion = new();
 
     // Deferred log queue: messages that depend on L10N, flushed after language system is ready
-    private readonly List<Func<string>> _deferredLogs = [];
-    private bool _deferredFlushed = false;
+    private static readonly List<Func<string>> _deferredLogs = [];
+    private static bool _deferredFlushed = false;
 
     // IMGUI style cache
-    private GUIStyle? _logStyle;
-    private GUIStyle? _inputStyle;
-    private GUIStyle? _completionStyle;
-    private GUIStyle? _completionSelectedStyle;
-    private GUIStyle? _headerStyle;
-    private Texture2D? _bgTexture;
-    private Texture2D? _inputBgTexture;
-    private Texture2D? _completionBgTexture;
-    private Texture2D? _completionSelTexture;
-    private bool _stylesInitialized = false;
+    private static GUIStyle? _logStyle;
+    private static GUIStyle? _inputStyle;
+    private static GUIStyle? _completionStyle;
+    private static GUIStyle? _completionSelectedStyle;
+    private static GUIStyle? _headerStyle;
+    private static Texture2D? _bgTexture;
+    private static Texture2D? _inputBgTexture;
+    private static Texture2D? _completionBgTexture;
+    private static Texture2D? _completionSelTexture;
+    private static bool _stylesInitialized = false;
 
-    public InGameConsole()
+    public static void Initialize()
     {
         _consoleContext = new ConsoleContext(LogToConsole);
         CommandRegistry.Initialize();
@@ -77,7 +77,7 @@ public partial class InGameConsole
     /// when <see cref="FlushDeferred"/> is called (after language system is ready).
     /// If already flushed, the message is resolved and printed immediately.
     /// </summary>
-    public void LogDeferred(Func<string> messageFactory)
+    public static void LogDeferred(Func<string> messageFactory)
     {
         if (_deferredFlushed)
             LogToConsole(messageFactory());
@@ -88,7 +88,7 @@ public partial class InGameConsole
     /// <summary>
     /// Resolve and print all deferred log messages. Call once after L10N is ready (MainScene Awake).
     /// </summary>
-    public void FlushDeferred()
+    public static void FlushDeferred()
     {
         foreach (var factory in _deferredLogs)
             LogToConsole(factory());
@@ -96,18 +96,18 @@ public partial class InGameConsole
         _deferredFlushed = true;
     }
 
-    public void AddPeerMessage(string senderName, string message)
+    public static void AddPeerMessage(string senderName, string message)
     {
         LogToConsole(TextId.PeerMessagePrefix.Get(senderName, message));
     }
 
-    public void ClearLogs()
+    public static void ClearLogs()
     {
         logs.Clear();
         inputs.Clear();
     }
 
-    private void UpdateGameInputState()
+    private static void UpdateGameInputState()
     {
         try
         {
@@ -125,7 +125,7 @@ public partial class InGameConsole
         }
     }
 
-    public void Update()
+    public static void Update()
     {
         if (IsOpen)
         {
@@ -152,7 +152,7 @@ public partial class InGameConsole
 
     #region IMGUI Styles
 
-    private void InitStyles()
+    private static void InitStyles()
     {
         if (_stylesInitialized) return;
         _stylesInitialized = true;
@@ -230,7 +230,7 @@ public partial class InGameConsole
 
     #endregion
 
-    public void OnGUI()
+    public static void OnGUI()
     {
         if (!IsOpen) return;
 
@@ -402,7 +402,7 @@ public partial class InGameConsole
             e.Use();
     }
 
-    private void DrawCompletionDropdown(float x, float inputY, float width)
+    private static void DrawCompletionDropdown(float x, float inputY, float width)
     {
         float itemHeight = (_completionStyle!.fontSize + 10);
 
@@ -461,14 +461,14 @@ public partial class InGameConsole
         }
     }
 
-    public void LogToConsole(string message)
+    public static void LogToConsole(string message)
     {
         logs.Add(message);
         if (logs.Count > MaxLogs) logs.RemoveAt(0);
         scrollPosition.y = float.MaxValue;
     }
 
-    private void ExecuteCommand(string cmd, out bool closeConsole)
+    private static void ExecuteCommand(string cmd, out bool closeConsole)
     {
         closeConsole = false;
         Log.LogMessage($"Console Command: {cmd}");
@@ -495,4 +495,3 @@ public partial class InGameConsole
         }
     }
 }
-

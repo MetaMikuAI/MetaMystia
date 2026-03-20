@@ -24,7 +24,7 @@ public partial class MessageAction : Action
     public override void OnReceivedDerived()
     {
         var senderName = PlayerManager.GetPeerName(SenderUid);
-        PluginManager.Console.AddPeerMessage(senderName, Message);
+        InGameConsole.AddPeerMessage(senderName, Message);
         if (PlayerManager.Peers.TryGetValue(SenderUid, out var senderPeer)
             && PlayerManager.LocalMapLabel == senderPeer.MapLabel)
         {

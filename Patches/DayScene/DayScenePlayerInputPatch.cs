@@ -3,6 +3,7 @@ using HarmonyLib;
 using DayScene.Input;
 
 using MetaMystia.Network;
+using MetaMystia.UI;
 using static MetaMystia.Patch.HarmonyPrefixFlow;
 
 namespace MetaMystia.Patch;
@@ -15,7 +16,7 @@ public partial class DayScenePlayerInputPatch
     [HarmonyPrefix]
     public static bool OnSprintPerformed_Prefix()
     {
-        if (PluginManager.Console != null && PluginManager.Console.IsOpen)
+        if (InGameConsole.IsOpen)
         {
             return SkipOriginal;
         }
@@ -36,7 +37,7 @@ public partial class DayScenePlayerInputPatch
     [HarmonyPrefix]
     public static bool TryInteract_Prefix()
     {
-        if (PluginManager.Console != null && PluginManager.Console.IsOpen)
+        if (InGameConsole.IsOpen)
         {
             Log.Warning($"Console is open, skipping interaction");
             return SkipOriginal;

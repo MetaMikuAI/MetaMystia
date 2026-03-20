@@ -96,7 +96,7 @@ public static partial class MpManager
         Log.Info($"{DebugText}");
         if (!Plugin.AllPatched)
         {
-            PluginManager.Console.LogToConsole($"Cannot start multiplayer, patch failure!\n{DebugText}");
+            InGameConsole.LogToConsole($"Cannot start multiplayer, patch failure!\n{DebugText}");
             Log.Fatal($"Cannot start multiplayer, patch failure!\n{DebugText}");
             return false;
         }
@@ -181,7 +181,7 @@ public static partial class MpManager
             {
                 SwitchRole(stop_existed_server);
             }
-            PluginManager.Console.LogToConsole(TextId.MpConnecting.Get(peerIp, port));
+            InGameConsole.LogToConsole(TextId.MpConnecting.Get(peerIp, port));
             Log.LogInfo($"[C] Connecting to {peerIp}:{port}...");
             client = new(peerIp, port);
             await client.StartAsync();

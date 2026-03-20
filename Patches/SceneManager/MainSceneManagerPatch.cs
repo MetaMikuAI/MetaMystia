@@ -28,6 +28,6 @@ public partial class MainSceneManagerPatch
         }
         FirstEnterMain = false;
 
-        PluginManager.Console.FlushDeferred();
+        InGameConsole.FlushDeferred();
     }
 }

@@ -30,7 +30,7 @@ public static class GeneralCommands
 
     private static void ClearHandler(InvocationContext ctx)
     {
-        PluginManager.Console.ClearLogs();
+        InGameConsole.ClearLogs();
     }
 
     private static void WhereAmIHandler(InvocationContext ctx)
