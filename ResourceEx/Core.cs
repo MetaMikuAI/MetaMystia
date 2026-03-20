@@ -151,6 +151,7 @@ public static partial class ResourceExManager
         CheckAndReloadSchedulerData();
         ActivateAllKizunaEventNodes(); // 依赖 CheckAndReloadSchedulerData
         ResetTrackedNpcDialog();
+        CheckAndCleanOrphanedMerchants(); // 清理孤儿商人数据，防止 RefMerchant KeyNotFoundException
         RegisterAllTrackedMerchant();
     }
 

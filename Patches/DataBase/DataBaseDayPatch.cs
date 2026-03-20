@@ -32,6 +32,14 @@ public partial class DataBaseDayPatch
             Log.Info($"Returned custom merchant for key: {key}");
             return SkipOriginal;
         }
+        // Safety net: if key doesn't exist in base game allMerchants either,
+        // skip original to prevent KeyNotFoundException from orphaned save data
+        if (!DataBaseDay.allMerchants.ContainsKey(key))
+        {
+            __result = null;
+            Log.Warning($"RefMerchant: key '{key}' not found in any merchant source, returning null to prevent crash.");
+            return SkipOriginal;
+        }
         return RunOriginal;
     }
 }

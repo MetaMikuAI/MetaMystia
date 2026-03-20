@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 
@@ -18,6 +19,39 @@ namespace MetaMystia;
 
 public static partial class ResourceExManager
 {
+    /// <summary>
+    /// Removes orphaned tracked merchant entries from RunTimeDayScene.trackedMerchants
+    /// that no longer have a corresponding merchant definition in either the base game
+    /// (DataBaseDay.allMerchants) or the current ResourceEx merchant configs.
+    /// This prevents KeyNotFoundException when the game calls DataBaseDay.RefMerchant
+    /// for a merchant whose resource pack has been removed.
+    /// </summary>
+    private static void CheckAndCleanOrphanedMerchants()
+    {
+        var trackedMerchants = RunTimeDayScene.trackedMerchants;
+        if (trackedMerchants == null) return;
+
+        var orphanedKeys = new List<string>();
+        foreach (var kvp in trackedMerchants)
+        {
+            var key = kvp.Key;
+            // Check if the key exists in base game merchants or current ResourceEx merchants
+            if (!DataBaseDay.allMerchants.ContainsKey(key) && !MerchantConfigs.ContainsKey(key))
+            {
+                orphanedKeys.Add(key);
+            }
+        }
+
+        foreach (var key in orphanedKeys)
+        {
+            trackedMerchants.Remove(key);
+            Log.Warning($"Removed orphaned tracked merchant: {key} (merchant definition no longer exists)");
+        }
+
+        if (orphanedKeys.Count > 0)
+            Log.Info($"Cleaned up {orphanedKeys.Count} orphaned tracked merchant(s).");
+    }
+
     private static void RegisterAllTrackedMerchant()
     {
         Log.Info("Registering all tracked merchants...");
