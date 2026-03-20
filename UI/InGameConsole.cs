@@ -1,4 +1,5 @@
 #nullable enable
+using System;
 using Il2CppInterop.Runtime;
 using System.Collections.Generic;
 using UnityEngine;
@@ -44,6 +45,10 @@ public partial class InGameConsole
     private ConsoleContext _consoleContext = null!;
     private CompletionEngine _completion = new();
 
+    // Deferred log queue: messages that depend on L10N, flushed after language system is ready
+    private readonly List<Func<string>> _deferredLogs = [];
+    private bool _deferredFlushed = false;
+
     // IMGUI style cache
     private GUIStyle? _logStyle;
     private GUIStyle? _inputStyle;
@@ -61,14 +66,34 @@ public partial class InGameConsole
         _consoleContext = new ConsoleContext(LogToConsole);
         CommandRegistry.Initialize();
 
-        // LogStartUpMessage(); // 延迟到 MainScene Awake 时调用，以确保语言系统已就绪
+        // Startup messages — queued for deferred resolution after language system loads
+        LogToConsole($"<color=#66CCFF>MetaMystia</color> <color=#888899>v{MyPluginInfo.PLUGIN_VERSION}</color>");
+        LogDeferred(() => $"<color=#888899>{TextId.ConsoleStarPrompt.Get()}</color>");
+        LogDeferred(() => $"<color=#888899>{TextId.ConsoleHelpHint.Get()}</color>");
     }
 
-    public void LogStartUpMessage()
+    /// <summary>
+    /// Queue a log message that depends on L10N. The factory is evaluated lazily
+    /// when <see cref="FlushDeferred"/> is called (after language system is ready).
+    /// If already flushed, the message is resolved and printed immediately.
+    /// </summary>
+    public void LogDeferred(Func<string> messageFactory)
     {
-        LogToConsole($"<color=#66CCFF>MetaMystia</color> <color=#888899>v{MyPluginInfo.PLUGIN_VERSION}</color>");
-        LogToConsole($"<color=#888899>{TextId.ConsoleStarPrompt.Get()}</color>");
-        LogToConsole($"<color=#888899>{TextId.ConsoleHelpHint.Get()}</color>");
+        if (_deferredFlushed)
+            LogToConsole(messageFactory());
+        else
+            _deferredLogs.Add(messageFactory);
+    }
+
+    /// <summary>
+    /// Resolve and print all deferred log messages. Call once after L10N is ready (MainScene Awake).
+    /// </summary>
+    public void FlushDeferred()
+    {
+        foreach (var factory in _deferredLogs)
+            LogToConsole(factory());
+        _deferredLogs.Clear();
+        _deferredFlushed = true;
     }
 
     public void AddPeerMessage(string senderName, string message)
