@@ -40,9 +40,8 @@ public static partial class CommandRegistry
         Commands.LinkCommands.Register(_root);
         Commands.ResourceExCommands.Register(_root);
 
-        // Build parser without default help/version to avoid conflicts with our /help command
+        // Build parser without default help/version or verbose error reporting
         _parser = new CommandLineBuilder(_root)
-            .UseParseErrorReporting()
             .Build();
 
         Log.Info("CommandRegistry initialized");
@@ -94,14 +93,66 @@ public static partial class CommandRegistry
         context.CloseConsole = false;
         try
         {
+            var parseResult = _parser.Parse(input);
+            if (parseResult.Errors.Count > 0)
+            {
+                context.Log(ConsoleFormat.Err(parseResult.Errors[0].Message));
+                var hint = FormatUsageHint(parseResult);
+                if (hint != null) context.Log(hint);
+                return false;
+            }
             _parser.Invoke(input, context);
         }
         catch (Exception ex)
         {
-            context.Log($"Command error: {ex.Message}");
+            context.Log(ConsoleFormat.Err($"Command error: {ex.Message}"));
             Log.Error($"Command execution error: {ex}");
         }
         return context.CloseConsole;
+    }
+
+    /// <summary>
+    /// Build a concise usage hint for the matched command when a parse error occurs.
+    /// e.g. "  → /skin set ‹characterId› ‹type› ‹skinIndex›"
+    /// </summary>
+    private static string? FormatUsageHint(ParseResult parseResult)
+    {
+        var cmd = parseResult.CommandResult.Command;
+        if (cmd == _root) return null;
+
+        // Walk up parent chain to build the full command path
+        var pathParts = new List<string>();
+        SymbolResult? sr = parseResult.CommandResult;
+        while (sr is CommandResult cr)
+        {
+            if (cr.Command != _root)
+                pathParts.Insert(0, cr.Command.Name);
+            sr = cr.Parent;
+        }
+        if (pathParts.Count == 0) return null;
+
+        string path = "/" + string.Join(" ", pathParts);
+        var usageParts = new List<string>();
+
+        // Add argument names
+        foreach (var arg in cmd.Arguments)
+        {
+            bool optional = arg.Arity.MinimumNumberOfValues == 0;
+            usageParts.Add(optional ? $"[{arg.Name}]" : $"<{arg.Name}>");
+        }
+
+        // Add subcommand names if no arguments
+        if (usageParts.Count == 0)
+        {
+            var subs = cmd.Children.OfType<Command>().Select(c => c.Name).ToList();
+            if (subs.Count > 0)
+                usageParts.Add($"<{string.Join("|", subs)}>");
+        }
+
+        if (usageParts.Count == 0) return null;
+
+        string argStr = string.Join(" ", usageParts);
+        return $"  {ConsoleFormat.Dim("→")} {ConsoleFormat.Cmd(path)} {ConsoleFormat.Arg(argStr)}";
     }
 
     /// <summary>
