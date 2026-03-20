@@ -38,6 +38,7 @@ public static partial class CommandRegistry
         Commands.SkinCommands.Register(_root);
         Commands.DebugCommands.Register(_root);
         Commands.LinkCommands.Register(_root);
+        Commands.ResourceExCommands.Register(_root);
 
         // Build parser without default help/version to avoid conflicts with our /help command
         _parser = new CommandLineBuilder(_root)

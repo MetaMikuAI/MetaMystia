@@ -1,4 +1,5 @@
 using BepInEx;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,6 +9,7 @@ using GameData.Core.Collections.DaySceneUtility.Collections;
 using GameData.Core.Collections.CharacterUtility;
 using GameData.Profile;
 
+using MetaMystia.ConsoleSystem;
 using MetaMystia.ResourceEx.AssetManagement;
 using MetaMystia.ResourceEx.Models;
 using MetaMystia.UI;
@@ -29,6 +31,26 @@ public static partial class ResourceExManager
     private static Dictionary<string, CustomDialogList> _dialogPackageConfigs = new Dictionary<string, CustomDialogList>();
     private static Dictionary<string, DialogPackage> _builtDialogPackages = new Dictionary<string, DialogPackage>();
     private static Dictionary<string, Merchant> _builtMerchants = new Dictionary<string, Merchant>();
+
+    // Loaded package metadata for console queries
+    private static readonly List<LoadedResourcePackage> _loadedPackages = new List<LoadedResourcePackage>();
+    private static readonly List<(string packageName, string reason)> _rejectedPackages = new List<(string, string)>();
+    private static readonly List<Func<string>> _pendingConsoleLogs = new List<Func<string>>();
+
+    public static IReadOnlyList<LoadedResourcePackage> LoadedPackages => _loadedPackages;
+    public static IReadOnlyList<(string packageName, string reason)> RejectedPackages => _rejectedPackages;
+
+    /// <summary>
+    /// Flush pending resource pack load messages to InGameConsole's deferred queue.
+    /// Call once after PluginManager.Console is available (e.g. PluginManager.Awake).
+    /// </summary>
+    public static void FlushPendingConsoleLogs()
+    {
+        if (PluginManager.Console == null) return;
+        foreach (var factory in _pendingConsoleLogs)
+            PluginManager.Console.LogDeferred(factory);
+        _pendingConsoleLogs.Clear();
+    }
 
     private static Dictionary<int, IngredientConfig> IngredientConfigs = new Dictionary<int, IngredientConfig>();
     private static Dictionary<int, FoodConfig> FoodConfigs = new Dictionary<int, FoodConfig>();
@@ -138,14 +160,44 @@ public static partial class ResourceExManager
     /// </summary>
     private static void LoadAllResourcePackages()
     {
-        var packages = ResourcePackageLoader.LoadAllPackages(ResourceRoot);
+        var packages = ResourcePackageLoader.LoadAllPackages(ResourceRoot, out var rejected);
 
         foreach (var package in packages)
         {
+            _loadedPackages.Add(package);
             MergeResourcePackage(package);
         }
 
+        _rejectedPackages.AddRange(rejected);
+
         Log.LogInfo($"Loaded {packages.Count} resource package(s) successfully.");
+
+        // Queue console messages — will be flushed to InGameConsole after it becomes available
+        foreach (var pkg in _loadedPackages)
+        {
+            var info = pkg.Config?.packInfo;
+            var captured = pkg;
+            if (info != null)
+            {
+                _pendingConsoleLogs.Add(() =>
+                    ConsoleFormat.Ok(TextId.ResourceExConsoleLoaded.Get(
+                        info.name ?? captured.PackageName,
+                        info.version ?? "?",
+                        info.authors != null ? string.Join(", ", info.authors) : "Unknown")));
+            }
+            else
+            {
+                _pendingConsoleLogs.Add(() =>
+                    ConsoleFormat.Ok(TextId.ResourceExConsoleLoadedNoInfo.Get(captured.PackageName)));
+            }
+        }
+        foreach (var (name, reason) in _rejectedPackages)
+        {
+            var capturedName = name;
+            var capturedReason = reason;
+            _pendingConsoleLogs.Add(() =>
+                ConsoleFormat.Err(TextId.ResourceExConsoleRejected.Get(capturedName, capturedReason)));
+        }
     }
 
     /// <summary>

@@ -193,6 +193,30 @@ public enum TextId
     CmdDescLink,
     LinkDescMetaMystia,
     LinkDescIzakaya,
+
+    // ResourceEx Console Messages & Commands
+    ResourceExConsoleLoaded,
+    ResourceExConsoleLoadedNoInfo,
+    ResourceExConsoleRejected,
+    CmdDescResourceEx,
+    ResourceExHelpHeader,
+    ResourceExDescList,
+    ResourceExDescInfo,
+    ResourceExListHeader,
+    ResourceExListItem,
+    ResourceExListEmpty,
+    ResourceExInfoHeader,
+    ResourceExInfoName,
+    ResourceExInfoLabel,
+    ResourceExInfoVersion,
+    ResourceExInfoAuthors,
+    ResourceExInfoDescription,
+    ResourceExInfoLicense,
+    ResourceExInfoIdRange,
+    ResourceExInfoContents,
+    ResourceExInfoNotFound,
+    ResourceExRejectedHeader,
+    ResourceExRejectedItem,
 }
 
 public static class L10n
@@ -1386,6 +1410,185 @@ public static class L10n
             [Language.ChineseTraditional] = "東方夜雀食堂小助手",
             [Language.Japanese] = "touhou mystia izakaya assistant",
             [Language.Korean] = "touhou mystia izakaya assistant",
+        },
+
+        // ── ResourceEx Console Messages ──
+
+        [TextId.ResourceExConsoleLoaded] = new()
+        {
+            [Language.English] = "✓ ResourceEx: {0} v{1} by {2}",
+            [Language.ChineseSimplified] = "✓ 资源包: {0} v{1} 作者: {2}",
+            [Language.ChineseTraditional] = "✓ 資源包: {0} v{1} 作者: {2}",
+            [Language.Japanese] = "✓ リソースパック: {0} v{1} 作者: {2}",
+            [Language.Korean] = "✓ 리소스 팩: {0} v{1} 저자: {2}",
+        },
+        [TextId.ResourceExConsoleLoadedNoInfo] = new()
+        {
+            [Language.English] = "✓ ResourceEx: {0} (no pack info)",
+            [Language.ChineseSimplified] = "✓ 资源包: {0}（无包信息）",
+            [Language.ChineseTraditional] = "✓ 資源包: {0}（無包信息）",
+            [Language.Japanese] = "✓ リソースパック: {0}（パック情報なし）",
+            [Language.Korean] = "✓ 리소스 팩: {0} (팩 정보 없음)",
+        },
+        [TextId.ResourceExConsoleRejected] = new()
+        {
+            [Language.English] = "✗ ResourceEx: {0} rejected — {1}",
+            [Language.ChineseSimplified] = "✗ 资源包: {0} 已拒绝 — {1}",
+            [Language.ChineseTraditional] = "✗ 資源包: {0} 已拒絕 — {1}",
+            [Language.Japanese] = "✗ リソースパック: {0} 拒否 — {1}",
+            [Language.Korean] = "✗ 리소스 팩: {0} 거부됨 — {1}",
+        },
+        [TextId.CmdDescResourceEx] = new()
+        {
+            [Language.English] = "Resource pack management",
+            [Language.ChineseSimplified] = "资源包管理",
+            [Language.ChineseTraditional] = "資源包管理",
+            [Language.Japanese] = "リソースパック管理",
+            [Language.Korean] = "리소스 팩 관리",
+        },
+        [TextId.ResourceExHelpHeader] = new()
+        {
+            [Language.English] = "ResourceEx Commands",
+            [Language.ChineseSimplified] = "ResourceEx 命令",
+            [Language.ChineseTraditional] = "ResourceEx 命令",
+            [Language.Japanese] = "ResourceEx コマンド",
+            [Language.Korean] = "ResourceEx 명령",
+        },
+        [TextId.ResourceExDescList] = new()
+        {
+            [Language.English] = "List all loaded resource packs",
+            [Language.ChineseSimplified] = "列出所有已加载的资源包",
+            [Language.ChineseTraditional] = "列出所有已加載的資源包",
+            [Language.Japanese] = "すべてのリソースパックを一覧表示",
+            [Language.Korean] = "로드된 모든 리소스 팩 목록",
+        },
+        [TextId.ResourceExDescInfo] = new()
+        {
+            [Language.English] = "Show details of a resource pack",
+            [Language.ChineseSimplified] = "显示资源包详细信息",
+            [Language.ChineseTraditional] = "顯示資源包詳細信息",
+            [Language.Japanese] = "リソースパックの詳細を表示",
+            [Language.Korean] = "리소스 팩 세부 정보 표시",
+        },
+        [TextId.ResourceExListHeader] = new()
+        {
+            [Language.English] = "Loaded Resource Packs ({0})",
+            [Language.ChineseSimplified] = "已加载资源包 ({0})",
+            [Language.ChineseTraditional] = "已加載資源包 ({0})",
+            [Language.Japanese] = "読み込み済みリソースパック ({0})",
+            [Language.Korean] = "로드된 리소스 팩 ({0})",
+        },
+        [TextId.ResourceExListItem] = new()
+        {
+            [Language.English] = "{0} v{1} by {2}",
+            [Language.ChineseSimplified] = "{0} v{1} 作者: {2}",
+            [Language.ChineseTraditional] = "{0} v{1} 作者: {2}",
+            [Language.Japanese] = "{0} v{1} 作者: {2}",
+            [Language.Korean] = "{0} v{1} 저자: {2}",
+        },
+        [TextId.ResourceExListEmpty] = new()
+        {
+            [Language.English] = "No resource packs loaded.",
+            [Language.ChineseSimplified] = "未加载任何资源包。",
+            [Language.ChineseTraditional] = "未加載任何資源包。",
+            [Language.Japanese] = "リソースパックが読み込まれていません。",
+            [Language.Korean] = "로드된 리소스 팩이 없습니다.",
+        },
+        [TextId.ResourceExInfoHeader] = new()
+        {
+            [Language.English] = "Resource Pack Info",
+            [Language.ChineseSimplified] = "资源包信息",
+            [Language.ChineseTraditional] = "資源包信息",
+            [Language.Japanese] = "リソースパック情報",
+            [Language.Korean] = "리소스 팩 정보",
+        },
+        [TextId.ResourceExInfoName] = new()
+        {
+            [Language.English] = "Name: {0}",
+            [Language.ChineseSimplified] = "名称: {0}",
+            [Language.ChineseTraditional] = "名稱: {0}",
+            [Language.Japanese] = "名前: {0}",
+            [Language.Korean] = "이름: {0}",
+        },
+        [TextId.ResourceExInfoLabel] = new()
+        {
+            [Language.English] = "Label: {0}",
+            [Language.ChineseSimplified] = "标签: {0}",
+            [Language.ChineseTraditional] = "標籤: {0}",
+            [Language.Japanese] = "ラベル: {0}",
+            [Language.Korean] = "라벨: {0}",
+        },
+        [TextId.ResourceExInfoVersion] = new()
+        {
+            [Language.English] = "Version: {0}",
+            [Language.ChineseSimplified] = "版本: {0}",
+            [Language.ChineseTraditional] = "版本: {0}",
+            [Language.Japanese] = "バージョン: {0}",
+            [Language.Korean] = "버전: {0}",
+        },
+        [TextId.ResourceExInfoAuthors] = new()
+        {
+            [Language.English] = "Authors: {0}",
+            [Language.ChineseSimplified] = "作者: {0}",
+            [Language.ChineseTraditional] = "作者: {0}",
+            [Language.Japanese] = "作者: {0}",
+            [Language.Korean] = "저자: {0}",
+        },
+        [TextId.ResourceExInfoDescription] = new()
+        {
+            [Language.English] = "Description: {0}",
+            [Language.ChineseSimplified] = "描述: {0}",
+            [Language.ChineseTraditional] = "描述: {0}",
+            [Language.Japanese] = "説明: {0}",
+            [Language.Korean] = "설명: {0}",
+        },
+        [TextId.ResourceExInfoLicense] = new()
+        {
+            [Language.English] = "License: {0}",
+            [Language.ChineseSimplified] = "许可证: {0}",
+            [Language.ChineseTraditional] = "許可證: {0}",
+            [Language.Japanese] = "ライセンス: {0}",
+            [Language.Korean] = "라이선스: {0}",
+        },
+        [TextId.ResourceExInfoIdRange] = new()
+        {
+            [Language.English] = "ID Range: {0} – {1}",
+            [Language.ChineseSimplified] = "ID 范围: {0} – {1}",
+            [Language.ChineseTraditional] = "ID 範圍: {0} – {1}",
+            [Language.Japanese] = "ID 範囲: {0} – {1}",
+            [Language.Korean] = "ID 범위: {0} – {1}",
+        },
+        [TextId.ResourceExInfoContents] = new()
+        {
+            [Language.English] = "Contents: {0}",
+            [Language.ChineseSimplified] = "内容: {0}",
+            [Language.ChineseTraditional] = "內容: {0}",
+            [Language.Japanese] = "内容: {0}",
+            [Language.Korean] = "내용: {0}",
+        },
+        [TextId.ResourceExInfoNotFound] = new()
+        {
+            [Language.English] = "Resource pack '{0}' not found.",
+            [Language.ChineseSimplified] = "未找到资源包 '{0}'。",
+            [Language.ChineseTraditional] = "未找到資源包 '{0}'。",
+            [Language.Japanese] = "リソースパック '{0}' が見つかりません。",
+            [Language.Korean] = "리소스 팩 '{0}'을(를) 찾을 수 없습니다.",
+        },
+        [TextId.ResourceExRejectedHeader] = new()
+        {
+            [Language.English] = "Rejected Resource Packs ({0})",
+            [Language.ChineseSimplified] = "被拒绝的资源包 ({0})",
+            [Language.ChineseTraditional] = "被拒絕的資源包 ({0})",
+            [Language.Japanese] = "拒否されたリソースパック ({0})",
+            [Language.Korean] = "거부된 리소스 팩 ({0})",
+        },
+        [TextId.ResourceExRejectedItem] = new()
+        {
+            [Language.English] = "{0} — {1}",
+            [Language.ChineseSimplified] = "{0} — {1}",
+            [Language.ChineseTraditional] = "{0} — {1}",
+            [Language.Japanese] = "{0} — {1}",
+            [Language.Korean] = "{0} — {1}",
         },
     };
 

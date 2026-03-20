@@ -19,8 +19,10 @@ public static partial class ResourcePackageLoader
     /// <summary>
     /// Scans the resource directory and loads all valid resource packages
     /// </summary>
-    public static List<LoadedResourcePackage> LoadAllPackages(string resourceRoot)
+    public static List<LoadedResourcePackage> LoadAllPackages(string resourceRoot, out List<(string packageName, string reason)> rejected)
     {
+        rejected = new List<(string, string)>();
+
         if (!Directory.Exists(resourceRoot))
         {
             Directory.CreateDirectory(resourceRoot);
@@ -47,6 +49,7 @@ public static partial class ResourcePackageLoader
             catch (Exception e)
             {
                 Log.LogError($"Failed to load resource package {packageName}: {e.Message}");
+                rejected.Add((packageName, e.Message));
             }
         }
 
@@ -73,6 +76,7 @@ public static partial class ResourcePackageLoader
 
                 Log.LogError($"[{candidate.PackageName}] Rejected: ID range validation failed.");
                 Notify.ShowOnNextAvailableScene(() => TextId.ResourcePackageValidationFailed.Get(candidate.PackageName));
+                rejected.Add((candidate.PackageName, "ID range validation failed"));
                 continue;
             }
 
@@ -95,6 +99,7 @@ public static partial class ResourcePackageLoader
             catch (Exception ex)
             {
                 Log.LogError($"[{candidate.PackageName}] Failed to finalize package: {ex.Message}");
+                rejected.Add((candidate.PackageName, ex.Message));
             }
         }
 

@@ -63,6 +63,7 @@ public static class GeneralCommands
         ["whereami"] = TextId.CmdDescWhereami,
         ["enable_bepin_console"] = TextId.CmdDescEnableBepinConsole,
         ["link"] = TextId.CmdDescLink,
+        ["resourceex"] = TextId.CmdDescResourceEx,
     };
 
     private static void HelpHandler(InvocationContext ctx)

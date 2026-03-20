@@ -47,6 +47,7 @@ public partial class PluginManager : MonoBehaviour
     private void Awake()
     {
         Console = new InGameConsole();
+        ResourceExManager.FlushPendingConsoleLogs();
     }
 
     private void OnGUI()
