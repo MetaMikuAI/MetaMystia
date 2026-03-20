@@ -1,6 +1,5 @@
 using System.CommandLine;
-using System.CommandLine.Invocation;
-using System.Diagnostics;
+using UnityEngine;
 
 using MetaMystia.UI;
 
@@ -45,6 +44,6 @@ public static class LinkCommands
 
     private static void OpenUrl(string url)
     {
-        Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+        Application.OpenURL(url);
     }
 }
