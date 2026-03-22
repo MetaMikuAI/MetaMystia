@@ -31,6 +31,7 @@ public static partial class NightSceneEventManagerPatch
     public static void Initialize_Postfix(EventManager __instance)
     {
         WorkSceneManager.GetWholeNightTimeOriginal = __instance.GetWholeNightTime;
+        WorkSceneManager.AllowClientClose = false;
         if (MpManager.IsConnected)
         {
             Func<int> GetWholeNightTime = () => MpManager.WorkTimeSecondOverride;
@@ -71,29 +72,22 @@ public static partial class NightSceneEventManagerPatch
         Log.InfoCaller($"time set to {__instance.singleRoundDuration}s");
     }
 
-
-    // [HarmonyPatch(nameof(EventManager.FundEdit))]
-    // [HarmonyPrefix]
-    // public static bool FundEdit_Prefix(EventManager __instance, ref float value, EventManager.MathOperation mathOperation)
-    // {
-    //     if (MpManager.IsConnectedHost)
-    //     {
-    //         var newValue = (float)Math.Round(value * MpManager.MultiplayerFundModifier);
-    //         Log.DebugCaller($"value {value} => {newValue}");
-    //         value = newValue;
-    //     }
-    //     if (MpManager.IsConnectedClient && !MpManager.InStory)
-    //     {
-    //         if (WorkSceneManager.InChallenge && mathOperation == EventManager.MathOperation.Set)
-    //         {
-    //             Log.InfoCaller($"InChallenge and mathOperation set, will not prevent, value {value}");
-    //             return true;
-    //         }
-    //         Log.DebugCaller($"prevented, value {value}");
-    //         return false;
-    //     }
-    //     return true;
-    // }
+    [HarmonyPatch(nameof(EventManager.FundEdit))]
+    [HarmonyPrefix]
+    public static bool FundEdit_Prefix(EventManager __instance, ref float value, EventManager.MathOperation mathOperation)
+    {
+        if (MpManager.IsConnectedClient && !MpManager.InStory)
+        {
+            if (WorkSceneManager.InChallenge && mathOperation == EventManager.MathOperation.Set)
+            {
+                Log.InfoCaller($"InChallenge and mathOperation set, will not prevent, value {value}");
+                return RunOriginal;
+            }
+            Log.DebugCaller($"prevented, value {value}");
+            return SkipOriginal;
+        }
+        return RunOriginal;
+    }
 
     [HarmonyPatch(nameof(EventManager.FundEdit))]
     [HarmonyPostfix]
@@ -177,5 +171,49 @@ public static partial class NightSceneEventManagerPatch
     public static void ComboEdit_Original(EventManager __instance, float value, EventManager.MathOperation mathOperation)
     {
         throw new NotImplementedException();
+    }
+
+    /// <summary>
+    /// 客机：阻止倒计时归零，等待主机 IzakayaCloseAction 后才允许打烊
+    /// </summary>
+    [HarmonyPatch(nameof(EventManager.ModifyTotalTime))]
+    [HarmonyPrefix]
+    public static bool ModifyTotalTime_Prefix(EventManager __instance, int time)
+    {
+        if (!MpManager.IsConnectedClient || WorkSceneManager.AllowClientClose) return RunOriginal;
+        if (time >= 0) return RunOriginal;
+
+        int effectiveRemaining = __instance.TotalCountDown + __instance.extraCountDown;
+        if (effectiveRemaining + time <= 0)
+        {
+            Log.DebugCaller($"Blocked countdown to zero: time={time}, remaining={effectiveRemaining}");
+            return SkipOriginal;
+        }
+        return RunOriginal;
+    }
+
+    /// <summary>
+    /// 停止生成客人 Loop 并执行打烊（ReversePatch 直接调用原始私有方法）
+    /// </summary>
+    [HarmonyPatch(typeof(EventManager), "StopInstantiationLoopAndCloseIzakaya")]
+    [HarmonyReversePatch]
+    public static void StopInstantiationLoopAndCloseIzakaya_Original(EventManager __instance)
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <summary>
+    /// 客机：阻止快进（跳过夜晚），仅主机可操作
+    /// </summary>
+    [HarmonyPatch(typeof(NightScene.UI.WorkSceneSustainedPannel), nameof(NightScene.UI.WorkSceneSustainedPannel.OnFastForwardSubmit))]
+    [HarmonyPrefix]
+    public static bool OnFastForwardSubmit_Prefix()
+    {
+        if (MpManager.IsConnectedClient)
+        {
+            Log.Message("Client attempted to fast forward, blocked");
+            return SkipOriginal;
+        }
+        return RunOriginal;
     }
 }

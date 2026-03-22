@@ -9,6 +9,8 @@ using MetaMystia.Network;
 using SgrYuki;
 using SgrYuki.Utils;
 
+using static MetaMystia.Patch.HarmonyPrefixFlow;
+
 namespace MetaMystia.Patch;
 
 [HarmonyPatch(typeof(NightScene.GuestManagementUtility.GuestsManager))]
@@ -419,6 +421,11 @@ public partial class GuestsManagerPatch
     {
         if (!MpManager.ShouldSkipAction)
         {
+            if (MpManager.IsConnectedClient && GuestsManager.instance?.isIzakayaClosing == true)
+            {
+                Log.DebugCaller("Client in close sequence, skipping network action");
+                return true;
+            }
             var uuid = toRepell.GetGuestUUID();
             if (uuid == null) return true;
 
@@ -442,6 +449,11 @@ public partial class GuestsManagerPatch
     {
         if (!MpManager.ShouldSkipAction)
         {
+            if (MpManager.IsConnectedClient && GuestsManager.instance?.isIzakayaClosing == true)
+            {
+                Log.DebugCaller("Client in close sequence, skipping network action");
+                return true;
+            }
             bool IsReimuSpellCardTriggered = Functional.CheckStacktraceContains("InitializeAsGeneralWorkScene");
             if (IsReimuSpellCardTriggered)
             {
@@ -657,26 +669,25 @@ public partial class GuestsManagerPatch
     {
         if (!MpManager.IsConnected) return true;
 
-        if (MpManager.IsClient)
+        if (MpManager.IsConnectedClient)
         {
-            // 客机：拦截打烊，只有主机可以打烊
+            if (WorkSceneManager.AllowClientClose)
+            {
+                Log.Message("Client close allowed by host command");
+                return true;
+            }
             Log.Message("Client attempted to close izakaya, blocked");
             return false;
         }
 
-        // 主机：正常执行打烊，Postfix 会广播
-        return true;
-    }
-
-    [HarmonyPatch(nameof(GuestsManager.TryCloseIzakaya))]
-    [HarmonyPostfix]
-    public static void TryCloseIzakaya_Postfix(GuestsManager __instance)
-    {
-        Log.Message("TryCloseIzakaya called!");
         if (MpManager.IsConnectedHost)
         {
             IzakayaCloseAction.Broadcast();
+            Log.Message("TryCloseIzakaya called, Host broadcast.");
         }
+
+        // 主机：正常执行打烊
+        return true;
     }
 
     [HarmonyPatch(nameof(GuestsManager.TryCloseIzakaya))]

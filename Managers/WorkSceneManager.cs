@@ -102,6 +102,11 @@ public static partial class WorkSceneManager
         float timeoutSeconds = 30f,
         Action onTimeout = null) => CommandScheduler.EnqueueKey(GuestCommandQueue, key, executeWhen, execute, executeInfo, beforeExecute, timeoutSeconds, onTimeout);
 
+    /// <summary>
+    /// 主机发送 IzakayaCloseAction 后，客机允许执行打烊流程
+    /// </summary>
+    public static bool AllowClientClose { get; set; } = false;
+
     public static int WorkTimeLeft => NightScene.EventUtility.EventManager.Instance.TotalCountDown;
     public static void ModifyWorkTimeLeft(int time)
     {

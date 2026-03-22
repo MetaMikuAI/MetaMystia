@@ -19,7 +19,6 @@ public enum GuestPayType
 /// </summary>
 [MemoryPackable]
 [AutoLog]
-[HostRelay]
 public partial class GuestPayAction : Action
 {
     public override ActionType Type => ActionType.GUEST_PAY;

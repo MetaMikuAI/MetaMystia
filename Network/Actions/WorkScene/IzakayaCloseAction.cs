@@ -1,5 +1,6 @@
 using MemoryPack;
 
+using MetaMystia.Patch;
 using MetaMystia.UI;
 
 namespace MetaMystia.Network;
@@ -14,7 +15,7 @@ public partial class IzakayaCloseAction : Action
     public override ActionType Type => ActionType.IZAKAYA_CLOSE;
 
     /// <summary>
-    /// 客机收到主机广播的打烊命令 → 执行本地打烊
+    /// 客机收到主机广播的打烊命令 → 设置允许打烊标志并直接触发打烊流程
     /// </summary>
     [CheckScene(Common.UI.Scene.WorkScene)]
     public override void OnReceivedDerived()
@@ -23,7 +24,12 @@ public partial class IzakayaCloseAction : Action
         {
             Log.Message($"Received close command from host");
             Notify.ShowOnMainThread(TextId.PeerClosedIzakaya.Get(PlayerManager.GetPeerName(SenderUid)));
-            WorkSceneManager.CloseIzakayaIfPossible();
+            WorkSceneManager.AllowClientClose = true;
+            var eventManager = NightScene.EventUtility.EventManager.Instance;
+            if (eventManager != null)
+            {
+                NightSceneEventManagerPatch.StopInstantiationLoopAndCloseIzakaya_Original(eventManager);
+            }
         });
     }
 

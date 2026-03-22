@@ -11,7 +11,6 @@ namespace MetaMystia.Network;
 /// </summary>
 [MemoryPackable]
 [AutoLog]
-[HostRelay]
 public partial class GuestLeaveAction : Action
 {
     public override ActionType Type => ActionType.GUEST_LEAVE;

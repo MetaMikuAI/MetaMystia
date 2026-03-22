@@ -10,7 +10,6 @@ namespace MetaMystia.Network;
 /// </summary>
 [MemoryPackable]
 [AutoLog]
-[HostRelay]
 public partial class GuestGenNormalOrderAction : Action
 {
     public override ActionType Type => ActionType.GUEST_GEN_NORMAL_ORDER;
