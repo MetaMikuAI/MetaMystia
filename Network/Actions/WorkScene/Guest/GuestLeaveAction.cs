@@ -10,6 +10,7 @@ namespace MetaMystia.Network;
 /// 任何玩家 → 全体玩家：通告某个顾客离开以及离开的方式。
 /// </summary>
 [MemoryPackable]
+[HostRelay]
 [AutoLog]
 public partial class GuestLeaveAction : Action
 {
