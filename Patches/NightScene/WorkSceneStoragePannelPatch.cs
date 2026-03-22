@@ -6,6 +6,8 @@ using NightScene.UI.CookingUtility;
 using MetaMystia.Network;
 using MetaMystia.UI;
 
+using static MetaMystia.Patch.HarmonyPrefixFlow;
+
 namespace MetaMystia.Patch;
 
 
@@ -41,7 +43,7 @@ public partial class WorkSceneStoragePannelPatch
             {
                 Log.LogWarning($"Peer does not have beverage {toExtract.id}, cannot extract.");
                 Notify.ShowOnMainThread(TextId.DLCPeerBeverageNotAvailable.Get(toExtract.id));
-                return false;
+                return SkipOriginal;
             }
         }
         else if (toExtract.type == Sellable.SellableType.Food)
@@ -50,11 +52,11 @@ public partial class WorkSceneStoragePannelPatch
             {
                 Log.LogWarning($"Peer does not have recipe {toExtract.id}, cannot extract.");
                 Notify.ShowOnMainThread(TextId.DLCPeerFoodNotAvailable.Get(toExtract.id));
-                return false;
+                return SkipOriginal;
             }
             SellableFood food = SellableFood.FromSellable(toExtract);
             ExtractFoodAction.Send(food);
         }
-        return true;
+        return RunOriginal;
     }
 }

@@ -5,6 +5,8 @@ using NightScene.GuestManagementUtility;
 using MetaMystia.Network;
 using SgrYuki.Utils;
 
+using static MetaMystia.Patch.HarmonyPrefixFlow;
+
 namespace MetaMystia.Patch;
 
 [HarmonyPatch]
@@ -43,21 +45,21 @@ public partial class GuestGroupControllerPatch
     [HarmonyPrefix]
     public static bool MoveToDesk_Prefix(GuestGroupController __instance, int deskCode, Il2CppSystem.Action onMovementFinishCallback)
     {
-        if (MpManager.ShouldSkipAction) return true;
+        if (MpManager.ShouldSkipAction) return RunOriginal;
 
         bool IsReimuSpellCardTriggered = Functional.CheckStacktraceContains("InitializeAsGeneralWorkScene");
-        if (IsReimuSpellCardTriggered) return true;
+        if (IsReimuSpellCardTriggered) return RunOriginal;
 
         var uuid = __instance.GetGuestUUID();
         if (uuid == null)
         {
             Log.Error($"not found uuid, will use original logic");
-            return true;
+            return RunOriginal;
         }
         var seat = WorkSceneManager.GetGuestDeskcodeSeat(uuid);
         Log.Info($"sending {uuid.GetGuestFSM()?.Identifier} to desk {deskCode}, seat {seat}");
         WorkSceneManager.MoveToDesk(__instance, deskCode, onMovementFinishCallback, seat);
-        return false;
+        return SkipOriginal;
     }
 
     [HarmonyPatch(typeof(GuestGroupController), nameof(GuestGroupController.EvaluateUnderSparrowTune))]

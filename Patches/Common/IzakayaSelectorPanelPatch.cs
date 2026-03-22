@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using MetaMystia.Network;
 using MetaMystia.UI;
 
+using static MetaMystia.Patch.HarmonyPrefixFlow;
+
 namespace MetaMystia.Patch;
 
 
@@ -38,7 +40,7 @@ public partial class IzakayaSelectorPanelPatch
         if (!MpManager.IsConnected)
         {
             Log.Info($"Not in multiplayer session, skipping patch");
-            return true;
+            return RunOriginal;
         }
 
         var izakayaMapLabel = __instance.m_CurrentSelectedSpot.PrimaryName;
@@ -58,11 +60,11 @@ public partial class IzakayaSelectorPanelPatch
         {
             // 客机：发送 SELECT 后等待主机 CONFIRM
             Notify.ShowOnMainThread(TextId.WaitingForHostConfirm.Get(mySelect));
-            return false;
+            return SkipOriginal;
         }
         // 主机：检查所有 peer 是否已选择且一致
         TryConfirmSelection();
-        return false;
+        return SkipOriginal;
     }
 
     /// <summary>

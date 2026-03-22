@@ -5,6 +5,8 @@ using Common.UI;
 
 using MetaMystia.UI;
 
+using static MetaMystia.Patch.HarmonyPrefixFlow;
+
 namespace MetaMystia.Patch;
 
 
@@ -21,7 +23,7 @@ public partial class UniversalGameManagerPatch
         if (dialogPackage == null)
         {
             // dialogPackage 为空时，直接调用原方法，将 onFinishCallback 传递下去
-            return true;
+            return RunOriginal;
         }
 
         if (dialogPackage.dialogContext == null)
@@ -41,7 +43,7 @@ public partial class UniversalGameManagerPatch
                 overrideReplaceTextCallback: ResourceExManager.GetOverrideReplaceTextCallback(dialogPackage),
                 previousPanelVisualMode: previousPanelVisualMode
             );
-            return false;
+            return SkipOriginal;
         }
 
         // MetaMiku 注:
@@ -53,7 +55,7 @@ public partial class UniversalGameManagerPatch
 
         if (!MpManager.IsConnected || dialogPackage?.name != "OnTransitionToNight") // dialogPackage 可能为空
         {
-            return true;
+            return RunOriginal;
         }
 
         Log.LogInfo($"In multiplayer session and dialogPackage is OnTransitionToNight -> show empty dialog instead");
@@ -63,7 +65,7 @@ public partial class UniversalGameManagerPatch
             overrideReplaceTextCallback: null,
             previousPanelVisualMode: previousPanelVisualMode
         );
-        return false;
+        return SkipOriginal;
     }
 
     [HarmonyPatch(nameof(UniversalGameManager.LoadScene))]

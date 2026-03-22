@@ -7,6 +7,8 @@ using NightScene.CookingUtility;
 using MetaMystia.Network;
 using MetaMystia.UI;
 
+using static MetaMystia.Patch.HarmonyPrefixFlow;
+
 namespace MetaMystia.Patch;
 
 [HarmonyPatch(typeof(NightScene.CookingUtility.CookController))]
@@ -23,9 +25,9 @@ public partial class CookControllerPatch
         {
             Log.LogWarning($"Peer does not have recipe {recipe.Id}, skipping SetCook.");
             Notify.ShowOnMainThread(TextId.DLCPeerRecipeNotAvailable.Get(recipe.Id));
-            return false;
+            return SkipOriginal;
         }
-        return true;
+        return RunOriginal;
     }
 
 
