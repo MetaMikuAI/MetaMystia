@@ -40,6 +40,8 @@ public partial class GuestLeaveAction : Action
         if (WorkSceneManager.CheckStatus(GuestUUID, WorkSceneManager.Status.Left))
         {
             Log.Info($"{GuestUUID.GetGuestFSM()?.Identifier} already left, skip");
+            // 警告，在非主线程盲目使用 Identifier 可能导致 竞态条件，该问题将在本次 commit 中通过缓存 guest name 来解决
+
             return;
         }
         WorkSceneManager.EnqueueGuestCommand(

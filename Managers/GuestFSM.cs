@@ -31,6 +31,7 @@ public partial class GuestFSM
     private int _deskCode = -1;
     private int _deskSeatCode = -1;
     private (bool foodServed, bool beverageServed) _orderFulfilled = (false, false);
+    private string _cachedGuestName;
 
     public GuestFSM(string guestUUID)
     {
@@ -158,13 +159,21 @@ public partial class GuestFSM
     /// </summary>
     public bool IsGuestValid()
     {
-        if (_guestController == null) return false;
-        if (_guestController.guestInstances == null) return false;
-        for (int i = 0; i < _guestController.guestInstances.Length; i++)
+        try
         {
-            if (_guestController.guestInstances[i] == null) return false;
+            if (_guestController == null) return false;
+            if (_guestController.guestInstances == null) return false;
+            for (int i = 0; i < _guestController.guestInstances.Length; i++)
+            {
+                if (_guestController.guestInstances[i] == null) return false;
+            }
+            return true;
         }
-        return true;
+        catch (System.NullReferenceException)
+        {
+            Log.Error($"{GuestUUID} guest controller invalid, likely due to guest destruction. Marking as invalid.");
+            return false;
+        }
     }
 
     public void ChangeState(WorkSceneManager.Status newState)
@@ -178,8 +187,28 @@ public partial class GuestFSM
         fSMState.OnEnter();
     }
 
-    public string GuestName => GuestController?.OnGetGuestName();
-    public GuestType GuestType => GuestController?.ControllType ?? GuestType.Normal;
+    public string GuestName
+    {
+        get
+        {
+            if (_cachedGuestName != null) return _cachedGuestName;
+            try
+            {
+                var name = GuestController?.OnGetGuestName();
+                if (name != null) _cachedGuestName = name;
+                return name;
+            }
+            catch { return _cachedGuestName ?? "<destroyed>"; }
+        }
+    }
+    public GuestType GuestType
+    {
+        get
+        {
+            try { return GuestController?.ControllType ?? GuestType.Normal; }
+            catch { return GuestType.Normal; }
+        }
+    }
     public string Identifier => $"{GuestName}-{GuestUUID}-[{DeskCode + 1}]";
 
     public void Update()

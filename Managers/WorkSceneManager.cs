@@ -526,10 +526,18 @@ public static partial class WorkSceneManager
     public static bool IsGuestNull(GuestGroupController guest) => !IsGuestNotNull(guest);
     public static bool IsGuestNotNull(GuestGroupController guest)
     {
-        if (guest == null) return false;
-        if (guest.guestInstances == null) return false;
-        if (guest.guestInstances.Any((component) => component == null)) return false;
-        return true;
+        try
+        {
+            if (guest == null) return false;
+            if (guest.guestInstances == null) return false;
+            if (guest.guestInstances.Any((component) => component == null)) return false;
+            return true;
+        }
+        catch (System.NullReferenceException)
+        {
+            Log.Error($"guest {guest.GetGuestFSM()?.GuestUUID} is in invalid memory state, treating as null");
+            return false;
+        }
     }
 
     public static bool IsGuestNull(string uuid) => !IsGuestNotNull(uuid);
