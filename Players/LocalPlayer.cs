@@ -12,8 +12,7 @@ namespace MetaMystia;
 [AutoLog]
 public partial class LocalPlayer : NetPlayer
 {
-    public bool CharacterSpawnedAndInitialized =>
-        Common.SceneDirector.instance.characterCollection.ContainsKey("Self");
+    public bool CharacterSpawnedAndInitialized => GetCharacterUnit() != null;
 
     public override CharacterControllerUnit GetCharacterUnit()
     {

@@ -94,8 +94,20 @@ public abstract partial class NetPlayer
 
     /// <summary>
     /// 玩家角色当前位置
+    /// NOTE: 不要使用 `?.` 运算符检查 IL2Cpp Unity 对象，它只检查 C# null，
+    ///       无法检测已销毁的 Unity 原生对象。使用 `== null` 以走 Unity 重载运算符。
     /// </summary>
-    public Vector2 Position => rb2d?.transform?.position ?? Vector2.zero;
+    public Vector2 Position
+    {
+        get
+        {
+            var r = rb2d;
+            if (r == null) return Vector2.zero;
+            var t = r.transform;
+            if (t == null) return Vector2.zero;
+            return (Vector2)t.position;
+        }
+    }
     #endregion
 
     /// <summary>

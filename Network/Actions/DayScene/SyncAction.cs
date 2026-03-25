@@ -46,6 +46,10 @@ public partial class SyncAction : Action
         {
             return;
         }
+        if (!PlayerManager.CharacterSpawnedAndInitialized)
+        {
+            return;
+        }
 
         var inputDirection = PlayerManager.LocalInputDirection;
         var position = PlayerManager.LocalPosition;
