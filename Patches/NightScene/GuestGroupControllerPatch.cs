@@ -82,7 +82,10 @@ public partial class GuestGroupControllerPatch
         {
             Log.WarningCaller($"{fsm.Identifier} trying to leave just after generated? Set to leave");
             fsm?.TryLeave();
-            GuestLeaveAction.Send(fsm.GuestUUID, GuestLeaveAction.LeaveType.LeaveFromQueue);
+            if (MpManager.IsConnectedHost)
+            {
+                GuestLeaveAction.Send(fsm.GuestUUID, GuestLeaveAction.LeaveType.LeaveFromQueue);
+            }
         }
     }
 
