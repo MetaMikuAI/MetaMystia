@@ -123,14 +123,16 @@ public class Plugin : BasePlugin
 
             foreach (var patch in ToBePatched)
             {
+                Log.LogInfo($"Applying patch {patch.Name}...");
                 harmony.PatchAll(patch);
-                Log.LogInfo($"Applied {patch.Name}");
+                Log.LogInfo($"Applied {patch.Name} Successfully!");
             }
 
             NativeDllExtractor.Extract("MetaMystia.Patches.Native.Runtime.MinHook.x64.dll", MinHook.DLLFilename);
 
             foreach (var hook in ToBeHooked)
             {
+                Log.LogInfo($"Installing hook {hook.Name}...");
                 hook.GetMethod("InstallHook").Invoke(null, null);
                 Log.LogInfo($"Installed {hook.Name}");
             }
