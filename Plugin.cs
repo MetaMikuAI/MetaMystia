@@ -15,7 +15,7 @@ namespace MetaMystia;
 public class Plugin : BasePlugin
 {
     public static Plugin Instance;
-    public readonly static string GameVersion = Common.LoadingSceneManager.VersionData;
+    public static string GameVersion => Common.LoadingSceneManager.VersionData;
     public readonly static string ModVersion = MyPluginInfo.PLUGIN_VERSION;
 
     public static bool AllPatched => PatchRegistry.AllPatched;
@@ -75,6 +75,7 @@ public class Plugin : BasePlugin
 
     public static void OnEnterMainScene()
     {
+        Instance?.Log.LogInfo($"Game Version: {GameVersion}");
         MetricsReporter.OnEnterMainScene();
         Instance?.Log.LogInfo(MpManager.DebugText);
     }
