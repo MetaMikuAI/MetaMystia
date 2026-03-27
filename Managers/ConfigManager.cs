@@ -24,6 +24,8 @@ public static partial class ConfigManager
     public static ConfigEntry<bool> SignatureCheck;
     public static ConfigEntry<RequestEnableMode> FoodRequestMode;
     public static ConfigEntry<RequestEnableMode> BevRequestMode;
+    public static ConfigEntry<int> ConsoleHistorySize;
+    public static ConfigEntry<string> ConsoleHistoryFile;
 
     public static void InitConfigs()
     {
@@ -41,6 +43,12 @@ public static partial class ConfigManager
         BevRequestMode = Config.Bind("General", "BevRequestMode", RequestEnableMode.ForceDisable,
             "Beverage request enable mode (ForceDisable by default)\n酒水点单启用模式(默认关闭)\n" +
             "ForceDisable: 强制关闭 | FollowPackage: 跟随资源包 | ForceEnable: 强制启用");
+
+        ConsoleHistorySize = Config.Bind("General", "ConsoleHistorySize", 200,
+            "Max number of console commands to persist across sessions\n控制台命令历史记录最大保存条数");
+
+        ConsoleHistoryFile = Config.Bind("General", "ConsoleHistoryFile", "MetaMystia_console_history.txt",
+            "Filename for console command history (stored in BepInEx/config/)\n控制台命令历史文件名(存储于 BepInEx/config/)");
     }
 
     public static string GetPlayerId()

@@ -1,5 +1,6 @@
 #nullable enable
 using System;
+using System.IO;
 using Il2CppInterop.Runtime;
 using System.Collections.Generic;
 using UnityEngine;
@@ -36,6 +37,9 @@ public static partial class InGameConsole
     private static List<string> inputs = [];
     private static int inputsCursor = 0;
     private const int MaxLogs = 1024;
+    private static int MaxHistorySize => ConfigManager.ConsoleHistorySize?.Value ?? 200;
+    private static string HistoryFilePath => Path.Combine(
+        BepInEx.Paths.ConfigPath, ConfigManager.ConsoleHistoryFile?.Value ?? "MetaMystia_console_history.txt");
     private static bool focusTextField = true;
     private static bool moveCursor = false;
     private const string TextFieldControlName = "ConsoleInput";
@@ -65,11 +69,45 @@ public static partial class InGameConsole
     {
         _consoleContext = new ConsoleContext(LogToConsole);
         CommandRegistry.Initialize();
+        LoadHistory();
 
         // Startup messages — queued for deferred resolution after language system loads
         LogToConsole($"<color=#66CCFF>MetaMystia</color> <color=#888899>v{MyPluginInfo.PLUGIN_VERSION}</color>");
         LogDeferred(() => $"<color=#888899>{TextId.ConsoleStarPrompt.Get()}</color>");
         LogDeferred(() => $"<color=#888899>{TextId.ConsoleHelpHint.Get()}</color>");
+    }
+
+    private static void LoadHistory()
+    {
+        try
+        {
+            if (File.Exists(HistoryFilePath))
+            {
+                var lines = File.ReadAllLines(HistoryFilePath);
+                inputs.AddRange(lines);
+                if (inputs.Count > MaxHistorySize)
+                    inputs.RemoveRange(0, inputs.Count - MaxHistorySize);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.LogWarning($"Failed to load console history: {ex.Message}");
+        }
+    }
+
+    private static void SaveHistory()
+    {
+        try
+        {
+            var toSave = inputs.Count > MaxHistorySize
+                ? inputs.GetRange(inputs.Count - MaxHistorySize, MaxHistorySize)
+                : inputs;
+            File.WriteAllLines(HistoryFilePath, toSave);
+        }
+        catch (Exception ex)
+        {
+            Log.LogWarning($"Failed to save console history: {ex.Message}");
+        }
     }
 
     /// <summary>
@@ -104,7 +142,6 @@ public static partial class InGameConsole
     public static void ClearLogs()
     {
         logs.Clear();
-        inputs.Clear();
     }
 
     private static void UpdateGameInputState()
@@ -384,6 +421,7 @@ public static partial class InGameConsole
                 inputsCursor = 0;
                 input = "";
                 _completion.Reset();
+                SaveHistory();
                 if (closeConsole)
                 {
                     IsOpen = false;
