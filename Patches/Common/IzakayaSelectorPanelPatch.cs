@@ -58,8 +58,9 @@ public partial class IzakayaSelectorPanelPatch
 
         if (MpManager.IsClient)
         {
-            // 客机：发送 SELECT 后等待主机 CONFIRM
+            // 客机：发送 SELECT 后等待主机 CONFIRM，同时展示当前状态
             Notify.ShowOnMainThread(TextId.WaitingForHostConfirm.Get(mySelect));
+            ShowSelectionStatus();
             return SkipOriginal;
         }
         // 主机：检查所有 peer 是否已选择且一致
@@ -98,6 +99,26 @@ public partial class IzakayaSelectorPanelPatch
         Notify.ShowOnMainThread(TextId.SelectedIzakaya.Get(mySelect));
         SgrYuki.Utils.Panel.CloseActivePanelsBeforeSceneTransit();
         _OnGuideMapInitialize_b__21_0_Original(instanceRef);
+    }
+
+    /// <summary>
+    /// 客机侧：收到其他玩家的 SELECT 后，显示当前全员选店状态摘要
+    /// </summary>
+    public static void ShowSelectionStatus()
+    {
+        var myMapLabel = PlayerManager.Local.IzakayaMapLabel;
+        var myLevel = PlayerManager.Local.IzakayaLevel;
+
+        // 自己还没选，不显示摘要
+        if (string.IsNullOrEmpty(myMapLabel) || myLevel == 0) return;
+
+        var mySelect = $"{Utils.GetMapLabelNameCN(myMapLabel)} {Utils.GetMapLevelNameCN(myLevel)}";
+
+        if (!PlayerManager.AllPeersSelectedSameIzakaya(myMapLabel, myLevel))
+        {
+            var mismatch = PlayerManager.GetFirstMismatchSelection(myMapLabel, myLevel);
+            Notify.ShowOnMainThread(TextId.SelectedIzakayaMismatch.Get(mySelect, mismatch ?? "???"));
+        }
     }
 
     [HarmonyPatch(nameof(Common.UI.IzakayaSelectorPanel_New._OnGuideMapInitialize_b__21_0))]

@@ -31,6 +31,11 @@ public partial class SelectAction : Action
             {
                 IzakayaSelectorPanelPatch.TryConfirmSelection();
             }
+            else
+            {
+                // 客机也显示当前选店状态摘要
+                IzakayaSelectorPanelPatch.ShowSelectionStatus();
+            }
         });
     }
 
