@@ -82,7 +82,7 @@ public partial class GuestsManagerPatch
     [HarmonyPrefix]
     public static bool SpawnNormalGuestGroup_Prefix()
     {
-        if (MpManager.ShouldSkipAction) return RunOriginal;
+        if (MpManager.ShouldSkipAction) { if (MpManager.IsConnectedClient) return SkipOriginal; return RunOriginal; }
         if (MpManager.IsClient) return SkipOriginal;
 
         var cook = NightScene.CookingUtility.CookSystemManager.Instance;
@@ -206,7 +206,7 @@ public partial class GuestsManagerPatch
     {
         overrideSpawnPosition ??= new Il2CppSystem.Nullable<UnityEngine.Vector3>();
 
-        if (MpManager.ShouldSkipAction) return RunOriginal;
+        if (MpManager.ShouldSkipAction) { if (MpManager.IsConnectedClient) return SkipOriginal; return RunOriginal; }
 
         bool IsReimuSpellCardTriggered = Functional.CheckStacktraceContains("InitializeAsGeneralWorkScene");
         if (IsReimuSpellCardTriggered) return RunOriginal;
@@ -314,7 +314,7 @@ public partial class GuestsManagerPatch
     [HarmonyPrefix]
     public static bool LeaveFromDesk_Prefix(GuestsManager __instance, GuestGroupController toLeave)
     {
-        if (MpManager.ShouldSkipAction) return RunOriginal;
+        if (MpManager.ShouldSkipAction) { if (MpManager.IsConnectedClient) return SkipOriginal; return RunOriginal; }
 
         bool IsReimuSpellCardTriggered = Functional.CheckStacktraceContains("InitializeAsGeneralWorkScene");
         if (IsReimuSpellCardTriggered) return RunOriginal;
@@ -549,7 +549,7 @@ public partial class GuestsManagerPatch
     [HarmonyPrefix]
     public static bool GuestPay_Prefix(GuestsManager __instance, GuestGroupController toPayAndLeave, bool includeTip)
     {
-        if (MpManager.ShouldSkipAction) return RunOriginal;
+        if (MpManager.ShouldSkipAction) { if (MpManager.IsConnectedClient) return SkipOriginal; return RunOriginal; }
         var uuid = toPayAndLeave.GetGuestUUID();
         if (uuid == null) return RunOriginal;
         var fsm = WorkSceneManager.GetGuestFSM(uuid);
@@ -619,7 +619,7 @@ public partial class GuestsManagerPatch
     [HarmonyPrefix]
     public static bool GenerateOrderSession_Prefix(GuestsManager __instance, GuestGroupController guestGroup, bool doContinue)
     {
-        if (MpManager.ShouldSkipAction) return RunOriginal;
+        if (MpManager.ShouldSkipAction) { if (MpManager.IsConnectedClient) return SkipOriginal; return RunOriginal; }
 
         var uuid = WorkSceneManager.GetGuestUUID(guestGroup);
         if (uuid == null) return RunOriginal;

@@ -45,7 +45,7 @@ public partial class GuestGroupControllerPatch
     [HarmonyPrefix]
     public static bool MoveToDesk_Prefix(GuestGroupController __instance, int deskCode, Il2CppSystem.Action onMovementFinishCallback)
     {
-        if (MpManager.ShouldSkipAction) return RunOriginal;
+        if (MpManager.ShouldSkipAction) { if (MpManager.IsConnectedClient) return SkipOriginal; return RunOriginal; }
 
         bool IsReimuSpellCardTriggered = Functional.CheckStacktraceContains("InitializeAsGeneralWorkScene");
         if (IsReimuSpellCardTriggered) return RunOriginal;
