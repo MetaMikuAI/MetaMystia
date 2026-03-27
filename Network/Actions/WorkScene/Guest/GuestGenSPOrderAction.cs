@@ -18,7 +18,7 @@ public partial class GuestGenSPOrderAction : Action
     public string Message { get; set; }
 
     [CheckScene(Common.UI.Scene.WorkScene)]
-    [ExecuteAfterStory]
+    [DiscardOnStory]
     public override void OnReceivedDerived()
     {
         void executeGenOrder()
@@ -68,6 +68,7 @@ public partial class GuestGenSPOrderAction : Action
 
     }
 
+    [DiscardOnStory]
     public static void Send(string GuestUUID, int requestFoodTag, int requestBevTag, int deskCode, bool notShowInUI, bool isFree, string message)
     {
         var order = new GuestOrder(requestFoodTag, requestBevTag, deskCode, notShowInUI, isFree);

@@ -103,9 +103,6 @@ public abstract partial class Action
     [MemoryPackIgnore]
     protected virtual bool OnSendLogOnlyAction { get; } = false;
 
-    [MemoryPackIgnore]
-    private const string OnReceivedDerivedAfterStoryOverCommand = "OnReceivedDerivedAfterStoryOver";
-
     protected Action()
     {
         TimestampMs = MpManager.TimestampNow;
@@ -123,6 +120,11 @@ public abstract partial class Action
             Log.Info($"{MpManager.RoleTag} Received in invalid scene: {Type}: {ToString()}");
             return;
         }
+        if (ShouldDiscardOnStory())
+        {
+            Log.Info($"{MpManager.RoleTag} Discarded (in story): {Type}");
+            return;
+        }
         OnReceivedDerived();
     }
 
@@ -131,6 +133,13 @@ public abstract partial class Action
         var method = this.GetType().GetMethod(nameof(OnReceivedDerived));
         var attr = method.GetCustomAttribute<CheckSceneAttribute>();
         return attr?.Scene;
+    }
+
+    private bool ShouldDiscardOnStory()
+    {
+        if (!MpManager.InStory) return false;
+        var method = this.GetType().GetMethod(nameof(OnReceivedDerived));
+        return method.GetCustomAttribute<DiscardOnStoryAttribute>() != null;
     }
 
     public override string ToString()
@@ -185,6 +194,11 @@ public abstract partial class Action
     protected void SendToHostOrBroadcast()
     {
         if (!MpManager.IsConnected) return;
+        if (ShouldDiscardOnStory())
+        {
+            Log.Info($"{MpManager.RoleTag} Will not send (in story): {Type}");
+            return;
+        }
 
         LogActionSend();
 
@@ -195,6 +209,11 @@ public abstract partial class Action
     protected void SendToPeer(long peerId)
     {
         if (!MpManager.IsConnected) return;
+        if (ShouldDiscardOnStory())
+        {
+            Log.Info($"{MpManager.RoleTag} Will not send (in story): {Type}");
+            return;
+        }
 
         LogActionSend();
 
@@ -233,7 +252,7 @@ public abstract partial class Action
     }
 
     [AttributeUsage(AttributeTargets.Method)]
-    protected class ExecuteAfterStoryAttribute : Attribute { }
+    protected class DiscardOnStoryAttribute : Attribute { }
 }
 
 

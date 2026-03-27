@@ -17,6 +17,7 @@ public partial class QTEAction : Action
     public int GridIndex { get; set; }
     public float QTEScore { get; set; }
 
+    [DiscardOnStory]
     [CheckScene(Common.UI.Scene.WorkScene)]
     public override void OnReceivedDerived()
     {

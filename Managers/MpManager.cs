@@ -60,9 +60,11 @@ public static partial class MpManager
     #endregion
 
 
-    #region 剧情相关（待删除）
-    // public static bool InStory => Common.SceneDirector.Instance.playableDirector.state == UnityEngine.Playables.PlayState.Playing || Common.SceneDirector.Instance.playableDirector.state == UnityEngine.Playables.PlayState.Delayed;
-    public static bool InStory => false; // disable
+    #region 剧情相关
+    public static bool InStory => Common.SceneDirector.Instance.playableDirector.state == UnityEngine.Playables.PlayState.Playing
+        || Common.SceneDirector.Instance.playableDirector.state == UnityEngine.Playables.PlayState.Delayed;
+    // public static bool InStory => LocalScene == Common.UI.Scene.WorkScene
+    //     && NightScene.NightSceneDirector.Instance?.IsInTutorial == true;
     public static bool ShouldSkipAction => !IsConnected || InStory;
     #endregion
 

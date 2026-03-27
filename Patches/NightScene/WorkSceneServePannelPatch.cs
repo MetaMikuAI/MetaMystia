@@ -42,8 +42,6 @@ public partial class WorkSceneServePannelPatch
         var order = __instance.operatingOrder;
         var guest = __instance.currentGuestController;
 
-        Log.InfoCaller($"target {guest.GetGuestFSM()?.Identifier}");
-
         // if this order is evaluated(by peer serving), try return the food/beverage to tray
         if (order == null || guest == null)
         {
@@ -71,8 +69,14 @@ public partial class WorkSceneServePannelPatch
             return SkipOriginal;
         }
 
-        var uuid = WorkSceneManager.GetGuestUUID(guest);
-        if (uuid == null) return RunOriginal;
+        var uuid = WorkSceneManager.GetGuestUUID(guest, false);
+        if (string.IsNullOrEmpty(uuid))
+        {
+            Log.DebugCaller($"guest not tracked, skipping");
+            return RunOriginal;
+        }
+
+        Log.InfoCaller($"target {WorkSceneManager.GetGuestFSM(uuid)?.Identifier}");
 
         var fsm = WorkSceneManager.GetGuestFSM(uuid);
         if (fsm.IsOrderFulfilled())

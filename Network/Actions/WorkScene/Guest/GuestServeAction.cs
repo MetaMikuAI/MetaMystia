@@ -31,7 +31,7 @@ public partial class GuestServeAction : Action
 
 
     [CheckScene(Common.UI.Scene.WorkScene)]
-    [ExecuteAfterStory]
+    [DiscardOnStory]
     public override void OnReceivedDerived()
     {
         // void setPanelOpenContext()
@@ -148,6 +148,7 @@ public partial class GuestServeAction : Action
         );
     }
 
+    [DiscardOnStory]
     public static void Send(string GuestUUID, SellableFood food, int beverageId, ServeType type)
     {
         var action = new GuestServeAction

@@ -36,7 +36,7 @@ public partial class GuestPayAction : Action
 
 
     [CheckScene(Common.UI.Scene.WorkScene)]
-    [ExecuteAfterStory]
+    [DiscardOnStory]
     public override void OnReceivedDerived()
     {
         CommandScheduler.EnqueueWithNoCondition(() =>
@@ -58,6 +58,7 @@ public partial class GuestPayAction : Action
         });
     }
 
+    [DiscardOnStory]
     public static void SendFund(int amount, EventManager.MathOperation mathOperation)
     {
         var action = new GuestPayAction
@@ -69,6 +70,7 @@ public partial class GuestPayAction : Action
         action.SendToHostOrBroadcast();
     }
 
+    [DiscardOnStory]
     public static void SendTip(int amount, EventManager.ServeType serveType, float comboBuff, float moodBuff, float extraBuff)
     {
         var action = new GuestPayAction
@@ -83,6 +85,7 @@ public partial class GuestPayAction : Action
         action.SendToHostOrBroadcast();
     }
 
+    [DiscardOnStory]
     public static void SendCombo(int amount, EventManager.MathOperation mathOperation)
     {
         var action = new GuestPayAction

@@ -34,7 +34,7 @@ public partial class GuestLeaveAction : Action
 
 
     [CheckScene(Common.UI.Scene.WorkScene)]
-    [ExecuteAfterStory]
+    [DiscardOnStory]
     public override void OnReceivedDerived()
     {
         if (WorkSceneManager.CheckStatus(GuestUUID, WorkSceneManager.Status.Left))
@@ -128,6 +128,7 @@ public partial class GuestLeaveAction : Action
          );
     }
 
+    [DiscardOnStory]
     public static void Send(string guest, LeaveType leaveType)
     {
         var action = new GuestLeaveAction

@@ -15,6 +15,7 @@ public partial class ExtractAction : Action
     public override ActionType Type => ActionType.EXTRACT;
     public int GridIndex { get; set; }
 
+    [DiscardOnStory]
     [CheckScene(Common.UI.Scene.WorkScene)]
     public override void OnReceivedDerived()
     {

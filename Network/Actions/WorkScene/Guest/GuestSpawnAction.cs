@@ -19,7 +19,7 @@ public partial class GuestSpawnAction : Action
 
 
     [CheckScene(Common.UI.Scene.WorkScene)]
-    [ExecuteAfterStory]
+    [DiscardOnStory]
     public override void OnReceivedDerived()
     {
         EnqueueGuestCommand(
@@ -39,6 +39,7 @@ public partial class GuestSpawnAction : Action
         );
     }
 
+    [DiscardOnStory]
     public static void Send(string uuid, GuestInfo guestInfo)
     {
         var action = new GuestSpawnAction

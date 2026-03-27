@@ -22,7 +22,7 @@ public partial class GuestSeatedAction : Action
 
 
     [CheckScene(Common.UI.Scene.WorkScene)]
-    [ExecuteAfterStory]
+    [DiscardOnStory]
     public override void OnReceivedDerived()
     {
         string executeInfo = $"Seated: guid {GuestUUID}, DeskId {DeskId}, SeatId {SeatId}";
@@ -107,6 +107,7 @@ public partial class GuestSeatedAction : Action
         return false;
     }
 
+    [DiscardOnStory]
     public static void Send(string GuestUUID, int deskId, bool firstSpawn, int seatId)
     {
         var action = new GuestSeatedAction

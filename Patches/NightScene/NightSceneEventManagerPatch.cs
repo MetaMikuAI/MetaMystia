@@ -116,7 +116,7 @@ public static partial class NightSceneEventManagerPatch
     [HarmonyPrefix]
     public static bool TipEdit_Prefix(EventManager __instance, ref int value, EventManager.ServeType serveType)
     {
-        if (MpManager.IsConnectedClient)
+        if (MpManager.IsConnectedClient && !MpManager.InStory)
         {
             Log.DebugCaller($"prevented, value {value}, type {serveType}");
             return SkipOriginal;

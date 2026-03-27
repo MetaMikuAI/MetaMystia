@@ -20,6 +20,7 @@ public partial class GuestGenNormalOrderAction : Action
 
 
     [CheckScene(Common.UI.Scene.WorkScene)]
+    [DiscardOnStory]
     public override void OnReceivedDerived()
     {
         var fsm = GuestUUID.GetGuestFSM();
@@ -94,6 +95,7 @@ public partial class GuestGenNormalOrderAction : Action
         );
     }
 
+    [DiscardOnStory]
     public static void Send(string GuestUUID, int requestFoodId, int requestBevId, int deskCode, bool notShowInUI, bool isFree, string message)
     {
         var order = new GuestOrder(requestFoodId, requestBevId, deskCode, notShowInUI, isFree);

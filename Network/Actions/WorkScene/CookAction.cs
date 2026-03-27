@@ -19,6 +19,7 @@ public partial class CookAction : Action
     public int RecipeId { get; set; }
     public SellableFood Food { get; set; }
 
+    [DiscardOnStory]
     [CheckScene(Common.UI.Scene.WorkScene)]
     public override void OnReceivedDerived()
     {

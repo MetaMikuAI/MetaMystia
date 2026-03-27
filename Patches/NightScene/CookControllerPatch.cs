@@ -42,7 +42,7 @@ public partial class CookControllerPatch
     [HarmonyPostfix]
     public static void SetCook_Postfix(CookController __instance, Sellable thisResult, Recipe recipe, bool thisCouldReturnIngredients)
     {
-        // Log.LogDebug($"SetCook_Postfix called for food:\n {thisResult.ToString()}\n\nrecipe:\n {recipe.ToString()}\n\nthisCouldReturnIngredients: {thisCouldReturnIngredients}");
+        if (MpManager.ShouldSkipAction) return;
         var gridIndex = __instance.GridIndex;
         var recipeId = recipe.Id;
         SellableFood food = SellableFood.FromSellable(thisResult);
@@ -60,6 +60,7 @@ public partial class CookControllerPatch
     [HarmonyPrefix]
     public static void Extract_Prefix(CookController __instance)
     {
+        if (MpManager.ShouldSkipAction) return;
         var gridIndex = __instance.GridIndex;
         ExtractAction.Send(gridIndex);
     }
@@ -75,6 +76,7 @@ public partial class CookControllerPatch
     [HarmonyPrefix]
     public static void Store_Prefix(CookController __instance, Sellable value)
     {
+        if (MpManager.ShouldSkipAction) return;
         var gridIndex = __instance.GridIndex;
         StoreSellableAction.Send(gridIndex, value);
     }
