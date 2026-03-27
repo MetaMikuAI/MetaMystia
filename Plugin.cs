@@ -1,9 +1,7 @@
-﻿using BepInEx;
-using BepInEx.Configuration;
+using BepInEx;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System;
 
@@ -20,65 +18,7 @@ public class Plugin : BasePlugin
     public readonly static string GameVersion = Common.LoadingSceneManager.VersionData;
     public readonly static string ModVersion = MyPluginInfo.PLUGIN_VERSION;
 
-
-    public static Type[] ToBePatched = [
-        // SceneManager Patches
-        typeof(MainSceneManagerPatch),
-        typeof(DaySceneManagerPatch),
-        typeof(NightSceneManagerPatch),
-        typeof(PrepNightSceneManagerPatch),
-        typeof(ResultSceneManagerPatch),
-        typeof(StaffSceneManagerPatch),
-        typeof(UniversalGameManagerPatch),
-        typeof(ReceivedObjectDisplayerControllerPatch),
-
-        // DayScene Patches
-        typeof(DaySceneUtilityPatch),
-        typeof(StatusTrackerPatch),
-        typeof(CharacterControllerUnitPatch),
-        typeof(CharacterControllerInputGeneratorComponentPatch),
-        typeof(DayScenePlayerInputPatch),
-        typeof(DaySceneMapPatch),
-        typeof(NoteBookProfilePannelPatch),
-
-        // PrepScene Patches
-        typeof(IzakayaConfigPannelPatch),
-        typeof(IzakayaConfigurePatch),
-        typeof(IzakayaSelectorPanelPatch),
-
-        // WorkScene Patches
-        typeof(CookControllerPatch),
-        typeof(SellablePatch),
-        typeof(GuestsManagerPatch),
-        typeof(GuestGroupControllerPatch),
-        typeof(WorkSceneServePannelPatch),
-        typeof(WorkSceneStoragePannelPatch),
-        typeof(QTERewardManagerPatch),
-        typeof(NightSceneEventManagerPatch),
-        typeof(MystiaQTEBuffRewardPatch),
-        typeof(GameTimeManagerPatch),
-
-        typeof(RunTimeAlbumPatch),
-
-        // ResourceEx Patches
-        typeof(DataBaseCharacterPatch),
-        typeof(DataBaseDayPatch),
-        typeof(DataBaseCorePatch),
-        typeof(DataBaseLanguagePatch),
-        typeof(NightSceneLanguagePatch),
-        typeof(SpecialGuestDescriberPatch),
-        typeof(DaySceneMapProfilePatch),
-        typeof(DialogPannelPatch),
-        typeof(DataBaseSchedulerPatch),
-        typeof(RunTimeDayScenePatch)
-    ];
-
-    public static Type[] ToBeHooked = [
-        typeof(SpawnNormalGuestGroupHook)
-    ];
-
-    public static bool AllPatched => PatchedException == null;
-    public static Exception PatchedException = null;
+    public static bool AllPatched => PatchRegistry.AllPatched;
 
     public Plugin()
     {
@@ -113,35 +53,12 @@ public class Plugin : BasePlugin
 
         Log.LogInfo(MpManager.DebugText);
 
-        try
-        {
-            var harmony = new Harmony(MyPluginInfo.PLUGIN_GUID);
+        var harmony = new Harmony(MyPluginInfo.PLUGIN_GUID);
+        var originalHandle = AccessTools.Method(typeof(CanvasScaler), "Handle");
+        var postHandle = AccessTools.Method(typeof(BootstrapPatch), "Handle");
+        harmony.Patch(originalHandle, postfix: new HarmonyMethod(postHandle));
 
-            var originalHandle = AccessTools.Method(typeof(CanvasScaler), "Handle");
-            var postHandle = AccessTools.Method(typeof(BootstrapPatch), "Handle");
-            harmony.Patch(originalHandle, postfix: new HarmonyMethod(postHandle));
-
-            foreach (var patch in ToBePatched)
-            {
-                Log.LogInfo($"Applying patch {patch.Name}...");
-                harmony.PatchAll(patch);
-                Log.LogInfo($"Applied {patch.Name} Successfully!");
-            }
-
-            NativeDllExtractor.Extract("MetaMystia.Patches.Native.Runtime.MinHook.x64.dll", MinHook.DLLFilename);
-
-            foreach (var hook in ToBeHooked)
-            {
-                Log.LogInfo($"Installing hook {hook.Name}...");
-                hook.GetMethod("InstallHook").Invoke(null, null);
-                Log.LogInfo($"Installed {hook.Name}");
-            }
-        }
-        catch (Exception ex)
-        {
-            Log.LogFatal($"FAILED to Apply Hooks! {ex.Message}");
-            PatchedException = ex;
-        }
+        PatchRegistry.ApplyAll(harmony);
 
         Network.Action.RegisterAllFormatter();
 
@@ -152,7 +69,7 @@ public class Plugin : BasePlugin
         catch (Exception ex)
         {
             Log.LogFatal($"FAILED to Initialize ResourceEx! {ex.Message}");
-            PatchedException = ex;
+            PatchRegistry.PatchedException = ex;
         }
     }
 
