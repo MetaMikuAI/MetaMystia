@@ -225,6 +225,15 @@ public enum TextId
     ResourceExInfoNotFound,
     ResourceExRejectedHeader,
     ResourceExRejectedItem,
+
+    // Max Players / Reject
+    RoomFull,
+    RoomFullHostNotify,
+    MpMaxPlayersCurrent,
+    MpMaxPlayersSet,
+    MpMaxPlayersHostOnly,
+    MpMaxPlayersRange,
+    MpDescMaxPlayers,
 }
 
 public static class L10n
@@ -1661,6 +1670,62 @@ public static class L10n
             [Language.ChineseTraditional] = "{0} — {1}",
             [Language.Japanese] = "{0} — {1}",
             [Language.Korean] = "{0} — {1}",
+        },
+        [TextId.RoomFull] = new()
+        {
+            [Language.English] = "Room is full ({0}/{1})",
+            [Language.ChineseSimplified] = "房间已满 ({0}/{1})",
+            [Language.ChineseTraditional] = "房間已滿 ({0}/{1})",
+            [Language.Japanese] = "部屋が満員です ({0}/{1})",
+            [Language.Korean] = "방이 가득 찼습니다 ({0}/{1})",
+        },
+        [TextId.RoomFullHostNotify] = new()
+        {
+            [Language.English] = "{0} tried to join, but room is full ({1}/{2})",
+            [Language.ChineseSimplified] = "{0} 尝试加入，但房间已满 ({1}/{2})",
+            [Language.ChineseTraditional] = "{0} 嘗試加入，但房間已滿 ({1}/{2})",
+            [Language.Japanese] = "{0} が参加を試みましたが、部屋が満員です ({1}/{2})",
+            [Language.Korean] = "{0}이(가) 참가를 시도했지만 방이 가득 찼습니다 ({1}/{2})",
+        },
+        [TextId.MpMaxPlayersCurrent] = new()
+        {
+            [Language.English] = "Max players: {0}",
+            [Language.ChineseSimplified] = "最大玩家数: {0}",
+            [Language.ChineseTraditional] = "最大玩家數: {0}",
+            [Language.Japanese] = "最大プレイヤー数: {0}",
+            [Language.Korean] = "최대 플레이어 수: {0}",
+        },
+        [TextId.MpMaxPlayersSet] = new()
+        {
+            [Language.English] = "Max players set to {0}",
+            [Language.ChineseSimplified] = "最大玩家数已设为 {0}",
+            [Language.ChineseTraditional] = "最大玩家數已設為 {0}",
+            [Language.Japanese] = "最大プレイヤー数を {0} に設定しました",
+            [Language.Korean] = "최대 플레이어 수를 {0}(으)로 설정했습니다",
+        },
+        [TextId.MpMaxPlayersHostOnly] = new()
+        {
+            [Language.English] = "Only the host can change max players",
+            [Language.ChineseSimplified] = "仅主机可修改最大玩家数",
+            [Language.ChineseTraditional] = "僅主機可修改最大玩家數",
+            [Language.Japanese] = "最大プレイヤー数はホストのみ変更可能です",
+            [Language.Korean] = "최대 플레이어 수는 호스트만 변경할 수 있습니다",
+        },
+        [TextId.MpMaxPlayersRange] = new()
+        {
+            [Language.English] = "Max players must be at least 2",
+            [Language.ChineseSimplified] = "最大玩家数不能小于 2",
+            [Language.ChineseTraditional] = "最大玩家數不能小於 2",
+            [Language.Japanese] = "最大プレイヤー数は 2 以上に設定してください",
+            [Language.Korean] = "최대 플레이어 수는 2 이상이어야 합니다",
+        },
+        [TextId.MpDescMaxPlayers] = new()
+        {
+            [Language.English] = "View or set max player limit",
+            [Language.ChineseSimplified] = "查看或设置最大玩家数",
+            [Language.ChineseTraditional] = "查看或設置最大玩家數",
+            [Language.Japanese] = "最大プレイヤー数の確認・設定",
+            [Language.Korean] = "최대 플레이어 수 확인/설정",
         },
     };
 

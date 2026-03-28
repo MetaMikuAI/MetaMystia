@@ -26,6 +26,7 @@ public static partial class ConfigManager
     public static ConfigEntry<RequestEnableMode> BevRequestMode;
     public static ConfigEntry<int> ConsoleHistorySize;
     public static ConfigEntry<string> ConsoleHistoryFile;
+    public static ConfigEntry<int> MaxPlayers;
 
     public static void InitConfigs()
     {
@@ -49,6 +50,11 @@ public static partial class ConfigManager
 
         ConsoleHistoryFile = Config.Bind("General", "ConsoleHistoryFile", "MetaMystia_console_history.txt",
             "Filename for console command history (stored in BepInEx/config/)\n控制台命令历史文件名(存储于 BepInEx/config/)");
+
+        MaxPlayers = Config.Bind("Multiplayer", "MaxPlayers", 2,
+            new BepInEx.Configuration.ConfigDescription(
+                "Maximum number of players allowed (including host)\n最大玩家数（含主机）",
+                new BepInEx.Configuration.AcceptableValueRange<int>(2, int.MaxValue)));
     }
 
     public static string GetPlayerId()

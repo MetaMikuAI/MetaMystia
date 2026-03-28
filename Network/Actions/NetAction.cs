@@ -51,6 +51,7 @@ public enum ActionType : ushort
 [MemoryPackUnion((ushort)ActionType.PONG, typeof(PongAction))]
 [MemoryPackUnion((ushort)ActionType.HELLO, typeof(HelloAction))]
 [MemoryPackUnion((ushort)ActionType.HELLO_ACK, typeof(HelloAckAction))]
+[MemoryPackUnion((ushort)ActionType.REJECT, typeof(RejectAction))]
 [MemoryPackUnion((ushort)ActionType.PEER_JOIN, typeof(PeerJoinAction))]
 [MemoryPackUnion((ushort)ActionType.PEER_LEAVE, typeof(PeerLeaveAction))]
 [MemoryPackUnion((ushort)ActionType.SCENE_TRANSIT, typeof(SceneTransitAction))]

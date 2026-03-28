@@ -66,7 +66,7 @@ public static class MpCommands
             ctx.Log($"  {ConsoleFormat.Dim("Running:")} {(MpManager.IsRunning ? ConsoleFormat.Ok("Yes") : ConsoleFormat.Err("No"))} {ConsoleFormat.Dim("|")} {ConsoleFormat.Dim("Connected:")} {(MpManager.IsConnected ? ConsoleFormat.Ok("Yes") : ConsoleFormat.Err("No"))}");
             if (MpManager.IsConnected)
             {
-                ctx.Log($"  {ConsoleFormat.Dim("Ping:")} {MpManager.Latency}ms {ConsoleFormat.Dim("|")} {ConsoleFormat.Dim("Players:")} {MpManager.AllPlayersCount} {ConsoleFormat.Dim("|")} {ConsoleFormat.Dim("Scene:")} {MpManager.LocalScene}");
+                ctx.Log($"  {ConsoleFormat.Dim("Ping:")} {MpManager.Latency}ms {ConsoleFormat.Dim("|")} {ConsoleFormat.Dim("Players:")} {MpManager.AllPlayersCount}/{ConfigManager.MaxPlayers.Value} {ConsoleFormat.Dim("|")} {ConsoleFormat.Dim("Scene:")} {MpManager.LocalScene}");
                 foreach (var kvp in PlayerManager.Peers)
                 {
                     var role = kvp.Key == MpManager.HOST_UID ? ConsoleFormat.Cmd("[S]") : ConsoleFormat.Dim("[C]");
@@ -206,6 +206,33 @@ public static class MpCommands
         });
         mpCmd.AddCommand(kickCmd);
 
+        // /mp maxplayers [number]
+        var maxPlayersCmd = new Command("maxplayers", "View or set max player limit");
+        var maxPlayersArg = new Argument<int>("count", () => -1, "Max players (>= 2)");
+        maxPlayersCmd.AddArgument(maxPlayersArg);
+        maxPlayersCmd.SetHandler(ctx =>
+        {
+            int count = ctx.ParseResult.GetValueForArgument(maxPlayersArg);
+            if (count == -1)
+            {
+                ctx.Log(TextId.MpMaxPlayersCurrent.Get(ConfigManager.MaxPlayers.Value));
+                return;
+            }
+            if (!MpManager.IsHost && MpManager.IsConnected)
+            {
+                ctx.Log(ConsoleFormat.Err(TextId.MpMaxPlayersHostOnly.Get()));
+                return;
+            }
+            if (count < 2)
+            {
+                ctx.Log(ConsoleFormat.Err(TextId.MpMaxPlayersRange.Get()));
+                return;
+            }
+            ConfigManager.MaxPlayers.Value = count;
+            ctx.Log(TextId.MpMaxPlayersSet.Get(count));
+        });
+        mpCmd.AddCommand(maxPlayersCmd);
+
         // /mp continue <phase>
         var continueCmd = new Command("continue", "Force continue to next phase (host only)");
         var phaseArg = new Argument<string>("phase", "Phase to continue to")
@@ -238,13 +265,14 @@ public static class MpCommands
             ctx.Log(ConsoleFormat.SubCmd("/mp connect", "<addr> [port]", TextId.MpDescConnect.Get()));
             ctx.Log(ConsoleFormat.SubCmd("/mp disconnect", null, TextId.MpDescDisconnect.Get()));
             ctx.Log(ConsoleFormat.SubCmd("/mp kick", "id|uid <target>", TextId.MpDescKick.Get()));
+            ctx.Log(ConsoleFormat.SubCmd("/mp maxplayers", "[count]", TextId.MpDescMaxPlayers.Get()));
             ctx.Log(ConsoleFormat.SubCmd("/mp continue", "<day|prep>", TextId.MpDescContinue.Get()));
             ctx.Log(ConsoleFormat.Line);
         });
 
         root.AddCommand(mpCmd);
 
-        CommandRegistry.RegisterCompletions("mp", 0, "start", "stop", "restart", "status", "id", "connect", "disconnect", "kick", "continue");
+        CommandRegistry.RegisterCompletions("mp", 0, "start", "stop", "restart", "status", "id", "connect", "disconnect", "kick", "maxplayers", "continue");
         CommandRegistry.RegisterCompletions("mp start", 0, "server", "client");
         CommandRegistry.RegisterCompletions("mp continue", 0, "day", "prep");
         CommandRegistry.RegisterCompletions("mp kick", 0, "id", "uid");

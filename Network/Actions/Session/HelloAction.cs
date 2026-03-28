@@ -40,16 +40,14 @@ public partial class HelloAction : Action
         if (Version != Plugin.ModVersion)
         {
             Log.LogError($"Mod version mismatch! Local: {Plugin.ModVersion}, Remote: {Version}");
-            // TODO: RejectAction
-            MpManager.DisconnectClient(SenderUid);
+            RejectAction.SendAndDisconnect(SenderUid, TextId.ModVersionMismatch.Get());
             return;
         }
 
         if (GameVersion != Plugin.GameVersion)
         {
             Log.LogError($"Game version mismatch! Local: {Plugin.GameVersion}, Remote: {GameVersion}");
-            // TODO: RejectAction
-            MpManager.DisconnectClient(SenderUid);
+            RejectAction.SendAndDisconnect(SenderUid, TextId.GameVersionMismatch.Get());
             return;
         }
 
@@ -59,7 +57,19 @@ public partial class HelloAction : Action
             Log.LogWarning($"Rejecting connection from '{PeerId}' (uid={SenderUid}): " +
                 $"reconnection not allowed in {MpManager.LocalScene}");
             Notify.ShowOnMainThread(TextId.PrepWorkReconnectBlocked.Get(PeerId));
-            MpManager.DisconnectClient(SenderUid);
+            RejectAction.SendAndDisconnect(SenderUid, TextId.PrepWorkReconnectBlocked.Get(PeerId));
+            return;
+        }
+
+        // --- 人数限制 ---
+        if (MpManager.AllPlayersCount >= ConfigManager.MaxPlayers.Value)
+        {
+            Log.LogWarning($"Rejecting connection from '{PeerId}' (uid={SenderUid}): " +
+                $"room full ({MpManager.AllPlayersCount}/{ConfigManager.MaxPlayers.Value})");
+            RejectAction.SendAndDisconnect(SenderUid,
+                TextId.RoomFull.Get(MpManager.AllPlayersCount, ConfigManager.MaxPlayers.Value));
+            Notify.ShowOnMainThread(TextId.RoomFullHostNotify.Get(
+                PeerId, MpManager.AllPlayersCount, ConfigManager.MaxPlayers.Value));
             return;
         }
 
