@@ -27,6 +27,7 @@ public static partial class ConfigManager
     public static ConfigEntry<int> ConsoleHistorySize;
     public static ConfigEntry<string> ConsoleHistoryFile;
     public static ConfigEntry<int> MaxPlayers;
+    public static ConfigEntry<string> LocaleOverride;
 
     public static void InitConfigs()
     {
@@ -55,6 +56,11 @@ public static partial class ConfigManager
             new BepInEx.Configuration.ConfigDescription(
                 "Maximum number of players allowed (including host)\n最大玩家数（含主机）",
                 new BepInEx.Configuration.AcceptableValueRange<int>(2, int.MaxValue)));
+
+        LocaleOverride = Config.Bind("General", "LocaleOverride", "",
+            "Path to a directory containing locale override JSON files (en.json, zh-CN.json).\n" +
+            "Supports absolute or relative path (relative to BepInEx/plugins/).\n" +
+            "翻译文件覆盖目录路径，支持绝对路径或相对路径(相对于 BepInEx/plugins/)");
     }
 
     public static string GetPlayerId()

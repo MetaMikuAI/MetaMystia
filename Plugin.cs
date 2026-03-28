@@ -28,6 +28,7 @@ public class Plugin : BasePlugin
     public override void Load()
     {
         ConfigManager.InitConfigs();
+        L10n.Initialize();
 
         if (ConfigManager.Debug.Value)
         {

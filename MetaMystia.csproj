@@ -5,7 +5,7 @@
     <LangVersion>14</LangVersion>
     <AssemblyName>MetaMystia</AssemblyName>
     <Product>MetaMystia</Product>
-    <Version>0.18.3</Version>
+    <Version>0.18.4</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RestoreAdditionalProjectSources>
       https://api.nuget.org/v3/index.json;
@@ -50,6 +50,8 @@
     <EmbeddedResource Include="Debugger\login.html" />
     <EmbeddedResource Include="Debugger\index.html" />
     <EmbeddedResource Include="ResourceEx\AssetManagement\public.pem" />
+    <EmbeddedResource Include="UI\Locales\en.json" />
+    <EmbeddedResource Include="UI\Locales\zh-CN.json" />
   </ItemGroup>
 
   <ItemGroup>
