@@ -27,6 +27,12 @@ public static partial class CommandRegistry
     /// </summary>
     private static readonly Dictionary<string, List<(int argIndex, string hint)>> _hintMeta = new();
 
+    /// <summary>
+    /// Dynamic completion metadata: maps "command path" → list of (argIndex, provider).
+    /// The provider is called each time completions are requested, enabling real-time data.
+    /// </summary>
+    private static readonly Dictionary<string, List<(int argIndex, Func<string[]> provider)>> _dynamicCompletionMeta = new();
+
     public static void Initialize()
     {
         _root = new RootCommand("MetaMystia Console");
@@ -74,6 +80,21 @@ public static partial class CommandRegistry
             _hintMeta[commandPath] = list;
         }
         list.Add((argIndex, hint));
+    }
+
+    /// <summary>
+    /// Register a dynamic completion provider for a specific argument position.
+    /// The provider Func is called each time completions are requested.
+    /// commandPath: space-separated command names, e.g. "mp kick id"
+    /// </summary>
+    public static void RegisterDynamicCompletions(string commandPath, int argIndex, Func<string[]> provider)
+    {
+        if (!_dynamicCompletionMeta.TryGetValue(commandPath, out var list))
+        {
+            list = [];
+            _dynamicCompletionMeta[commandPath] = list;
+        }
+        list.Add((argIndex, provider));
     }
 
     /// <summary>
@@ -201,12 +222,24 @@ public static partial class CommandRegistry
             string cmdPath = string.Join(" ", resolvedTokens[..tokenIndex]
                 .Select(t => t.ToLowerInvariant()));
 
-            // Check for completable values first
+            // Check for completable values first (static)
             if (_completionMeta.TryGetValue(cmdPath, out var meta))
             {
                 var match = meta.FirstOrDefault(m => m.argIndex == argIndex);
                 if (match.values != null && match.values.Length > 0)
                     return new CompletionResult(FilterPrefix(match.values.ToList(), currentPartial), null);
+            }
+
+            // Check for dynamic completions
+            if (_dynamicCompletionMeta.TryGetValue(cmdPath, out var dynamicMeta))
+            {
+                var dynMatch = dynamicMeta.FirstOrDefault(m => m.argIndex == argIndex);
+                if (dynMatch.provider != null)
+                {
+                    var dynamicValues = dynMatch.provider();
+                    if (dynamicValues.Length > 0)
+                        return new CompletionResult(FilterPrefix(dynamicValues.ToList(), currentPartial), null);
+                }
             }
 
             // Check for hint (non-completable info)

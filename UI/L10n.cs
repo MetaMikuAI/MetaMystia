@@ -56,6 +56,11 @@ public enum TextId
     PeerDisconnectedAllReady,
     PeerDisconnectedWaiting,
     MpContinueHostOnly,
+    MpKickHostOnly,
+    MpKickNoTarget,
+    MpKickSelf,
+    MpKickNotFound,
+    MpKickSuccess,
     MpContinueUsage,
     MpContinueSuccess,
     MpContinueFailed,
@@ -178,6 +183,9 @@ public enum TextId
     MpDescId,
     MpDescConnect,
     MpDescDisconnect,
+    MpDescKick,
+    MpDescKickId,
+    MpDescKickUid,
     MpDescContinue,
     CallDescGetmapsnpcs,
     CallDescMovecharacter,
@@ -561,6 +569,46 @@ public static class L10n
             [Language.ChineseTraditional] = "只有主機可以使用 /mp continue",
             [Language.Japanese] = "/mp continue はホストのみ使用できます",
             [Language.Korean] = "/mp continue는 호스트만 사용할 수 있습니다",
+        },
+        [TextId.MpKickHostOnly] = new()
+        {
+            [Language.English] = "Only the host can use /mp kick",
+            [Language.ChineseSimplified] = "只有主机可以使用 /mp kick",
+            [Language.ChineseTraditional] = "只有主機可以使用 /mp kick",
+            [Language.Japanese] = "/mp kick はホストのみ使用できます",
+            [Language.Korean] = "/mp kick은 호스트만 사용할 수 있습니다",
+        },
+        [TextId.MpKickNoTarget] = new()
+        {
+            [Language.English] = "No connected players to kick",
+            [Language.ChineseSimplified] = "没有已连接的玩家可踢出",
+            [Language.ChineseTraditional] = "沒有已連接的玩家可踢出",
+            [Language.Japanese] = "キックできる接続中のプレイヤーがいません",
+            [Language.Korean] = "추방할 연결된 플레이어가 없습니다",
+        },
+        [TextId.MpKickSelf] = new()
+        {
+            [Language.English] = "Cannot kick yourself",
+            [Language.ChineseSimplified] = "不能踢出自己",
+            [Language.ChineseTraditional] = "不能踢出自己",
+            [Language.Japanese] = "自分をキックできません",
+            [Language.Korean] = "자기 자신을 추방할 수 없습니다",
+        },
+        [TextId.MpKickNotFound] = new()
+        {
+            [Language.English] = "Player not found: {0}",
+            [Language.ChineseSimplified] = "未找到玩家：{0}",
+            [Language.ChineseTraditional] = "未找到玩家：{0}",
+            [Language.Japanese] = "プレイヤーが見つかりません：{0}",
+            [Language.Korean] = "플레이어를 찾을 수 없음: {0}",
+        },
+        [TextId.MpKickSuccess] = new()
+        {
+            [Language.English] = "Kicked player: {0} (uid={1})",
+            [Language.ChineseSimplified] = "已踢出玩家：{0} (uid={1})",
+            [Language.ChineseTraditional] = "已踢出玩家：{0} (uid={1})",
+            [Language.Japanese] = "プレイヤーをキックしました：{0} (uid={1})",
+            [Language.Korean] = "플레이어를 추방했습니다: {0} (uid={1})",
         },
 
         [TextId.MpContinueUsage] = new()
@@ -1300,6 +1348,30 @@ public static class L10n
             [Language.ChineseTraditional] = "斷開連接",
             [Language.Japanese] = "切断",
             [Language.Korean] = "연결 해제",
+        },
+        [TextId.MpDescKick] = new()
+        {
+            [Language.English] = "Kick a player (host)",
+            [Language.ChineseSimplified] = "踢出玩家 (主机)",
+            [Language.ChineseTraditional] = "踢出玩家 (主機)",
+            [Language.Japanese] = "プレイヤーをキック (ホスト)",
+            [Language.Korean] = "플레이어 추방 (호스트)",
+        },
+        [TextId.MpDescKickId] = new()
+        {
+            [Language.English] = "Kick by player name",
+            [Language.ChineseSimplified] = "按玩家名踢出",
+            [Language.ChineseTraditional] = "按玩家名踢出",
+            [Language.Japanese] = "プレイヤー名でキック",
+            [Language.Korean] = "플레이어 이름으로 추방",
+        },
+        [TextId.MpDescKickUid] = new()
+        {
+            [Language.English] = "Kick by UID",
+            [Language.ChineseSimplified] = "按 UID 踢出",
+            [Language.ChineseTraditional] = "按 UID 踢出",
+            [Language.Japanese] = "UIDでキック",
+            [Language.Korean] = "UID로 추방",
         },
         [TextId.MpDescContinue] = new()
         {
