@@ -91,7 +91,7 @@ public partial class PluginManager : MonoBehaviour
                 _ = MpManager.ConnectToPeerAsync("127.0.0.1");
                 Notify.ShowOnMainThread("[DEBUG] Connecting to Self");
             }
-            if (Input.GetKeyDown(KeyCode.F12))
+            if (Input.GetKeyDown(KeyCode.F11))
             {
                 Debugger ??= new Debugger.WebDebugger();
                 Debugger?.Start();
