@@ -28,6 +28,7 @@ public static partial class ConfigManager
     public static ConfigEntry<string> ConsoleHistoryFile;
     public static ConfigEntry<int> MaxPlayers;
     public static ConfigEntry<string> LocaleOverride;
+    public static ConfigEntry<bool> NoteBookSkinPortrait;
 
     public static void InitConfigs()
     {
@@ -61,6 +62,10 @@ public static partial class ConfigManager
             "Path to a directory containing locale override JSON files (en.json, zh-CN.json).\n" +
             "Supports absolute or relative path (relative to BepInEx/plugins/).\n" +
             "翻译文件覆盖目录路径，支持绝对路径或相对路径(相对于 BepInEx/plugins/)");
+
+        NoteBookSkinPortrait = Config.Bind("Experimental", "NoteBookSkinPortrait", false,
+            "(Experimental) Enable portrait replacement for Skin System in NoteBook\n" +
+            "(实验性)是否在笔记本中为皮肤系统启用立绘替换功能");
     }
 
     public static string GetPlayerId()
