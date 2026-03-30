@@ -2,9 +2,11 @@ using HarmonyLib;
 using Il2CppSystem.IO;
 using System.Linq;
 
+using GameData.Core.Collections.CharacterUtility;
 using GameData.Core.Collections.NightSceneUtility;
 using NightScene.GuestManagementUtility;
 
+using DEYU.Utils;
 using MetaMystia.Network;
 using SgrYuki;
 using SgrYuki.Utils;
@@ -17,7 +19,6 @@ namespace MetaMystia.Patch;
 [AutoLog]
 public partial class GuestsManagerPatch
 {
-    // public static readonly System.Threading.AsyncLocal<bool> PassGuestSpawn = new();
     public static volatile bool SpawnNormalGuestGroup_WithArg_Manual_Call = false;
 
     [HarmonyPatch(nameof(GuestsManager.PostInitializeGuestGroup))]
@@ -97,14 +98,111 @@ public partial class GuestsManagerPatch
             var arr = guestGroups.ToArray();
             if (arr.All((guest) => PlayerManager.NormalGuestAvailable(guest.id)))
             {
-                _ = SpawnNormalGuestGroup_Original_MinHook(
+                _ = SpawnNormalGuestGroup_WithArg_Original(
                             GuestsManager.instance, guestGroups, new Il2CppSystem.Nullable<UnityEngine.Vector3>(), GuestGroupController.LeaveType.Move, -1, true);
                 return SkipOriginal;
             }
         }
     }
 
-    public static NormalGuestsController SpawnNormalGuestGroup_Original_MinHook(
+    [HarmonyPatch(nameof(GuestsManager.SpawnNormalGuestGroup), [
+        typeof(Il2CppSystem.Collections.Generic.IEnumerable<NormalGuest>),
+        typeof(Il2CppSystem.Nullable<UnityEngine.Vector3>),
+        typeof(GuestGroupController.LeaveType),
+        typeof(int),
+        typeof(bool),
+    ])]
+    [HarmonyReversePatch]
+    public static NormalGuestsController SpawnNormalGuestGroup_WithArg_Original(
+        GuestsManager __instance,
+        Il2CppSystem.Collections.Generic.IEnumerable<NormalGuest> normalGuests,
+        Il2CppSystem.Nullable<UnityEngine.Vector3> overrideSpawnPosition,
+        GuestGroupController.LeaveType leaveType,
+        int targetDeskCode,
+        bool shouldFade)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    [HarmonyPatch(nameof(GuestsManager.SpawnNormalGuestGroup), [
+        typeof(Il2CppSystem.Collections.Generic.IEnumerable<NormalGuest>),
+        typeof(Il2CppSystem.Nullable<UnityEngine.Vector3>),
+        typeof(GuestGroupController.LeaveType),
+        typeof(int),
+        typeof(bool),
+    ])]
+    [HarmonyPrefix]
+    public static bool SpawnNormalGuestGroup_WithArg_Prefix(
+        ref Il2CppSystem.Nullable<UnityEngine.Vector3> overrideSpawnPosition)
+    {
+        overrideSpawnPosition ??= new Il2CppSystem.Nullable<UnityEngine.Vector3>();
+        Log.DebugCaller($"called");
+        if (!SpawnNormalGuestGroup_WithArg_Manual_Call
+            && MpManager.IsConnectedClient && !MpManager.InStory)
+        {
+            return SkipOriginal;
+        }
+        return RunOriginal;
+    }
+
+    [HarmonyPatch(nameof(GuestsManager.SpawnNormalGuestGroup), [
+        typeof(Il2CppSystem.Collections.Generic.IEnumerable<NormalGuest>),
+        typeof(Il2CppSystem.Nullable<UnityEngine.Vector3>),
+        typeof(GuestGroupController.LeaveType),
+        typeof(int),
+        typeof(bool),
+    ])]
+    [HarmonyPostfix]
+    public static void SpawnNormalGuestGroup_WithArg_Postfix(
+        NormalGuestsController __result,
+        Il2CppSystem.Nullable<UnityEngine.Vector3> overrideSpawnPosition,
+        GuestGroupController.LeaveType leaveType)
+    {
+        if (__result == null)
+        {
+            Log.WarningCaller($"failed to SpawnNormalGuestGroup, skip");
+            return;
+        }
+
+        if (MpManager.ShouldSkipAction || !MpManager.IsConnectedHost) return;
+
+        var guestGroupControllerCvt = __result;
+        // uuid stored in PostInitializeGuestGroup_Prefix
+        string uuid = WorkSceneManager.GetGuestUUID(guestGroupControllerCvt);
+        var array = guestGroupControllerCvt.GetAllGuests().ToIl2CppReferenceArray();
+
+        var guestVisualArray = DataBaseCharacter.NormalGuestVisual.Get(array[0].id).SortByToString();
+        int visualId1 = guestVisualArray.IndexAtByToString(array[0].CharacterPixel);
+        Log.InfoCaller($"{uuid} visualId1 found at {visualId1} => {guestVisualArray[visualId1].ToString()}");
+
+        var info = new WorkSceneManager.GuestInfo
+        {
+            Id = array[0].id,
+            VisualId = visualId1,
+            IsSpecial = false,
+            LeaveType = leaveType
+        };
+        if (overrideSpawnPosition.HasValue && overrideSpawnPosition.Value.sqrMagnitude > 0.25f * 0.25f * 3 && overrideSpawnPosition.Value.sqrMagnitude < 15 * 15 * 3)
+        {
+            info.OverrideSpawnPosition = overrideSpawnPosition.Value;
+            Log.InfoCaller($"overrideSpawnPositionCvt, {overrideSpawnPosition.Value}");
+        }
+        if (array.Length > 1)
+        {
+            var guestVisualArray2 = DataBaseCharacter.NormalGuestVisual.Get(array[1].id).SortByToString();
+            int visualId2 = guestVisualArray2.IndexAtByToString(array[1].CharacterPixel);
+            Log.InfoCaller($"{uuid} visualId2 found at {visualId2} => {guestVisualArray2[visualId2].ToString()}");
+
+            info.Id2 = array[1].id;
+            info.VisualId2 = visualId2;
+        }
+        GuestSpawnAction.Send(uuid, info);
+
+        var fsm = WorkSceneManager.GetOrCreateGuestFSM(uuid);
+        fsm.ChangeState(WorkSceneManager.Status.Generated);
+    }
+
+    public static NormalGuestsController SpawnNormalGuestGroup_Original(
         GuestsManager __instance,
         Il2CppSystem.Collections.Generic.IEnumerable<NormalGuest> normalGuests,
         Il2CppSystem.Nullable<UnityEngine.Vector3> overrideSpawnPosition = null,
@@ -113,8 +211,7 @@ public partial class GuestsManagerPatch
         bool shouldFade = true)
     {
         SpawnNormalGuestGroup_WithArg_Manual_Call = true;
-        // calling MinHook_SpawnNormalGuestGroup.Hook_SpawnNormalGuestGroup
-        var res = __instance.SpawnNormalGuestGroup(normalGuests, overrideSpawnPosition, leaveType, targetDeskCode, shouldFade);
+        var res = SpawnNormalGuestGroup_WithArg_Original(__instance, normalGuests, overrideSpawnPosition ?? new Il2CppSystem.Nullable<UnityEngine.Vector3>(), leaveType, targetDeskCode, shouldFade);
         SpawnNormalGuestGroup_WithArg_Manual_Call = false;
         return res;
     }

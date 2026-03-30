@@ -24,7 +24,7 @@
   "ReadyForWork": "{0} are ready to open for business.",
   "MystiaReadyForWork": "You are ready to open for business.",
   "AllReadyTransition": "All players are ready, transitioning...",
-  "ModPatchFailure": "Patch failure! The Mod will not function normally! Maybe your game version is not supported, please consider removing the mod!",
+  "ModPatchFailure": "Patch failure! MetaMystia will not function normally!",
   "ModVersionMismatch": "Mod version mismatch, connection disconnected!",
   "GameVersionMismatch": "Game version mismatch, connection disconnected!",
   "SceneMismatchDisconnected": "One or more players are not in the DayScene or MainScene at the same time, connection disconnected!",

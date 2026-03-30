@@ -31,6 +31,13 @@ public partial class DaySceneManagerPatch
             SkinChangeAction.Send(PlayerManager.Local.Skin);
         }
 
+        if (PatchRegistry.PatchedException != null)
+        {
+            var warningMessage = TextId.ModPatchFailure.Get();
+            Notify.Show(warningMessage);
+            InGameConsole.LogToConsole(warningMessage);
+        }
+
 
         // if (MpManager.IsConnected)
         // {

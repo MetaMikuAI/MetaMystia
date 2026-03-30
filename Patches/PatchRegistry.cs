@@ -1,9 +1,6 @@
 using System;
 using HarmonyLib;
 
-using MetaMystia.Patch;
-using SgrYuki;
-
 namespace MetaMystia.Patch;
 
 [AutoLog]
@@ -61,55 +58,25 @@ public static partial class PatchRegistry
         typeof(RunTimeDayScenePatch)
     ];
 
-    public static readonly Type[] NativeHooks = [
-        typeof(SpawnNormalGuestGroupHook)
-    ];
-
     public static bool AllPatched => PatchedException == null;
     public static Exception PatchedException { get; set; }
 
     public static void ApplyAll(Harmony harmony)
     {
-        try
+        Log.LogInfo($"Patching {Patches.Length} modules...");
+        for (int i = 0; i < Patches.Length; i++)
         {
-            Log.LogInfo($"Patching {Patches.Length} modules...");
-            for (int i = 0; i < Patches.Length; i++)
+            var patch = Patches[i];
+            try
             {
-                var patch = Patches[i];
-                try
-                {
-                    harmony.PatchAll(patch);
-                    Log.LogInfo($"  [{i + 1}/{Patches.Length}] {patch.Name} OK");
-                }
-                catch (Exception ex)
-                {
-                    Log.LogError($"  [{i + 1}/{Patches.Length}] {patch.Name} FAILED: {ex.Message}");
-                    throw;
-                }
+                harmony.PatchAll(patch);
+                Log.LogInfo($"  [{i + 1}/{Patches.Length}] {patch.Name} OK");
             }
-
-            NativeDllExtractor.Extract("MetaMystia.Patches.Native.Runtime.MinHook.x64.dll", MinHook.DLLFilename);
-
-            Log.LogInfo($"Installing {NativeHooks.Length} native hooks...");
-            for (int i = 0; i < NativeHooks.Length; i++)
+            catch (Exception ex)
             {
-                var hook = NativeHooks[i];
-                try
-                {
-                    hook.GetMethod("InstallHook").Invoke(null, null);
-                    Log.LogInfo($"  [{i + 1}/{NativeHooks.Length}] {hook.Name} OK");
-                }
-                catch (Exception ex)
-                {
-                    Log.LogError($"  [{i + 1}/{NativeHooks.Length}] {hook.Name} FAILED: {ex.Message}");
-                    throw;
-                }
+                Log.LogFatal($"  [{i + 1}/{Patches.Length}] {patch.Name} FAILED: {ex.Message}");
+                PatchedException = ex;
             }
-        }
-        catch (Exception ex)
-        {
-            Log.LogFatal($"FAILED to apply patches: {ex.Message}");
-            PatchedException = ex;
         }
     }
 }

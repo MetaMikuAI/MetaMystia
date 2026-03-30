@@ -24,7 +24,7 @@
   "ReadyForWork": "{0} 已经准备好营业啦",
   "MystiaReadyForWork": "你已经准备好营业啦",
   "AllReadyTransition": "全员就绪，即将切换场景…",
-  "ModPatchFailure": "补丁注入失败！此Mod将不会正常运行！可能是你的游戏版本不受支持？请考虑移除此Mod进行游玩！",
+  "ModPatchFailure": "补丁注入失败！MetaMystia 可能不会正常运行！",
   "ModVersionMismatch": "Mod 版本不匹配，连接已断开！",
   "GameVersionMismatch": "游戏版本不匹配，连接已断开！",
   "SceneMismatchDisconnected": "有玩家不同处于白天或主界面，连接已断开",
