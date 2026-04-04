@@ -16,6 +16,7 @@ public class Plugin : BasePlugin
 {
     public static Plugin Instance;
     public static string GameVersion => Common.LoadingSceneManager.VersionData;
+    public static string TargetGameVersion => "RELEASE 4.3.0c";
     public readonly static string ModVersion = MyPluginInfo.PLUGIN_VERSION;
 
     public static bool AllPatched => PatchRegistry.AllPatched;
@@ -74,9 +75,14 @@ public class Plugin : BasePlugin
         }
     }
 
-    public static void OnEnterMainScene()
+    public static void OnFirstEnterMainScene()
     {
         Instance?.Log.LogInfo($"Game Version: {GameVersion}");
+        if (GameVersion != TargetGameVersion)
+        {
+            Instance?.Log.LogWarning($"Game version does not match target version! Expected: {TargetGameVersion}");
+            Notify.ShowOnNextAvailableScene(UI.TextId.GameVersionMismatchNotify.Get(TargetGameVersion, GameVersion));
+        }
         MetricsReporter.OnEnterMainScene();
         Instance?.Log.LogInfo(MpManager.DebugText);
     }

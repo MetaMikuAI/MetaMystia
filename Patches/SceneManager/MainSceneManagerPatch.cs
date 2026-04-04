@@ -24,7 +24,7 @@ public partial class MainSceneManagerPatch
         if (FirstEnterMain)
         {
             Log.Info("First time entering Main Scene.");
-            Plugin.OnEnterMainScene();
+            Plugin.OnFirstEnterMainScene();
         }
         FirstEnterMain = false;
 

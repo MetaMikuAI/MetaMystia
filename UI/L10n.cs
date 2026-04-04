@@ -226,6 +226,9 @@ public enum TextId
     ResourceExRejectedHeader,
     ResourceExRejectedItem,
 
+    // Version Mismatch
+    GameVersionMismatchNotify,
+
     // Max Players / Reject
     RoomFull,
     RoomFullHostNotify,
