@@ -171,5 +171,6 @@
     "MpMaxPlayersHostOnly": "仅主机可修改最大玩家数",
     "MpMaxPlayersRange": "最大玩家数不能小于 2",
     "MpDescMaxPlayers": "查看或设置最大玩家数",
-    "GameVersionMismatchNotify": "预期游戏版本: {0}\n当前版本: {1}\n可能会发生未知错误！"
+    "GameVersionMismatchNotify": "预期游戏版本: {0}\n当前版本: {1}\n可能会发生未知错误！",
+    "Il2CppInteropPatchedRestartRequired": "已自动更新 Il2CppInterop 补丁，请重启游戏以生效。"
 }

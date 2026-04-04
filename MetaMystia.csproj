@@ -39,7 +39,15 @@
     <Message Text="Copied $(RenamedAssemblyPath)$(TargetExt) to @(ExtraOutputPaths)" Importance="High" />
   </Target>
 
+  <Target Name="PatchIl2CppInteropHarmonySupport" AfterTargets="Build">
+    <Copy SourceFiles="Patches\Native\Runtime\Il2CppInterop.HarmonySupport.dll"
+          DestinationFolder="$(GamePath)\BepInEx\core"
+          SkipUnchangedFiles="true" />
+    <Message Text="Patched Il2CppInterop.HarmonySupport.dll → $(GamePath)\BepInEx\core" Importance="High" />
+  </Target>
+
   <ItemGroup>
+    <EmbeddedResource Include="Patches\Native\Runtime\Il2CppInterop.HarmonySupport.dll" />
     <EmbeddedResource Include="Debugger\login.html" />
     <EmbeddedResource Include="Debugger\index.html" />
     <EmbeddedResource Include="ResourceEx\AssetManagement\public.pem" />

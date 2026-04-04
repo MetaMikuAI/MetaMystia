@@ -30,6 +30,7 @@ public class Plugin : BasePlugin
     {
         ConfigManager.InitConfigs();
         L10n.Initialize();
+        Il2CppInteropPatcher.TryPatch();
 
         if (ConfigManager.Debug.Value)
         {
@@ -83,6 +84,7 @@ public class Plugin : BasePlugin
             Instance?.Log.LogWarning($"Game version does not match target version! Expected: {TargetGameVersion}");
             Notify.ShowOnNextAvailableScene(UI.TextId.GameVersionMismatchNotify.Get(TargetGameVersion, GameVersion));
         }
+        Il2CppInteropPatcher.NotifyIfPatched();
         MetricsReporter.OnEnterMainScene();
         Instance?.Log.LogInfo(MpManager.DebugText);
     }
