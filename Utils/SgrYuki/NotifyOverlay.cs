@@ -178,7 +178,7 @@ public static partial class NotifyOverlay
         var rt = tmp.rectTransform;
         rt.anchorMin = rt.anchorMax = new Vector2(0f, 0f);
         rt.pivot = new Vector2(0f, 0f);
-        rt.sizeDelta = new Vector2(HorizontalSize, FontSize);
+        rt.sizeDelta = new Vector2(HorizontalSize, tmp.preferredHeight);
         rt.anchoredPosition = new Vector2(0f, BottomHeight);
         // rt.anchoredPosition = new Vector2(0f, 0f);
 
@@ -203,19 +203,20 @@ public static partial class NotifyOverlay
     // ====================================================================
     private static void RefreshTargets(MonoBehaviour host)
     {
-        for (int i = 0; i < _entries.Count; i++)
+        float cumulativeY = BottomHeight;
+        for (int i = _entries.Count - 1; i >= 0; i--)
         {
             var e = _entries[i];
             if (e?.Tmp == null) continue;
 
-            float targetY = BottomHeight + (_entries.Count - 1 - i) * LineHeight;
-            e.TargetY = targetY;
+            e.TargetY = cumulativeY;
+            cumulativeY += e.Tmp.preferredHeight + Spacing;
 
             if (e.MoveCoroutine != null)
                 host.StopCoroutine(e.MoveCoroutine);
 
             e.MoveCoroutine = host.StartCoroutine(
-                AnimateMoveToY(e.Tmp.rectTransform, targetY)
+                AnimateMoveToY(e.Tmp.rectTransform, e.TargetY)
             );
         }
     }
