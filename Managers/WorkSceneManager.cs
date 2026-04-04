@@ -349,7 +349,7 @@ public static partial class WorkSceneManager
             ? new Il2CppSystem.Nullable<Vector3>(guestInfo.OverrideSpawnPosition.Value)
             : new Il2CppSystem.Nullable<Vector3>();
 
-        var controller = GuestsManagerPatch.SpawnNormalGuestGroup_Original_MinHook(
+        var controller = GuestsManagerPatch.SpawnNormalGuestGroup_Original(
                 GuestsManager.instance, guests.ToIEnumerable(), overrideSpawnPosition, guestInfo.LeaveType);
         if (IsGuestNull(controller))
         {
