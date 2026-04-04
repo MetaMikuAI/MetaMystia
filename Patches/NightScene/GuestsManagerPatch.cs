@@ -20,6 +20,7 @@ namespace MetaMystia.Patch;
 public partial class GuestsManagerPatch
 {
     public static volatile bool SpawnNormalGuestGroup_WithArg_Manual_Call = false;
+    public static volatile bool ReimuSpellCard = false;
 
     [HarmonyPatch(nameof(GuestsManager.PostInitializeGuestGroup))]
     [HarmonyPrefix]
@@ -27,8 +28,7 @@ public partial class GuestsManagerPatch
     {
         if (MpManager.IsConnectedHost)
         {
-            bool IsReimuSpellCardTriggered = Functional.CheckStacktraceContains("InitializeAsGeneralWorkScene");
-            if (IsReimuSpellCardTriggered)
+            if (ReimuSpellCard)
             {
                 return;
             }
@@ -205,11 +205,17 @@ public partial class GuestsManagerPatch
         bool shouldFade)
     {
         overrideSpawnPosition ??= new Il2CppSystem.Nullable<UnityEngine.Vector3>();
-
+        
+        // 灵梦符卡为最高优先级，不应受网络状态也不应参与网络通信
+        if (guestSpawnType == SpecialGuestsController.GuestSpawnType.HakureiMoneyBoxReimu)
+        {
+            Log.Info("灵梦释放了符卡，特别允许其在联机状态中生成");
+            ReimuSpellCard = true; // SpawnSpecialGuestGroup 生产 ReimuSpellCard
+            return RunOriginal;
+        }
+        
         if (MpManager.ShouldSkipAction) { if (MpManager.IsConnectedClient) return SkipOriginal; return RunOriginal; }
 
-        bool IsReimuSpellCardTriggered = Functional.CheckStacktraceContains("InitializeAsGeneralWorkScene");
-        if (IsReimuSpellCardTriggered) return RunOriginal;
 
         if (!MpManager.IsConnectedHost) return SkipOriginal;
 
@@ -273,8 +279,7 @@ public partial class GuestsManagerPatch
 
                 var seatRand = UnityEngine.Random.Range(0, 2);
 
-                bool IsReimuSpellCardTriggered = Functional.CheckStacktraceContains("InitializeAsGeneralWorkScene");
-                if (IsReimuSpellCardTriggered)
+                if (ReimuSpellCard)
                 {
                     return RunOriginal;
                 }
@@ -297,7 +302,6 @@ public partial class GuestsManagerPatch
                     },
                     timeoutSeconds: 10);
                 Log.DebugCaller($"desk code {targetDeskCode}, seat {seatRand}");
-
             }
         }
         return RunOriginal;
@@ -316,8 +320,12 @@ public partial class GuestsManagerPatch
     {
         if (MpManager.ShouldSkipAction) { if (MpManager.IsConnectedClient) return SkipOriginal; return RunOriginal; }
 
-        bool IsReimuSpellCardTriggered = Functional.CheckStacktraceContains("InitializeAsGeneralWorkScene");
-        if (IsReimuSpellCardTriggered) return RunOriginal;
+        if (ReimuSpellCard)
+        {
+            Log.Info("灵梦符卡状态下，允许正常离座");
+            ReimuSpellCard = false; // LeaveFromDesk 消费 ReimuSpellCard
+            return RunOriginal;
+        }
 
         var uuid = WorkSceneManager.GetGuestUUID(toLeave);
         if (uuid == null) return RunOriginal;
