@@ -36,49 +36,6 @@ public partial class GuestsManagerPatch
         }
     }
 
-
-    // [HarmonyPatch(nameof(GuestsManager.PostInitializeGuestGroup))]
-    // [HarmonyPrefix]
-    // public static bool PostInitializeGuestGroup_Prefix(GuestGroupController initializedController)
-    // {
-    //     // Log.LogInfo($"PostInitializeGuestGroup_Prefix called");
-    //     bool isNormalGuest = !Functional.CheckStacktraceContains("NightScene.GuestManagementUtility.GuestsManager::SpawnSpecialGuestGroup");
-
-    //     // Sync host's guest spawn here because GuestsManager::SpawnNormalGuestGroup/0 does not return guest controller
-    //     if (MpManager.IsConnected && !MpManager.InStory)
-    //     {
-    //         if (MpManager.IsHost)
-    //         {
-    //             string uuid = WorkSceneManager.StoreGuest(initializedController);
-    //             var array = initializedController.GetAllGuests().ToIl2CppReferenceArray();
-
-    //             if (array != null)
-    //             {
-    //                 if (isNormalGuest)
-    //                 {
-    //                     var normalGuestVArrayS = DataBaseCharacter.NormalGuestVisual.Get(array[0].id).SortByToString();
-    //                     int normalGuestVisual = indexAt(normalGuestVArrayS, array[0].CharacterPixel, 1);
-    //                     if (array.Length > 1)
-    //                     {
-    //                         var normalGuest2VArrayS = DataBaseCharacter.NormalGuestVisual.Get(array[1].id).SortByToString();
-    //                         int normalGuest2Visual = indexAt(normalGuest2VArrayS, array[1].CharacterPixel, 2);
-    //                         GuestSpawnAction.Send(array[0].id, false, uuid, normalGuestVisual, array[1].id, normalGuest2Visual);
-    //                     }
-    //                     else
-    //                     {
-    //                         GuestSpawnAction.Send(array[0].id, false, uuid, normalGuestVisual);
-    //                     }
-    //                 }
-    //                 else
-    //                 {
-    //                     GuestSpawnAction.Send(array[0].id, true, uuid);
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     return true;
-    // }
-
     [HarmonyPatch(nameof(GuestsManager.SpawnNormalGuestGroup), [])]
     [HarmonyPrefix]
     public static bool SpawnNormalGuestGroup_Prefix()
@@ -98,8 +55,8 @@ public partial class GuestsManagerPatch
             var arr = guestGroups.ToArray();
             if (arr.All((guest) => PlayerManager.NormalGuestAvailable(guest.id)))
             {
-                _ = SpawnNormalGuestGroup_WithArg_Original(
-                            GuestsManager.instance, guestGroups, new Il2CppSystem.Nullable<UnityEngine.Vector3>(), GuestGroupController.LeaveType.Move, -1, true);
+                _ = SpawnNormalGuestGroup_Original(
+                            GuestsManager.instance, guestGroups);
                 return SkipOriginal;
             }
         }
@@ -211,64 +168,10 @@ public partial class GuestsManagerPatch
         bool shouldFade = true)
     {
         SpawnNormalGuestGroup_WithArg_Manual_Call = true;
-        var res = SpawnNormalGuestGroup_WithArg_Original(__instance, normalGuests, overrideSpawnPosition ?? new Il2CppSystem.Nullable<UnityEngine.Vector3>(), leaveType, targetDeskCode, shouldFade);
+        var res = __instance.SpawnNormalGuestGroup(normalGuests, overrideSpawnPosition ?? new Il2CppSystem.Nullable<UnityEngine.Vector3>(), leaveType, targetDeskCode, shouldFade);
         SpawnNormalGuestGroup_WithArg_Manual_Call = false;
         return res;
     }
-
-    // [HarmonyPatch(nameof(GuestsManager.SpawnNormalGuestGroup), [
-    //     typeof(Il2CppSystem.Collections.Generic.IEnumerable<NormalGuest>),
-    //     typeof(Il2CppSystem.Nullable<UnityEngine.Vector3>),
-    //     typeof(GuestGroupController.LeaveType),
-    //     typeof(int),
-    //     typeof(bool),
-    // ])]
-    // [HarmonyReversePatch]
-    // public static NormalGuestsController SpawnNormalGuestGroup_WithArg_Original(GuestsManager __instance, Il2CppSystem.Collections.Generic.IEnumerable<NormalGuest> normalGuests, Il2CppSystem.Nullable<UnityEngine.Vector3> overrideSpawnPosition, GuestGroupController.LeaveType leaveType, int targetDeskCode, bool shouldFade)
-    // {
-    //     throw new System.NotImplementedException();
-    // }
-
-    // public unsafe NormalGuestsController SpawnNormalGuestGroup(
-    // IEnumerable<NormalGuest> normalGuests,
-    // Il2CppSystem.Nullable<Vector3> overrideSpawnPosition = null,
-    // GuestGroupController.LeaveType leaveType = GuestGroupController.LeaveType.Move,
-    // int targetDeskCode = -1,
-    // bool shouldFade = true)
-
-    // [HarmonyPatch(nameof(GuestsManager.SpawnNormalGuestGroup), [
-    //     typeof(Il2CppSystem.Collections.Generic.IEnumerable<NormalGuest>),
-    //     typeof(Il2CppSystem.Nullable<UnityEngine.Vector3>),
-    //     typeof(GuestGroupController.LeaveType),
-    //     typeof(int),
-    //     typeof(bool),
-    // ])]
-    // [HarmonyPrefix]
-    // public static bool SpawnNormalGuestGroup_WithArg_Prefix(
-    //     GuestsManager __instance,
-    //     Il2CppSystem.Collections.Generic.IEnumerable<NormalGuest> normalGuests,
-    //     ref Il2CppSystem.Nullable<UnityEngine.Vector3> overrideSpawnPosition,
-    //     GuestGroupController.LeaveType leaveType,
-    //     int targetDeskCode,
-    //     bool shouldFade,
-    //     ref NormalGuestsController __result)
-    // {
-    //     Log.LogInfo($"SpawnNormalGuestGroup_WithArg_Prefix called, overrideSpawnPosition {(overrideSpawnPosition.hasValue? overrideSpawnPosition.Value.ToString() : "null")}");
-    //     overrideSpawnPosition ??= new Il2CppSystem.Nullable<UnityEngine.Vector3>();
-    //     if (MpManager.IsConnected)
-    //     {
-    //         if (MpManager.IsClient && !MpManager.InStory)
-    //         {
-    //             return false;
-    //         }
-    //         else if (MpManager.IsHost)
-    //         {
-    //             __result = SpawnNormalGuestGroup_WithArg_Original(__instance, normalGuests, overrideSpawnPosition, leaveType, targetDeskCode, shouldFade);
-    //             return false;
-    //         }
-    //     }
-    //     return true;
-    // }
 
     [HarmonyPatch(nameof(GuestsManager.SpawnSpecialGuestGroup))]
     [HarmonyReversePatch]
