@@ -171,6 +171,6 @@
     "MpMaxPlayersHostOnly": "Only the host can change max players",
     "MpMaxPlayersRange": "Max players must be at least 2",
     "MpDescMaxPlayers": "View or set max player limit",
-    "GameVersionMismatchNotify": "Expected game version: {0}\nCurrent version: {1}\nUnexpected errors may occur!",
+    "GameVersionMismatchNotify": "Expected game version: {0}, Current version: {1}, Unexpected errors may occur!",
     "Il2CppInteropPatchedRestartRequired": "Il2CppInterop patch has been updated. Please restart the game for it to take effect."
 }

@@ -82,7 +82,7 @@ public class Plugin : BasePlugin
         if (GameVersion != TargetGameVersion)
         {
             Instance?.Log.LogWarning($"Game version does not match target version! Expected: {TargetGameVersion}");
-            Notify.ShowOnNextAvailableScene(UI.TextId.GameVersionMismatchNotify.Get(TargetGameVersion, GameVersion));
+            Notify.ShowExtern(UI.TextId.GameVersionMismatchNotify.Get(TargetGameVersion, GameVersion));
         }
         Il2CppInteropPatcher.NotifyIfPatched();
         MetricsReporter.OnEnterMainScene();

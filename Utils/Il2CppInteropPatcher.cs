@@ -74,6 +74,6 @@ public static class Il2CppInteropPatcher
     public static void NotifyIfPatched()
     {
         if (Patched)
-            Notify.ShowOnNextAvailableScene(() => TextId.Il2CppInteropPatchedRestartRequired.Get());
+            Notify.ShowExtern(TextId.Il2CppInteropPatchedRestartRequired.Get());
     }
 }
