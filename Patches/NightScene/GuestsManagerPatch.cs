@@ -261,47 +261,48 @@ public partial class GuestsManagerPatch
     [HarmonyPrefix]
     public static bool TrySendToSeat_Prefix(GuestsManager __instance, GuestGroupController toTry, bool firstSpawn, ref int targetDeskCode, bool shouldOrder)
     {
-        if (!MpManager.ShouldSkipAction)
+        if (MpManager.ShouldSkipAction)
         {
-            if (ReimuSpellCard)
-            {
-                Log.Info($"灵梦塞钱箱：灵梦尝试入座，跳过同步直接执行");
-                return RunOriginal;
-            }
-            
-            if (MpManager.IsClient)
-            {
-                Log.LogDebug($"TrySendToSeat prevented");
-                return SkipOriginal;
-            }
-            else
-            {
-                var seatableDeskCodes = __instance.TrueAvailableDesks.FilterKey(value => value >= toTry.GuestCount);
-                if (seatableDeskCodes.Count == 0) return SkipOriginal;
-                targetDeskCode = seatableDeskCodes.GetRandomOne();
-
-                var seatRand = UnityEngine.Random.Range(0, 2);
-
-                var guuid = WorkSceneManager.GetGuestUUID(toTry);
-                int copiedTargetDeskCode = targetDeskCode;
-
-                WorkSceneManager.SetGuestDeskcodeSeat(guuid, seatRand);
-                WorkSceneManager.SetGuestDeskcode(guuid, copiedTargetDeskCode);
-                // Delay send seated action because SpawnNormalGuestGroup may execute TrySendToSeat first then return
-                CommandScheduler.Enqueue(
-                    executeWhen: () => WorkSceneManager.CheckStatus(guuid, WorkSceneManager.Status.Generated),
-                    executeInfo: $"TrySendToSeat: waiting {guuid} generated",
-                    execute: () =>
-                    {
-                        // 通过FSM转移到Seated状态
-                        var fsm = WorkSceneManager.GetGuestFSM(guuid);
-                        fsm.TrySeated();
-                        GuestSeatedAction.Send(guuid, copiedTargetDeskCode, firstSpawn, seatRand);
-                    },
-                    timeoutSeconds: 10);
-                Log.DebugCaller($"desk code {targetDeskCode}, seat {seatRand}");
-            }
+            return RunOriginal;
         }
+
+        if (ReimuSpellCard)
+        {
+            Log.Info($"灵梦塞钱箱：灵梦尝试入座，跳过同步直接执行");
+            return RunOriginal;
+        }
+        
+        if (MpManager.IsClient)
+        {
+            Log.LogDebug($"TrySendToSeat prevented");
+            return SkipOriginal;
+        }
+        
+        var seatableDeskCodes = __instance.TrueAvailableDesks.FilterKey(value => value >= toTry.GuestCount);
+        if (seatableDeskCodes.Count == 0) return SkipOriginal;
+        targetDeskCode = seatableDeskCodes.GetRandomOne();
+
+        var seatRand = UnityEngine.Random.Range(0, 2);
+
+        var guuid = WorkSceneManager.GetGuestUUID(toTry);
+        int copiedTargetDeskCode = targetDeskCode;
+
+        WorkSceneManager.SetGuestDeskcodeSeat(guuid, seatRand);
+        WorkSceneManager.SetGuestDeskcode(guuid, copiedTargetDeskCode);
+        // Delay send seated action because SpawnNormalGuestGroup may execute TrySendToSeat first then return
+        CommandScheduler.Enqueue(
+            executeWhen: () => WorkSceneManager.CheckStatus(guuid, WorkSceneManager.Status.Generated),
+            executeInfo: $"TrySendToSeat: waiting {guuid} generated",
+            execute: () =>
+            {
+                // 通过FSM转移到Seated状态
+                var fsm = WorkSceneManager.GetGuestFSM(guuid);
+                fsm.TrySeated();
+                GuestSeatedAction.Send(guuid, copiedTargetDeskCode, firstSpawn, seatRand);
+            },
+            timeoutSeconds: 10);
+        Log.DebugCaller($"desk code {targetDeskCode}, seat {seatRand}");
+
         return RunOriginal;
     }
 
@@ -334,16 +335,14 @@ public partial class GuestsManagerPatch
         {
             return WorkSceneManager.CheckStatus(uuid, WorkSceneManager.Status.Left);
         }
-        else
+        
+        if (WorkSceneManager.CheckStatus(uuid, WorkSceneManager.Status.Left))
         {
-            if (WorkSceneManager.CheckStatus(uuid, WorkSceneManager.Status.Left))
-            {
-                return RunOriginal;
-            }
-            WorkSceneManager.GetGuestFSM(uuid)?.TryLeave();
-            GuestLeaveAction.Send(uuid, GuestLeaveAction.LeaveType.LeaveFromDesk);
+            return RunOriginal;
         }
-
+        WorkSceneManager.GetGuestFSM(uuid)?.TryLeave();
+        GuestLeaveAction.Send(uuid, GuestLeaveAction.LeaveType.LeaveFromDesk);
+        
         return RunOriginal;
     }
 
@@ -358,22 +357,22 @@ public partial class GuestsManagerPatch
     [HarmonyPrefix]
     public static bool PayAndLeave_Prefix(GuestsManager __instance, GuestGroupController toPayAndLeave, bool includeTip)
     {
-        if (!MpManager.ShouldSkipAction)
+        if (MpManager.ShouldSkipAction)
         {
-            var uuid = toPayAndLeave.GetGuestUUID();
-            if (uuid == null) return RunOriginal;
-
-            Log.InfoCaller($"{uuid.GetGuestFSM()?.Identifier}");
-            if (MpManager.IsClient)
-            {
-                return WorkSceneManager.CheckStatus(uuid, WorkSceneManager.Status.Left);
-            }
-            else
-            {
-                WorkSceneManager.GetGuestFSM(uuid)?.TryLeave();
-                GuestLeaveAction.Send(uuid, GuestLeaveAction.LeaveType.PayAndLeave);
-            }
+            return RunOriginal;
         }
+
+        var uuid = toPayAndLeave.GetGuestUUID();
+        if (uuid == null) return RunOriginal;
+
+        Log.InfoCaller($"{uuid.GetGuestFSM()?.Identifier}");
+        if (MpManager.IsClient)
+        {
+            return WorkSceneManager.CheckStatus(uuid, WorkSceneManager.Status.Left);
+        }
+        WorkSceneManager.GetGuestFSM(uuid)?.TryLeave();
+        GuestLeaveAction.Send(uuid, GuestLeaveAction.LeaveType.PayAndLeave);
+        
         return RunOriginal;
     }
 
@@ -388,22 +387,23 @@ public partial class GuestsManagerPatch
     [HarmonyPrefix]
     public static bool ExBadLeave_Prefix(GuestsManager __instance, GuestGroupController toExBadLeave)
     {
-        if (!MpManager.ShouldSkipAction)
+        if (MpManager.ShouldSkipAction)
         {
-            var uuid = toExBadLeave.GetGuestUUID();
-            if (uuid == null) return RunOriginal;
-
-            Log.InfoCaller($"{uuid.GetGuestFSM()?.Identifier}");
-            if (MpManager.IsClient)
-            {
-                return WorkSceneManager.CheckStatus(uuid, WorkSceneManager.Status.Left);
-            }
-            else
-            {
-                WorkSceneManager.GetGuestFSM(uuid)?.TryLeave();
-                GuestLeaveAction.Send(uuid, GuestLeaveAction.LeaveType.ExBadLeave);
-            }
+            return RunOriginal;
         }
+
+        var uuid = toExBadLeave.GetGuestUUID();
+        if (uuid == null) return RunOriginal;
+
+        Log.InfoCaller($"{uuid.GetGuestFSM()?.Identifier}");
+        if (MpManager.IsClient)
+        {
+            return WorkSceneManager.CheckStatus(uuid, WorkSceneManager.Status.Left);
+        }
+
+        WorkSceneManager.GetGuestFSM(uuid)?.TryLeave();
+        GuestLeaveAction.Send(uuid, GuestLeaveAction.LeaveType.ExBadLeave);
+
         return RunOriginal;
     }
 
@@ -418,20 +418,24 @@ public partial class GuestsManagerPatch
     [HarmonyPrefix]
     public static bool RepellAndLeavePay_Prefix(GuestsManager __instance, GuestGroupController toRepell)
     {
-        if (!MpManager.ShouldSkipAction)
+        if (MpManager.ShouldSkipAction)
         {
-            if (MpManager.IsConnectedClient && GuestsManager.instance?.isIzakayaClosing == true)
-            {
-                Log.DebugCaller("Client in close sequence, skipping network action");
-                return RunOriginal;
-            }
-            var uuid = toRepell.GetGuestUUID();
-            if (uuid == null) return RunOriginal;
-
-            Log.InfoCaller($"{uuid.GetGuestFSM()?.Identifier}");
-            WorkSceneManager.GetGuestFSM(uuid)?.TryLeave();
-            GuestLeaveAction.Send(uuid, GuestLeaveAction.LeaveType.RepelAndLeavePay);
+            return RunOriginal;
         }
+
+        if (MpManager.IsConnectedClient && GuestsManager.instance?.isIzakayaClosing == true)
+        {
+            Log.DebugCaller("Client in close sequence, skipping network action");
+            return RunOriginal;
+        }
+        var uuid = toRepell.GetGuestUUID();
+        if (uuid == null) return RunOriginal;
+
+        Log.InfoCaller($"{uuid.GetGuestFSM()?.Identifier}");
+        
+        WorkSceneManager.GetGuestFSM(uuid)?.TryLeave();
+        GuestLeaveAction.Send(uuid, GuestLeaveAction.LeaveType.RepelAndLeavePay);
+
         return RunOriginal;
     }
 
@@ -446,27 +450,30 @@ public partial class GuestsManagerPatch
     [HarmonyPrefix]
     public static bool RepellAndLeaveNoPay_Prefix(GuestsManager __instance, GuestGroupController toRepell)
     {
-        if (!MpManager.ShouldSkipAction)
+        if (MpManager.ShouldSkipAction)
         {
-            if (ReimuSpellCard && toRepell.leaveType == GuestGroupController.LeaveType.Delete)
-            {
-                ReimuSpellCard = false;
-                Log.Info($"灵梦塞钱箱：灵梦离开，消费 ReimuSpellCard flag, 跳过同步直接执行");
-                return RunOriginal;
-            }
-            
-            if (MpManager.IsConnectedClient && GuestsManager.instance?.isIzakayaClosing == true)
-            {
-                Log.DebugCaller("Client in close sequence, skipping network action");
-                return RunOriginal;
-            }
-            var uuid = toRepell.GetGuestUUID();
-            if (uuid == null) return RunOriginal;
-
-            Log.InfoCaller($"{uuid.GetGuestFSM()?.Identifier}");
-            WorkSceneManager.GetGuestFSM(uuid)?.TryLeave();
-            GuestLeaveAction.Send(uuid, GuestLeaveAction.LeaveType.RepelAndLeaveNoPay);
+            return RunOriginal;
         }
+
+        if (ReimuSpellCard && toRepell.leaveType == GuestGroupController.LeaveType.Delete)
+        {
+            ReimuSpellCard = false;
+            Log.Info($"灵梦塞钱箱：灵梦离开，消费 ReimuSpellCard flag, 跳过同步直接执行");
+            return RunOriginal;
+        }
+        
+        if (MpManager.IsConnectedClient && GuestsManager.instance?.isIzakayaClosing == true)
+        {
+            Log.DebugCaller("Client in close sequence, skipping network action");
+            return RunOriginal;
+        }
+        var uuid = toRepell.GetGuestUUID();
+        if (uuid == null) return RunOriginal;
+
+        Log.InfoCaller($"{uuid.GetGuestFSM()?.Identifier}");
+        WorkSceneManager.GetGuestFSM(uuid)?.TryLeave();
+        GuestLeaveAction.Send(uuid, GuestLeaveAction.LeaveType.RepelAndLeaveNoPay);
+        
         return RunOriginal;
     }
 
@@ -481,24 +488,26 @@ public partial class GuestsManagerPatch
     [HarmonyPrefix]
     public static bool PlayerRepell_Prefix(GuestsManager __instance, int deskCode)
     {
-        if (!MpManager.ShouldSkipAction)
+        if (MpManager.ShouldSkipAction)
         {
-            var toRepell = __instance.GetInDeskGuest(deskCode);
-            var uuid = toRepell.GetGuestUUID();
-            if (uuid == null) return RunOriginal;
+            return RunOriginal;
+        }
 
-            var fsm = uuid.GetGuestFSM();
-            Log.InfoCaller($"{fsm?.Identifier}");
-            fsm?.TryLeave();
-            GuestLeaveAction.Send(uuid, GuestLeaveAction.LeaveType.PlayerRepel);
+        var toRepell = __instance.GetInDeskGuest(deskCode);
+        var uuid = toRepell.GetGuestUUID();
+        if (uuid == null) return RunOriginal;
 
-            if (WorkSceneManager.IsGuestNull(toRepell))
-            {
-                Log.ErrorCaller($"{fsm?.Identifier} is null, will stop executing PlayerRepell");
-                fsm?.RemoveInvalidGuest(deskCode);
-                WorkSceneManager.RemoveOccupiedDesk(deskCode);
-                return SkipOriginal;
-            }
+        var fsm = uuid.GetGuestFSM();
+        Log.InfoCaller($"{fsm?.Identifier}");
+        fsm?.TryLeave();
+        GuestLeaveAction.Send(uuid, GuestLeaveAction.LeaveType.PlayerRepel);
+
+        if (WorkSceneManager.IsGuestNull(toRepell))
+        {
+            Log.ErrorCaller($"{fsm?.Identifier} is null, will stop executing PlayerRepell");
+            fsm?.RemoveInvalidGuest(deskCode);
+            WorkSceneManager.RemoveOccupiedDesk(deskCode);
+            return SkipOriginal;
         }
         return RunOriginal;
     }
@@ -515,23 +524,24 @@ public partial class GuestsManagerPatch
     [HarmonyPrefix]
     public static bool PatientDepletedLeave_Prefix(GuestsManager __instance, GuestGroupController toPatientDepletedLeave)
     {
-        if (!MpManager.ShouldSkipAction)
+        if (MpManager.ShouldSkipAction)
         {
-            var uuid = toPatientDepletedLeave.GetGuestUUID();
-            if (uuid == null) return RunOriginal;
-
-            if (MpManager.IsClient)
-            {
-                Log.DebugCaller($"{uuid.GetGuestFSM()?.Identifier}");
-                return WorkSceneManager.CheckStatus(uuid, WorkSceneManager.Status.Left);
-            }
-            else
-            {
-                Log.InfoCaller($"{uuid.GetGuestFSM()?.Identifier}");
-                WorkSceneManager.GetGuestFSM(uuid)?.TryLeave();
-                GuestLeaveAction.Send(uuid, GuestLeaveAction.LeaveType.PatientDepletedLeave);
-            }
+            return RunOriginal;
         }
+
+        var uuid = toPatientDepletedLeave.GetGuestUUID();
+        if (uuid == null) return RunOriginal;
+
+        if (MpManager.IsClient)
+        {
+            Log.DebugCaller($"{uuid.GetGuestFSM()?.Identifier}");
+            return WorkSceneManager.CheckStatus(uuid, WorkSceneManager.Status.Left);
+        }
+        
+        Log.InfoCaller($"{uuid.GetGuestFSM()?.Identifier}");
+        WorkSceneManager.GetGuestFSM(uuid)?.TryLeave();
+        GuestLeaveAction.Send(uuid, GuestLeaveAction.LeaveType.PatientDepletedLeave);
+        
         return RunOriginal;
     }
 
@@ -566,19 +576,15 @@ public partial class GuestsManagerPatch
             }
             return RunOriginal;
         }
-        else
+        
+        if (WorkSceneManager.CheckStatus(uuid, WorkSceneManager.Status.Left))
         {
-            if (WorkSceneManager.CheckStatus(uuid, WorkSceneManager.Status.Left))
-            {
-                Log.InfoCaller($"{fsm?.Identifier} allow to pay");
-                return RunOriginal;
-            }
-            else
-            {
-                Log.InfoCaller($"{fsm?.Identifier} not allow to pay now");
-                return SkipOriginal;
-            }
+            Log.InfoCaller($"{fsm?.Identifier} allow to pay");
+            return RunOriginal;
         }
+        
+        Log.InfoCaller($"{fsm?.Identifier} not allow to pay now");
+        return SkipOriginal;
     }
 
     [HarmonyPatch(nameof(GuestsManager.Eval))]
