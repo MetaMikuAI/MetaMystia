@@ -42,12 +42,6 @@ public partial class GuestSpawnAction : Action
     [DiscardOnStory]
     public static void Send(string uuid, GuestInfo guestInfo)
     {
-        Plugin.Instance.Log.LogWarning($"Sending GuestSpawnAction: guid {uuid}, special {guestInfo.IsSpecial}");
-        Plugin.Instance.Log.LogWarning($"Sending GuestSpawnAction: guid {uuid}, special {guestInfo.IsSpecial}");
-        Plugin.Instance.Log.LogWarning($"Sending GuestSpawnAction: guid {uuid}, special {guestInfo.IsSpecial}");
-        Plugin.Instance.Log.LogWarning($"Sending GuestSpawnAction: guid {uuid}, special {guestInfo.IsSpecial}");
-        Plugin.Instance.Log.LogWarning($"Sending GuestSpawnAction: guid {uuid}, special {guestInfo.IsSpecial}");
-        Plugin.Instance.Log.LogWarning($"Sending GuestSpawnAction: guid {uuid}, special {guestInfo.IsSpecial}");
         var action = new GuestSpawnAction
         {
             UUID = uuid,
