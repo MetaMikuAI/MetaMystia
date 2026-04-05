@@ -317,6 +317,13 @@ public partial class GuestsManagerPatch
     [HarmonyPrefix]
     public static bool LeaveFromDesk_Prefix(GuestsManager __instance, GuestGroupController toLeave)
     {
+        if (ReimuSpellCard)
+        {
+            Log.Info($"灵梦塞钱箱：灵梦尝试支付，消费 ReimuSpellCard flag, 跳过同步直接执行");
+            ReimuSpellCard = false;
+            return RunOriginal;
+        }
+        
         if (MpManager.ShouldSkipAction) { if (MpManager.IsConnectedClient) return SkipOriginal; return RunOriginal; }
         
         var uuid = WorkSceneManager.GetGuestUUID(toLeave);
@@ -455,10 +462,9 @@ public partial class GuestsManagerPatch
             return RunOriginal;
         }
 
-        if (ReimuSpellCard && toRepell.leaveType == GuestGroupController.LeaveType.Delete)
+        if (ReimuSpellCard)
         {
-            ReimuSpellCard = false;
-            Log.Info($"灵梦塞钱箱：灵梦离开，消费 ReimuSpellCard flag, 跳过同步直接执行");
+            Log.Info($"灵梦塞钱箱：灵梦离开，跳过同步直接执行");
             return RunOriginal;
         }
         
