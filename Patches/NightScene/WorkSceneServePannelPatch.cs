@@ -37,7 +37,7 @@ public partial class WorkSceneServePannelPatch
     {
         if (ManuallyClosePanel) return RunOriginal;
         if (__instance == null) return SkipOriginal;
-        if (MpManager.ShouldSkipAction) { if (MpManager.IsConnectedClient) return SkipOriginal; return RunOriginal; }
+        if (MpManager.ShouldSkipAction) return RunOriginal;
 
         var order = __instance.operatingOrder;
         var guest = __instance.currentGuestController;

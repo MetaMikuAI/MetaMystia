@@ -36,7 +36,7 @@ public partial class GuestsManagerPatch
     [HarmonyPrefix]
     public static bool SpawnNormalGuestGroup_Prefix()
     {
-        if (MpManager.ShouldSkipAction) { if (MpManager.IsConnectedClient) return SkipOriginal; return RunOriginal; }
+        if (MpManager.ShouldSkipAction) return RunOriginal;
         if (MpManager.IsClient) return SkipOriginal;
 
         var cook = NightScene.CookingUtility.CookSystemManager.Instance;
@@ -211,7 +211,7 @@ public partial class GuestsManagerPatch
         
         overrideSpawnPosition ??= new Il2CppSystem.Nullable<UnityEngine.Vector3>();
         
-        if (MpManager.ShouldSkipAction) { if (MpManager.IsConnectedClient) return SkipOriginal; return RunOriginal; }
+        if (MpManager.ShouldSkipAction) return RunOriginal;
 
 
         if (!MpManager.IsConnectedHost) return SkipOriginal;
@@ -324,7 +324,7 @@ public partial class GuestsManagerPatch
             return RunOriginal;
         }
         
-        if (MpManager.ShouldSkipAction) { if (MpManager.IsConnectedClient) return SkipOriginal; return RunOriginal; }
+        if (MpManager.ShouldSkipAction) return RunOriginal;
         
         var uuid = WorkSceneManager.GetGuestUUID(toLeave);
         if (uuid == null) return RunOriginal;
@@ -566,7 +566,7 @@ public partial class GuestsManagerPatch
     [HarmonyPrefix]
     public static bool GuestPay_Prefix(GuestsManager __instance, GuestGroupController toPayAndLeave, bool includeTip)
     {
-        if (MpManager.ShouldSkipAction) { if (MpManager.IsConnectedClient) return SkipOriginal; return RunOriginal; }
+        if (MpManager.ShouldSkipAction)return RunOriginal;
         var uuid = toPayAndLeave.GetGuestUUID();
         if (uuid == null) return RunOriginal;
         var fsm = WorkSceneManager.GetGuestFSM(uuid);
@@ -606,12 +606,11 @@ public partial class GuestsManagerPatch
     public static void EvaluateOrder_Postfix(GuestsManager __instance, GuestGroupController toEvaluate, bool isTriggerByPartner)
     {
         Log.InfoCaller($"for {toEvaluate.GetGuestFSM(LogError: false)?.Identifier}");
-        if (!MpManager.ShouldSkipAction)
-        {
-            var fsm = toEvaluate.GetGuestFSM();
+        if (MpManager.ShouldSkipAction) return;
+        
+        var fsm = toEvaluate.GetGuestFSM();
             fsm?.ResetOrderServed();
             fsm?.TryServeOrder();
-        }
     }
 
     [HarmonyPatch(nameof(GuestsManager.RemoveFromOrder))]
@@ -632,7 +631,7 @@ public partial class GuestsManagerPatch
     [HarmonyPrefix]
     public static bool GenerateOrderSession_Prefix(GuestsManager __instance, GuestGroupController guestGroup, bool doContinue)
     {
-        if (MpManager.ShouldSkipAction) { if (MpManager.IsConnectedClient) return SkipOriginal; return RunOriginal; }
+        if (MpManager.ShouldSkipAction) return RunOriginal;
 
         var uuid = WorkSceneManager.GetGuestUUID(guestGroup);
         if (uuid == null) return RunOriginal;
