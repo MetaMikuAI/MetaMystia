@@ -25,6 +25,7 @@ public static partial class PatchRegistry
         typeof(DayScenePlayerInputPatch),
         typeof(DaySceneMapPatch),
         typeof(NoteBookProfilePannelPatch),
+        typeof(DaySceneShopPannelPatch),
 
         // PrepScene Patches
         typeof(IzakayaConfigPannelPatch),
