@@ -20,6 +20,7 @@
     "DLCPeerFoodNotAvailable": "有玩家未装载有此食物 {0} 的 DLC 或资源包",
     "DLCPeerBeverageNotAvailable": "有玩家未装载有此酒水 {0} 的 DLC 或资源包",
     "DLCPeerRecipeNotAvailable": "有玩家未装载有此食谱 {0} 的 DLC 或资源包",
+    "DLCPeerIngredientNotAvailable": "有玩家未装载有此食材 {0} 的 DLC 或资源包",
     "DLCPeerCookerNotAvailable": "有玩家未装载有此厨具 {0} 的 DLC 或资源包",
     "ReadyForWork": "{0} 已经准备好营业啦",
     "MystiaReadyForWork": "你已经准备好营业啦",

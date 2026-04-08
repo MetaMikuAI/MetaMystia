@@ -96,6 +96,7 @@ public enum TextId
     DLCPeerRecipeNotAvailable,
     DLCPeerBeverageNotAvailable,
     DLCPeerFoodNotAvailable,
+    DLCPeerIngredientNotAvailable,
     DLCPeerCookerNotAvailable,
 
     // System Messages

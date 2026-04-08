@@ -20,6 +20,7 @@
     "DLCPeerFoodNotAvailable": "One or more players have not installed the DLC or resource pack that contains the food item {0}.",
     "DLCPeerBeverageNotAvailable": "One or more players have not installed the DLC or resource pack that contains the beverage item {0}.",
     "DLCPeerRecipeNotAvailable": "One or more players have not installed the DLC or resource pack that contains the recipe item {0}.",
+    "DLCPeerIngredientNotAvailable": "One or more players have not installed the DLC or resource pack that contains the ingredient item {0}.",
     "DLCPeerCookerNotAvailable": "One or more players have not installed the DLC or resource pack that contains the cooker item {0}.",
     "ReadyForWork": "{0} are ready to open for business.",
     "MystiaReadyForWork": "You are ready to open for business.",

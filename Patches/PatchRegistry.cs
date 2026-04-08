@@ -42,6 +42,7 @@ public static partial class PatchRegistry
         typeof(NightSceneEventManagerPatch),
         typeof(MystiaQTEBuffRewardPatch),
         typeof(GameTimeManagerPatch),
+        typeof(WorkSceneCookingSelectionPannel__c__DisplayClass79_0Patch),
 
         typeof(RunTimeAlbumPatch),
 
