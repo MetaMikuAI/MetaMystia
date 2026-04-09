@@ -1,5 +1,6 @@
 using BepInEx.Configuration;
 using System;
+using UnityEngine;
 
 namespace MetaMystia;
 
@@ -29,6 +30,12 @@ public static partial class ConfigManager
     public static ConfigEntry<int> MaxPlayers;
     public static ConfigEntry<string> LocaleOverride;
     public static ConfigEntry<bool> NoteBookSkinPortrait;
+
+    // Keybinds
+    public static ConfigEntry<KeyCode> KeyToggleLog;
+    public static ConfigEntry<KeyCode> KeyToggleStatus;
+    public static ConfigEntry<KeyCode> KeyOpenCommand;
+    public static ConfigEntry<KeyCode> KeyOpenChat;
 
     public static void InitConfigs()
     {
@@ -66,6 +73,16 @@ public static partial class ConfigManager
         NoteBookSkinPortrait = Config.Bind("Experimental", "NoteBookSkinPortrait", false,
             "(Experimental) Enable portrait replacement for Skin System in NoteBook\n" +
             "(实验性)是否在笔记本中为皮肤系统启用立绘替换功能");
+
+        // Keybinds
+        KeyToggleLog = Config.Bind("Keybinds", "ToggleLog", KeyCode.RightShift,
+            "Key to print debug log\n打印调试日志的按键");
+        KeyToggleStatus = Config.Bind("Keybinds", "ToggleStatus", KeyCode.Backslash,
+            "Key to toggle status text visibility\n切换状态栏可见性的按键");
+        KeyOpenCommand = Config.Bind("Keybinds", "OpenCommand", KeyCode.Slash,
+            "Key to open command console (with '/' prefix)\n打开命令控制台的按键（带 '/' 前缀）");
+        KeyOpenChat = Config.Bind("Keybinds", "OpenChat", KeyCode.T,
+            "Key to open chat\n打开聊天的按键");
     }
 
     public static string GetPlayerId()

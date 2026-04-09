@@ -68,11 +68,11 @@ public partial class PluginManager : MonoBehaviour
 
         InGameConsole.Update();
 
-        if (Input.GetKeyDown(KeyCode.RightShift))
+        if (Input.GetKeyDown(ConfigManager.KeyToggleLog.Value)) // KeyCode.RightShift
         {
             Log.LogInfo($"\n");
         }
-        if (Input.GetKeyDown(KeyCode.Backslash))
+        if (Input.GetKeyDown(ConfigManager.KeyToggleStatus.Value)) // KeyCode.Backslash
         {
             IsStatusVisible = !IsStatusVisible;
             Log.LogMessage($"Toggled text visibility: " + IsStatusVisible);

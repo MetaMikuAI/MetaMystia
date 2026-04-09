@@ -173,12 +173,13 @@ public static partial class InGameConsole
 
         if (justOpened) justOpened = false;
 
-        if (Input.GetKeyDown(KeyCode.Slash) || Input.GetKeyDown(KeyCode.T))
+        // KeyCode.Slash and KeyCode.T
+        if (Input.GetKeyDown(ConfigManager.KeyOpenCommand.Value) || Input.GetKeyDown(ConfigManager.KeyOpenChat.Value))
         {
             if (!IsOpen)
             {
                 IsOpen = true;
-                input = Input.GetKeyDown(KeyCode.Slash) ? "/" : "";
+                input = Input.GetKeyDown(ConfigManager.KeyOpenCommand.Value) ? "/" : ""; // KeyCode.Slash
                 focusTextField = true;
                 moveCursor = true;
                 justOpened = true;
