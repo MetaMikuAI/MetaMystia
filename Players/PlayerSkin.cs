@@ -1,11 +1,15 @@
 using MemoryPack;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 using Common.CharacterUtility;
+using GameData.Core.Collections;
 using GameData.Core.Collections.CharacterUtility;
 using GameData.Profile;
+
+using SgrYuki.Utils;
 
 namespace MetaMystia;
 
@@ -53,43 +57,50 @@ public partial class PlayerSkin
     }
 
     /// <summary>
-    /// 解析当前皮肤对应的 CharacterPortrayal（立绘配置）
-    /// 不使用 IL2CPP 的 GetProtrayal 方法（其 Nullable&lt;int&gt; 参数存在互操作问题），
-    /// 而是直接从 CharacterProtrayalSet 字段解析。
+    /// 解析当前皮肤对应的 CharacterPortrayal（立绘配置），专门用于 SpecialGuest
     /// </summary>
-    public CharacterPortrayal ResolvePortrait()
+    public CharacterPortrayal ResolveSpecialPortrait()
     {
         CharacterProtrayalSet set;
 
-        if (CharacterId == -1)
+        if (DataBaseCharacter.SpecialGuestVisual.ContainsKey(CharacterId))
         {
-            set = DataBaseCharacter.SelfPortrayalSet;
-        }
-        else if (DataBaseCharacter.SpecialGuestVisual.ContainsKey(CharacterId))
-        {
-            set = DataBaseCharacter.SpecialGuestVisual[CharacterId]?.CharacterPortrayal;
-        }
-        else
-        {
-            return null;
+            return DataBaseCharacter.SpecialGuestVisual[CharacterId]?.CharacterPortrayal?.defaultPortrayal;
         }
 
-        return ResolvePortraitFromSet(set, SelectedType, SkinIndex);
+        return DataBaseCharacter.FallbackPortrayal;
     }
 
-    private static CharacterPortrayal ResolvePortraitFromSet(
-        CharacterProtrayalSet set, CharacterSkinSets.SelectedType type, int index)
+    private static Sprite ResolvePortraitFromSelf(CharacterSkinSets.SelectedType type, int index)
     {
-        if (set == null) return null;
-        return type switch
+        if (type == CharacterSkinSets.SelectedType.Default)
         {
-            CharacterSkinSets.SelectedType.Default => set.defaultPortrayal,
-            CharacterSkinSets.SelectedType.Explicit => (index >= 0 && index < (set.explicitPortrayals?.Length ?? 0))
-                ? set.explicitPortrayals[index] : set.defaultPortrayal,
-            CharacterSkinSets.SelectedType.DLC => (index >= 0 && index < (set.dlcPortrayals?.Length ?? 0))
-                ? set.dlcPortrayals[index] : set.defaultPortrayal,
-            _ => set.defaultPortrayal
-        };
+            return DataBaseCharacter.SelfPortrayalSet?.defaultPortrayal.m_VisualAssetAtlasReference[0]?.Asset
+                ?.TryCast<Sprite>();
+        }
+
+        return DataBaseCore.Clothes
+            .ToList()
+            .Where(c => c.Value.skinIndex.index == index && c.Value.skinIndex.selectedType == type)
+            .Select(c => ResolveSelfPortrayalFromClothes(c.Value))
+            .FirstOrDefault() ?? ResolvePortraitFromSelf(CharacterSkinSets.SelectedType.Default, 0);
+    }
+
+    private static Sprite ResolveSelfPortrayalFromClothes(ClothesProfile.Clothes clothes)
+    {
+        if (!clothes.IsValidVisual)
+            return null;
+
+        var assetRef = clothes.m_OverrideVisualAsset;
+        var sprite = assetRef.Asset?.TryCast<Sprite>();
+
+        if (sprite == null)
+        {
+            var handle = assetRef.LoadAssetAsync();
+            sprite = handle.WaitForCompletion();
+        }
+
+        return sprite;
     }
 
     /// <summary>
@@ -98,7 +109,12 @@ public partial class PlayerSkin
     /// </summary>
     public Sprite ResolvePortraitSprite()
     {
-        var portrayal = ResolvePortrait();
+        if (CharacterId == -1)
+        {
+            return ResolvePortraitFromSelf(SelectedType, SkinIndex);
+        }
+
+        var portrayal = ResolveSpecialPortrait();
         if (portrayal == null) return null;
 
         // 优先：ResourceEx 自定义立绘

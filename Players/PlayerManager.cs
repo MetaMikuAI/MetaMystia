@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using UnityEngine;
@@ -241,7 +240,10 @@ public static partial class PlayerManager
         var uiManager = NightScene.UI.UIManager.Instance;
         if (uiManager != null)
         {
+            var actual = GameData.RunTime.Common.RunTimeAlbum.UseCurrentSkinAtNight;
+            GameData.RunTime.Common.RunTimeAlbum.UseCurrentSkinAtNight = true;
             uiManager.InitializePlayerPortrayal();
+            GameData.RunTime.Common.RunTimeAlbum.UseCurrentSkinAtNight = actual;
         }
     }
 
