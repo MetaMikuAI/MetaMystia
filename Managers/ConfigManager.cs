@@ -31,6 +31,13 @@ public static partial class ConfigManager
     public static ConfigEntry<string> LocaleOverride;
     public static ConfigEntry<bool> NoteBookSkinPortrait;
 
+    // Console layout
+    public static ConfigEntry<float> ConsoleX;
+    public static ConfigEntry<float> ConsoleY;
+    public static ConfigEntry<float> ConsoleWidth;
+    public static ConfigEntry<float> ConsoleHeight;
+    public static ConfigEntry<int> ConsoleFontSize;
+
     // Keybinds
     public static ConfigEntry<KeyCode> KeyToggleLog;
     public static ConfigEntry<KeyCode> KeyToggleStatus;
@@ -73,6 +80,19 @@ public static partial class ConfigManager
         NoteBookSkinPortrait = Config.Bind("Experimental", "NoteBookSkinPortrait", false,
             "(Experimental) Enable portrait replacement for Skin System in NoteBook\n" +
             "(实验性)是否在笔记本中为皮肤系统启用立绘替换功能");
+
+        // Console layout
+        ConsoleX = Config.Bind("Console", "X", 8f,
+            "Console panel X position (pixels from left)\n控制台面板X坐标（左侧像素偏移）");
+        ConsoleY = Config.Bind("Console", "Y", -1f,
+            "Console panel Y position (pixels from top, -1 = auto bottom)\n控制台面板Y坐标（顶部像素偏移，-1=自动底部）");
+        ConsoleWidth = Config.Bind("Console", "Width", 800f,
+            "Console panel width in pixels\n控制台面板宽度（像素）");
+        ConsoleHeight = Config.Bind("Console", "Height", 350f,
+            "Console panel height in pixels (log area)\n控制台面板高度（像素，日志区域）");
+
+        ConsoleFontSize = Config.Bind("Console", "FontSize", 0,
+            "Console font size (0 = auto based on screen height)\n控制台字体大小（0=根据屏幕高度自动）");
 
         // Keybinds
         KeyToggleLog = Config.Bind("Keybinds", "ToggleLog", KeyCode.RightShift,

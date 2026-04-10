@@ -22,7 +22,7 @@ public partial class PlayerIdChangeAction : Action
         {
             var oldId = peer.Id;
             peer.Id = NewPlayerId;
-            Notify.ShowOnMainThread(TextId.PeerPlayerIdChanged.Get(oldId, NewPlayerId));
+            InGameConsole.ShowPassiveFromAnyThread(TextId.PeerPlayerIdChanged.Get(oldId, NewPlayerId));
             // 更新头顶浮动标签
             FloatingTextHelper.UpdatePlayerLabel(SenderUid, NewPlayerId);
         }

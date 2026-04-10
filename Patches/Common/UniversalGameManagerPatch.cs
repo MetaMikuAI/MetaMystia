@@ -76,7 +76,7 @@ public partial class UniversalGameManagerPatch
         {
             if (MpManager.LocalScene == Scene.DayScene && scene == Scene.WorkScene)
             {
-                Notify.ShowOnMainThread(TextId.ChallengeWarning.Get());
+                InGameConsole.ShowPassive(TextId.ChallengeWarning.Get());
             }
         }
         MpManager.OnSceneTransit(Scene.LoadScene);

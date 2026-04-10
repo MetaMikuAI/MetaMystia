@@ -56,7 +56,7 @@ public partial class HelloAction : Action
         {
             Log.LogWarning($"Rejecting connection from '{PeerId}' (uid={SenderUid}): " +
                 $"reconnection not allowed in {MpManager.LocalScene}");
-            Notify.ShowOnMainThread(TextId.PrepWorkReconnectBlocked.Get(PeerId));
+            InGameConsole.ShowPassiveFromAnyThread(TextId.PrepWorkReconnectBlocked.Get(PeerId));
             RejectAction.SendAndDisconnect(SenderUid, TextId.PrepWorkReconnectBlocked.Get(PeerId));
             return;
         }
@@ -68,7 +68,7 @@ public partial class HelloAction : Action
                 $"room full ({MpManager.AllPlayersCount}/{ConfigManager.MaxPlayers.Value})");
             RejectAction.SendAndDisconnect(SenderUid,
                 TextId.RoomFull.Get(MpManager.AllPlayersCount, ConfigManager.MaxPlayers.Value));
-            Notify.ShowOnMainThread(TextId.RoomFullHostNotify.Get(
+            InGameConsole.ShowPassiveFromAnyThread(TextId.RoomFullHostNotify.Get(
                 PeerId, MpManager.AllPlayersCount, ConfigManager.MaxPlayers.Value));
             return;
         }
@@ -93,7 +93,7 @@ public partial class HelloAction : Action
         // 启动同步
         MpManager.OnPeerHandshakeComplete(assignedUid, PeerId);
 
-        Notify.ShowOnMainThread(TextId.MpConnected.Get(PeerId));
+        InGameConsole.ShowPassiveFromAnyThread(TextId.MpConnected.Get(PeerId));
     }
 
     /// <summary>

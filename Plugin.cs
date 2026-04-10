@@ -35,7 +35,7 @@ public class Plugin : BasePlugin
         if (ConfigManager.Debug.Value)
         {
             Log.LogWarning("MetaMystia Debug mode is enabled.");
-            Notify.ShowOnNextAvailableScene("MetaMystia 调试模式已启用");
+            InGameConsole.LogToConsole("<color=#FFAA44>MetaMystia 调试模式已启用</color>");
         }
 
         try
@@ -82,7 +82,7 @@ public class Plugin : BasePlugin
         if (GameVersion != TargetGameVersion)
         {
             Instance?.Log.LogWarning($"Game version does not match target version! Expected: {TargetGameVersion}");
-            Notify.ShowExtern(UI.TextId.GameVersionMismatchNotify.Get(TargetGameVersion, GameVersion));
+            InGameConsole.LogToConsole($"<color=#FF6666>{UI.TextId.GameVersionMismatchNotify.Get(TargetGameVersion, GameVersion)}</color>");
         }
         Il2CppInteropPatcher.NotifyIfPatched();
         MetricsReporter.OnEnterMainScene();

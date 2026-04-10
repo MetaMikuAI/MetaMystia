@@ -23,7 +23,7 @@ public partial class SelectAction : Action
 
             PlayerManager.Peers.TryGetValue(SenderUid, out var senderPeer);
             var peerName = senderPeer?.Id ?? "???";
-            Notify.ShowOnMainThread(TextId.PeerSelectedIzakaya.Get(
+            InGameConsole.ShowPassive(TextId.PeerSelectedIzakaya.Get(
                 $"{peerName}", $"{Utils.GetMapLabelNameCN(MapLabel)} {Utils.GetMapLevelNameCN(MapLevel)}"));
 
             // 主机收到 SELECT 后自动检查全员是否一致

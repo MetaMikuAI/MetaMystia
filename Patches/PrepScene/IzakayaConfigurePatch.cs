@@ -26,7 +26,7 @@ public partial class IzakayaConfigurePatch
         if (MpManager.IsConnected && !PlayerManager.RecipeAvailable(id))
         {
             Log.LogWarning($"Peer does not have recipe {id}, skipping...");
-            Notify.ShowExternOnMainThread(TextId.DLCPeerRecipeNotAvailable.Get(id));
+            InGameConsole.ShowPassiveFromAnyThread(TextId.DLCPeerRecipeNotAvailable.Get(id));
             return SkipOriginal;
         }
 
@@ -43,7 +43,7 @@ public partial class IzakayaConfigurePatch
         if (MpManager.IsConnected && !PlayerManager.BeverageAvailable(id))
         {
             Log.LogWarning($"Peer does not have beverage {id}, skipping...");
-            Notify.ShowExternOnMainThread(TextId.DLCPeerBeverageNotAvailable.Get(id));
+            InGameConsole.ShowPassiveFromAnyThread(TextId.DLCPeerBeverageNotAvailable.Get(id));
             return SkipOriginal;
         }
 
@@ -66,7 +66,7 @@ public partial class IzakayaConfigurePatch
         if (id != -1 && MpManager.IsConnected && !PlayerManager.CookerAvailable(id))
         {
             Log.LogWarning($"Peer does not have cooker {id}, skipping...");
-            Notify.ShowExternOnMainThread(TextId.DLCPeerCookerNotAvailable.Get(id));
+            InGameConsole.ShowPassiveFromAnyThread(TextId.DLCPeerCookerNotAvailable.Get(id));
             return SkipOriginal;
         }
 

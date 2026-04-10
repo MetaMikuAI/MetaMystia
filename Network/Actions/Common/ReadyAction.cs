@@ -38,7 +38,7 @@ public partial class ReadyAction : Action
                 {
                     CommandScheduler.EnqueueWithNoCondition(() =>
                     {
-                        Notify.ShowOnMainThread(TextId.AllReadyTransition.Get());
+                        InGameConsole.ShowPassiveFromAnyThread(TextId.AllReadyTransition.Get());
                         DaySceneManagerPatch.OnDayOver();
                     });
                     return;
@@ -46,7 +46,7 @@ public partial class ReadyAction : Action
                 PlayerManager.SetPeerDayOver(SenderUid);
                 MpManager.DayOver();
                 PlayerManager.Peers.TryGetValue(SenderUid, out var dayPeer);
-                Notify.ShowOnMainThread(TextId.ReadyForWork.Get(dayPeer?.Id ?? "???"));
+                InGameConsole.ShowPassiveFromAnyThread(TextId.ReadyForWork.Get(dayPeer?.Id ?? "???"));
                 break;
             case ReadyType.PrepOver:
                 if ((MpManager.LocalScene != Common.UI.Scene.IzakayaPrepScene && MpManager.LocalScene != Common.UI.Scene.WorkScene)
@@ -64,7 +64,7 @@ public partial class ReadyAction : Action
                 PlayerManager.SetPeerPrepOver(SenderUid);
                 MpManager.PrepOver();
                 PlayerManager.Peers.TryGetValue(SenderUid, out var prepPeer);
-                Notify.ShowOnMainThread(TextId.ReadyForWork.Get(prepPeer?.Id ?? "???"));
+                InGameConsole.ShowPassiveFromAnyThread(TextId.ReadyForWork.Get(prepPeer?.Id ?? "???"));
                 break;
             default:
                 break;

@@ -42,7 +42,7 @@ public partial class WorkSceneStoragePannelPatch
             if (MpManager.IsConnected && !PlayerManager.BeverageAvailable(toExtract.id))
             {
                 Log.LogWarning($"Peer does not have beverage {toExtract.id}, cannot extract.");
-                Notify.ShowOnMainThread(TextId.DLCPeerBeverageNotAvailable.Get(toExtract.id));
+                InGameConsole.ShowPassive(TextId.DLCPeerBeverageNotAvailable.Get(toExtract.id));
                 return SkipOriginal;
             }
         }
@@ -51,7 +51,7 @@ public partial class WorkSceneStoragePannelPatch
             if (MpManager.IsConnected && !PlayerManager.FoodAvailable(toExtract.id))
             {
                 Log.LogWarning($"Peer does not have recipe {toExtract.id}, cannot extract.");
-                Notify.ShowOnMainThread(TextId.DLCPeerFoodNotAvailable.Get(toExtract.id));
+                InGameConsole.ShowPassive(TextId.DLCPeerFoodNotAvailable.Get(toExtract.id));
                 return SkipOriginal;
             }
             SellableFood food = SellableFood.FromSellable(toExtract);

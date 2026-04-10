@@ -22,7 +22,7 @@ public partial class ConfirmSelectAction : Action
         PluginManager.Instance.RunOnMainThread(() =>
         {
             var display = $"{Utils.GetMapLabelNameCN(MapLabel)} {Utils.GetMapLevelNameCN(MapLevel)}";
-            Notify.ShowOnMainThread(TextId.SelectedIzakaya.Get(display));
+            InGameConsole.ShowPassive(TextId.SelectedIzakaya.Get(display));
             SgrYuki.Utils.Panel.CloseActivePanelsBeforeSceneTransit();
 
             if (IzakayaSelectorPanelPatch.instanceRef != null)

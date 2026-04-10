@@ -33,7 +33,7 @@ public partial class WorkSceneCookingSelectionPannel__c__DisplayClass79_0Patch
         if (!PlayerManager.RecipeAvailable(solved.Recipe.Id))
         {
             Log.Warning($"Peer does not have recipe {solved.Recipe.Id}, blocking OnSubmit");
-            Notify.Show(TextId.DLCPeerRecipeNotAvailable.Get(solved.Recipe.Id));
+            InGameConsole.ShowPassive(TextId.DLCPeerRecipeNotAvailable.Get(solved.Recipe.Id));
             return SkipOriginal;
         }
 
@@ -47,7 +47,7 @@ public partial class WorkSceneCookingSelectionPannel__c__DisplayClass79_0Patch
             var ingredientNames = unavailable.Select(id => $"{DataBaseLanguage.Ingredients[id]?.Name ?? "Unknown"}({id})");
             var ingredientList = string.Join(", ", ingredientNames);
             Log.Warning($"Peer does not have modifier ingredient {ingredientList}, blocking OnSubmit");
-            Notify.Show(TextId.DLCPeerIngredientNotAvailable.Get(ingredientList));
+            InGameConsole.ShowPassive(TextId.DLCPeerIngredientNotAvailable.Get(ingredientList));
             return SkipOriginal;
         }
 

@@ -43,7 +43,7 @@ public static partial class NightSceneManagerPatch
             executeWhen: () => WorkSceneManager.WorkTimeLeft > 0,
             execute: () =>
             {
-                Notify.ShowExtern(TextId.TodayBusinessHours.Get(WorkSceneManager.WorkTimeLeft / 60));
+                InGameConsole.ShowPassive(TextId.TodayBusinessHours.Get(WorkSceneManager.WorkTimeLeft / 60));
             },
             timeoutSeconds: 120
         );

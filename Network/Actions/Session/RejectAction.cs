@@ -22,7 +22,7 @@ public partial class RejectAction : Action
         if (MpManager.IsHost) return;
 
         Log.LogWarning($"Connection rejected: {Reason}");
-        Notify.ShowOnMainThread(Reason);
+        InGameConsole.ShowPassiveFromAnyThread(Reason);
         MpManager.DisconnectPeer();
     }
 

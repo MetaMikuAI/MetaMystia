@@ -57,7 +57,7 @@ public partial class HelloAckAction : Action
         }
 
         MpManager.OnHandshakeComplete(HostInfo.PeerId);
-        Notify.ShowOnMainThread(TextId.MpConnected.Get(HostInfo.PeerId));
+        InGameConsole.ShowPassiveFromAnyThread(TextId.MpConnected.Get(HostInfo.PeerId));
     }
 
     /// <summary>

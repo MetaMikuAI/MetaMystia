@@ -98,7 +98,7 @@ public static partial class MpManager
         Log.Info($"{DebugText}");
         if (!Plugin.AllPatched)
         {
-            InGameConsole.LogToConsole($"Cannot start multiplayer, patch failure!\n{DebugText}");
+            InGameConsole.LogToConsole($"<color=#FF6666>Cannot start multiplayer, patch failure!\n{DebugText}</color>");
             Log.Fatal($"Cannot start multiplayer, patch failure!\n{DebugText}");
             return false;
         }
@@ -218,7 +218,7 @@ public static partial class MpManager
     {
         SceneTransitAction.Send(LocalScene);
         CommandScheduler.EnqueueInterval(SyncActionCommandID, 0.5f, SyncAction.Send);
-        Notify.ShowOnMainThread(TextId.MultiplayerConnected.Get());
+        InGameConsole.ShowPassiveFromAnyThread(TextId.MultiplayerConnected.Get());
     }
 
     /// <summary>
@@ -238,7 +238,7 @@ public static partial class MpManager
         PlayerManager.Local.Uid = UNASSIGNED_UID;
         CommandScheduler.RemoveKeyFromKeyQueue(PeerGetCharacterUnitNotNullCommand);
         CommandScheduler.CancelInterval(SyncActionCommandID);
-        Notify.ShowOnMainThread(TextId.MultiplayerDisconnected.Get());
+        InGameConsole.ShowPassiveFromAnyThread(TextId.MultiplayerDisconnected.Get());
     }
 
     /// <summary>
@@ -281,12 +281,12 @@ public static partial class MpManager
                 {
                     if (!hasPeers || PlayerManager.AllPeersDayOver)
                     {
-                        Notify.ShowOnMainThread(TextId.PeerDisconnectedAllReady.Get(
+                        InGameConsole.ShowPassiveFromAnyThread(TextId.PeerDisconnectedAllReady.Get(
                             disconnectedName, "/mp continue day"));
                     }
                     else
                     {
-                        Notify.ShowOnMainThread(TextId.PeerDisconnectedWaiting.Get(
+                        InGameConsole.ShowPassiveFromAnyThread(TextId.PeerDisconnectedWaiting.Get(
                             disconnectedName));
                     }
                 }
@@ -297,12 +297,12 @@ public static partial class MpManager
                 {
                     if (!hasPeers || PlayerManager.AllPeersPrepOver)
                     {
-                        Notify.ShowOnMainThread(TextId.PeerDisconnectedAllReady.Get(
+                        InGameConsole.ShowPassiveFromAnyThread(TextId.PeerDisconnectedAllReady.Get(
                             disconnectedName, "/mp continue prep"));
                     }
                     else
                     {
-                        Notify.ShowOnMainThread(TextId.PeerDisconnectedWaiting.Get(
+                        InGameConsole.ShowPassiveFromAnyThread(TextId.PeerDisconnectedWaiting.Get(
                             disconnectedName));
                     }
                 }
@@ -516,7 +516,7 @@ public static partial class MpManager
             // For host who will not receive DayOver allready
             CommandScheduler.EnqueueWithNoCondition(() =>
             {
-                Notify.ShowOnMainThread(TextId.AllReadyTransition.Get());
+                InGameConsole.ShowPassive(TextId.AllReadyTransition.Get());
                 DaySceneManagerPatch.OnDayOver();
             });
         }
@@ -567,7 +567,7 @@ public static partial class MpManager
         ReadyAction.Broadcast(ReadyType.DayOver);
         CommandScheduler.EnqueueWithNoCondition(() =>
         {
-            Notify.ShowOnMainThread(TextId.AllReadyTransition.Get());
+            InGameConsole.ShowPassive(TextId.AllReadyTransition.Get());
             DaySceneManagerPatch.OnDayOver();
         });
         return true;

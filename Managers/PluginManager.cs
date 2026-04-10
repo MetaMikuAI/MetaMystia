@@ -84,12 +84,12 @@ public partial class PluginManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.F1))
             {
                 MpManager.Start(MpManager.ROLE.Host);
-                Notify.ShowOnMainThread("[DEBUG] Started as Host");
+                InGameConsole.ShowPassive("[DEBUG] Started as Host");
             }
             if (Input.GetKeyDown(KeyCode.F2))
             {
                 _ = MpManager.ConnectToPeerAsync("127.0.0.1");
-                Notify.ShowOnMainThread("[DEBUG] Connecting to Self");
+                InGameConsole.ShowPassive("[DEBUG] Connecting to Self");
             }
             if (Input.GetKeyDown(KeyCode.F11))
             {

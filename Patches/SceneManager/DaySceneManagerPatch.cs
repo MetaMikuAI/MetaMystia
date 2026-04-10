@@ -34,8 +34,7 @@ public partial class DaySceneManagerPatch
         if (PatchRegistry.PatchedException != null)
         {
             var warningMessage = TextId.ModPatchFailure.Get();
-            Notify.Show(warningMessage);
-            InGameConsole.LogToConsole(warningMessage);
+            InGameConsole.LogError(warningMessage);
         }
 
 
@@ -81,7 +80,7 @@ public partial class DaySceneManagerPatch
             return RunOriginal;
         }
 
-        Notify.ShowOnMainThread(TextId.MystiaReadyForWork.Get());
+        InGameConsole.ShowPassive(TextId.MystiaReadyForWork.Get());
         ReadyAction.Send(ReadyType.DayOver);
         MpManager.DayOver();
         return SkipOriginal;

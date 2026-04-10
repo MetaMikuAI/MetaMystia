@@ -36,7 +36,7 @@ public partial class PeerJoinAction : Action
                 peer.SpawnForScene();
             }
         }
-        Notify.ShowOnMainThread(TextId.PeerJoined.Get(PeerId));
+        InGameConsole.ShowPassiveFromAnyThread(TextId.PeerJoined.Get(PeerId));
     }
 
     /// <summary>

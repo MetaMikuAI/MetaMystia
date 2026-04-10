@@ -266,15 +266,15 @@ public static partial class MetricsReporter
 
                     if (string.IsNullOrEmpty(latestVer))
                     {
-                        Notify.ShowOnMainThread(TextId.ModVersionUnavailable.Get(currentVer));
+                        InGameConsole.ShowPassiveFromAnyThread(TextId.ModVersionUnavailable.Get(currentVer));
                     }
                     else if (currentVer.Equals(latestVer, StringComparison.Ordinal))
                     {
-                        Notify.ShowOnMainThread(TextId.ModVersionLatest.Get(currentVer));
+                        InGameConsole.ShowPassiveFromAnyThread(TextId.ModVersionLatest.Get(currentVer));
                     }
                     else
                     {
-                        Notify.ShowOnMainThread(TextId.ModVersionOutdated.Get(currentVer, latestVer));
+                        InGameConsole.ShowPassiveFromAnyThread(TextId.ModVersionOutdated.Get(currentVer, latestVer));
                     }
 
                     if (!PluginManager.DEBUG)

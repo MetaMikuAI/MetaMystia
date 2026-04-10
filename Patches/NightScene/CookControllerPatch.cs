@@ -24,7 +24,7 @@ public partial class CookControllerPatch
         if (MpManager.IsConnected && (!PlayerManager.RecipeAvailable(recipe.Id) || !PlayerManager.FoodAvailable(thisResult.id)))
         {
             Log.LogWarning($"Peer does not have recipe {recipe.Id}, skipping SetCook.");
-            Notify.ShowOnMainThread(TextId.DLCPeerRecipeNotAvailable.Get(recipe.Id));
+            InGameConsole.ShowPassive(TextId.DLCPeerRecipeNotAvailable.Get(recipe.Id));
             return SkipOriginal;
         }
         return RunOriginal;

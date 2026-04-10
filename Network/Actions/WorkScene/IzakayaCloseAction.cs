@@ -23,7 +23,7 @@ public partial class IzakayaCloseAction : Action
         PluginManager.Instance.RunOnMainThread(() =>
         {
             Log.Message($"Received close command from host");
-            Notify.ShowOnMainThread(TextId.PeerClosedIzakaya.Get(PlayerManager.GetPeerName(SenderUid)));
+            InGameConsole.ShowPassive(TextId.PeerClosedIzakaya.Get(PlayerManager.GetPeerName(SenderUid)));
             WorkSceneManager.AllowClientClose = true;
             var eventManager = NightScene.EventUtility.EventManager.Instance;
             if (eventManager != null)

@@ -59,7 +59,7 @@ public partial class IzakayaSelectorPanelPatch
         if (MpManager.IsClient)
         {
             // 客机：发送 SELECT 后等待主机 CONFIRM，同时展示当前状态
-            Notify.ShowOnMainThread(TextId.WaitingForHostConfirm.Get(mySelect));
+            InGameConsole.ShowPassive(TextId.WaitingForHostConfirm.Get(mySelect));
             ShowSelectionStatus();
             return SkipOriginal;
         }
@@ -89,14 +89,14 @@ public partial class IzakayaSelectorPanelPatch
         {
             var mismatch = PlayerManager.GetFirstMismatchSelection(mapLabel, level);
             Log.LogWarning($"Selection mismatch: my={mySelect}, peer={mismatch}");
-            Notify.ShowOnMainThread(TextId.SelectedIzakayaMismatch.Get(mySelect, mismatch ?? "???"));
+            InGameConsole.ShowPassive(TextId.SelectedIzakayaMismatch.Get(mySelect, mismatch ?? "???"));
             return;
         }
 
         // 全员一致 → 广播 CONFIRM_SELECT → 本地执行切换
         Log.LogMessage($"All peers match selection: {mySelect}, broadcasting CONFIRM and proceeding");
         ConfirmSelectAction.Broadcast(mapLabel, level);
-        Notify.ShowOnMainThread(TextId.SelectedIzakaya.Get(mySelect));
+        InGameConsole.ShowPassive(TextId.SelectedIzakaya.Get(mySelect));
         SgrYuki.Utils.Panel.CloseActivePanelsBeforeSceneTransit();
         _OnGuideMapInitialize_b__21_0_Original(instanceRef);
     }
@@ -117,7 +117,7 @@ public partial class IzakayaSelectorPanelPatch
         if (!PlayerManager.AllPeersSelectedSameIzakaya(myMapLabel, myLevel))
         {
             var mismatch = PlayerManager.GetFirstMismatchSelection(myMapLabel, myLevel);
-            Notify.ShowOnMainThread(TextId.SelectedIzakayaMismatch.Get(mySelect, mismatch ?? "???"));
+            InGameConsole.ShowPassive(TextId.SelectedIzakayaMismatch.Get(mySelect, mismatch ?? "???"));
         }
     }
 
