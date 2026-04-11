@@ -30,7 +30,6 @@ public partial class MessageAction : Action
         {
             FloatingTextHelper.ShowFloatingTextOnMainThread(senderPeer.GetCharacterUnit(), Message);
         }
-        InGameConsole.ShowPassiveFromAnyThread(TextId.ChatMessagePeer.Get(senderName, Message));
     }
     private static MessageAction CreateMsgAction(string msg)
     {
@@ -47,7 +46,6 @@ public partial class MessageAction : Action
     public static void Send(string message)
     {
         FloatingTextHelper.ShowFloatingTextSelfOnMainThread(message);
-        InGameConsole.ShowPassiveFromAnyThread(TextId.ChatMessageSelf.Get(message));
         CreateMsgAction(message).SendToHostOrBroadcast();
     }
 }
