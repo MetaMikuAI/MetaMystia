@@ -167,6 +167,8 @@
     "ResourceExRejectedItem": "{0} — {1}",
     "RoomFull": "房间已满 ({0}/{1})",
     "RoomFullHostNotify": "{0} 尝试加入，但房间已满 ({1}/{2})",
+    "DuplicatePeerId": "连接被拒绝：已有同名玩家 '{0}' 在线",
+    "DuplicatePeerIdHostNotify": "{0} 尝试加入，但已有同名玩家在线",
     "MpMaxPlayersCurrent": "最大玩家数: {0}",
     "MpMaxPlayersSet": "最大玩家数已设为 {0}",
     "MpMaxPlayersHostOnly": "仅主机可修改最大玩家数",

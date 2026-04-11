@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using MemoryPack;
 
 using MetaMystia.UI;
@@ -13,7 +12,8 @@ namespace MetaMystia.Network;
 public partial class RejectAction : Action
 {
     public override ActionType Type => ActionType.REJECT;
-    public string Reason { get; set; } = "";
+    public TextId ReasonId { get; set; }
+    public string[] ReasonArgs { get; set; } = [];
 
     protected override BepInEx.Logging.LogLevel OnReceiveLogLevel => BepInEx.Logging.LogLevel.Warning;
 
@@ -21,22 +21,18 @@ public partial class RejectAction : Action
     {
         if (MpManager.IsHost) return;
 
-        Log.LogWarning($"Connection rejected: {Reason}");
-        InGameConsole.ShowPassiveFromAnyThread(Reason);
+        var reason = ReasonId.Get(ReasonArgs);
+        Log.LogWarning($"Connection rejected: {reason}");
+        InGameConsole.ShowPassiveFromAnyThread(reason);
         MpManager.DisconnectPeer();
     }
 
     /// <summary>
     /// 主机向指定客机发送拒绝消息，然后断开连接
     /// </summary>
-    public static void SendAndDisconnect(int uid, string reason)
+    public static void SendAndDisconnect(int uid, TextId reasonId, params string[] args)
     {
-        new RejectAction { Reason = reason }.SendToClient(uid);
-        // 延迟断开，给客机时间接收消息
-        Task.Run(async () =>
-        {
-            await Task.Delay(200);
-            MpManager.DisconnectClient(uid);
-        });
+        new RejectAction { ReasonId = reasonId, ReasonArgs = args }.SendToClient(uid);
+        MpManager.DisconnectClient(uid);
     }
 }

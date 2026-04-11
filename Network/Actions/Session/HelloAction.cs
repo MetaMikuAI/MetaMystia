@@ -40,14 +40,14 @@ public partial class HelloAction : Action
         if (Version != Plugin.ModVersion)
         {
             Log.LogError($"Mod version mismatch! Local: {Plugin.ModVersion}, Remote: {Version}");
-            RejectAction.SendAndDisconnect(SenderUid, TextId.ModVersionMismatch.Get());
+            RejectAction.SendAndDisconnect(SenderUid, TextId.ModVersionMismatch);
             return;
         }
 
         if (GameVersion != Plugin.GameVersion)
         {
             Log.LogError($"Game version mismatch! Local: {Plugin.GameVersion}, Remote: {GameVersion}");
-            RejectAction.SendAndDisconnect(SenderUid, TextId.GameVersionMismatch.Get());
+            RejectAction.SendAndDisconnect(SenderUid, TextId.GameVersionMismatch);
             return;
         }
 
@@ -57,7 +57,7 @@ public partial class HelloAction : Action
             Log.LogWarning($"Rejecting connection from '{PeerId}' (uid={SenderUid}): " +
                 $"reconnection not allowed in {MpManager.LocalScene}");
             InGameConsole.ShowPassiveFromAnyThread(TextId.PrepWorkReconnectBlocked.Get(PeerId));
-            RejectAction.SendAndDisconnect(SenderUid, TextId.PrepWorkReconnectBlocked.Get(PeerId));
+            RejectAction.SendAndDisconnect(SenderUid, TextId.PrepWorkReconnectBlocked, PeerId);
             return;
         }
 
@@ -67,9 +67,19 @@ public partial class HelloAction : Action
             Log.LogWarning($"Rejecting connection from '{PeerId}' (uid={SenderUid}): " +
                 $"room full ({MpManager.AllPlayersCount}/{ConfigManager.MaxPlayers.Value})");
             RejectAction.SendAndDisconnect(SenderUid,
-                TextId.RoomFull.Get(MpManager.AllPlayersCount, ConfigManager.MaxPlayers.Value));
+                TextId.RoomFull, MpManager.AllPlayersCount.ToString(), ConfigManager.MaxPlayers.Value.ToString());
             InGameConsole.ShowPassiveFromAnyThread(TextId.RoomFullHostNotify.Get(
                 PeerId, MpManager.AllPlayersCount, ConfigManager.MaxPlayers.Value));
+            return;
+        }
+
+        // --- 重名检测 ---
+        if (PlayerManager.IsPeerIdOnline(PeerId))
+        {
+            Log.LogWarning($"Rejecting connection from '{PeerId}' (uid={SenderUid}): " +
+                $"duplicate PeerId already online");
+            RejectAction.SendAndDisconnect(SenderUid, TextId.DuplicatePeerId, PeerId);
+            InGameConsole.ShowPassiveFromAnyThread(TextId.DuplicatePeerIdHostNotify.Get(PeerId));
             return;
         }
 

@@ -200,6 +200,19 @@ public static partial class PlayerManager
     }
 
     /// <summary>
+    /// 检查指定 PeerId 是否已有在线连接
+    /// </summary>
+    public static bool IsPeerIdOnline(string peerId)
+    {
+        foreach (var kvp in Peers)
+        {
+            if (string.Equals(kvp.Value.Id, peerId, System.StringComparison.OrdinalIgnoreCase))
+                return true;
+        }
+        return false;
+    }
+
+    /// <summary>
     /// 握手成功后，根据对端 UID 创建并注册 PeerPlayer
     /// </summary>
     public static PeerPlayer AddPeer(int uid, string peerId, ResourceDataBase resourceDataBase = null, PlayerSkin skin = null)

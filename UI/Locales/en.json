@@ -167,6 +167,8 @@
     "ResourceExRejectedItem": "{0} — {1}",
     "RoomFull": "Room is full ({0}/{1})",
     "RoomFullHostNotify": "{0} tried to join, but room is full ({1}/{2})",
+    "DuplicatePeerId": "Connection rejected: player '{0}' is already online",
+    "DuplicatePeerIdHostNotify": "{0} tried to join, but a player with the same name is already online",
     "MpMaxPlayersCurrent": "Max players: {0}",
     "MpMaxPlayersSet": "Max players set to {0}",
     "MpMaxPlayersHostOnly": "Only the host can change max players",

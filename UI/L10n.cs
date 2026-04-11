@@ -236,6 +236,8 @@ public enum TextId
     // Max Players / Reject
     RoomFull,
     RoomFullHostNotify,
+    DuplicatePeerId,
+    DuplicatePeerIdHostNotify,
     MpMaxPlayersCurrent,
     MpMaxPlayersSet,
     MpMaxPlayersHostOnly,
