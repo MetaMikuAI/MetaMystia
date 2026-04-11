@@ -52,6 +52,7 @@ public partial class PluginManager : MonoBehaviour
     private void OnGUI()
     {
         InGameConsole.OnGUI();
+        PlayerListPanel.OnGUI();
 
         if (IsStatusVisible)
         {
@@ -67,6 +68,7 @@ public partial class PluginManager : MonoBehaviour
         UpdateRunOnMainThreadQueue();
 
         InGameConsole.Update();
+        PlayerListPanel.Update();
 
         if (Input.GetKeyDown(ConfigManager.KeyToggleLog.Value)) // KeyCode.RightShift
         {

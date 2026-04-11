@@ -38,6 +38,10 @@ public static partial class ConfigManager
     public static ConfigEntry<float> ConsoleHeight;
     public static ConfigEntry<int> ConsoleFontSize;
 
+    // Player list layout
+    public static ConfigEntry<float> PlayerListX;
+    public static ConfigEntry<float> PlayerListY;
+
     // Keybinds
     public static ConfigEntry<KeyCode> KeyToggleLog;
     public static ConfigEntry<KeyCode> KeyToggleStatus;
@@ -93,6 +97,12 @@ public static partial class ConfigManager
 
         ConsoleFontSize = Config.Bind("Console", "FontSize", 0,
             "Console font size (0 = auto based on screen height)\n控制台字体大小（0=根据屏幕高度自动）");
+
+        // Player list
+        PlayerListX = Config.Bind("PlayerList", "X", 8f,
+            "Player list panel X position (pixels from left)\n玩家列表面板X坐标（左侧像素偏移）");
+        PlayerListY = Config.Bind("PlayerList", "Y", 8f,
+            "Player list panel Y position (pixels from top)\n玩家列表面板Y坐标（顶部像素偏移）");
 
         // Keybinds
         KeyToggleLog = Config.Bind("Keybinds", "ToggleLog", KeyCode.RightShift,
