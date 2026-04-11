@@ -40,14 +40,9 @@ public static partial class PlayerListPanel
     // ====================================================================
     public static void Update()
     {
-        if (InGameConsole.IsOpen)
-        {
-            _visible = true;
-            return;
-        }
-
-        // Enter 键切换显示
-        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+        // Enter 键切换显示（控制台打开时不响应，避免与控制台 Enter 冲突）
+        if (!InGameConsole.IsOpen &&
+            (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)))
             _visible = !_visible;
     }
 
@@ -56,7 +51,7 @@ public static partial class PlayerListPanel
     // ====================================================================
     public static void OnGUI()
     {
-        if (!MpManager.IsRunning || !_visible)
+        if (!MpManager.IsRunning || (!_visible && !InGameConsole.IsOpen))
             return;
 
         InitStyles();
