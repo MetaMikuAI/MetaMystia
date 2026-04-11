@@ -131,11 +131,15 @@ public static partial class PlayerListPanel
         var lines = new System.Collections.Generic.List<(string, int)>();
         var scene = MpManager.LocalScene;
 
+        // 仅在游戏场景中读取坐标/地图标签，避免在 MainScene 等场景中触发 GetCharacterUnit 警告
+        bool needsGameplayData = scene is Scene.DayScene or Scene.WorkScene or Scene.IzakayaPrepScene;
+
         // 本地玩家 (UID=0 if host, else assigned)
         var local = PlayerManager.Local;
         string localLine = FormatPlayer(
             local.Uid, local.Id, scene,
-            PlayerManager.LocalMapLabel, local.Position,
+            needsGameplayData ? PlayerManager.LocalMapLabel : "",
+            needsGameplayData ? local.Position : Vector2.zero,
             local.IsDayOver, local.IsPrepOver,
             local.IzakayaMapLabel, local.IzakayaLevel,
             isSelf: true, isHost: MpManager.IsHost);
@@ -148,7 +152,8 @@ public static partial class PlayerListPanel
             var peer = kvp.Value;
             string line = FormatPlayer(
                 peer.Uid, peer.Id, scene,
-                peer.MapLabel, peer.Position,
+                needsGameplayData ? peer.MapLabel : "",
+                needsGameplayData ? peer.Position : Vector2.zero,
                 peer.IsDayOver, peer.IsPrepOver,
                 peer.IzakayaMapLabel, peer.IzakayaLevel,
                 isSelf: false, isHost: kvp.Key == MpManager.HOST_UID);
