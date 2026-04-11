@@ -29,7 +29,7 @@ public enum TextId
     // Multiplayer Status & Responses
     MpAlreadyStarted,
     MpStartedAsHost,
-    MpStartedAsClient,
+    MpSwitchingToHost,
     MpStopped,
     MpRestarted,
     MpPlayerIdSet,

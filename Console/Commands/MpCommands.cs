@@ -13,29 +13,22 @@ public static class MpCommands
     {
         var mpCmd = new Command("mp", "Multiplayer commands");
 
-        // /mp start <role>
-        var startCmd = new Command("start", "Start multiplayer");
-        var roleArg = new Argument<string>("role", "server or client")
-            .FromAmong("server", "client");
-        startCmd.AddArgument(roleArg);
+        // /mp start
+        var startCmd = new Command("start", "Start multiplayer as host");
         startCmd.SetHandler(ctx =>
         {
-            string role = ctx.ParseResult.GetValueForArgument(roleArg);
-            if (MpManager.IsRunning)
+            if (MpManager.IsRunning && MpManager.IsHost)
             {
                 ctx.Log(TextId.MpAlreadyStarted.Get(MpManager.RoleName));
                 return;
             }
-            if (role == "server")
+            if (MpManager.IsRunning && MpManager.IsClient)
             {
-                if (MpManager.Start(MpManager.ROLE.Host))
-                    ctx.Log(TextId.MpStartedAsHost.Get());
+                ctx.Log(TextId.MpSwitchingToHost.Get());
+                MpManager.Stop();
             }
-            else
-            {
-                if (MpManager.Start(MpManager.ROLE.Client))
-                    ctx.Log(TextId.MpStartedAsClient.Get());
-            }
+            if (MpManager.Start(MpManager.ROLE.Host))
+                ctx.Log(TextId.MpStartedAsHost.Get());
         });
         mpCmd.AddCommand(startCmd);
 
@@ -256,7 +249,7 @@ public static class MpCommands
         mpCmd.SetHandler(ctx =>
         {
             ctx.Log(ConsoleFormat.Header(TextId.MpHelpHeader.Get()));
-            ctx.Log(ConsoleFormat.SubCmd("/mp start", "<server|client>", TextId.MpDescStart.Get()));
+            ctx.Log(ConsoleFormat.SubCmd("/mp start", null, TextId.MpDescStart.Get()));
             ctx.Log(ConsoleFormat.SubCmd("/mp stop", null, TextId.MpDescStop.Get()));
             ctx.Log(ConsoleFormat.SubCmd("/mp restart", null, TextId.MpDescRestart.Get()));
             ctx.Log(ConsoleFormat.SubCmd("/mp status", null, TextId.MpDescStatus.Get()));
@@ -272,7 +265,7 @@ public static class MpCommands
         root.AddCommand(mpCmd);
 
         CommandRegistry.RegisterCompletions("mp", 0, "start", "stop", "restart", "status", "id", "connect", "disconnect", "kick", "maxplayers", "continue");
-        CommandRegistry.RegisterCompletions("mp start", 0, "server", "client");
+
         CommandRegistry.RegisterCompletions("mp continue", 0, "day", "prep");
         CommandRegistry.RegisterCompletions("mp kick", 0, "id", "uid");
         CommandRegistry.RegisterDynamicCompletions("mp kick id", 0, () =>
