@@ -193,7 +193,7 @@ public static partial class PlayerManager
         // 为本地玩家也添加头顶标签（等 Local unit 初始化后）
         SgrYuki.CommandScheduler.Enqueue(
             executeWhen: () => Local.unit != null,
-            execute: () => SgrYuki.FloatingTextHelper.SetPlayerLabel(Local.Uid, Local.Id, Local.unit.transform),
+            execute: () => UI.FloatingTextHelper.SetPlayerLabel(Local.Uid, Local.Id, Local.unit.transform),
             timeoutSeconds: 30
         );
         Log.LogInfo($"PlayerManager peers spawned (peers: {Peers.Count})");
@@ -257,7 +257,7 @@ public static partial class PlayerManager
         {
             peer.UpdateVisibleState(false);
         }
-        SgrYuki.FloatingTextHelper.RemovePlayerLabel(uid);
+        UI.FloatingTextHelper.RemovePlayerLabel(uid);
     }
 
     /// <summary>
@@ -269,7 +269,7 @@ public static partial class PlayerManager
         {
             kvp.Value.UpdateVisibleState(false);
         }
-        SgrYuki.FloatingTextHelper.ClearAllLabels();
+        UI.FloatingTextHelper.ClearAllLabels();
     }
 
     /// <summary>
