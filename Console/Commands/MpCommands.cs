@@ -73,7 +73,6 @@ public static class MpCommands
                     ctx.Log($"    {role} {ConsoleFormat.Arg(kvp.Value.Id)} {ConsoleFormat.Dim($"uid={kvp.Key}")}");
                 }
             }
-            ctx.Log(ConsoleFormat.Dim(MpManager.DebugText));
             ctx.Log(ConsoleFormat.Line);
         });
         mpCmd.AddCommand(statusCmd);
