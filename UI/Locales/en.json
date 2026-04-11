@@ -12,6 +12,7 @@
     "MpUsageRoot": "Usage: /mp <subcommand> [args]",
     "MpUsageSetId": "Usage: /mp id <new_id>",
     "MpPlayerIdSet": "Player ID set to {0}",
+    "MpPlayerIdInvalid": "Invalid ID: must not contain spaces, angle brackets, or control characters",
     "PeerPlayerIdChanged": "Player changed their ID: {0} -> {1}",
     "MpNoActiveConnection": "No active multiplayer connection",
     "MpConnecting": "Connecting to {0}:{1}...",

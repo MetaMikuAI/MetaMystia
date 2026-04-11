@@ -77,6 +77,11 @@ public static class MpCommands
         idCmd.SetHandler(ctx =>
         {
             string id = ctx.ParseResult.GetValueForArgument(idArg);
+            if (!MpManager.IsValidPlayerId(id))
+            {
+                ctx.Log(ConsoleFormat.Err(TextId.MpPlayerIdInvalid.Get()));
+                return;
+            }
             MpManager.PlayerId = id;
             PlayerIdChangeAction.Send(id);
             ctx.Log(TextId.MpPlayerIdSet.Get(id));

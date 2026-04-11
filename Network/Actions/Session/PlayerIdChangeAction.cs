@@ -10,6 +10,7 @@ namespace MetaMystia.Network;
 /// </summary>
 [MemoryPackable]
 [HostRelay]
+[AutoLog]
 public partial class PlayerIdChangeAction : Action
 {
     public override ActionType Type => ActionType.PLAYER_ID_CHANGE;
@@ -20,6 +21,13 @@ public partial class PlayerIdChangeAction : Action
     {
         if (PlayerManager.Peers.TryGetValue(SenderUid, out var peer))
         {
+            // 主机侧校验：非法改名 → 踢出
+            if (MpManager.IsHost && !MpManager.IsValidPlayerId(NewPlayerId))
+            {
+                Log.LogWarning($"Kicking uid={SenderUid} ('{peer.Id}'): attempted illegal rename to '{NewPlayerId}'");
+                MpManager.DisconnectClient(SenderUid);
+                return;
+            }
             var oldId = peer.Id;
             peer.Id = NewPlayerId;
             InGameConsole.ShowPassiveFromAnyThread(TextId.PeerPlayerIdChanged.Get(oldId, NewPlayerId));

@@ -109,7 +109,13 @@ public static partial class ConfigManager
     {
         if (string.IsNullOrEmpty(PlayerId.Value))
         {
-            return Environment.MachineName;
+            return MpManager.SanitizePlayerId(Environment.MachineName);
+        }
+        if (!MpManager.IsValidPlayerId(PlayerId.Value))
+        {
+            var sanitized = MpManager.SanitizePlayerId(PlayerId.Value);
+            Log.Warning($"PlayerId '{PlayerId.Value}' contains illegal characters, sanitized to '{sanitized}'");
+            PlayerId.Value = sanitized;
         }
         return PlayerId.Value;
     }

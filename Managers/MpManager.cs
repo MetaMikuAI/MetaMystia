@@ -27,6 +27,38 @@ public static partial class MpManager
     private const string SyncActionCommandID = "SyncAction";
     #endregion
 
+    /// <summary>
+    /// 校验玩家 ID 是否合法：不能为空，不能包含空格、尖括号或控制字符
+    /// </summary>
+    public static bool IsValidPlayerId(string id)
+    {
+        if (string.IsNullOrWhiteSpace(id)) return false;
+        foreach (char c in id)
+        {
+            if (c == '<' || c == '>' || char.IsWhiteSpace(c) || char.IsControl(c))
+                return false;
+        }
+        return true;
+    }
+
+    /// <summary>
+    /// 清理不合法字符，返回合法 ID；若清理后为空则返回 fallback
+    /// </summary>
+    public static string SanitizePlayerId(string id, string fallback = null)
+    {
+        if (string.IsNullOrWhiteSpace(id))
+            return fallback ?? Environment.MachineName;
+
+        var sb = new StringBuilder();
+        foreach (char c in id)
+        {
+            if (c != '<' && c != '>' && !char.IsWhiteSpace(c) && !char.IsControl(c))
+                sb.Append(c);
+        }
+        var result = sb.ToString();
+        return string.IsNullOrEmpty(result) ? (fallback ?? Environment.MachineName) : result;
+    }
+
     #region Multiplayer Related Values
     public static string PlayerId { get => ConfigManager.GetPlayerId(); set => ConfigManager.SetPlayerId(value); }
     public static long Latency { get; private set; } = 0;

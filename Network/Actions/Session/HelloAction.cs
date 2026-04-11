@@ -73,6 +73,14 @@ public partial class HelloAction : Action
             return;
         }
 
+        // --- PeerId 合法性校验 ---
+        if (!MpManager.IsValidPlayerId(PeerId))
+        {
+            Log.LogWarning($"Rejecting connection (uid={SenderUid}): invalid PeerId '{PeerId}'");
+            RejectAction.SendAndDisconnect(SenderUid, TextId.MpPlayerIdInvalid);
+            return;
+        }
+
         // --- 重名检测 ---
         if (PlayerManager.IsPeerIdOnline(PeerId))
         {

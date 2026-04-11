@@ -33,6 +33,7 @@ public enum TextId
     MpStopped,
     MpRestarted,
     MpPlayerIdSet,
+    MpPlayerIdInvalid,
     PeerPlayerIdChanged,
     MpNoActiveConnection,
     MpConnecting,

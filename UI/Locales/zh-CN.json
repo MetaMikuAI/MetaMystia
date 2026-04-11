@@ -12,6 +12,7 @@
     "MpUsageRoot": "用法：/mp <子命令> [参数] （不要尖括号和方括号哦）",
     "MpUsageSetId": "用法：/mp id <新ID> （不要尖括号哦）",
     "MpPlayerIdSet": "玩家 ID 已设置为 {0}",
+    "MpPlayerIdInvalid": "ID 不合法：不能包含空格、尖括号或控制字符",
     "PeerPlayerIdChanged": "玩家已更改 ID：{0} -> {1}",
     "MpNoActiveConnection": "当前没有活动的网络连接",
     "MpConnecting": "正在连接到 {0}:{1}...",
