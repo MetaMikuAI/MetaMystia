@@ -19,3 +19,5 @@
 private.pem
 
 copilot-instructions.md
+
+__pycache__
