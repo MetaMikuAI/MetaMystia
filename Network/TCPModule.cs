@@ -58,9 +58,9 @@ public class PacketBuffer
         buffer.Position = 0;
     }
 
-    public List<NetPacket> ExtractPackets()
+    public List<(NetPacket packet, byte[] rawBody)> ExtractPackets()
     {
-        List<NetPacket> packets = new List<NetPacket>();
+        var packets = new List<(NetPacket, byte[])>();
         while (true)
         {
             if (buffer.Length - buffer.Position < 4) break;
@@ -74,7 +74,7 @@ public class PacketBuffer
             }
             byte[] body = new byte[bodyLength];
             buffer.Read(body, 0, bodyLength);
-            packets.Add(NetPacket.FromBytes(body));
+            packets.Add((NetPacket.FromBytes(body), body));
         }
 
         // 剩余数据移到新的 MemoryStream
@@ -92,6 +92,17 @@ public class PacketBuffer
 
         return packets;
     }
+}
+
+// ---- 用于 zero-copy relay 的常量 ----
+// 在单 Action NetPacket 中，SenderUid 的字节偏移:
+// ObjectHeader(1) + ArrayLen(4) + UnionTag(1) + ObjectHeader(1) + Type(2) + TimestampMs(8) = 17
+internal static class RelayConstants
+{
+    /// <summary>
+    /// SenderUid(int32 LE) 在单 Action NetPacket body 中的起始偏移
+    /// </summary>
+    public const int SenderUidOffset = 17;
 }
 
 // ---------------- TCP Server (Star Topology: Host) ----------------
@@ -223,11 +234,11 @@ public sealed partial class TcpServer : IDisposable
 
                     buffer.Write(recv, 0, read);
 
-                    foreach (var packet in buffer.ExtractPackets())
+                    foreach (var (packet, rawBody) in buffer.ExtractPackets())
                     {
                         foreach (var action in packet.Actions)
                         {
-                            MpManager.OnActionFromClient(action, uid);
+                            MpManager.OnActionFromClient(action, uid, rawBody);
                         }
                     }
                 }
@@ -338,6 +349,15 @@ public sealed partial class TcpServer : IDisposable
     {
         if (!running) return;
         byte[] data = packet.ToBytesWithLength();
+        SendRawToExcept(exceptUid, data);
+    }
+
+    /// <summary>
+    /// Zero-copy relay：用已带长度前缀的原始字节直接广播给除 exceptUid 以外的所有客机。
+    /// </summary>
+    public void SendRawToExcept(int exceptUid, byte[] dataWithLength)
+    {
+        if (!running) return;
         List<int> failed = null;
 
         lock (sendLock)
@@ -347,11 +367,11 @@ public sealed partial class TcpServer : IDisposable
                 if (kvp.Key == exceptUid) continue;
                 try
                 {
-                    kvp.Value.GetStream().Write(data, 0, data.Length);
+                    kvp.Value.GetStream().Write(dataWithLength, 0, dataWithLength.Length);
                 }
                 catch (Exception ex)
                 {
-                    Log.LogWarning($"[S] SendToExcept uid={kvp.Key} failed: {ex.Message}");
+                    Log.LogWarning($"[S] SendRawToExcept uid={kvp.Key} failed: {ex.Message}");
                     (failed ??= new()).Add(kvp.Key);
                 }
             }
@@ -563,7 +583,7 @@ public sealed partial class TcpClientWrapper : IDisposable
                 buffer.Write(recv, 0, read);
 
                 var packets = buffer.ExtractPackets();
-                foreach (var packet in packets)
+                foreach (var (packet, _) in packets)
                 {
                     foreach (var action in packet.Actions)
                     {

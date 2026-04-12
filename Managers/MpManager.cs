@@ -344,8 +344,9 @@ public static partial class MpManager
 
     /// <summary>
     /// 主机侧：收到客机发来的 Action。主机先处理，如果 Action 标记了 HostRelay 则转发。
+    /// 使用 zero-copy relay：直接在原始字节上修改 SenderUid 并广播，跳过 reserialize。
     /// </summary>
-    public static void OnActionFromClient(Network.Action action, int clientUid)
+    public static void OnActionFromClient(Network.Action action, int clientUid, byte[] rawBody)
     {
         // 注入发送者 UID
         action.SenderUid = clientUid;
@@ -356,8 +357,12 @@ public static partial class MpManager
         // 检查是否需要转发给其他客机
         if (action.GetType().GetCustomAttributes(typeof(Network.Action.HostRelayAttribute), false).Length > 0)
         {
-            var packet = NetPacket.FromSingleAction(action);
-            server?.SendToExcept(clientUid, packet);
+            // Zero-copy relay: 在原始字节上修改 SenderUid，添加长度前缀后直接广播
+            BitConverter.GetBytes(clientUid).CopyTo(rawBody, Network.RelayConstants.SenderUidOffset);
+            byte[] framed = new byte[4 + rawBody.Length];
+            BitConverter.GetBytes(rawBody.Length).CopyTo(framed, 0);
+            Buffer.BlockCopy(rawBody, 0, framed, 4, rawBody.Length);
+            server?.SendRawToExcept(clientUid, framed);
         }
     }
 
