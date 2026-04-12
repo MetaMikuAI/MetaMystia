@@ -262,6 +262,7 @@ public class MissionFinishConditionConfig
 {
     public ConditionType conditionType { get; set; }
     public int? amount { get; set; }
+    public int? tag { get; set; }
     public SellableType? sellableType { get; set; }
     public string label { get; set; }
     public ProductType? productType { get; set; }

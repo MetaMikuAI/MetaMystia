@@ -193,6 +193,11 @@ public static partial class Mappers
                 product.productAmount = config.productAmount ?? 0;
                 condition.product = product;
                 break;
+            case FinishCondition.ConditionType.SubmitByTag:
+                condition.amount = config?.amount ?? 0; // 所需物品的数量
+                condition.tag = config?.tag ?? 0; // 所需物品的标签
+                condition.sellableType = config?.sellableType ?? SellableType.Food; // 所需 Sellable 的类型
+                break;
             default:
                 break;
         }
