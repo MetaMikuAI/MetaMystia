@@ -7,6 +7,7 @@ using BepInEx;
 using GameData.Core.Collections.CharacterUtility;
 using SgrYuki.Utils;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 namespace MetaMystia;
 
@@ -497,5 +498,464 @@ public static partial class ExportUtils
                 TrySaveSprite(sprite, filepath);
             }
         });
+    }
+
+    /// <summary>
+    /// 将 Tilemap 导出为一张完整的 PNG 图片。
+    /// 通过逐 Tile 读取 Sprite 并合成到目标纹理来实现，支持翻转和颜色着色。
+    /// 注意：不处理 Tile 旋转（非90°倍数），仅处理水平/垂直翻转。
+    /// </summary>
+    public static void ExportTilemap(Tilemap tilemap, string filepath)
+    {
+        if (tilemap == null)
+        {
+            Log.LogError("ExportTilemap: Tilemap is null");
+            return;
+        }
+
+        tilemap.CompressBounds();
+        var bounds = tilemap.cellBounds;
+        var grid = tilemap.layoutGrid;
+
+        if (bounds.size.x <= 0 || bounds.size.y <= 0)
+        {
+            Log.LogWarning($"ExportTilemap: {tilemap.name} has no tiles.");
+            return;
+        }
+
+        float ppu = DetectTilemapPPU(tilemap, bounds);
+        int cellW = Mathf.RoundToInt(grid.cellSize.x * ppu);
+        int cellH = Mathf.RoundToInt(grid.cellSize.y * ppu);
+
+        // 使用 TilemapRenderer.bounds 获取实际视觉范围
+        var tmRenderer = tilemap.GetComponent<TilemapRenderer>();
+        float worldMinX, worldMinY;
+        int totalW, totalH;
+        if (tmRenderer != null)
+        {
+            var rBounds = tmRenderer.bounds;
+            worldMinX = rBounds.min.x;
+            worldMinY = rBounds.min.y;
+            totalW = Mathf.CeilToInt(rBounds.size.x * ppu);
+            totalH = Mathf.CeilToInt(rBounds.size.y * ppu);
+        }
+        else
+        {
+            var cellMin = tilemap.CellToWorld(bounds.min);
+            var cellMax = tilemap.CellToWorld(bounds.max);
+            worldMinX = cellMin.x;
+            worldMinY = cellMin.y;
+            totalW = Mathf.CeilToInt((cellMax.x - cellMin.x) * ppu);
+            totalH = Mathf.CeilToInt((cellMax.y - cellMin.y) * ppu);
+        }
+
+        Log.LogInfo($"ExportTilemap: {tilemap.name} => {bounds.size.x}x{bounds.size.y} cells, " +
+                    $"{cellW}x{cellH} px/cell, total {totalW}x{totalH}, PPU={ppu}");
+
+        var outputPixels = new Color[totalW * totalH];
+        var textureCache = new System.Collections.Generic.Dictionary<int, Texture2D>();
+
+        try
+        {
+            for (int cx = bounds.xMin; cx < bounds.xMax; cx++)
+            {
+                for (int cy = bounds.yMin; cy < bounds.yMax; cy++)
+                {
+                    var cellPos = new Vector3Int(cx, cy, 0);
+                    var sprite = tilemap.GetSprite(cellPos);
+                    if (sprite == null) continue;
+
+                    var tileColor = tilemap.GetColor(cellPos);
+                    var matrix = tilemap.GetTransformMatrix(cellPos);
+                    bool flipX = matrix.GetColumn(0).x < 0;
+                    bool flipY = matrix.GetColumn(1).y < 0;
+
+                    Color[] texPixels = GetReadableSpritePixels(sprite, textureCache);
+                    if (texPixels == null) continue;
+
+                    int texW = Mathf.RoundToInt(sprite.textureRect.width);
+                    int texH = Mathf.RoundToInt(sprite.textureRect.height);
+                    int logicalW = Mathf.RoundToInt(sprite.rect.width);
+                    int logicalH = Mathf.RoundToInt(sprite.rect.height);
+                    var texOff = sprite.textureRectOffset;
+                    int offX = Mathf.RoundToInt(texOff.x);
+                    int offY = Mathf.RoundToInt(texOff.y);
+
+                    // 翻转时镜像 offset
+                    int finalOffX = flipX ? (logicalW - texW - offX) : offX;
+                    int finalOffY = flipY ? (logicalH - texH - offY) : offY;
+
+                    // Sprite Pivot 对齐到 Cell Anchor，用世界坐标计算左下角像素坐标
+                    var anchor = tilemap.tileAnchor;
+                    var cellWorld = tilemap.CellToWorld(cellPos);
+                    int cellPixelX = Mathf.RoundToInt((cellWorld.x - worldMinX) * ppu);
+                    int cellPixelY = Mathf.RoundToInt((cellWorld.y - worldMinY) * ppu);
+                    int spriteOriginX = cellPixelX + Mathf.RoundToInt(anchor.x * cellW) - Mathf.RoundToInt(sprite.pivot.x);
+                    int spriteOriginY = cellPixelY + Mathf.RoundToInt(anchor.y * cellH) - Mathf.RoundToInt(sprite.pivot.y);
+
+                    for (int py = 0; py < texH; py++)
+                    {
+                        for (int px = 0; px < texW; px++)
+                        {
+                            int srcX = flipX ? (texW - 1 - px) : px;
+                            int srcY = flipY ? (texH - 1 - py) : py;
+
+                            Color pixel = texPixels[srcY * texW + srcX];
+                            pixel = new Color(pixel.r * tileColor.r, pixel.g * tileColor.g,
+                                              pixel.b * tileColor.b, pixel.a * tileColor.a);
+                            if (pixel.a <= 0f) continue;
+
+                            int outX = spriteOriginX + finalOffX + px;
+                            int outY = spriteOriginY + finalOffY + py;
+                            if (outX < 0 || outX >= totalW || outY < 0 || outY >= totalH) continue;
+
+                            int idx = outY * totalW + outX;
+                            Color dst = outputPixels[idx];
+
+                            // Source-over alpha 合成
+                            float srcA = pixel.a;
+                            float dstA = dst.a;
+                            float outA = srcA + dstA * (1f - srcA);
+                            if (outA > 0f)
+                            {
+                                outputPixels[idx] = new Color(
+                                    (pixel.r * srcA + dst.r * dstA * (1f - srcA)) / outA,
+                                    (pixel.g * srcA + dst.g * dstA * (1f - srcA)) / outA,
+                                    (pixel.b * srcA + dst.b * dstA * (1f - srcA)) / outA,
+                                    outA);
+                            }
+                        }
+                    }
+                }
+            }
+
+            var output = new Texture2D(totalW, totalH, TextureFormat.RGBA32, false);
+            output.SetPixels(outputPixels);
+            output.Apply();
+
+            byte[] pngData = ImageConversion.EncodeToPNG(output);
+            var dir = Path.GetDirectoryName(filepath);
+            if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+            File.WriteAllBytes(filepath, pngData);
+
+            UnityEngine.Object.DestroyImmediate(output);
+            Log.LogInfo($"ExportTilemap: Saved to {filepath}");
+        }
+        finally
+        {
+            foreach (var tex in textureCache.Values)
+            {
+                if (tex != null) UnityEngine.Object.DestroyImmediate(tex);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 导出当前居酒屋地图的所有可视 Tilemap 合成图和各层单独图片。
+    /// 自动过滤碰撞/逻辑层，仅合成可视层。
+    /// </summary>
+    public static void ExportIzakayaTilemaps()
+    {
+        var mapRoot = NightScene.MapManager.instance.transform;
+        var allTilemaps = new System.Collections.Generic.List<Tilemap>();
+        var visualTilemaps = new System.Collections.Generic.List<Tilemap>();
+        foreach (var tm in mapRoot.GetComponentsInChildren<Tilemap>())
+        {
+            tm.CompressBounds();
+            if (tm.cellBounds.size.x <= 0 || tm.cellBounds.size.y <= 0) continue;
+            allTilemaps.Add(tm);
+            var n = tm.name;
+            if (n.Contains("Collision") || n.Contains("Collider") ||
+                n.Contains("Ray") || n.Contains("Height") || n.Contains("Navigation"))
+                continue;
+            visualTilemaps.Add(tm);
+        }
+        ExportTilemapsComposite(visualTilemaps.ToArray(),
+            Path.Combine(ExportRoot, "Tilemaps", "Composite_Visual.png"));
+        foreach (var tm in allTilemaps)
+            ExportTilemap(tm, Path.Combine(ExportRoot, "Tilemaps", $"Tilemap_{tm.name}.png"));
+    }
+
+    /// <summary>
+    /// 将多个 Tilemap 按世界坐标合成到一张图上导出。
+    /// tilemaps 应按渲染顺序传入（从底层到顶层）。
+    /// </summary>
+    public static void ExportTilemapsComposite(Tilemap[] tilemaps, string filepath)
+    {
+        if (tilemaps == null || tilemaps.Length == 0)
+        {
+            Log.LogError("ExportTilemapsComposite: No tilemaps provided");
+            return;
+        }
+
+        // 从首个有效 Tile 获取 PPU
+        float ppu = 0f;
+        foreach (var tm in tilemaps)
+        {
+            if (tm == null) continue;
+            tm.CompressBounds();
+            if (ppu <= 0f) ppu = DetectTilemapPPU(tm, tm.cellBounds);
+        }
+        if (ppu <= 0f) ppu = 48f;
+
+        // 使用 TilemapRenderer.bounds 获取实际视觉范围（包含超出 cell 的 sprite 溢出）
+        float worldMinX = float.MaxValue, worldMinY = float.MaxValue;
+        float worldMaxX = float.MinValue, worldMaxY = float.MinValue;
+
+        foreach (var tm in tilemaps)
+        {
+            if (tm == null) continue;
+            var bounds = tm.cellBounds;
+            if (bounds.size.x <= 0 || bounds.size.y <= 0) continue;
+
+            var tmRenderer = tm.GetComponent<TilemapRenderer>();
+            if (tmRenderer != null)
+            {
+                var rBounds = tmRenderer.bounds;
+                worldMinX = Mathf.Min(worldMinX, rBounds.min.x);
+                worldMinY = Mathf.Min(worldMinY, rBounds.min.y);
+                worldMaxX = Mathf.Max(worldMaxX, rBounds.max.x);
+                worldMaxY = Mathf.Max(worldMaxY, rBounds.max.y);
+            }
+            else
+            {
+                var min = tm.CellToWorld(bounds.min);
+                var max = tm.CellToWorld(bounds.max);
+                worldMinX = Mathf.Min(worldMinX, min.x);
+                worldMinY = Mathf.Min(worldMinY, min.y);
+                worldMaxX = Mathf.Max(worldMaxX, max.x);
+                worldMaxY = Mathf.Max(worldMaxY, max.y);
+            }
+        }
+
+        if (worldMinX >= worldMaxX || worldMinY >= worldMaxY)
+        {
+            Log.LogWarning("ExportTilemapsComposite: No valid tilemap bounds");
+            return;
+        }
+
+        int totalW = Mathf.CeilToInt((worldMaxX - worldMinX) * ppu);
+        int totalH = Mathf.CeilToInt((worldMaxY - worldMinY) * ppu);
+
+        Log.LogInfo($"ExportTilemapsComposite: world ({worldMinX},{worldMinY})-({worldMaxX},{worldMaxY}), " +
+                    $"total {totalW}x{totalH} px, PPU={ppu}");
+
+        var outputPixels = new Color[totalW * totalH];
+        var textureCache = new System.Collections.Generic.Dictionary<int, Texture2D>();
+
+        try
+        {
+            foreach (var tm in tilemaps)
+            {
+                if (tm == null) continue;
+                var bounds = tm.cellBounds;
+                if (bounds.size.x <= 0 || bounds.size.y <= 0) continue;
+
+                var grid = tm.layoutGrid;
+                int cellW = Mathf.RoundToInt(grid.cellSize.x * ppu);
+                int cellH = Mathf.RoundToInt(grid.cellSize.y * ppu);
+
+                Log.LogInfo($"  Compositing: {tm.name} ({bounds.size.x}x{bounds.size.y} cells)");
+
+                for (int cx = bounds.xMin; cx < bounds.xMax; cx++)
+                {
+                    for (int cy = bounds.yMin; cy < bounds.yMax; cy++)
+                    {
+                        var cellPos = new Vector3Int(cx, cy, 0);
+                        var sprite = tm.GetSprite(cellPos);
+                        if (sprite == null) continue;
+
+                        var tileColor = tm.GetColor(cellPos);
+                        var matrix = tm.GetTransformMatrix(cellPos);
+                        bool flipX = matrix.GetColumn(0).x < 0;
+                        bool flipY = matrix.GetColumn(1).y < 0;
+
+                        Color[] texPixels = GetReadableSpritePixels(sprite, textureCache);
+                        if (texPixels == null) continue;
+
+                        int texW = Mathf.RoundToInt(sprite.textureRect.width);
+                        int texH = Mathf.RoundToInt(sprite.textureRect.height);
+                        int logicalW = Mathf.RoundToInt(sprite.rect.width);
+                        int logicalH = Mathf.RoundToInt(sprite.rect.height);
+                        var texOff = sprite.textureRectOffset;
+                        int offX = Mathf.RoundToInt(texOff.x);
+                        int offY = Mathf.RoundToInt(texOff.y);
+
+                        int finalOffX = flipX ? (logicalW - texW - offX) : offX;
+                        int finalOffY = flipY ? (logicalH - texH - offY) : offY;
+
+                        // 用世界坐标计算 cell 在输出图中的位置
+                        var anchor = tm.tileAnchor;
+                        var cellWorld = tm.CellToWorld(cellPos);
+                        int cellPixelX = Mathf.RoundToInt((cellWorld.x - worldMinX) * ppu);
+                        int cellPixelY = Mathf.RoundToInt((cellWorld.y - worldMinY) * ppu);
+                        int spriteOriginX = cellPixelX + Mathf.RoundToInt(anchor.x * cellW) - Mathf.RoundToInt(sprite.pivot.x);
+                        int spriteOriginY = cellPixelY + Mathf.RoundToInt(anchor.y * cellH) - Mathf.RoundToInt(sprite.pivot.y);
+
+                        for (int py = 0; py < texH; py++)
+                        {
+                            for (int px = 0; px < texW; px++)
+                            {
+                                int srcX = flipX ? (texW - 1 - px) : px;
+                                int srcY = flipY ? (texH - 1 - py) : py;
+
+                                Color pixel = texPixels[srcY * texW + srcX];
+                                pixel = new Color(pixel.r * tileColor.r, pixel.g * tileColor.g,
+                                                  pixel.b * tileColor.b, pixel.a * tileColor.a);
+                                if (pixel.a <= 0f) continue;
+
+                                int outX = spriteOriginX + finalOffX + px;
+                                int outY = spriteOriginY + finalOffY + py;
+                                if (outX < 0 || outX >= totalW || outY < 0 || outY >= totalH) continue;
+
+                                int idx = outY * totalW + outX;
+                                Color dst = outputPixels[idx];
+                                float srcA = pixel.a;
+                                float dstA = dst.a;
+                                float outA = srcA + dstA * (1f - srcA);
+                                if (outA > 0f)
+                                {
+                                    outputPixels[idx] = new Color(
+                                        (pixel.r * srcA + dst.r * dstA * (1f - srcA)) / outA,
+                                        (pixel.g * srcA + dst.g * dstA * (1f - srcA)) / outA,
+                                        (pixel.b * srcA + dst.b * dstA * (1f - srcA)) / outA,
+                                        outA);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            var output = new Texture2D(totalW, totalH, TextureFormat.RGBA32, false);
+            output.SetPixels(outputPixels);
+            output.Apply();
+
+            byte[] pngData = ImageConversion.EncodeToPNG(output);
+            var dir = Path.GetDirectoryName(filepath);
+            if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+            File.WriteAllBytes(filepath, pngData);
+
+            UnityEngine.Object.DestroyImmediate(output);
+            Log.LogInfo($"ExportTilemapsComposite: Saved to {filepath}");
+        }
+        finally
+        {
+            foreach (var tex in textureCache.Values)
+            {
+                if (tex != null) UnityEngine.Object.DestroyImmediate(tex);
+            }
+        }
+    }
+
+    private static float DetectTilemapPPU(Tilemap tilemap, BoundsInt bounds)
+    {
+        for (int x = bounds.xMin; x < bounds.xMax; x++)
+            for (int y = bounds.yMin; y < bounds.yMax; y++)
+            {
+                var sprite = tilemap.GetSprite(new Vector3Int(x, y, 0));
+                if (sprite != null) return sprite.pixelsPerUnit;
+            }
+        return 16f;
+    }
+
+    private static Color[] GetReadableSpritePixels(Sprite sprite,
+        System.Collections.Generic.Dictionary<int, Texture2D> cache)
+    {
+        var originalTex = sprite.texture;
+        var rect = sprite.textureRect;
+        int w = Mathf.RoundToInt(rect.width);
+        int h = Mathf.RoundToInt(rect.height);
+
+        // Crunch 压缩纹理即使 isReadable 也无法 GetPixels，必须走 RenderTexture 路径
+        var fmt = originalTex.format;
+        bool isCrunched = fmt == TextureFormat.DXT1Crunched
+                       || fmt == TextureFormat.DXT5Crunched
+                       || fmt == TextureFormat.ETC_RGB4Crunched
+                       || fmt == TextureFormat.ETC2_RGBA8Crunched;
+
+        if (originalTex.isReadable && !isCrunched)
+            return originalTex.GetPixels((int)rect.x, (int)rect.y, w, h);
+
+        int texId = originalTex.GetInstanceID();
+        if (!cache.TryGetValue(texId, out var readable))
+        {
+            var rt = RenderTexture.GetTemporary(
+                originalTex.width, originalTex.height, 0,
+                RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default);
+            Graphics.Blit(originalTex, rt);
+            var prev = RenderTexture.active;
+            RenderTexture.active = rt;
+
+            readable = new Texture2D(originalTex.width, originalTex.height, TextureFormat.RGBA32, false);
+            readable.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
+            readable.Apply();
+
+            RenderTexture.active = prev;
+            RenderTexture.ReleaseTemporary(rt);
+            cache[texId] = readable;
+        }
+
+        return readable.GetPixels((int)rect.x, (int)rect.y, w, h);
+    }
+
+    /// <summary>
+    /// 递归遍历 GameObject 层级并 dump 所有 Renderer 信息，用于分析 Prefab 的可视化结构。
+    /// </summary>
+    public static void DumpHierarchyRenderers(GameObject root, string exportFilePath = null)
+    {
+        var sb = new System.Text.StringBuilder();
+        DumpRendererRecursive(root.transform, 0, sb);
+        string result = sb.ToString();
+        Log.LogInfo($"Hierarchy dump for '{root.name}':\n{result}");
+
+        if (!string.IsNullOrEmpty(exportFilePath))
+        {
+            var dir = Path.GetDirectoryName(exportFilePath);
+            if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+            File.WriteAllText(exportFilePath, result);
+            Log.LogInfo($"Hierarchy dump saved to {exportFilePath}");
+        }
+    }
+
+    private static void DumpRendererRecursive(Transform t, int depth, System.Text.StringBuilder sb)
+    {
+        string indent = new string(' ', depth * 2);
+        string active = t.gameObject.activeSelf ? "" : " [INACTIVE]";
+        sb.AppendLine($"{indent}{t.name}{active}");
+
+        var renderers = t.GetComponents<Renderer>();
+        foreach (var r in renderers)
+        {
+            string type = r.GetIl2CppType().Name;
+            string extra = "";
+
+            var sr = r.TryCast<SpriteRenderer>();
+            if (sr != null && sr.sprite != null)
+            {
+                var sp = sr.sprite;
+                extra = $" sprite='{sp.name}' tex='{sp.texture?.name}' rect={sp.rect} ppu={sp.pixelsPerUnit}";
+            }
+            var tr = r.TryCast<UnityEngine.Tilemaps.TilemapRenderer>();
+            if (tr != null)
+            {
+                var tilemap = t.GetComponent<Tilemap>();
+                if (tilemap != null)
+                {
+                    tilemap.CompressBounds();
+                    var b = tilemap.cellBounds;
+                    extra = $" cells={b.size.x}x{b.size.y} (tiles exist={b.size.x > 0 && b.size.y > 0})";
+                }
+            }
+            sb.AppendLine($"{indent}  [{type}] sortingLayer={r.sortingLayerName} order={r.sortingOrder}{extra}");
+        }
+
+        for (int i = 0; i < t.childCount; i++)
+        {
+            DumpRendererRecursive(t.GetChild(i), depth + 1, sb);
+        }
     }
 }
