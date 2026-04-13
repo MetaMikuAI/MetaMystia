@@ -101,7 +101,7 @@ public static partial class NightSceneEventManagerPatch
                 Log.InfoCaller($"InChallenge and mathOperation set, will not send fund, value {value}");
                 return;
             }
-            GuestPayAction.SendFund((int)value, mathOperation);
+            // GuestPayAction.SendFund((int)value, mathOperation);
         }
     }
 
@@ -132,7 +132,7 @@ public static partial class NightSceneEventManagerPatch
         {
             if (value == 0) return;
             Log.DebugCaller($"value {value}, serveType {serveType}, comboBuff {comboBuff}, moodBuff {moodBuff}, extraBuff {extraBuff}");
-            GuestPayAction.SendTip(value, serveType, comboBuff, moodBuff, extraBuff);
+            // GuestPayAction.SendTip(value, serveType, comboBuff, moodBuff, extraBuff);
         }
     }
 
@@ -162,7 +162,7 @@ public static partial class NightSceneEventManagerPatch
         if (MpManager.IsConnectedHost)
         {
             Log.DebugCaller($"value {value}, mathOperation {mathOperation}");
-            GuestPayAction.SendCombo((int)value, mathOperation);
+            // GuestPayAction.SendCombo((int)value, mathOperation);
         }
     }
 

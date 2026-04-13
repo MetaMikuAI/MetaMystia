@@ -31,14 +31,6 @@ public enum ActionType : ushort
     STORE_FOOD, // 这是往保温箱中存储，仅可以存储 food
     STORE_SELLABLE, // 这是往空位存储，可以存储 sellable（food / beverage）
     EXTRACT_FOOD,
-    GUEST_INVITE,
-    GUEST_SPAWN,
-    GUEST_SEATED,
-    GUEST_GEN_NORMAL_ORDER,
-    GUEST_GEN_SPECIAL_ORDER,
-    GUEST_SERVE,
-    GUEST_PAY,
-    GUEST_LEAVE,
     BUFF,
     IZAKAYA_CLOSE,
     GET_COLLECTABLE, // disabled
@@ -68,14 +60,6 @@ public enum ActionType : ushort
 [MemoryPackUnion((ushort)ActionType.STORE_FOOD, typeof(StoreFoodAction))]
 [MemoryPackUnion((ushort)ActionType.STORE_SELLABLE, typeof(StoreSellableAction))]
 [MemoryPackUnion((ushort)ActionType.EXTRACT_FOOD, typeof(ExtractFoodAction))]
-[MemoryPackUnion((ushort)ActionType.GUEST_INVITE, typeof(GuestInviteAction))]
-[MemoryPackUnion((ushort)ActionType.GUEST_SPAWN, typeof(GuestSpawnAction))]
-[MemoryPackUnion((ushort)ActionType.GUEST_SEATED, typeof(GuestSeatedAction))]
-[MemoryPackUnion((ushort)ActionType.GUEST_GEN_NORMAL_ORDER, typeof(GuestGenNormalOrderAction))]
-[MemoryPackUnion((ushort)ActionType.GUEST_GEN_SPECIAL_ORDER, typeof(GuestGenSPOrderAction))]
-[MemoryPackUnion((ushort)ActionType.GUEST_SERVE, typeof(GuestServeAction))]
-[MemoryPackUnion((ushort)ActionType.GUEST_PAY, typeof(GuestPayAction))]
-[MemoryPackUnion((ushort)ActionType.GUEST_LEAVE, typeof(GuestLeaveAction))]
 [MemoryPackUnion((ushort)ActionType.BUFF, typeof(BuffAction))]
 [MemoryPackUnion((ushort)ActionType.IZAKAYA_CLOSE, typeof(IzakayaCloseAction))]
 [MemoryPackUnion((ushort)ActionType.GET_COLLECTABLE, typeof(GetCollectableAction))]
