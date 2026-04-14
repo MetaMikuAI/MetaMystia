@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using System.Text;
 
-namespace LogGenerator
+namespace MetaMystia.Generators
 {
     [Generator]
     public sealed class LogGenerator : IIncrementalGenerator

@@ -55,13 +55,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="LogGenerator\LogGenerator.csproj" OutputItemType="Analyzer"
+    <ProjectReference Include="MetaMystia.Generators\MetaMystia.Generators.csproj" OutputItemType="Analyzer"
       ReferenceOutputAssembly="false" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Remove="LogGenerator\**" />
-    <EmbeddedResource Remove="LogGenerator\**" />
-    <None Remove="LogGenerator\**" />
+    <Compile Remove="MetaMystia.Generators\**" />
+    <EmbeddedResource Remove="MetaMystia.Generators\**" />
+    <None Remove="MetaMystia.Generators\**" />
   </ItemGroup>
 
   <ItemGroup>

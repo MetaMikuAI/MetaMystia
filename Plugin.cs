@@ -19,6 +19,8 @@ public class Plugin : BasePlugin
     public static string TargetGameVersion => "RELEASE 4.3.1";
     public readonly static string ModVersion = MyPluginInfo.PLUGIN_VERSION;
 
+    public static TraceLog tl = new TraceLog(); // for debug
+
     public static bool AllPatched => PatchRegistry.AllPatched;
 
     public Plugin()

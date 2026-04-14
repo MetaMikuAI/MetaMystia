@@ -61,7 +61,7 @@ public partial class DaySceneManagerPatch
     {
         if (MpManager.IsConnectedClient)
         {
-            GuestInviteAction.Send(GameData.RunTime.Common.StatusTracker.Instance?.InvitedGuests.ToManagedList());
+            // GuestInviteAction.Send(GameData.RunTime.Common.StatusTracker.Instance?.InvitedGuests.ToManagedList());
         }
         Panel.CloseActivePanelsBeforeSceneTransit();
         OnDayOver_Original(SceneManager.Instance);

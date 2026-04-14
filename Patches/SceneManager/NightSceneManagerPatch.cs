@@ -21,7 +21,8 @@ public static partial class NightSceneManagerPatch
     [HarmonyPostfix]
     public static void NightScene_Start_Postfix()
     {
-        GuestsManagerPatch.ReimuSpellCard = false;
+        // REFACTORING
+        // GuestsManagerPatch.ReimuSpellCard = false;
         
         MpManager.OnSceneTransit(Scene.WorkScene);
         PlayerManager.Local.ResetState();

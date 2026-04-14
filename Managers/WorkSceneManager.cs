@@ -305,7 +305,9 @@ public static partial class WorkSceneManager
         return "";
     }
 
-    private static Status GetGuestStatus(string uuid) => GetGuestFSM(uuid)?.CurrentState ?? Status.Null;
+    // private static Status GetGuestStatus(string uuid) => GetGuestFSM(uuid)?.CurrentState ?? Status.Null;
+    private static Status GetGuestStatus(string uuid) {return default;} // REFACTORING
+
     public static Status GetGuestStatusForLog(string uuid) => GetGuestStatus(uuid);
 
     /// <summary>
@@ -349,37 +351,41 @@ public static partial class WorkSceneManager
             ? new Il2CppSystem.Nullable<Vector3>(guestInfo.OverrideSpawnPosition.Value)
             : new Il2CppSystem.Nullable<Vector3>();
 
-        var controller = GuestsManagerPatch.SpawnNormalGuestGroup_Original(
-                GuestsManager.instance, guests.ToIEnumerable(), overrideSpawnPosition, guestInfo.LeaveType);
-        if (IsGuestNull(controller))
-        {
-            Log.Error($"{UUID} is null after executing SpawnNormalGuestGroup_WithArg_Original!");
-        }
+        // REFACTORING
+        // var controller = GuestsManagerPatch.SpawnNormalGuestGroup_Original(
+        //         GuestsManager.instance, guests.ToIEnumerable(), overrideSpawnPosition, guestInfo.LeaveType);
+        // if (IsGuestNull(controller))
+        // {
+        //     Log.Error($"{UUID} is null after executing SpawnNormalGuestGroup_WithArg_Original!");
+        // }
 
-        StoreGuest(controller, UUID);
+        // StoreGuest(controller, UUID);
 
         // 通过FSM转移状态
-        var fsm = GetOrCreateGuestFSM(UUID);
-        fsm.ChangeState(Status.Generated);
-        fsm.StoreGuestInfo(guestInfo);
-
-        return controller;
+        // var fsm = GetOrCreateGuestFSM(UUID);
+        // fsm.ChangeState(Status.Generated);
+        // fsm.StoreGuestInfo(guestInfo);
+        //
+        // return controller;
+        return default; // REFACTORING
     }
 
     private static SpecialGuestsController SpawnSpecialGuestGroup(GuestInfo guestInfo, string UUID)
     {
-        var controller = GuestsManagerPatch.SpawnSpecialGuestGroup_Original(
-                GuestsManager.instance, guestInfo.Id, SpecialGuestsController.GuestSpawnType.Normal,
-                new Il2CppSystem.Nullable<Vector3>(), leaveType: guestInfo.LeaveType);
+        // REFACTORING
+        // var controller = GuestsManagerPatch.SpawnSpecialGuestGroup_Original(
+        //         GuestsManager.instance, guestInfo.Id, SpecialGuestsController.GuestSpawnType.Normal,
+        //         new Il2CppSystem.Nullable<Vector3>(), leaveType: guestInfo.LeaveType);
 
-        StoreGuest(controller, UUID);
-
-        // 通过FSM转移状态
-        var fsm = GetOrCreateGuestFSM(UUID);
-        fsm.ChangeState(Status.Generated);
-        fsm.StoreGuestInfo(guestInfo);
-
-        return controller;
+        // StoreGuest(controller, UUID);
+        //
+        // // 通过FSM转移状态
+        // var fsm = GetOrCreateGuestFSM(UUID);
+        // fsm.ChangeState(Status.Generated);
+        // fsm.StoreGuestInfo(guestInfo);
+        //
+        // return controller;
+        return null;
     }
 
     public static void MoveToDesk(GuestGroupController __instance, int deskCode, Il2CppSystem.Action onMovementFinishCallback, int deskSeat = -1)
@@ -464,7 +470,8 @@ public static partial class WorkSceneManager
         {
             Log.WarningCaller($"{guest.GetGuestFSM()?.Identifier}: DeskId {deskId}");
             RemoveOrder(guest);
-            GuestsManagerPatch.LeaveFromDesk_Original(GuestsManager.instance, guest, GuestGroupController.LeaveType.Move, null, true);
+            // REFACTORING
+            // GuestsManagerPatch.LeaveFromDesk_Original(GuestsManager.instance, guest, GuestGroupController.LeaveType.Move, null, true);
             GuestsManager.Instance.SetGuestOutDesk(guest);
             GuestsManager.Instance.guestIconManager?.Remove(guest);
             GuestsManager.Instance.ManualDesksDic?.Remove(deskId);
@@ -563,7 +570,8 @@ public static partial class WorkSceneManager
     {
         if (MpManager.LocalScene != Common.UI.Scene.WorkScene) return;
         GuestsManager.Instance?.TryRepellAllQueuedGuestControllers();
-        GuestsManagerPatch.TryCloseIzakaya_Original(GuestsManager.Instance);
+        // REFACTORING
+        // GuestsManagerPatch.TryCloseIzakaya_Original(GuestsManager.Instance);
         GuestsManager.Instance?.occupiedDesks.Clear();
     }
 

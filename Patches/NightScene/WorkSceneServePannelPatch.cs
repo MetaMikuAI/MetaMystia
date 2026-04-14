@@ -31,125 +31,126 @@ public partial class WorkSceneServePannelPatch
         instanceRef = null;
     }
 
-    [HarmonyPatch(nameof(WorkSceneServePannel.OnPanelClose))]
-    [HarmonyPrefix]
-    public static bool OnPanelClose_Prefix(WorkSceneServePannel __instance)
-    {
-        if (ManuallyClosePanel) return RunOriginal;
-        if (__instance == null) return SkipOriginal;
-        if (MpManager.ShouldSkipAction) return RunOriginal;
-
-        var order = __instance.operatingOrder;
-        var guest = __instance.currentGuestController;
-
-        // if this order is evaluated(by peer serving), try return the food/beverage to tray
-        if (order == null || guest == null)
-        {
-            Log.InfoCaller($"order null {order == null}, guest null {guest == null}");
-
-            GameData.Core.Collections.Sellable foodInTray = __instance.willServeFood;
-            GameData.Core.Collections.Sellable beverageIdInTray = __instance.willServeBeverage;
-
-            var trayInstance = DEYU.Singletons.Singleton<GameData.RunTime.NightSceneUtility.IzakayaTray>.Instance;
-            if (trayInstance != null)
-            {
-                if (foodInTray != null)
-                {
-                    Log.InfoCaller($"returned food in tray");
-                    trayInstance.Receive(foodInTray.Duplicate());
-                }
-                if (beverageIdInTray != null)
-                {
-                    Log.InfoCaller($"returned bev in tray");
-                    trayInstance.Receive(beverageIdInTray.Duplicate());
-                }
-            }
-
-            WorkSceneManager.CloseTrayPanel(__instance);
-            return SkipOriginal;
-        }
-
-        var uuid = WorkSceneManager.GetGuestUUID(guest, false);
-        if (string.IsNullOrEmpty(uuid))
-        {
-            Log.DebugCaller($"guest not tracked, skipping");
-            return RunOriginal;
-        }
-
-        Log.InfoCaller($"target {WorkSceneManager.GetGuestFSM(uuid)?.Identifier}");
-
-        var fsm = WorkSceneManager.GetGuestFSM(uuid);
-        if (fsm.IsOrderFulfilled())
-        {
-            Log.InfoCaller($"{fsm.Identifier} GuestOrder Fulfilled !");
-            return RunOriginal;
-        }
-
-        // SellableFood food = order.ServFood != null ? SellableFood.FromSellable(order.servFood) : null;
-        // food ??= order.ServedFoodInAir != null ? SellableFood.FromSellable(order.ServedFoodInAir) : null;
-        // food ??= __instance.willServeFood != null ? SellableFood.FromSellable(__instance.willServeFood) : null;
-        // int? beverageId = order.ServBeverage?.id ?? order.ServedBeverageInAir?.id ?? __instance.willServeBeverage?.id;
-
-        SellableFood food = __instance.willServeFood != null ? SellableFood.FromSellable(__instance.willServeFood) : null;
-        int? beverageId = __instance.willServeBeverage?.id;
-
-        if (food == null && beverageId == null)
-        {
-            Log.DebugCaller($"{fsm.Identifier} food and beverage are null, will not serve");
-            return RunOriginal;
-        }
-
-        void LogWarningIfNoServe()
-        {
-            Log.WarningCaller($"{fsm.Identifier} fail to serve, status: food {fsm.IsOrderFoodServed()}, bev {fsm.IsOrderBeverageServed()}; food {food?.FoodId}, bev {beverageId}");
-        }
-
-        if (fsm.IsOrderFoodServed())
-        {
-            if (beverageId != null)
-            {
-                // food already served, only allow serving beverage
-                GuestServeAction.Send(uuid, null, beverageId.Value, GuestServeAction.ServeType.Beverage);
-                fsm.SetOrderServedBeverage();
-            }
-            else LogWarningIfNoServe();
-        }
-        else if (fsm.IsOrderBeverageServed())
-        {
-            if (food != null)
-            {
-                // beverage already served, only allow serving food
-                GuestServeAction.Send(uuid, food, -1, GuestServeAction.ServeType.Food);
-                fsm.SetOrderServedFood();
-            }
-            else LogWarningIfNoServe();
-        }
-        else
-        {
-            if (beverageId != null && food != null)
-            {
-                // none served, now serving both
-                GuestServeAction.Send(uuid, food, beverageId.Value, GuestServeAction.ServeType.Both);
-                fsm.SetOrderFulfilled();
-            }
-            else if (beverageId != null)
-            {
-                // none served, now serving beverage
-                GuestServeAction.Send(uuid, null, beverageId.Value, GuestServeAction.ServeType.Beverage);
-                fsm.SetOrderServedBeverage();
-            }
-            else
-            {
-                // none served, now serving food
-                GuestServeAction.Send(uuid, food, -1, GuestServeAction.ServeType.Food);
-                fsm.SetOrderServedFood();
-            }
-        }
-
-        Log.InfoCaller($"{fsm.Identifier} served status: food {fsm.IsOrderFoodServed()}, bev {fsm.IsOrderBeverageServed()}; food {food?.FoodId}, beverage {beverageId}");
-        return RunOriginal;
-
-    }
+    // REFACTORING
+    // [HarmonyPatch(nameof(WorkSceneServePannel.OnPanelClose))]
+    // [HarmonyPrefix]
+    // public static bool OnPanelClose_Prefix(WorkSceneServePannel __instance)
+    // {
+    //     if (ManuallyClosePanel) return RunOriginal;
+    //     if (__instance == null) return SkipOriginal;
+    //     if (MpManager.ShouldSkipAction) return RunOriginal;
+    //
+    //     var order = __instance.operatingOrder;
+    //     var guest = __instance.currentGuestController;
+    //
+    //     // if this order is evaluated(by peer serving), try return the food/beverage to tray
+    //     if (order == null || guest == null)
+    //     {
+    //         Log.InfoCaller($"order null {order == null}, guest null {guest == null}");
+    //
+    //         GameData.Core.Collections.Sellable foodInTray = __instance.willServeFood;
+    //         GameData.Core.Collections.Sellable beverageIdInTray = __instance.willServeBeverage;
+    //
+    //         var trayInstance = DEYU.Singletons.Singleton<GameData.RunTime.NightSceneUtility.IzakayaTray>.Instance;
+    //         if (trayInstance != null)
+    //         {
+    //             if (foodInTray != null)
+    //             {
+    //                 Log.InfoCaller($"returned food in tray");
+    //                 trayInstance.Receive(foodInTray.Duplicate());
+    //             }
+    //             if (beverageIdInTray != null)
+    //             {
+    //                 Log.InfoCaller($"returned bev in tray");
+    //                 trayInstance.Receive(beverageIdInTray.Duplicate());
+    //             }
+    //         }
+    //
+    //         WorkSceneManager.CloseTrayPanel(__instance);
+    //         return SkipOriginal;
+    //     }
+    //
+    //     var uuid = WorkSceneManager.GetGuestUUID(guest, false);
+    //     if (string.IsNullOrEmpty(uuid))
+    //     {
+    //         Log.DebugCaller($"guest not tracked, skipping");
+    //         return RunOriginal;
+    //     }
+    //
+    //     Log.InfoCaller($"target {WorkSceneManager.GetGuestFSM(uuid)?.Identifier}");
+    //
+    //     var fsm = WorkSceneManager.GetGuestFSM(uuid);
+    //     if (fsm.IsOrderFulfilled())
+    //     {
+    //         Log.InfoCaller($"{fsm.Identifier} GuestOrder Fulfilled !");
+    //         return RunOriginal;
+    //     }
+    //
+    //     // SellableFood food = order.ServFood != null ? SellableFood.FromSellable(order.servFood) : null;
+    //     // food ??= order.ServedFoodInAir != null ? SellableFood.FromSellable(order.ServedFoodInAir) : null;
+    //     // food ??= __instance.willServeFood != null ? SellableFood.FromSellable(__instance.willServeFood) : null;
+    //     // int? beverageId = order.ServBeverage?.id ?? order.ServedBeverageInAir?.id ?? __instance.willServeBeverage?.id;
+    //
+    //     SellableFood food = __instance.willServeFood != null ? SellableFood.FromSellable(__instance.willServeFood) : null;
+    //     int? beverageId = __instance.willServeBeverage?.id;
+    //
+    //     if (food == null && beverageId == null)
+    //     {
+    //         Log.DebugCaller($"{fsm.Identifier} food and beverage are null, will not serve");
+    //         return RunOriginal;
+    //     }
+    //
+    //     void LogWarningIfNoServe()
+    //     {
+    //         Log.WarningCaller($"{fsm.Identifier} fail to serve, status: food {fsm.IsOrderFoodServed()}, bev {fsm.IsOrderBeverageServed()}; food {food?.FoodId}, bev {beverageId}");
+    //     }
+    //
+    //     if (fsm.IsOrderFoodServed())
+    //     {
+    //         if (beverageId != null)
+    //         {
+    //             // food already served, only allow serving beverage
+    //             GuestServeAction.Send(uuid, null, beverageId.Value, GuestServeAction.ServeType.Beverage);
+    //             fsm.SetOrderServedBeverage();
+    //         }
+    //         else LogWarningIfNoServe();
+    //     }
+    //     else if (fsm.IsOrderBeverageServed())
+    //     {
+    //         if (food != null)
+    //         {
+    //             // beverage already served, only allow serving food
+    //             GuestServeAction.Send(uuid, food, -1, GuestServeAction.ServeType.Food);
+    //             fsm.SetOrderServedFood();
+    //         }
+    //         else LogWarningIfNoServe();
+    //     }
+    //     else
+    //     {
+    //         if (beverageId != null && food != null)
+    //         {
+    //             // none served, now serving both
+    //             GuestServeAction.Send(uuid, food, beverageId.Value, GuestServeAction.ServeType.Both);
+    //             fsm.SetOrderFulfilled();
+    //         }
+    //         else if (beverageId != null)
+    //         {
+    //             // none served, now serving beverage
+    //             GuestServeAction.Send(uuid, null, beverageId.Value, GuestServeAction.ServeType.Beverage);
+    //             fsm.SetOrderServedBeverage();
+    //         }
+    //         else
+    //         {
+    //             // none served, now serving food
+    //             GuestServeAction.Send(uuid, food, -1, GuestServeAction.ServeType.Food);
+    //             fsm.SetOrderServedFood();
+    //         }
+    //     }
+    //
+    //     Log.InfoCaller($"{fsm.Identifier} served status: food {fsm.IsOrderFoodServed()}, bev {fsm.IsOrderBeverageServed()}; food {food?.FoodId}, beverage {beverageId}");
+    //     return RunOriginal;
+    //
+    // }
 
     [HarmonyPatch(nameof(WorkSceneServePannel.InvokeOrderUpdate))]
     [HarmonyPrefix]
