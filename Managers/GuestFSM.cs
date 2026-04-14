@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 using NightScene.GuestManagementUtility;
 
@@ -77,8 +78,7 @@ public partial class GuestFSM
         State From,
         State To,
         Event Event,
-        bool Accepted,
-        string Note
+        bool Accepted
     );
 
     private readonly string _guestUUID;
@@ -226,6 +226,76 @@ public partial class GuestFSM
         _orderFulfilled = (false, false);
     }
 
+    // TODO: Seated 事件目前没有精确 hook —— OnArrive 位于编译器生成的 DisplayClass，
+    //       字段访问困难，当前由 FirstOrder 触发时直接跳过 SeatedDelay 合并到 WaitingServe。
+    //       后续可尝试 hook __c__DisplayClass295_0.Method_Internal_Void_PDM_0 并读取 __4__this 字段。
+    // TODO: LeaveCompleted 事件目前没有 hook —— 需要拦截 OnCompletelyLeaveCallback
+    //       或监控 GuestGroupController 实体销毁来精确触发 Leaving → Left 转移。
+    private static readonly Dictionary<(State, EventType), State> _matrix = new()
+    {
+        // None
+        { (State.None,              EventType.Spawned),                State.Constructed },
+        { (State.None,              EventType.ManualCreated),          State.Manual },
+
+        // Constructed
+        { (State.Constructed,       EventType.QueueEntered),           State.Queued },
+        { (State.Constructed,       EventType.SeatMoveStarted),        State.SeatMoving },
+        { (State.Constructed,       EventType.LeaveStarted),           State.Leaving },
+        { (State.Constructed,       EventType.LeaveCompleted),         State.Left },
+
+        // Queued
+        { (State.Queued,            EventType.SeatMoveStarted),        State.SeatMoving },
+        { (State.Queued,            EventType.QueueTimedOut),          State.Leaving },
+        { (State.Queued,            EventType.Repelled),               State.Leaving },
+        { (State.Queued,            EventType.LeaveStarted),           State.Leaving },
+        { (State.Queued,            EventType.LeaveCompleted),         State.Left },
+
+        // SeatMoving
+        { (State.SeatMoving,        EventType.Seated),                 State.SeatedDelay },
+        { (State.SeatMoving,        EventType.FirstOrderDelayStarted), State.SeatedDelay },
+        { (State.SeatMoving,        EventType.Repelled),               State.Leaving },
+        { (State.SeatMoving,        EventType.LeaveStarted),           State.Leaving },
+        { (State.SeatMoving,        EventType.LeaveCompleted),         State.Left },
+
+        // SeatedDelay
+        { (State.SeatedDelay,       EventType.OrderOpened),            State.WaitingServe },
+        { (State.SeatedDelay,       EventType.Repelled),               State.Leaving },
+        { (State.SeatedDelay,       EventType.LeaveStarted),           State.Leaving },
+        { (State.SeatedDelay,       EventType.LeaveCompleted),         State.Left },
+
+        // WaitingServe
+        { (State.WaitingServe,      EventType.OrderPartiallyServed),   State.WaitingServe },
+        { (State.WaitingServe,      EventType.OrderFulfilled),         State.WaitingServe },
+        { (State.WaitingServe,      EventType.EvaluationStarted),      State.Evaluating },
+        { (State.WaitingServe,      EventType.PatienceExpiredAtDesk),  State.Leaving },
+        { (State.WaitingServe,      EventType.Repelled),               State.Leaving },
+        { (State.WaitingServe,      EventType.LeaveStarted),           State.Leaving },
+        { (State.WaitingServe,      EventType.LeaveCompleted),         State.Left },
+
+        // Evaluating
+        { (State.Evaluating,        EventType.EvaluationFinished),     State.ContinueDecision },
+        { (State.Evaluating,        EventType.LeaveStarted),           State.Leaving },
+        { (State.Evaluating,        EventType.LeaveCompleted),         State.Left },
+
+        // ContinueDecision
+        { (State.ContinueDecision,  EventType.ContinueOrderOpened),    State.WaitingServe },
+        { (State.ContinueDecision,  EventType.ContinueStopped),        State.Leaving },
+        { (State.ContinueDecision,  EventType.LeaveStarted),           State.Leaving },
+        { (State.ContinueDecision,  EventType.LeaveCompleted),         State.Left },
+
+        // Leaving
+        { (State.Leaving,           EventType.LeaveStarted),           State.Leaving },
+        { (State.Leaving,           EventType.LeaveCompleted),         State.Left },
+
+        // Left: 不接受任何事件
+
+        // Manual
+        { (State.Manual,            EventType.ManualOrderOpened),       State.Manual },
+        { (State.Manual,            EventType.ManualLeaveStarted),     State.Leaving },
+        { (State.Manual,            EventType.LeaveStarted),           State.Leaving },
+        { (State.Manual,            EventType.LeaveCompleted),         State.Left },
+    };
+
     public void Apply(Event evt)
     {
         if (evt.Type == EventType.Reset)
@@ -235,235 +305,19 @@ public partial class GuestFSM
         }
 
         State from = _state;
-        State to = from;
-        bool accepted = true;
-        string note = null;
-
-        switch (_state)
-        {
-            case State.None:
-                switch (evt.Type)
-                {
-                    case EventType.Spawned:
-                        to = State.Constructed;
-                        break;
-                    case EventType.ManualCreated:
-                        to = State.Manual;
-                        break;
-                    default:
-                        accepted = false;
-                        note = "must start from Spawned or ManualCreated";
-                        break;
-                }
-                break;
-
-            case State.Constructed:
-                switch (evt.Type)
-                {
-                    case EventType.QueueEntered:
-                        to = State.Queued;
-                        break;
-                    case EventType.SeatMoveStarted:
-                        to = State.SeatMoving;
-                        break;
-                    case EventType.LeaveStarted:
-                        to = State.Leaving;
-                        break;
-                    case EventType.LeaveCompleted:
-                        to = State.Left;
-                        break;
-                    default:
-                        accepted = false;
-                        note = "constructed guests can only queue, move to seat, or leave";
-                        break;
-                }
-                break;
-
-            case State.Queued:
-                switch (evt.Type)
-                {
-                    case EventType.SeatMoveStarted:
-                        to = State.SeatMoving;
-                        break;
-                    case EventType.QueueTimedOut:
-                    case EventType.Repelled:
-                    case EventType.LeaveStarted:
-                        to = State.Leaving;
-                        break;
-                    case EventType.LeaveCompleted:
-                        to = State.Left;
-                        break;
-                    default:
-                        accepted = false;
-                        note = "queued guests may move to seat, timeout, or leave";
-                        break;
-                }
-                break;
-
-            case State.SeatMoving:
-                // TODO: Seated 事件目前没有精确 hook —— OnArrive 位于编译器生成的 DisplayClass，
-                //       字段访问困难，当前由 FirstOrder 触发时直接跳过 SeatedDelay 合并到 WaitingServe。
-                //       后续可尝试 hook __c__DisplayClass295_0.Method_Internal_Void_PDM_0 并读取 __4__this 字段。
-                switch (evt.Type)
-                {
-                    case EventType.Seated:
-                    case EventType.FirstOrderDelayStarted:
-                        to = State.SeatedDelay;
-                        break;
-                    case EventType.Repelled:
-                    case EventType.LeaveStarted:
-                        to = State.Leaving;
-                        break;
-                    case EventType.LeaveCompleted:
-                        to = State.Left;
-                        break;
-                    default:
-                        accepted = false;
-                        note = "seat-moving guests should either seat or leave";
-                        break;
-                }
-                break;
-
-            case State.SeatedDelay:
-                switch (evt.Type)
-                {
-                    case EventType.OrderOpened:
-                        to = State.WaitingServe;
-                        break;
-                    case EventType.Repelled:
-                    case EventType.LeaveStarted:
-                        to = State.Leaving;
-                        break;
-                    case EventType.LeaveCompleted:
-                        to = State.Left;
-                        break;
-                    default:
-                        accepted = false;
-                        note = "seated-delay guests wait for first order or leave";
-                        break;
-                }
-                break;
-
-            case State.WaitingServe:
-                switch (evt.Type)
-                {
-                    case EventType.OrderPartiallyServed:
-                    case EventType.OrderFulfilled:
-                        to = State.WaitingServe;
-                        break;
-                    case EventType.EvaluationStarted:
-                        to = State.Evaluating;
-                        break;
-                    case EventType.PatienceExpiredAtDesk:
-                    case EventType.Repelled:
-                    case EventType.LeaveStarted:
-                        to = State.Leaving;
-                        break;
-                    case EventType.LeaveCompleted:
-                        to = State.Left;
-                        break;
-                    default:
-                        accepted = false;
-                        note = "waiting-serve guests accept serve progress, evaluation, or leave";
-                        break;
-                }
-                break;
-
-            case State.Evaluating:
-                switch (evt.Type)
-                {
-                    case EventType.EvaluationFinished:
-                        to = State.ContinueDecision;
-                        break;
-                    case EventType.LeaveStarted:
-                        to = State.Leaving;
-                        break;
-                    case EventType.LeaveCompleted:
-                        to = State.Left;
-                        break;
-                    default:
-                        accepted = false;
-                        note = "evaluating guests must finish evaluation or leave";
-                        break;
-                }
-                break;
-
-            case State.ContinueDecision:
-                switch (evt.Type)
-                {
-                    case EventType.ContinueOrderOpened:
-                        to = State.WaitingServe;
-                        break;
-                    case EventType.ContinueStopped:
-                    case EventType.LeaveStarted:
-                        to = State.Leaving;
-                        break;
-                    case EventType.LeaveCompleted:
-                        to = State.Left;
-                        break;
-                    default:
-                        accepted = false;
-                        note = "continue-decision guests either reopen order or leave";
-                        break;
-                }
-                break;
-
-            case State.Leaving:
-                // TODO: LeaveCompleted 事件目前没有 hook —— 需要拦截 OnCompletelyLeaveCallback
-                //       或监控 GuestGroupController 实体销毁来精确触发 Leaving → Left 转移。
-                switch (evt.Type)
-                {
-                    case EventType.LeaveStarted:
-                        to = State.Leaving;
-                        break;
-                    case EventType.LeaveCompleted:
-                        to = State.Left;
-                        break;
-                    default:
-                        accepted = false;
-                        note = "leaving guests only wait for completion";
-                        break;
-                }
-                break;
-
-            case State.Left:
-                accepted = false;
-                note = "left guests should not receive more lifecycle events";
-                break;
-
-            case State.Manual:
-                switch (evt.Type)
-                {
-                    case EventType.ManualOrderOpened:
-                        to = State.Manual;
-                        break;
-                    case EventType.ManualLeaveStarted:
-                    case EventType.LeaveStarted:
-                        to = State.Leaving;
-                        break;
-                    case EventType.LeaveCompleted:
-                        to = State.Left;
-                        break;
-                    default:
-                        accepted = false;
-                        note = "manual guests stay manual until explicitly leaving";
-                        break;
-                }
-                break;
-
-            default:
-                accepted = false;
-                note = "unknown state";
-                break;
-        }
+        bool accepted = _matrix.TryGetValue((_state, evt.Type), out State to);
 
         if (accepted)
         {
             ApplyEventData(evt);
             _state = to;
         }
+        else
+        {
+            to = from;
+        }
 
-        _lastTransition = new Transition(from, accepted ? to : from, evt, accepted, note);
+        _lastTransition = new Transition(from, to, evt, accepted);
 
         if (accepted)
         {
@@ -474,7 +328,7 @@ public partial class GuestFSM
         }
         else
         {
-            Log.Error($"FSM rejected {evt.Type} in {_state}: {note} [{Identifier}]");
+            Log.Error($"FSM rejected {evt.Type} in {_state} [{Identifier}]");
         }
     }
 
