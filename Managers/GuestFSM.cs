@@ -301,6 +301,9 @@ public partial class GuestFSM
                 break;
 
             case State.SeatMoving:
+                // TODO: Seated 事件目前没有精确 hook —— OnArrive 位于编译器生成的 DisplayClass，
+                //       字段访问困难，当前由 FirstOrder 触发时直接跳过 SeatedDelay 合并到 WaitingServe。
+                //       后续可尝试 hook __c__DisplayClass295_0.Method_Internal_Void_PDM_0 并读取 __4__this 字段。
                 switch (evt.Type)
                 {
                     case EventType.Seated:
@@ -406,6 +409,8 @@ public partial class GuestFSM
                 break;
 
             case State.Leaving:
+                // TODO: LeaveCompleted 事件目前没有 hook —— 需要拦截 OnCompletelyLeaveCallback
+                //       或监控 GuestGroupController 实体销毁来精确触发 Leaving → Left 转移。
                 switch (evt.Type)
                 {
                     case EventType.LeaveStarted:
@@ -464,12 +469,12 @@ public partial class GuestFSM
         {
             if (from != to)
             {
-                Log.Message($"{Identifier} FSM changed {from} -> {to} by {evt.Type} ({evt.Source ?? "unknown"})");
+                Log.Message($"FSM {from} -> {to} by {evt.Type} ({evt.Source ?? "unknown"}) [{Identifier}]");
             }
         }
         else
         {
-            Log.Warning($"{Identifier} invalid FSM event {evt.Type} while in {_state}: {note}");
+            Log.Error($"FSM rejected {evt.Type} in {_state}: {note} [{Identifier}]");
         }
     }
 
