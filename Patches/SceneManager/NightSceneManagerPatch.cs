@@ -23,7 +23,7 @@ public static partial class NightSceneManagerPatch
     {
         // REFACTORING
         // GuestsManagerPatch.ReimuSpellCard = false;
-        
+
         MpManager.OnSceneTransit(Scene.WorkScene);
         PlayerManager.Local.ResetState();
         PlayerManager.InitLocalSkin();

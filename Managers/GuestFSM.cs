@@ -231,6 +231,29 @@ public partial class GuestFSM
     //       后续可尝试 hook __c__DisplayClass295_0.Method_Internal_Void_PDM_0 并读取 __4__this 字段。
     // TODO: LeaveCompleted 事件目前没有 hook —— 需要拦截 OnCompletelyLeaveCallback
     //       或监控 GuestGroupController 实体销毁来精确触发 Leaving → Left 转移。
+    private static readonly Dictionary<(State, EventType), int> _transitionHits = new();
+    private static int _rejectedHits;
+
+    public static void ResetTransitionStats()
+    {
+        _transitionHits.Clear();
+        _rejectedHits = 0;
+    }
+
+    public static void DumpTransitionStats()
+    {
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine("=== GuestFSM Transition Stats ===");
+        foreach (var kv in _matrix)
+        {
+            _transitionHits.TryGetValue(kv.Key, out int hits);
+            string mark = hits == 0 ? " [UNTESTED]" : "";
+            sb.AppendLine($"  {kv.Key.Item1,-20} + {kv.Key.Item2,-28} -> {kv.Value,-20} x{hits}{mark}");
+        }
+        sb.AppendLine($"  REJECTED total: {_rejectedHits}");
+        Log.Message(sb.ToString());
+    }
+
     private static readonly Dictionary<(State, EventType), State> _matrix = new()
     {
         // None
@@ -274,12 +297,14 @@ public partial class GuestFSM
 
         // Evaluating
         { (State.Evaluating,        EventType.EvaluationFinished),     State.ContinueDecision },
+        { (State.Evaluating,        EventType.Repelled),               State.Leaving },
         { (State.Evaluating,        EventType.LeaveStarted),           State.Leaving },
         { (State.Evaluating,        EventType.LeaveCompleted),         State.Left },
 
         // ContinueDecision
         { (State.ContinueDecision,  EventType.ContinueOrderOpened),    State.WaitingServe },
         { (State.ContinueDecision,  EventType.ContinueStopped),        State.Leaving },
+        { (State.ContinueDecision,  EventType.Repelled),               State.Leaving },
         { (State.ContinueDecision,  EventType.LeaveStarted),           State.Leaving },
         { (State.ContinueDecision,  EventType.LeaveCompleted),         State.Left },
 
@@ -309,11 +334,14 @@ public partial class GuestFSM
 
         if (accepted)
         {
+            var key = (from, evt.Type);
+            _transitionHits[key] = _transitionHits.TryGetValue(key, out int c) ? c + 1 : 1;
             ApplyEventData(evt);
             _state = to;
         }
         else
         {
+            _rejectedHits++;
             to = from;
         }
 

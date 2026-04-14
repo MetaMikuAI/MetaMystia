@@ -93,6 +93,11 @@ public partial class PluginManager : MonoBehaviour
                 _ = MpManager.ConnectToPeerAsync("127.0.0.1");
                 InGameConsole.ShowPassive("[DEBUG] Connecting to Self");
             }
+            if (Input.GetKeyDown(KeyCode.F3))
+            {
+                GuestFSM.DumpTransitionStats();
+                InGameConsole.ShowPassive("[DEBUG] FSM transition stats dumped to log");
+            }
             if (Input.GetKeyDown(KeyCode.F11))
             {
                 Debugger ??= new Debugger.WebDebugger();
