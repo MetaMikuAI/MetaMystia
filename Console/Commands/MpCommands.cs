@@ -13,10 +13,42 @@ public static class MpCommands
     {
         var mpCmd = new Command("mp", "Multiplayer commands");
 
-        // /mp start
+        // /mp start [port]
         var startCmd = new Command("start", "Start multiplayer as host");
+        var startPortArg = new Argument<int>("port", () => MpManager.ConfigPort, "Server port");
+        startCmd.AddArgument(startPortArg);
         startCmd.SetHandler(ctx =>
         {
+            if (MpManager.IsRunning && MpManager.IsHost)
+            {
+                ctx.Log(TextId.MpAlreadyStarted.Get(MpManager.RoleName));
+                return;
+            }
+            if (MpManager.IsRunning && MpManager.IsClient)
+            {
+                ctx.Log(TextId.MpSwitchingToHost.Get());
+                MpManager.Stop();
+            }
+            int port = ctx.ParseResult.GetValueForArgument(startPortArg);
+            if (port < 1 || port > 65535)
+            {
+                ctx.Log(ConsoleFormat.Err(TextId.MpPortRange.Get()));
+                return;
+            }
+            if (MpManager.Start(MpManager.ROLE.Host, port))
+            {
+                if (port != MpManager.DEFAULT_PORT)
+                    ctx.Log(TextId.MpStartedOnPort.Get(port));
+                else
+                    ctx.Log(TextId.MpStartedAsHost.Get());
+            }
+        });
+
+        // /mp start server (deprecated alias)
+        var startServerCmd = new Command("server", "Start as host (deprecated, use '/mp start')");
+        startServerCmd.SetHandler(ctx =>
+        {
+            ctx.Log(ConsoleFormat.Warn(TextId.MpStartDeprecated.Get()));
             if (MpManager.IsRunning && MpManager.IsHost)
             {
                 ctx.Log(TextId.MpAlreadyStarted.Get(MpManager.RoleName));
@@ -30,6 +62,8 @@ public static class MpCommands
             if (MpManager.Start(MpManager.ROLE.Host))
                 ctx.Log(TextId.MpStartedAsHost.Get());
         });
+        startCmd.AddCommand(startServerCmd);
+
         mpCmd.AddCommand(startCmd);
 
         // /mp stop
@@ -254,7 +288,7 @@ public static class MpCommands
         mpCmd.SetHandler(ctx =>
         {
             ctx.Log(ConsoleFormat.Header(TextId.MpHelpHeader.Get()));
-            ctx.Log(ConsoleFormat.SubCmd("/mp start", null, TextId.MpDescStart.Get()));
+            ctx.Log(ConsoleFormat.SubCmd("/mp start", "[port]", TextId.MpDescStart.Get()));
             ctx.Log(ConsoleFormat.SubCmd("/mp stop", null, TextId.MpDescStop.Get()));
             ctx.Log(ConsoleFormat.SubCmd("/mp restart", null, TextId.MpDescRestart.Get()));
             ctx.Log(ConsoleFormat.SubCmd("/mp status", null, TextId.MpDescStatus.Get()));

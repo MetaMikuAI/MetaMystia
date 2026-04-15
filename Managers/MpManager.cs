@@ -21,11 +21,14 @@ public static partial class MpManager
     }
 
     #region Const Values
-    private const int TCP_PORT = 40815;
+    public const int DEFAULT_PORT = 40815;
     public const int HOST_UID = 0;
     public const int UNASSIGNED_UID = -1;
     private const string SyncActionCommandID = "SyncAction";
     #endregion
+
+    public static int ConfigPort => ConfigManager.DefaultPort?.Value ?? DEFAULT_PORT;
+    public static int CurrentPort { get; private set; } = DEFAULT_PORT;
 
     /// <summary>
     /// 校验玩家 ID 是否合法：不能为空，不能包含空格、尖括号或控制字符
@@ -119,14 +122,15 @@ public static partial class MpManager
         else
         {
             client?.Close();
-            server = new(TCP_PORT);
+            server = new(CurrentPort);
             server.Start();
             Role = ROLE.Host;
         }
     }
 
-    public static bool Start(ROLE r = ROLE.Host)
+    public static bool Start(ROLE r = ROLE.Host, int port = -1)
     {
+        if (port == -1) port = ConfigPort;
         Log.Info($"{DebugText}");
         if (!Plugin.AllPatched)
         {
@@ -143,15 +147,16 @@ public static partial class MpManager
 
         IsRunning = true;
         Role = r;
+        CurrentPort = port;
         PlayerManager.Local.Id = PlayerId;
 
         switch (r)
         {
             case ROLE.Host:
                 PlayerManager.Local.Uid = HOST_UID;
-                server = new(TCP_PORT);
+                server = new(CurrentPort);
                 server.Start();
-                Log.LogInfo("Starting MpManager as host");
+                Log.LogInfo($"Starting MpManager as host on port {CurrentPort}");
                 break;
             case ROLE.Client:
                 PlayerManager.Local.Uid = UNASSIGNED_UID;
@@ -185,12 +190,14 @@ public static partial class MpManager
 
     public static bool Restart()
     {
+        var port = CurrentPort;
         Stop();
-        return Start(Role);
+        return Start(Role, port);
     }
 
-    public static async Task<bool> ConnectToPeerAsync(string peerIp, int port = TCP_PORT, bool stop_existed_server = true)
+    public static async Task<bool> ConnectToPeerAsync(string peerIp, int port = -1, bool stop_existed_server = true)
     {
+        if (port == -1) port = ConfigPort;
         if (!IsRunning && !Start(ROLE.Client))
         {
             return false;
@@ -487,7 +494,7 @@ public static partial class MpManager
     {
         StringBuilder status = new();
         status.AppendLine($"Self: {RoleTag} {PlayerId} (uid={PlayerManager.Local.Uid})");
-        status.AppendLine($"Port: {TCP_PORT} | Running: {(IsRunning ? "Yes" : "No")} | Connected: {(IsConnected ? "Yes" : "No")}");
+        status.AppendLine($"Port: {CurrentPort} | Running: {(IsRunning ? "Yes" : "No")} | Connected: {(IsConnected ? "Yes" : "No")}");
         if (IsConnected)
         {
             status.AppendLine($"Ping: {Latency} ms | Players: {AllPlayersCount}");

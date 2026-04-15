@@ -28,6 +28,7 @@ public static partial class ConfigManager
     public static ConfigEntry<int> ConsoleHistorySize;
     public static ConfigEntry<string> ConsoleHistoryFile;
     public static ConfigEntry<int> MaxPlayers;
+    public static ConfigEntry<int> DefaultPort;
     public static ConfigEntry<string> LocaleOverride;
     public static ConfigEntry<bool> NoteBookSkinPortrait;
 
@@ -75,6 +76,11 @@ public static partial class ConfigManager
             new BepInEx.Configuration.ConfigDescription(
                 "Maximum number of players allowed (including host)\n最大玩家数（含主机）",
                 new BepInEx.Configuration.AcceptableValueRange<int>(2, int.MaxValue)));
+
+        DefaultPort = Config.Bind("Multiplayer", "DefaultPort", 40815,
+            new BepInEx.Configuration.ConfigDescription(
+                "Default TCP port for hosting a server\n主机默认 TCP 端口",
+                new BepInEx.Configuration.AcceptableValueRange<int>(1, 65535)));
 
         LocaleOverride = Config.Bind("General", "LocaleOverride", "",
             "Path to a directory containing locale override JSON files (en.json, zh-CN.json).\n" +

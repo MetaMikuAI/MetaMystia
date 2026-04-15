@@ -244,6 +244,9 @@ public enum TextId
     MpMaxPlayersHostOnly,
     MpMaxPlayersRange,
     MpDescMaxPlayers,
+    MpStartDeprecated,
+    MpStartedOnPort,
+    MpPortRange,
 }
 
 public static class L10n
