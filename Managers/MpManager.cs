@@ -427,10 +427,13 @@ public static partial class MpManager
             if (IsHost)
             {
                 server.DisconnectAllClients();
+                PlayerManager.ClearPeers();
+                CommandScheduler.RemoveKeyFromKeyQueue(PeerGetCharacterUnitNotNullCommand);
+                CommandScheduler.CancelInterval(SyncActionCommandID);
             }
             else
             {
-                client.Close();
+                client.Close(); // triggers OnDisconnected() internally
             }
             Log.LogMessage("All peer connections disconnected");
         }
@@ -443,6 +446,11 @@ public static partial class MpManager
     {
         if (!IsHost) return;
         server?.DisconnectClient(uid);
+        // 清理幽灵 Peer (Socket 意外断开而 PlayerManager 中残留 Peer)
+        if (PlayerManager.Peers.ContainsKey(uid))
+        {
+            OnClientDisconnected(uid);
+        }
     }
 
     /// <summary>
@@ -535,10 +543,20 @@ public static partial class MpManager
         Log.Message($"LocalScene transit from {LocalScene} -> {newScene}");
         SceneTransitAction.Send(newScene);
         LocalScene = newScene;
-        if (newScene == Common.UI.Scene.MainScene && IsConnected)
+        if (newScene == Common.UI.Scene.MainScene)
         {
-            Log.Message($"Transit to {newScene}, disconnecting peers");
-            DisconnectPeer();
+            if (IsConnected)
+            {
+                Log.Message($"Transit to {newScene}, disconnecting peers");
+                DisconnectPeer();
+            }
+            else if (!PlayerManager.Peers.IsEmpty)
+            {
+                Log.Message($"Transit to {newScene}, clearing stale peers");
+                PlayerManager.ClearPeers();
+                CommandScheduler.RemoveKeyFromKeyQueue(PeerGetCharacterUnitNotNullCommand);
+                CommandScheduler.CancelInterval(SyncActionCommandID);
+            }
         }
     }
 
