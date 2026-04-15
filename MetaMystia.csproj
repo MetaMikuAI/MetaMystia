@@ -76,6 +76,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="MetaMystia.Generators\**" />
+    <EmbeddedResource Remove="MetaMystia.Generators\**" />
+    <None Remove="MetaMystia.Generators\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="DebugImpl\**" />
     <EmbeddedResource Remove="DebugImpl\**" />
     <None Remove="DebugImpl\**" />
