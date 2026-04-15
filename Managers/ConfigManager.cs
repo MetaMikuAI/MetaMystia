@@ -42,6 +42,7 @@ public static partial class ConfigManager
     // Player list layout
     public static ConfigEntry<float> PlayerListX;
     public static ConfigEntry<float> PlayerListY;
+    public static ConfigEntry<int> PlayerListFontSize;
 
     // Keybinds
     public static ConfigEntry<KeyCode> KeyToggleLog;
@@ -109,6 +110,8 @@ public static partial class ConfigManager
             "Player list panel X position (pixels from left)\n玩家列表面板X坐标（左侧像素偏移）");
         PlayerListY = Config.Bind("PlayerList", "Y", 8f,
             "Player list panel Y position (pixels from top)\n玩家列表面板Y坐标（顶部像素偏移）");
+        PlayerListFontSize = Config.Bind("PlayerList", "FontSize", 0,
+            "Player list font size (0 = auto based on screen height)\n玩家列表字体大小（0=根据屏幕高度自动）");
 
         // Keybinds
         KeyToggleLog = Config.Bind("Keybinds", "ToggleLog", KeyCode.RightShift,

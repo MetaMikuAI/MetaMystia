@@ -17,8 +17,11 @@ public static partial class PlayerListPanel
     private static bool _stylesInitialized = false;
     private static Font _font;
     private static GUIStyle _lineStyle;
+    private static GUIStyle _fontBtnStyle;
     private static Texture2D _bgTexture;
     private static Texture2D _dragHandleTexture;
+
+    public static void ResetStyles() => _stylesInitialized = false;
 
     // ── 拖拽 ──
     private static bool _isDragging = false;
@@ -81,6 +84,14 @@ public static partial class PlayerListPanel
         // ── 拖拽手柄 ──
         var dragRect = new Rect(panelX, panelY, panelW, DragHandleHeight);
         GUI.DrawTexture(dragRect, _dragHandleTexture, ScaleMode.StretchToFill);
+
+        // ── 字体大小按钮（拖拽手柄右侧）──
+        float fontBtnW = DragHandleHeight * 2f;
+        float fontBtnH = DragHandleHeight;
+        if (GUI.Button(new Rect(panelX + panelW - fontBtnW * 2 - 2, panelY, fontBtnW, fontBtnH), "A−", _fontBtnStyle))
+            AdjustFontSize(-2);
+        if (GUI.Button(new Rect(panelX + panelW - fontBtnW, panelY, fontBtnW, fontBtnH), "A+", _fontBtnStyle))
+            AdjustFontSize(2);
 
         if (e.type == EventType.MouseDown && dragRect.Contains(e.mousePosition))
         {
@@ -242,8 +253,8 @@ public static partial class PlayerListPanel
         _bgTexture = MakeTex(1, 1, new Color(0.05f, 0.05f, 0.08f, 0.55f));
         _dragHandleTexture = MakeTex(1, 1, new Color(0.3f, 0.3f, 0.4f, 0.6f));
 
-        int fontSize = ConfigManager.ConsoleFontSize.Value > 0
-            ? ConfigManager.ConsoleFontSize.Value
+        int fontSize = ConfigManager.PlayerListFontSize.Value > 0
+            ? ConfigManager.PlayerListFontSize.Value
             : Mathf.Clamp(Screen.height / 55, 12, 20);
 
         _lineStyle = new GUIStyle(GUI.skin.label)
@@ -258,6 +269,32 @@ public static partial class PlayerListPanel
         _lineStyle.padding.right = 4;
         _lineStyle.padding.top = (int)LinePadding;
         _lineStyle.padding.bottom = (int)LinePadding;
+
+        _fontBtnStyle = new GUIStyle(GUI.skin.button)
+        {
+            font = font,
+            fontSize = 10,
+            alignment = TextAnchor.MiddleCenter,
+        };
+        _fontBtnStyle.padding.left = 0;
+        _fontBtnStyle.padding.right = 0;
+        _fontBtnStyle.padding.top = 0;
+        _fontBtnStyle.padding.bottom = 0;
+        _fontBtnStyle.margin.left = 0;
+        _fontBtnStyle.margin.right = 0;
+        _fontBtnStyle.margin.top = 0;
+        _fontBtnStyle.margin.bottom = 0;
+    }
+
+    private static void AdjustFontSize(int delta)
+    {
+        int current = ConfigManager.PlayerListFontSize.Value;
+        int effective = current > 0
+            ? current
+            : Mathf.Clamp(Screen.height / 55, 12, 20);
+        int newSize = Mathf.Clamp(effective + delta, 10, 36);
+        ConfigManager.PlayerListFontSize.Value = newSize;
+        ResetStyles();
     }
 
     private static Texture2D MakeTex(int w, int h, Color col)

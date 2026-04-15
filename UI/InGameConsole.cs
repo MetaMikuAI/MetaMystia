@@ -94,6 +94,14 @@ public static partial class InGameConsole
     private static bool _isDragging = false;
     private static Vector2 _dragOffset;
 
+    // Resize state
+    private static bool _isResizing = false;
+    private static Vector2 _resizeStart;
+    private static float _resizeStartW, _resizeStartH;
+    private const float ResizeHandleSize = 14f;
+    private const float MinPanelW = 300f;
+    private const float MinPanelH = 120f;
+
     // ====================================================================
     // IMGUI style cache
     // ====================================================================
@@ -101,14 +109,18 @@ public static partial class InGameConsole
     private static GUIStyle? _inputStyle;
     private static GUIStyle? _completionStyle;
     private static GUIStyle? _completionSelectedStyle;
+    private static GUIStyle? _fontBtnStyle;
     private static Texture2D? _bgTexture;
     private static Texture2D? _inputBgTexture;
     private static Texture2D? _completionBgTexture;
     private static Texture2D? _completionSelTexture;
     private static Texture2D? _shadowTexture;
     private static Texture2D? _dragHandleTexture;
+    private static Texture2D? _resizeHandleTexture;
     private static bool _stylesInitialized = false;
     private static Font? _font;
+
+    public static void ResetStyles() => _stylesInitialized = false;
 
     public static void Initialize()
     {
@@ -253,6 +265,7 @@ public static partial class InGameConsole
         _completionSelTexture = MakeTex(1, 1, new Color(0.25f, 0.40f, 0.65f, 0.90f));
         _shadowTexture = MakeTex(1, 1, new Color(0f, 0f, 0f, 0.35f));
         _dragHandleTexture = MakeTex(1, 1, new Color(0.3f, 0.3f, 0.4f, 0.6f));
+        _resizeHandleTexture = MakeTex(1, 1, new Color(0.4f, 0.4f, 0.5f, 0.7f));
 
         int fontSize = ConfigManager.ConsoleFontSize.Value > 0
             ? ConfigManager.ConsoleFontSize.Value
@@ -305,6 +318,21 @@ public static partial class InGameConsole
             normal = { textColor = Color.white, background = _completionSelTexture },
             fontStyle = FontStyle.Bold
         };
+
+        _fontBtnStyle = new GUIStyle(GUI.skin.button)
+        {
+            font = font,
+            fontSize = 10,
+            alignment = TextAnchor.MiddleCenter,
+        };
+        _fontBtnStyle.padding.left = 0;
+        _fontBtnStyle.padding.right = 0;
+        _fontBtnStyle.padding.top = 0;
+        _fontBtnStyle.padding.bottom = 0;
+        _fontBtnStyle.margin.left = 0;
+        _fontBtnStyle.margin.right = 0;
+        _fontBtnStyle.margin.top = 0;
+        _fontBtnStyle.margin.bottom = 0;
     }
 
     private static Texture2D MakeTex(int w, int h, Color col)
@@ -319,6 +347,20 @@ public static partial class InGameConsole
     }
 
     #endregion
+
+    // ====================================================================
+    // Font size adjustment
+    // ====================================================================
+    private static void AdjustFontSize(int delta)
+    {
+        int current = ConfigManager.ConsoleFontSize.Value;
+        int effective = current > 0
+            ? current
+            : Mathf.Clamp(Screen.height / 50, 14, 24);
+        int newSize = Mathf.Clamp(effective + delta, 10, 36);
+        ConfigManager.ConsoleFontSize.Value = newSize;
+        ResetStyles();
+    }
 
     // ====================================================================
     // OnGUI — Minecraft-style bottom chat
@@ -490,6 +532,14 @@ public static partial class InGameConsole
         var dragRect = new Rect(panelX, dragY, panelW, DragHandleHeight);
         GUI.DrawTexture(dragRect, _dragHandleTexture, ScaleMode.StretchToFill);
 
+        // ── Font size buttons (right side of drag handle) ──
+        float fontBtnW = DragHandleHeight * 2f;
+        float fontBtnH = DragHandleHeight;
+        if (GUI.Button(new Rect(panelX + panelW - fontBtnW * 2 - 2, dragY, fontBtnW, fontBtnH), "A−", _fontBtnStyle))
+            AdjustFontSize(-2);
+        if (GUI.Button(new Rect(panelX + panelW - fontBtnW, dragY, fontBtnW, fontBtnH), "A+", _fontBtnStyle))
+            AdjustFontSize(2);
+
         // Drag logic
         if (e.type == EventType.MouseDown && dragRect.Contains(e.mousePosition))
         {
@@ -516,6 +566,36 @@ public static partial class InGameConsole
 
         // Background behind log area + input
         GUI.DrawTexture(new Rect(panelX, logY, panelW, logAreaH + InputHeight), _bgTexture, ScaleMode.StretchToFill);
+
+        // ── Resize handle (bottom-right corner) ──
+        var resizeRect = new Rect(panelX + panelW - ResizeHandleSize, inputY + InputHeight - ResizeHandleSize,
+            ResizeHandleSize, ResizeHandleSize);
+        GUI.DrawTexture(resizeRect, _resizeHandleTexture, ScaleMode.StretchToFill);
+
+        if (e.type == EventType.MouseDown && resizeRect.Contains(e.mousePosition))
+        {
+            _isResizing = true;
+            _resizeStart = e.mousePosition;
+            _resizeStartW = panelW;
+            _resizeStartH = logAreaH;
+            e.Use();
+        }
+        if (_isResizing)
+        {
+            if (e.type == EventType.MouseDrag)
+            {
+                float dw = e.mousePosition.x - _resizeStart.x;
+                float dh = e.mousePosition.y - _resizeStart.y; // down = taller (console grows upward)
+                ConfigManager.ConsoleWidth.Value = Mathf.Max(_resizeStartW + dw, MinPanelW);
+                ConfigManager.ConsoleHeight.Value = Mathf.Max(_resizeStartH + dh, MinPanelH);
+                e.Use();
+            }
+            if (e.type == EventType.MouseUp)
+            {
+                _isResizing = false;
+                e.Use();
+            }
+        }
 
         // Log area (scrollable, bottom-aligned)
         GUILayout.BeginArea(new Rect(panelX + Padding, logY, panelW - Padding * 2, logAreaH));
