@@ -111,6 +111,9 @@
                     <input type="text" id="resource-class-name" placeholder="Full Class Name (e.g. GameData.Profile.DialogPackage)" onkeydown="if(event.key==='Enter') searchResources()">
                     <button onclick="searchResources()">Find Objects</button>
                 </div>
+                <div style="display: flex; gap: 10px; margin-top: 5px;">
+                    <input type="text" id="resource-filter-expr" placeholder="Filter expression using $it (e.g. $it.name)" onkeydown="if(event.key==='Enter') searchResources()" style="flex: 1;">
+                </div>
                 <div id="resource-list" style="margin-top: 10px; max-height: 400px; overflow-y: auto;"></div>
             </div>
         </div>
@@ -740,11 +743,14 @@
 
         async function searchResources() {
             const className = document.getElementById('resource-class-name').value;
+            const filterExpr = document.getElementById('resource-filter-expr').value;
             const list = document.getElementById('resource-list');
             list.innerHTML = '<div style="color: #4ec9b0;">Searching...</div>';
 
             try {
-                const response = await fetch(`/?token=${token}&action=search_resources&className=${encodeURIComponent(className)}`);
+                let url = `/?token=${token}&action=search_resources&className=${encodeURIComponent(className)}`;
+                if (filterExpr) url += `&filter=${encodeURIComponent(filterExpr)}`;
+                const response = await fetch(url);
                 const data = await response.json();
 
                 if (data.error) {
