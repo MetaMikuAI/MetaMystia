@@ -306,7 +306,7 @@ public static partial class WorkSceneManager
     }
 
     // private static Status GetGuestStatus(string uuid) => GetGuestFSM(uuid)?.CurrentState ?? Status.Null;
-    private static Status GetGuestStatus(string uuid) {return default;} // REFACTORING
+    private static Status GetGuestStatus(string uuid) { return default; } // REFACTORING
 
     public static Status GetGuestStatusForLog(string uuid) => GetGuestStatus(uuid);
 

@@ -98,6 +98,12 @@ public partial class GuestsManagerPatch
     // 客机不生成顾客，由主机通过 GuestFSMEventAction.Spawned 通知。
     internal static bool SpawnNormalGuestGroup_WithArg_Manual_Call;
 
+    // PostInitializeGuestGroup 内部先调用 TrySendToSeat (firstSpawn=true)，
+    // 其 postfix 会先于 SpawnNormalGuestGroup postfix 执行，导致 SeatMoveStarted
+    // 在 Spawned 之前发送。此处暂存 firstSpawn 时的 SeatMove 信息，
+    // 由 Spawn postfix 发完 Spawned 后再发。
+    private static (string uuid, int deskCode, int deskSeatCode)? _deferredFirstSpawnSeatMove;
+
     [HarmonyPatch(nameof(GuestsManager.SpawnNormalGuestGroup), [
         typeof(Il2CppSystem.Collections.Generic.IEnumerable<NormalGuest>),
         typeof(Il2CppSystem.Nullable<UnityEngine.Vector3>),
@@ -160,6 +166,16 @@ public partial class GuestsManagerPatch
             info.VisualId2 = visualId2;
         }
         GuestFSMEventAction.SendSpawn(uuid, info);
+        FlushDeferredSeatMove();
+    }
+
+    private static void FlushDeferredSeatMove()
+    {
+        if (_deferredFirstSpawnSeatMove is var (uuid, deskCode, deskSeatCode))
+        {
+            GuestFSMEventAction.SendSeatMove(uuid, deskCode, deskSeatCode, firstSpawn: true);
+            _deferredFirstSpawnSeatMove = null;
+        }
     }
 
     // --- Network: SpawnSpecialGuestGroup ---
@@ -197,6 +213,7 @@ public partial class GuestsManagerPatch
             LeaveType = leaveType
         };
         GuestFSMEventAction.SendSpawn(uuid, info);
+        FlushDeferredSeatMove();
     }
 
     // ═══════════════════════════════════════════════════════════
@@ -230,7 +247,19 @@ public partial class GuestsManagerPatch
         {
             var uuid = WorkSceneManager.GetGuestUUID(toTry);
             if (uuid != null)
-                GuestFSMEventAction.SendSeatMove(uuid, toTry.DeskCode, fsm.DeskSeatCode, firstSpawn);
+            {
+                if (firstSpawn)
+                {
+                    // PostInitializeGuestGroup 内部调用 TrySendToSeat(firstSpawn=true)，
+                    // 此 postfix 在 SpawnNormalGuestGroup postfix 之前执行。
+                    // 延迟到 Spawn postfix 发完 Spawned 后再发 SeatMoveStarted，保证顺序。
+                    _deferredFirstSpawnSeatMove = (uuid, toTry.DeskCode, fsm.DeskSeatCode);
+                }
+                else
+                {
+                    GuestFSMEventAction.SendSeatMove(uuid, toTry.DeskCode, fsm.DeskSeatCode, firstSpawn);
+                }
+            }
         }
     }
 
