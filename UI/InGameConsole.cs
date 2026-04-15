@@ -401,12 +401,22 @@ public static partial class InGameConsole
             ? Screen.height - BottomMargin
             : ConfigManager.ConsoleY.Value + logAreaH + InputHeight;
         float inputTopY = panelBottomY - InputHeight;
+        float maxWidth = panelW - Padding * 2;
 
-        float lineHeight = _logStyle!.fontSize + 6;
-        float totalHeight = visible.Count * lineHeight;
+        // Calculate actual height for each entry (supports multi-line word wrap)
+        float[] heights = new float[visible.Count];
+        float totalHeight = 0;
+        for (int i = 0; i < visible.Count; i++)
+        {
+            var content = new GUIContent(visible[i].Text);
+            float h = _logStyle!.CalcHeight(content, maxWidth);
+            heights[i] = h;
+            totalHeight += h;
+        }
+
         // Stack messages upward from where the input bar top would be
         float baseY = inputTopY - totalHeight;
-        float maxWidth = panelW - Padding * 2;
+        float currentY = baseY;
 
         for (int i = 0; i < visible.Count; i++)
         {
@@ -419,20 +429,21 @@ public static partial class InGameConsole
             else
                 alpha = 1f - Mathf.Clamp01((age - PassiveLingerTime) / PassiveFadeTime);
 
-            float itemY = baseY + i * lineHeight;
+            float itemH = heights[i];
 
-            var content = new GUIContent(StripRichText(entry.Text));
-            float textWidth = _logStyle.CalcSize(content).x + 16f;
+            var strippedContent = new GUIContent(StripRichText(entry.Text));
+            float textWidth = _logStyle!.CalcSize(strippedContent).x + 16f;
             textWidth = Mathf.Clamp(textWidth, 100f, maxWidth);
 
             var prevColor = GUI.color;
             GUI.color = new Color(0f, 0f, 0f, alpha * 0.85f);
-            GUI.DrawTexture(new Rect(panelX + Padding, itemY, textWidth, lineHeight), _shadowTexture);
+            GUI.DrawTexture(new Rect(panelX + Padding, currentY, textWidth, itemH), _shadowTexture);
 
             GUI.color = new Color(1f, 1f, 1f, alpha);
-            GUI.Label(new Rect(panelX + Padding, itemY, maxWidth, lineHeight), entry.Text, _logStyle);
+            GUI.Label(new Rect(panelX + Padding, currentY, maxWidth, itemH), entry.Text, _logStyle);
 
             GUI.color = prevColor;
+            currentY += itemH;
         }
     }
 
