@@ -36,6 +36,7 @@ public enum ActionType : ushort
     GET_COLLECTABLE, // disabled
     PLAYER_ID_CHANGE,
     SKIN_CHANGE,
+    GUEST_FSM_EVENT,
 }
 
 [MemoryPackable]
@@ -65,6 +66,7 @@ public enum ActionType : ushort
 [MemoryPackUnion((ushort)ActionType.GET_COLLECTABLE, typeof(GetCollectableAction))]
 [MemoryPackUnion((ushort)ActionType.PLAYER_ID_CHANGE, typeof(PlayerIdChangeAction))]
 [MemoryPackUnion((ushort)ActionType.SKIN_CHANGE, typeof(SkinChangeAction))]
+[MemoryPackUnion((ushort)ActionType.GUEST_FSM_EVENT, typeof(GuestFSMEventAction))]
 [AutoLog]
 
 public abstract partial class Action

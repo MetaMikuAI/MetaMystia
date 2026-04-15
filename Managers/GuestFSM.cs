@@ -96,6 +96,7 @@ public partial class GuestFSM
     private int _deskSeatCode = -1;
     private (bool foodServed, bool beverageServed) _orderFulfilled;
     private string _cachedGuestName;
+    private int _initialFund;
 
     public GuestFSM(string guestUUID)
     {
@@ -116,6 +117,7 @@ public partial class GuestFSM
     public int DeskCode => _deskCode;
     public int DeskSeatCode => _deskSeatCode;
     public (bool foodServed, bool beverageServed) OrderFulfilled => _orderFulfilled;
+    public int InitialFund => _initialFund;
 
     public string GuestName
     {
@@ -224,13 +226,15 @@ public partial class GuestFSM
         _hasCompletedFirstEvaluation = false;
         _isManual = false;
         _orderFulfilled = (false, false);
+        _initialFund = 0;
     }
 
-    // TODO: Seated 事件目前没有精确 hook —— OnArrive 位于编译器生成的 DisplayClass，
-    //       字段访问困难，当前由 FirstOrder 触发时直接跳过 SeatedDelay 合并到 WaitingServe。
-    //       后续可尝试 hook __c__DisplayClass295_0.Method_Internal_Void_PDM_0 并读取 __4__this 字段。
-    // TODO: LeaveCompleted 事件目前没有 hook —— 需要拦截 OnCompletelyLeaveCallback
-    //       或监控 GuestGroupController 实体销毁来精确触发 Leaving → Left 转移。
+    // Seated 事件由 GuestGroupControllerPatch.RefreshCurrentFundAndOrder_FSM_Prefix 触发，
+    //   当 FSM 处于 SeatMoving 状态时，RefreshCurrentFundAndOrder 在 _TrySendToSeat_b__0
+    //   (MoveToDesk 的 OnArrive 回调) 中被调用，精确对应角色到达座位的时刻。
+    // LeaveCompleted 事件由 PostInitializeGuestGroup_FSM_Prefix 注册的
+    //   OnCompletelyLeaveCallback 回调触发，MoveToSpawn.OnArrive 和 FlyToSpawn._b__2
+    //   均会在角色实体销毁前调用此回调。
     private static readonly Dictionary<(State, EventType), int> _transitionHits = new();
     private static int _rejectedHits;
 
@@ -372,6 +376,7 @@ public partial class GuestFSM
                 _leaveReason = null;
                 _hasCompletedFirstEvaluation = false;
                 _orderFulfilled = (false, false);
+                try { _initialFund = GuestController?.MaxFundCarry ?? 0; } catch { _initialFund = 0; }
                 break;
 
             case EventType.ManualCreated:

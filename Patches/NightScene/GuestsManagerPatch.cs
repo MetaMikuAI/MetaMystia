@@ -59,6 +59,31 @@ public partial class GuestsManagerPatch
         var uuid = WorkSceneManager.StoreGuest(initializedController);
         var fsm = WorkSceneManager.GetOrCreateGuestFSM(uuid);
         fsm.OnSpawned();
+
+        // 注册 OnCompletelyLeaveCallback 以触发 Leaving → Left 转移。
+        // MoveToSpawn.OnArrive 和 FlyToSpawn._b__2 每个角色到达时都会调用此回调，
+        // 多角色群组会触发多次，因此需要检查 FSM 状态避免重复转移。
+        var existingCallback = initializedController.OnCompletelyLeaveCallback;
+        initializedController.OnCompletelyLeaveCallback = new System.Action<GuestGroupController>(guest =>
+        {
+            const string traceName = "GuestGroupController.OnCompletelyLeaveCallback";
+            tl.OnPrefix(traceName);
+            try
+            {
+                try { existingCallback?.Invoke(guest); } catch { }
+                var guestFsm = guest.GetGuestFSM();
+                if (guestFsm != null && guestFsm.CurrentState == GuestFSM.State.Leaving)
+                {
+                    guestFsm.OnLeaveCompleted();
+                }
+            }
+            catch (System.Exception ex)
+            {
+                tl.OnFinalizer(traceName, ex);
+                throw;
+            }
+            tl.OnPostfix(traceName);
+        });
     }
 
     // === FSM: Constructed → SeatMoving ===
@@ -72,15 +97,14 @@ public partial class GuestsManagerPatch
         fsm.OnSeatMoveStarted(toTry.DeskCode);
     }
 
-    // === FSM: SeatMoving → SeatedDelay → WaitingServe (首单) ===
+    // === FSM: SeatedDelay → WaitingServe (首单) ===
+    // 注：SeatMoving → SeatedDelay 由 RefreshCurrentFundAndOrder hook 触发
     [HarmonyPatch("FirstOrder")]
     [HarmonyPrefix]
     public static void FirstOrder_FSM_Prefix(GuestGroupController first)
     {
         var fsm = first.GetGuestFSM();
         if (fsm == null) return;
-        if (fsm.CurrentState == GuestFSM.State.SeatMoving)
-            fsm.OnSeated(first.DeskCode);
         fsm.OnOrderOpened(first.DeskCode);
     }
 
