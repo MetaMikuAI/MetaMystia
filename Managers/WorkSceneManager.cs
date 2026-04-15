@@ -351,41 +351,28 @@ public static partial class WorkSceneManager
             ? new Il2CppSystem.Nullable<Vector3>(guestInfo.OverrideSpawnPosition.Value)
             : new Il2CppSystem.Nullable<Vector3>();
 
-        // REFACTORING
-        // var controller = GuestsManagerPatch.SpawnNormalGuestGroup_Original(
-        //         GuestsManager.instance, guests.ToIEnumerable(), overrideSpawnPosition, guestInfo.LeaveType);
-        // if (IsGuestNull(controller))
-        // {
-        //     Log.Error($"{UUID} is null after executing SpawnNormalGuestGroup_WithArg_Original!");
-        // }
+        var controller = Patch.GuestsManagerPatch.SpawnNormalGuestGroup_Original(
+                GuestsManager.instance, guests.ToIEnumerable(), overrideSpawnPosition, guestInfo.LeaveType);
+        if (IsGuestNull(controller))
+        {
+            Log.Error($"{UUID} is null after executing SpawnNormalGuestGroup_Original!");
+        }
 
-        // StoreGuest(controller, UUID);
-
-        // 通过FSM转移状态
-        // var fsm = GetOrCreateGuestFSM(UUID);
-        // fsm.ChangeState(Status.Generated);
-        // fsm.StoreGuestInfo(guestInfo);
-        //
-        // return controller;
-        return default; // REFACTORING
+        // UUID 映射由 PostInitializeGuestGroup_FSM_Prefix 中的 StoreGuest 完成
+        return controller;
     }
 
     private static SpecialGuestsController SpawnSpecialGuestGroup(GuestInfo guestInfo, string UUID)
     {
-        // REFACTORING
-        // var controller = GuestsManagerPatch.SpawnSpecialGuestGroup_Original(
-        //         GuestsManager.instance, guestInfo.Id, SpecialGuestsController.GuestSpawnType.Normal,
-        //         new Il2CppSystem.Nullable<Vector3>(), leaveType: guestInfo.LeaveType);
+        var controller = Patch.GuestsManagerPatch.SpawnSpecialGuestGroup_Original(
+                GuestsManager.instance, guestInfo.Id, SpecialGuestsController.GuestSpawnType.Normal,
+                new Il2CppSystem.Nullable<Vector3>(), leaveType: guestInfo.LeaveType);
+        if (controller == null)
+        {
+            Log.Error($"{UUID} is null after executing SpawnSpecialGuestGroup_Original!");
+        }
 
-        // StoreGuest(controller, UUID);
-        //
-        // // 通过FSM转移状态
-        // var fsm = GetOrCreateGuestFSM(UUID);
-        // fsm.ChangeState(Status.Generated);
-        // fsm.StoreGuestInfo(guestInfo);
-        //
-        // return controller;
-        return null;
+        return controller;
     }
 
     public static void MoveToDesk(GuestGroupController __instance, int deskCode, Il2CppSystem.Action onMovementFinishCallback, int deskSeat = -1)

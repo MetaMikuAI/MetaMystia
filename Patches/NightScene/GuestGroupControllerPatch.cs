@@ -2,6 +2,8 @@ using HarmonyLib;
 
 using NightScene.GuestManagementUtility;
 
+using MetaMystia.Network;
+
 using static MetaMystia.Patch.HarmonyPrefixFlow;
 
 
@@ -28,7 +30,7 @@ public partial class GuestGroupControllerPatch
         fsm.OnQueueEntered();
     }
 
-    // === FSM: Queued → Leaving (排队耐心耗尽) ===
+    // === FSM: Queued → Leaving (排队耐心耗尽) + Network ===
     [HarmonyPatch(nameof(GuestGroupController.MoveToSpawn))]
     [HarmonyPrefix]
     public static void MoveToSpawn_FSM_Prefix(GuestGroupController __instance)
@@ -36,7 +38,15 @@ public partial class GuestGroupControllerPatch
         var fsm = __instance.GetGuestFSM();
         if (fsm == null) return;
         if (fsm.CurrentState == GuestFSM.State.Queued)
+        {
             fsm.OnQueueTimedOut();
+            if (MpManager.IsConnectedHost)
+            {
+                var uuid = WorkSceneManager.GetGuestUUID(__instance);
+                if (uuid != null)
+                    GuestFSMEventAction.SendQueueTimedOut(uuid);
+            }
+        }
     }
 
     // === FSM: SeatMoving → SeatedDelay (到达座位) ===
@@ -50,5 +60,30 @@ public partial class GuestGroupControllerPatch
         if (fsm == null) return;
         if (fsm.CurrentState == GuestFSM.State.SeatMoving)
             fsm.OnSeated(__instance.DeskCode);
+    }
+
+    // === Network: GenerateOrder 后捕获订单并发送 ===
+    [HarmonyPatch(nameof(GuestGroupController.GenerateOrder))]
+    [HarmonyPostfix]
+    public static void GenerateOrder_Postfix(
+        GuestGroupController __instance,
+        ref string orderGenerationMessage,
+        ref GuestsManager.OrderBase generatedOrder)
+    {
+        if (__instance == null || generatedOrder == null) return;
+        if (!MpManager.IsConnectedHost) return;
+
+        var uuid = WorkSceneManager.GetGuestUUID(__instance);
+        if (uuid == null) return;
+
+        var order = new GuestOrder(
+            generatedOrder.foodRequest,
+            generatedOrder.beverageRequest,
+            generatedOrder.DeskCode,
+            generatedOrder.NotShowInUI,
+            generatedOrder.FreeOrder);
+
+        bool isContinue = __instance.GetGuestFSM()?.CurrentState == GuestFSM.State.ContinueDecision;
+        GuestFSMEventAction.SendOrder(uuid, order, orderGenerationMessage, isContinue);
     }
 }
