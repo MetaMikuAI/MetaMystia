@@ -179,5 +179,6 @@
     "Il2CppInteropPatchedRestartRequired": "已自动更新 Il2CppInterop 补丁，请重启游戏以生效。",
     "MpStartDeprecated": "⚠ '/mp start server' 已弃用，请使用 '/mp start'",
     "MpStartedOnPort": "已在端口 {0} 启动主机 ✓",
-    "MpPortRange": "端口必须在 1 到 65535 之间"
+    "MpPortRange": "端口必须在 1 到 65535 之间",
+    "MpConnectInProgress": "正在连接中，请稍候..."
 }

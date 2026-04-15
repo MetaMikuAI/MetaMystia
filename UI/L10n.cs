@@ -247,6 +247,7 @@ public enum TextId
     MpStartDeprecated,
     MpStartedOnPort,
     MpPortRange,
+    MpConnectInProgress,
 }
 
 public static class L10n

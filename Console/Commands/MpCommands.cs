@@ -1,6 +1,7 @@
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.Linq;
+using System.Threading.Tasks;
 
 using MetaMystia.Network;
 using MetaMystia.UI;
@@ -129,39 +130,48 @@ public static class MpCommands
         portArg.SetDefaultValue(null);
         connectCmd.AddArgument(addressArg);
         connectCmd.AddArgument(portArg);
-        connectCmd.SetHandler(async ctx =>
+        connectCmd.SetHandler(ctx =>
         {
             string address = ctx.ParseResult.GetValueForArgument(addressArg);
             int? port = ctx.ParseResult.GetValueForArgument(portArg);
-            bool result;
 
-            if (port.HasValue)
+            if (MpManager.IsConnected)
             {
-                result = await MpManager.ConnectToPeerAsync(address, port.Value);
+                ctx.Log(ConsoleFormat.Err(TextId.ConnectCommandConnected.Get(address)));
+                return;
             }
-            else
+            if (MpManager.IsConnecting)
             {
-                // Try parsing ip:port format
+                ctx.Log(ConsoleFormat.Warn(TextId.MpConnectInProgress.Get()));
+                return;
+            }
+
+            // Fire-and-forget: resolve address then connect on background thread
+            string host = address;
+            int resolvedPort = port ?? -1;
+
+            if (!port.HasValue)
+            {
                 int idx = address.LastIndexOf(':');
                 if (idx > 0 && idx != address.Length - 1)
                 {
-                    string host = address[..idx];
                     string portStr = address[(idx + 1)..];
                     if (int.TryParse(portStr, out int parsedPort))
-                        result = await MpManager.ConnectToPeerAsync(host, parsedPort);
-                    else
-                        result = await MpManager.ConnectToPeerAsync(address);
-                }
-                else
-                {
-                    result = await MpManager.ConnectToPeerAsync(address);
+                    {
+                        host = address[..idx];
+                        resolvedPort = parsedPort;
+                    }
                 }
             }
 
-            if (result)
-                ctx.Log(TextId.ConnectCommandConnected.Get(address));
-            else
-                ctx.Log(TextId.ConnectCommandFail.Get(address));
+            _ = Task.Run(async () =>
+            {
+                bool result = await MpManager.ConnectToPeerAsync(host, resolvedPort);
+                if (result)
+                    InGameConsole.ShowPassiveFromAnyThread(TextId.ConnectCommandConnected.Get(address));
+                else
+                    InGameConsole.ShowPassiveFromAnyThread(TextId.ConnectCommandFail.Get(address));
+            });
         });
         mpCmd.AddCommand(connectCmd);
 

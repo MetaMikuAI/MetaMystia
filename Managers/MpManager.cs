@@ -76,7 +76,7 @@ public static partial class MpManager
     public static bool IsRunning { get; private set; }
     public static bool IsHost => Role == ROLE.Host;
     public static bool IsClient => Role == ROLE.Client;
-    private static bool IsConnecting = false;
+    public static bool IsConnecting { get; private set; } = false;
     public static bool IsConnected => (IsHost ? server?.HasAnyClient : client?.IsConnected) ?? false;
     public static bool IsConnectedClient => IsConnected && IsClient;
     public static bool IsConnectedHost => IsConnected && IsHost;
