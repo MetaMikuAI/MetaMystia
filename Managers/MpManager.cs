@@ -290,6 +290,7 @@ public static partial class MpManager
         {
             peerId = peer.Id;
             Log.LogMessage($"Client uid={uid} (id='{peerId}') disconnected");
+            InGameConsole.ShowPassiveFromAnyThread(TextId.PeerLeft.Get(peerId));
             Network.PeerLeaveAction.BroadcastPeerLeave(uid);
             PlayerManager.RemovePeer(uid);
         }

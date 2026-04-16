@@ -23,6 +23,8 @@ import argparse
 import sys
 import random
 import string
+import socket
+import select as _select
 
 from pwn import *
 
@@ -374,6 +376,8 @@ class FakeClient:
         """连接到主机并完成 Hello/HelloAck 握手。"""
         try:
             self.tube = remote(self.host, self.port, level="error")
+            # 增大内核接收缓冲区，避免 drain 跟不上时 TCP 窗口迅速归零
+            self.tube.sock.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 4 * 1024 * 1024)
             log.info(f"[Client {self.client_index}] Connected to {self.host}:{self.port}")
         except Exception as e:
             self.error = f"Connection failed: {e}"
@@ -479,14 +483,18 @@ class FakeClient:
                 pass
 
     def drain_recv(self):
-        """后台线程：持续读取服务器发来的包（避免 TCP 缓冲区满导致零窗口）。"""
+        """后台线程：用原生 socket + select 持续读取服务器发来的包，避免 TCP 零窗口。"""
+        sock = self.tube.sock
         while self.running:
             try:
-                data = self.tube.recv(65536, timeout=0.5)
+                readable, _, _ = _select.select([sock], [], [], 0.5)
+                if not readable:
+                    continue
+                data = sock.recv(65536)
                 if not data:
                     break
                 self.bytes_recv += len(data)
-            except:
+            except (OSError, ValueError):
                 if not self.running:
                     break
                 continue
