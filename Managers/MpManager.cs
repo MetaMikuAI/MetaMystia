@@ -399,6 +399,21 @@ public static partial class MpManager
     }
 
     /// <summary>
+    /// 低优先级发送：拥塞时丢弃（用于位置同步等高频包）
+    /// </summary>
+    public static void SendToHostOrBroadcastLowPriority(NetPacket packet)
+    {
+        if (IsHost)
+        {
+            server?.BroadcastLowPriority(packet);
+        }
+        else
+        {
+            client?.SendLowPriority(packet);
+        }
+    }
+
+    /// <summary>
     /// 客机→主机
     /// </summary>
     public static void SendToHost(NetPacket packet)

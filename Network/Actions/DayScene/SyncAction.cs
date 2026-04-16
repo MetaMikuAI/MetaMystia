@@ -64,7 +64,7 @@ public partial class SyncAction : Action
                 Py = position.y,
                 Speed = PlayerManager.Local.Speed
             };
-            action.SendToHostOrBroadcast();
+            action.SendToHostOrBroadcastLowPriority();
         }
         else
         {
@@ -82,7 +82,7 @@ public partial class SyncAction : Action
                 Px = position.x,
                 Py = position.y
             };
-            action.SendToHostOrBroadcast();
+            action.SendToHostOrBroadcastLowPriority();
         }
     }
 }

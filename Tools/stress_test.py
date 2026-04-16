@@ -479,10 +479,10 @@ class FakeClient:
                 pass
 
     def drain_recv(self):
-        """后台线程：持续读取服务器发来的包（避免 TCP 缓冲区满）。"""
+        """后台线程：持续读取服务器发来的包（避免 TCP 缓冲区满导致零窗口）。"""
         while self.running:
             try:
-                data = self.tube.recv(4096, timeout=1)
+                data = self.tube.recv(65536, timeout=0.5)
                 if not data:
                     break
                 self.bytes_recv += len(data)
@@ -503,7 +503,7 @@ def main():
     parser.add_argument("-n", "--clients", type=int, default=10, help="Number of fake clients (default: 10)")
     parser.add_argument("-i", "--interval", type=float, default=0.5, help="Sync interval in seconds (default: 0.5)")
     parser.add_argument("-d", "--duration", type=float, default=60.0, help="Test duration in seconds (default: 60)")
-    parser.add_argument("--mod-version", default="0.21.0", help="Mod version to send in Hello")
+    parser.add_argument("--mod-version", default="0.21.1", help="Mod version to send in Hello")
     parser.add_argument("--game-version", default="RELEASE 4.3.1", help="Game version to send in Hello")
     parser.add_argument("--stagger", type=float, default=0.2, help="Delay between client connections (default: 0.2s)")
     args = parser.parse_args()
@@ -534,6 +534,10 @@ def main():
 
         if client.connect_and_handshake():
             clients.append(client)
+            # 握手成功后立即启动 drain 线程，避免后续广播包填满 TCP 缓冲区
+            client.running = True
+            drain_thread = threading.Thread(target=client.drain_recv, daemon=True)
+            drain_thread.start()
         else:
             log.warning(f"[Client {i}] Failed to connect, skipping")
 
@@ -557,11 +561,7 @@ def main():
     log.info(f"Phase 3: Starting Sync flood ({args.duration}s)...")
 
     for client in clients:
-        # 启动接收线程（drain）
-        drain_thread = threading.Thread(target=client.drain_recv, daemon=True)
-        drain_thread.start()
-
-        # 启动 Sync 发送线程
+        # drain 线程已在握手后启动，这里只启动 Sync 发送线程
         sync_thread = threading.Thread(
             target=client.start_sync_loop,
             args=(args.interval, args.duration),
