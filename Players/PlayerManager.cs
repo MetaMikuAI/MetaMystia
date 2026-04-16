@@ -247,9 +247,9 @@ public static partial class PlayerManager
     /// <summary>
     /// 刷新 NightScene 中的角色立绘（通过重新触发 SetupPortrayalVisual 前缀钩子）
     /// </summary>
-    public static void RefreshPortrait()
+    public static void RefreshPortrait(bool skipSceneCheck = false)
     {
-        if (MpManager.LocalScene != Common.UI.Scene.WorkScene) return;
+        if (!skipSceneCheck && MpManager.LocalScene != Common.UI.Scene.WorkScene) return;
         var uiManager = NightScene.UI.UIManager.Instance;
         if (uiManager != null)
         {
