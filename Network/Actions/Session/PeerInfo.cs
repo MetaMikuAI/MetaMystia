@@ -19,7 +19,7 @@ public partial class PlayerInfo
         {
             Uid = player.Uid,
             PeerId = player.Id,
-            DataBase = player.DataBase,
+            DataBase = player.IncrementalDataBase,
             Skin = player.Skin
         };
     }

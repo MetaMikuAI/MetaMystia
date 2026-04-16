@@ -61,15 +61,23 @@ public partial class PeerPlayer : NetPlayer
     private readonly float FAR_POS = 40815f;
 
     /// <summary>
-    /// 构造函数，接受玩家 UID 和可选的资源数据库
+    /// 构造函数，接受玩家 UID 和可选的增量资源数据库（自动展开并缓存）
     /// </summary>
     /// <param name="uid">玩家 UID，由主机分配</param>
-    /// <param name="resourceDataBase">可选的资源数据库，如果不提供则使用本地资源数据库</param>
-    public PeerPlayer(int uid, ResourceDataBase resourceDataBase = null)
+    /// <param name="incrementalDataBase">增量格式资源数据库，为 null 时使用本地资源</param>
+    public PeerPlayer(int uid, ResourceDataBase incrementalDataBase = null)
     {
         Uid = uid;
         CharacterId = $"MetaMystia_{uid}";
-        DataBase = resourceDataBase ?? new ResourceDataBase().LoadResourceIds();
+        if (incrementalDataBase != null)
+        {
+            IncrementalDataBase = incrementalDataBase;
+            DataBase = ResourceDataBase.Expand(incrementalDataBase);
+        }
+        else
+        {
+            DataBase = new ResourceDataBase().LoadResourceIds();
+        }
     }
 
     public override void ResetState()
