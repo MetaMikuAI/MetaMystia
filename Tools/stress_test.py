@@ -159,18 +159,20 @@ def build_player_skin(character_id: int = -1, selected_type: int = 0, skin_index
 def build_resource_database_empty() -> bytes:
     """
     ResourceDataBase 字段（按声明顺序）：
-      1. Foods         (List<int>)
-      2. Recipes       (List<int>)
-      3. Beverages     (List<int>)
-      4. Ingredients   (List<int>)
-      5. Cookers       (List<int>)
-      6. Items         (List<int>)
-      7. Izakayas      (List<int>)
-      8. SpecialGuests (List<int>)
-      9. NormalGuests  (List<int>)
+      1. DlcFlags      (DlcPack : byte)  ← 增量标识，None=0 表示全量模式
+      2. Foods         (List<int>)
+      3. Recipes       (List<int>)
+      4. Beverages     (List<int>)
+      5. Ingredients   (List<int>)
+      6. Cookers       (List<int>)
+      7. Items         (List<int>)
+      8. Izakayas      (List<int>)
+      9. SpecialGuests (List<int>)
+     10. NormalGuests  (List<int>)
     """
     return (
-        mp_object_header(9) +
+        mp_object_header(10) +
+        mp_byte(0) +          # DlcFlags = None
         mp_int_list([]) +  # Foods
         mp_int_list([]) +  # Recipes
         mp_int_list([]) +  # Beverages
