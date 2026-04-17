@@ -91,7 +91,7 @@ public static class MpCommands
         {
             ctx.Log(ConsoleFormat.Header("Multiplayer Status"));
             ctx.Log($"  {ConsoleFormat.Dim("Role:")} {ConsoleFormat.Cmd(MpManager.RoleName)} {ConsoleFormat.Dim("|")} {ConsoleFormat.Dim("ID:")} {ConsoleFormat.Arg(MpManager.PlayerId)} {ConsoleFormat.Dim($"(uid={PlayerManager.Local.Uid})")}");
-            ctx.Log($"  {ConsoleFormat.Dim("Running:")} {(MpManager.IsRunning ? ConsoleFormat.Ok("Yes") : ConsoleFormat.Err("No"))} {ConsoleFormat.Dim("|")} {ConsoleFormat.Dim("Connected:")} {(MpManager.IsConnected ? ConsoleFormat.Ok("Yes") : ConsoleFormat.Err("No"))}");
+            ctx.Log($"  {ConsoleFormat.Dim("Running:")} {(MpManager.IsRunning ? ConsoleFormat.Ok("Yes") : ConsoleFormat.Err("No"))} {ConsoleFormat.Dim("|")} {ConsoleFormat.Dim("Connected:")} {(MpManager.IsConnected ? ConsoleFormat.Ok("Yes") : ConsoleFormat.Err("No"))} {ConsoleFormat.Dim("|")} {ConsoleFormat.Dim("IPv6:")} {(MpManager.EnableIPv6 ? ConsoleFormat.Ok("On") : ConsoleFormat.Dim("Off"))}");
             if (MpManager.IsConnected)
             {
                 ctx.Log($"  {ConsoleFormat.Dim("Ping:")} {MpManager.Latency}ms {ConsoleFormat.Dim("|")} {ConsoleFormat.Dim("Players:")} {MpManager.AllPlayersCount}/{ConfigManager.MaxPlayers.Value} {ConsoleFormat.Dim("|")} {ConsoleFormat.Dim("Scene:")} {MpManager.LocalScene}");
@@ -294,6 +294,30 @@ public static class MpCommands
         });
         mpCmd.AddCommand(continueCmd);
 
+        // /mp ipv6 <enable|disable>
+        var ipv6Cmd = new Command("ipv6", "Enable or disable IPv6 dual-stack listening");
+        var ipv6ActionArg = new Argument<string>("action", "enable or disable")
+            .FromAmong("enable", "disable");
+        ipv6Cmd.AddArgument(ipv6ActionArg);
+        ipv6Cmd.SetHandler(ctx =>
+        {
+            string action = ctx.ParseResult.GetValueForArgument(ipv6ActionArg);
+            bool enable = action == "enable";
+            if (MpManager.IsConnectedHost)
+            {
+                ctx.Log(ConsoleFormat.Err(TextId.MpIpv6RejectConnected.Get()));
+                return;
+            }
+            ConfigManager.EnableIPv6.Value = enable;
+            ctx.Log(enable ? TextId.MpIpv6Enabled.Get() : TextId.MpIpv6Disabled.Get());
+            if (MpManager.IsRunning && MpManager.IsHost)
+            {
+                MpManager.Restart();
+                ctx.Log(TextId.MpIpv6Restarted.Get());
+            }
+        });
+        mpCmd.AddCommand(ipv6Cmd);
+
         // Default handler when /mp is called without subcommand
         mpCmd.SetHandler(ctx =>
         {
@@ -308,14 +332,16 @@ public static class MpCommands
             ctx.Log(ConsoleFormat.SubCmd("/mp kick", "id|uid <target>", TextId.MpDescKick.Get()));
             ctx.Log(ConsoleFormat.SubCmd("/mp maxplayers", "[count]", TextId.MpDescMaxPlayers.Get()));
             ctx.Log(ConsoleFormat.SubCmd("/mp continue", "<day|prep>", TextId.MpDescContinue.Get()));
+            ctx.Log(ConsoleFormat.SubCmd("/mp ipv6", "<enable|disable>", TextId.MpDescIpv6.Get()));
             ctx.Log(ConsoleFormat.Line);
         });
 
         root.AddCommand(mpCmd);
 
-        CommandRegistry.RegisterCompletions("mp", 0, "start", "stop", "restart", "status", "id", "connect", "disconnect", "kick", "maxplayers", "continue");
+        CommandRegistry.RegisterCompletions("mp", 0, "start", "stop", "restart", "status", "id", "connect", "disconnect", "kick", "maxplayers", "continue", "ipv6");
 
         CommandRegistry.RegisterCompletions("mp continue", 0, "day", "prep");
+        CommandRegistry.RegisterCompletions("mp ipv6", 0, "enable", "disable");
         CommandRegistry.RegisterCompletions("mp kick", 0, "id", "uid");
         CommandRegistry.RegisterDynamicCompletions("mp kick id", 0, () =>
             PlayerManager.Peers.Values.Select(p => p.Id).ToArray());

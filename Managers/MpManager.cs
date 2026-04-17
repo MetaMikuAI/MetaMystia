@@ -29,6 +29,7 @@ public static partial class MpManager
 
     public static int ConfigPort => ConfigManager.DefaultPort?.Value ?? DEFAULT_PORT;
     public static int CurrentPort { get; private set; } = DEFAULT_PORT;
+    public static bool EnableIPv6 => ConfigManager.EnableIPv6?.Value ?? false;
 
     /// <summary>
     /// 校验玩家 ID 是否合法：不能为空，不能包含空格、尖括号或控制字符
@@ -122,7 +123,7 @@ public static partial class MpManager
         else
         {
             client?.Close();
-            server = new(CurrentPort);
+            server = new(CurrentPort, EnableIPv6);
             server.Start();
             Role = ROLE.Host;
         }
@@ -154,7 +155,7 @@ public static partial class MpManager
         {
             case ROLE.Host:
                 PlayerManager.Local.Uid = HOST_UID;
-                server = new(CurrentPort);
+                server = new(CurrentPort, EnableIPv6);
                 server.Start();
                 Log.LogInfo($"Starting MpManager as host on port {CurrentPort}");
                 break;

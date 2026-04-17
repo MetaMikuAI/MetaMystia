@@ -180,5 +180,10 @@
     "MpStartDeprecated": "⚠ '/mp start server' is deprecated, use '/mp start' instead.",
     "MpStartedOnPort": "Multiplayer started as Host on port {0} ✓",
     "MpPortRange": "Port must be between 1 and 65535",
-    "MpConnectInProgress": "Connection already in progress, please wait..."
+    "MpConnectInProgress": "Connection already in progress, please wait...",
+    "MpIpv6Enabled": "IPv6 dual-stack listening enabled",
+    "MpIpv6Disabled": "IPv6 dual-stack listening disabled",
+    "MpIpv6Restarted": "Server restarted to apply IPv6 setting",
+    "MpIpv6RejectConnected": "Cannot change IPv6 setting while clients are connected, disconnect first",
+    "MpDescIpv6": "Enable or disable IPv6 dual-stack listening"
 }

@@ -168,9 +168,17 @@ public sealed partial class TcpServer : IDisposable
     private const int HeartbeatLoopInterval = 3000;
     private const int BufferLen = 4096;
 
-    public TcpServer(int port)
+    public TcpServer(int port, bool enableIPv6 = false)
     {
-        listener = new TcpListener(IPAddress.Any, port);
+        if (enableIPv6)
+        {
+            listener = new TcpListener(IPAddress.IPv6Any, port);
+            listener.Server.DualMode = true;
+        }
+        else
+        {
+            listener = new TcpListener(IPAddress.Any, port);
+        }
     }
 
     /// <summary>
@@ -523,7 +531,17 @@ public sealed partial class TcpClientWrapper : IDisposable
 
         Log.LogMessage("[C] Connecting...");
 
-        var tcp = new TcpClient();
+        // Resolve address family: if the host parses as an IPv6 address, use InterNetworkV6;
+        // otherwise default to InterNetwork. DNS names use ConnectAsync which resolves automatically.
+        TcpClient tcp;
+        if (IPAddress.TryParse(host, out var parsedAddr) && parsedAddr.AddressFamily == AddressFamily.InterNetworkV6)
+        {
+            tcp = new TcpClient(AddressFamily.InterNetworkV6);
+        }
+        else
+        {
+            tcp = new TcpClient();
+        }
 
         try
         {

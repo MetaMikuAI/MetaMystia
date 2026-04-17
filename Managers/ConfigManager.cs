@@ -29,6 +29,7 @@ public static partial class ConfigManager
     public static ConfigEntry<string> ConsoleHistoryFile;
     public static ConfigEntry<int> MaxPlayers;
     public static ConfigEntry<int> DefaultPort;
+    public static ConfigEntry<bool> EnableIPv6;
     public static ConfigEntry<string> LocaleOverride;
     public static ConfigEntry<bool> NoteBookSkinPortrait;
 
@@ -82,6 +83,10 @@ public static partial class ConfigManager
             new BepInEx.Configuration.ConfigDescription(
                 "Default TCP port for hosting a server\n主机默认 TCP 端口",
                 new BepInEx.Configuration.AcceptableValueRange<int>(1, 65535)));
+
+        EnableIPv6 = Config.Bind("Multiplayer", "EnableIPv6", false,
+            "Enable IPv6 dual-stack listening (IPv4 always works)\n" +
+            "启用 IPv6 双栈监听（IPv4 始终可用）");
 
         LocaleOverride = Config.Bind("General", "LocaleOverride", "",
             "Path to a directory containing locale override JSON files (en.json, zh-CN.json).\n" +
