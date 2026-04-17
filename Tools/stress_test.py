@@ -514,7 +514,7 @@ def main():
     parser.add_argument("-i", "--interval", type=float, default=0.5, help="Sync interval in seconds (default: 0.5)")
     parser.add_argument("-d", "--duration", type=float, default=60.0, help="Test duration in seconds (default: 60)")
     parser.add_argument("--mod-version", default="0.21.1", help="Mod version to send in Hello")
-    parser.add_argument("--game-version", default="RELEASE 4.3.1", help="Game version to send in Hello")
+    parser.add_argument("--game-version", default="RELEASE 4.4.0", help="Game version to send in Hello")
     parser.add_argument("--stagger", type=float, default=0.2, help="Delay between client connections (default: 0.2s)")
     args = parser.parse_args()
 
