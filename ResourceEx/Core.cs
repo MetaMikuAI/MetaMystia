@@ -230,7 +230,7 @@ public static partial class ResourceExManager
                 dialogList.packageName = pkgConfig.name;
                 foreach (var d in pkgConfig.dialogList)
                 {
-                    dialogList.AddDialog(d.characterId, d.characterType, d.pid, d.position, d.text);
+                    dialogList.AddDialog(d.characterId, d.characterType, d.pid, d.position, d.text, d.actions);
                 }
                 _dialogPackageConfigs[pkgConfig.name] = dialogList;
                 Log.LogInfo($"[{packageName}] Loaded dialog package: {pkgConfig.name}");

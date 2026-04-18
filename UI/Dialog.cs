@@ -1,3 +1,4 @@
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using System.Collections.Generic;
 
 using Common.DialogUtility;
@@ -6,6 +7,7 @@ using GameData.Profile;
 
 namespace MetaMystia.UI;
 
+// TODO: Refactor
 [AutoLog]
 public static partial class Dialog
 {
@@ -38,7 +40,21 @@ public static partial class Dialog
             meta.dialogId = i;
             meta.speakerPosition = dialog.position;
 
-            meta.dialogAction = new DialogAction[0];
+            if (dialog.actions != null && dialog.actions.Length > 0)
+            {
+                meta.dialogAction = new Il2CppReferenceArray<DialogAction>(dialog.actions.Length);
+                for (int j = 0; j < dialog.actions.Length; j++)
+                {
+                    var action = new DialogAction();
+                    action.actionType = dialog.actions[j].actionType;
+                    meta.dialogAction[j] = action;
+                }
+            }
+            else
+            {
+                meta.dialogAction = new Il2CppReferenceArray<DialogAction>(0);
+            }
+
             meta.isSpeakInForeground = true;
             meta.isDark = false;
             meta.useNameInText = true;
@@ -133,6 +149,11 @@ public static partial class Dialog
 
 };
 
+public class CustomAction
+{
+    public ActionType actionType { get; set; }
+}
+
 public class CustomDialog
 {
     public int characterId;
@@ -140,13 +161,15 @@ public class CustomDialog
     public int speakerPortrayalVariationId;
     public string message;
     public Position position;
-    public CustomDialog(int characterId, SpeakerIdentity.Identity speakerType, int speakerPortrayalVariationId, Position position, string message)
+    public CustomAction[] actions;
+    public CustomDialog(int characterId, SpeakerIdentity.Identity speakerType, int speakerPortrayalVariationId, Position position, string message, CustomAction[] actions = null)
     {
         this.characterId = characterId;
         this.speakerType = speakerType;
         this.speakerPortrayalVariationId = speakerPortrayalVariationId;
         this.message = message;
         this.position = position;
+        this.actions = actions ?? new CustomAction[0];
     }
 }
 
@@ -160,9 +183,9 @@ public class CustomDialogList
         dialogs = new List<CustomDialog>();
     }
 
-    public void AddDialog(int characterId, SpeakerIdentity.Identity speakerType, int speakerPortrayalVariationId, Position position, string message)
+    public void AddDialog(int characterId, SpeakerIdentity.Identity speakerType, int speakerPortrayalVariationId, Position position, string message, CustomAction[] actions = null)
     {
-        dialogs.Add(new CustomDialog(characterId, speakerType, speakerPortrayalVariationId, position, message));
+        dialogs.Add(new CustomDialog(characterId, speakerType, speakerPortrayalVariationId, position, message, actions));
     }
 
     public void AddDialog(CustomDialog dialog)

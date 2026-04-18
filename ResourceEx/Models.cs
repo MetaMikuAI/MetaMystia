@@ -172,6 +172,7 @@ public class DialogConfig
     public Common.DialogUtility.SpeakerIdentity.Identity characterType { get; set; }
     public int pid { get; set; }
     public Common.DialogUtility.Position position { get; set; }
+    public UI.CustomAction[] actions { get; set; }
     public string text { get; set; }
 }
 
