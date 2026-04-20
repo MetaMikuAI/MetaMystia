@@ -93,6 +93,18 @@ public partial class PluginManager : MonoBehaviour
                 _ = MpManager.ConnectToPeerAsync("127.0.0.1");
                 InGameConsole.ShowPassive("[DEBUG] Connecting to Self");
             }
+            if (Input.GetKeyDown(KeyCode.F3))
+            {
+                InGameConsole.ShowPassive("[DEBUG] F3: CG Test Dialog");
+                try
+                {
+                    UI.Dialog.ShowCGTestDialog(@"E:\Desktop\SpringTest.png");
+                }
+                catch (System.Exception ex)
+                {
+                    Plugin.Instance.Log.LogError($"[F3] ShowCGTestDialog exception: {ex}");
+                }
+            }
             if (Input.GetKeyDown(KeyCode.F11))
             {
                 Debugger ??= new Debugger.WebDebugger();

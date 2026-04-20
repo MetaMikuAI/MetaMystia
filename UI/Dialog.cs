@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Common.DialogUtility;
 using Common.UI;
 using GameData.Profile;
+using UnityEngine.AddressableAssets;
 
 namespace MetaMystia.UI;
 
@@ -47,6 +48,19 @@ public static partial class Dialog
                 {
                     var action = new DialogAction();
                     action.actionType = dialog.actions[j].actionType;
+                    action.shouldSet = dialog.actions[j].shouldSet;
+
+                    // For CG/BG actions, m_SpriteAsset and m_MaterialAsset must not be null
+                    // (LoadAssetAllowNull throws NullReferenceException on null input).
+                    // Provide empty refs with invalid keys so they safely return null handles.
+                    if (dialog.actions[j].actionType == ActionType.CG || dialog.actions[j].actionType == ActionType.BG)
+                    {
+                        var srcSprite = dialog.actions[j].spriteAsset;
+                        action.m_SpriteAsset = srcSprite ?? new AssetReferenceSprite("");
+                        action.m_MaterialAsset = new AssetReferenceT<UnityEngine.Material>("");
+                        Log.LogInfo($"[BuildDialog] Action[{i}][{j}] type={dialog.actions[j].actionType}, shouldSet={dialog.actions[j].shouldSet}, spriteAsset={(srcSprite != null ? "set" : "null")}, RuntimeKeyIsValid={action.m_SpriteAsset?.RuntimeKeyIsValid()}");
+                    }
+
                     meta.dialogAction[j] = action;
                 }
             }
@@ -73,14 +87,45 @@ public static partial class Dialog
         CustomDialogList dialogList,
         System.Action onFinishCallback = null)
     {
+        Log.LogInfo($"[BuildAndShow] Building dialog package...");
         var newDialogPackage = BuildDialogPackage(dialogList);
         if (newDialogPackage == null)
         {
+            Log.LogWarning("[BuildAndShow] BuildDialogPackage returned null, calling OpenDialogMenu with null.");
             UniversalGameManager.OpenDialogMenu(
                 null,
                 onFinishCallback: onFinishCallback
             );
             return;
+        }
+
+        Log.LogInfo($"[BuildAndShow] Package built: name={newDialogPackage.name}, meta count={newDialogPackage.dialogMeta?.Length}");
+
+        // Log each meta's actions
+        if (newDialogPackage.dialogMeta != null)
+        {
+            for (int i = 0; i < newDialogPackage.dialogMeta.Length; i++)
+            {
+                var m = newDialogPackage.dialogMeta[i];
+                var actionCount = m.dialogAction?.Length ?? 0;
+                Log.LogInfo($"[BuildAndShow] Meta[{i}]: dialogId={m.dialogId}, actions={actionCount}");
+                for (int j = 0; j < actionCount; j++)
+                {
+                    var a = m.dialogAction[j];
+                    Log.LogInfo($"[BuildAndShow]   Action[{j}]: type={a.actionType}, shouldSet={a.shouldSet}, m_SpriteAsset={(a.m_SpriteAsset != null ? "set" : "null")}, m_MaterialAsset={(a.m_MaterialAsset != null ? "set" : "null")}");
+                    if (a.m_SpriteAsset != null)
+                    {
+                        try
+                        {
+                            Log.LogInfo($"[BuildAndShow]   m_SpriteAsset.RuntimeKey={a.m_SpriteAsset.RuntimeKey}, RuntimeKeyIsValid={a.m_SpriteAsset.RuntimeKeyIsValid()}");
+                        }
+                        catch (System.Exception ex)
+                        {
+                            Log.LogWarning($"[BuildAndShow]   Failed to read m_SpriteAsset RuntimeKey: {ex.Message}");
+                        }
+                    }
+                }
+            }
         }
 
 
@@ -92,12 +137,14 @@ public static partial class Dialog
             }
         };
 
+        Log.LogInfo("[BuildAndShow] Calling UniversalGameManager.OpenDialogMenu...");
         UniversalGameManager.OpenDialogMenu(
             newDialogPackage,
             onFinishCallback: onFinishCallback,
             overrideReplaceTextCallback: overrideReplaceTextCallback,
             previousPanelVisualMode: 0
         );
+        Log.LogInfo("[BuildAndShow] OpenDialogMenu returned.");
     }
 
     public static void DumpExampleDialog()
@@ -147,11 +194,87 @@ public static partial class Dialog
         }
     }
 
+    /// <summary>
+    /// Test dialog that displays a CG image loaded via ModAssetRegistry.
+    /// Uses the IResourceProvider pipeline to serve a sprite from disk.
+    /// </summary>
+    public static void ShowCGTestDialog(string imagePath, System.Action onFinishCallback = null)
+    {
+        const string cgKey = "mod://test/cg_spring";
+        Log.LogInfo($"[CG Test] Starting CG test dialog. imagePath={imagePath}");
+
+        // Ensure ModAssetRegistry is initialized
+        if (!ModAssetRegistry.IsInitialized)
+        {
+            Log.LogInfo("[CG Test] ModAssetRegistry not yet initialized, calling Initialize()...");
+            ModAssetRegistry.Initialize();
+        }
+
+        // Register the image as a mod sprite via ModAssetRegistry
+        Log.LogInfo($"[CG Test] Creating sprite reference from file: {imagePath}");
+        var spriteRef = ModAssetRegistry.CreateSpriteReferenceFromFile(
+            cgKey, imagePath, new UnityEngine.Vector2(0.5f, 0.5f));
+
+        if (spriteRef == null)
+        {
+            Log.LogError($"[CG Test] Failed to create sprite reference from: {imagePath}");
+            return;
+        }
+        Log.LogInfo($"[CG Test] Registered CG sprite: key={cgKey}, RuntimeKey={spriteRef.RuntimeKey}, IsValid={spriteRef.RuntimeKeyIsValid()}");
+
+        var dialogList = new CustomDialogList();
+        dialogList.packageName = "MetaMystia_CG_Test";
+
+        // Dialog 1: Show CG
+        dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 2, Position.Right,
+            "看，这是通过 ModAssetRegistry 加载的 CG 图片！",
+            new CustomAction[]
+            {
+                new CustomAction
+                {
+                    actionType = ActionType.CG,
+                    shouldSet = true,
+                    spriteAsset = spriteRef
+                }
+            });
+
+        // Dialog 2: Continue with CG visible
+        dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 7, Position.Right,
+            "IResourceProvider 方案完全生效了，Addressables 标准管线加载自定义 CG 成功！");
+
+        // Dialog 3: Clear CG
+        dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 2, Position.Right,
+            "现在清除 CG...",
+            new CustomAction[]
+            {
+                new CustomAction
+                {
+                    actionType = ActionType.CG,
+                    shouldSet = false,
+                    spriteAsset = spriteRef
+                }
+            });
+
+        // Dialog 4: Done
+        dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 2, Position.Right,
+            "CG 测试完毕。");
+
+        Log.LogInfo($"[CG Test] Built dialog list with {dialogList.Count} entries, calling BuildAndShow...");
+        BuildAndShow(dialogList, onFinishCallback);
+        Log.LogInfo("[CG Test] BuildAndShow called.");
+    }
+
 };
 
 public class CustomAction
 {
     public ActionType actionType { get; set; }
+    /// <summary>
+    /// For CG/BG actions: the AssetReferenceSprite to display. 
+    /// Use ModAssetRegistry.CreateSpriteReference() to create one from a mod sprite.
+    /// </summary>
+    public AssetReferenceSprite spriteAsset { get; set; }
+    public bool shouldSet { get; set; } = true;
 }
 
 public class CustomDialog

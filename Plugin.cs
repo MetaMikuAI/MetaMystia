@@ -87,6 +87,9 @@ public class Plugin : BasePlugin
         Il2CppInteropPatcher.NotifyIfPatched();
         MetricsReporter.OnEnterMainScene();
         Instance?.Log.LogInfo(MpManager.DebugText);
+
+        // PoC: Test IResourceProvider-based asset injection
+        ModAssetRegistryPoC.RunTest();
     }
 
     class BootstrapPatch
