@@ -44,9 +44,14 @@ public partial class ModSpriteProvider : ResourceProviderBase
 
     public override bool CanProvide(Il2CppSystem.Type type, IResourceLocation location)
     {
-        return location != null
+        var result = location != null
             && location.ProviderId == Id
             && _sprites.ContainsKey(location.InternalId);
+        if (location != null && location.ProviderId == Id)
+        {
+            Log.LogDebug($"CanProvide: key={location.InternalId}, found={_sprites.ContainsKey(location.InternalId)}");
+        }
+        return result;
     }
 
     public override void Provide(ProvideHandle provideHandle)

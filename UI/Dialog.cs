@@ -150,11 +150,20 @@ public static partial class Dialog
 public class CustomAction
 {
     public ActionType actionType { get; set; }
+
     /// <summary>
-    /// For CG/BG actions: the AssetReferenceSprite to display.
-    /// Use ModAssetRegistry.CreateSpriteReference() to create one from a mod sprite.
+    /// For CG/BG actions: relative path to sprite image (e.g. "assets/CG/painting.png").
+    /// Used in ResourceEx JSON config; resolved to <see cref="spriteAsset"/> at load time.
     /// </summary>
+    public string sprite { get; set; }
+
+    /// <summary>
+    /// Runtime-only: the resolved AssetReferenceSprite for CG/BG actions.
+    /// Populated automatically when <see cref="sprite"/> is set during ResourceEx loading.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonIgnore]
     public AssetReferenceSprite spriteAsset { get; set; }
+
     public bool shouldSet { get; set; } = true;
 }
 

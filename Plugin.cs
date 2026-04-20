@@ -67,6 +67,15 @@ public class Plugin : BasePlugin
 
         try
         {
+            ModAssetRegistry.Initialize();
+        }
+        catch (Exception ex)
+        {
+            Log.LogWarning($"Early ModAssetRegistry init failed (will retry later): {ex.Message}");
+        }
+
+        try
+        {
             ResourceExManager.Initialize();
         }
         catch (Exception ex)
