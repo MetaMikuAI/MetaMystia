@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Common.DialogUtility;
 using Common.UI;
 using GameData.Profile;
+using UnityEngine.AddressableAssets;
 
 namespace MetaMystia.UI;
 
@@ -47,6 +48,17 @@ public static partial class Dialog
                 {
                     var action = new DialogAction();
                     action.actionType = dialog.actions[j].actionType;
+                    action.shouldSet = dialog.actions[j].shouldSet;
+
+                    // For CG/BG actions, m_SpriteAsset and m_MaterialAsset must not be null
+                    // (LoadAssetAllowNull throws NullReferenceException on null input).
+                    // Provide empty refs with invalid keys so they safely return null handles.
+                    if (dialog.actions[j].actionType == ActionType.CG || dialog.actions[j].actionType == ActionType.BG)
+                    {
+                        action.m_SpriteAsset = dialog.actions[j].spriteAsset ?? new AssetReferenceSprite("");
+                        action.m_MaterialAsset = new AssetReferenceT<UnityEngine.Material>("");
+                    }
+
                     meta.dialogAction[j] = action;
                 }
             }
@@ -92,6 +104,7 @@ public static partial class Dialog
             }
         };
 
+        Log.LogInfo("Calling OpenDialogMenu...");
         UniversalGameManager.OpenDialogMenu(
             newDialogPackage,
             onFinishCallback: onFinishCallback,
@@ -119,21 +132,6 @@ public static partial class Dialog
         }
     }
 
-    public static void ShowTestDialog(System.Action onFinishCallback = null)
-    {
-        var dialogList = new CustomDialogList();
-        dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 2, Position.Right, "你为什么上来就粉评啊，夜雀食堂不是这样的啊！");
-        dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 2, Position.Right, "你应该先慢慢跟我提要求，我猜一猜你的喜好，再偶尔来点绿评暗示我你还不够满意，还嘲讽我「您完全没有文化底蕴是吗」");
-        dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 7, Position.Right, "最后我饭团加好料的时候开始提新的要求，我继续加料说「怎么口味这么刁」，然后给你满足你4个喜好tag的食物和酒水你才正式开启奖励符卡啊！");
-        dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 7, Position.Right, "夜雀食堂里根本不是这样的啊我不接受");
-        dialogList.AddDialog(14, SpeakerIdentity.Identity.Special, 13, Position.Left, "……");
-        dialogList.AddDialog(14, SpeakerIdentity.Identity.Special, 13, Position.Left, "米斯琪，你还好吗？");
-        dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 18, Position.Right, "没事的，这只是个测试");
-        dialogList.AddDialog(14, SpeakerIdentity.Identity.Special, 13, Position.Left, "……");
-        dialogList.AddDialog(14, SpeakerIdentity.Identity.Special, 16, Position.Left, "……好~");
-        BuildAndShow(dialogList, onFinishCallback);
-    }
-
     public static void ShowResourceExPackage(string packageName, System.Action onFinishCallback = null)
     {
         var dialogList = ResourceExManager.GetDialogPackage(packageName);
@@ -152,6 +150,21 @@ public static partial class Dialog
 public class CustomAction
 {
     public ActionType actionType { get; set; }
+
+    /// <summary>
+    /// For CG/BG actions: relative path to sprite image (e.g. "assets/CG/painting.png").
+    /// Used in ResourceEx JSON config; resolved to <see cref="spriteAsset"/> at load time.
+    /// </summary>
+    public string sprite { get; set; }
+
+    /// <summary>
+    /// Runtime-only: the resolved AssetReferenceSprite for CG/BG actions.
+    /// Populated automatically when <see cref="sprite"/> is set during ResourceEx loading.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public AssetReferenceSprite spriteAsset { get; set; }
+
+    public bool shouldSet { get; set; } = true;
 }
 
 public class CustomDialog
