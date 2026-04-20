@@ -16,7 +16,7 @@ public class Plugin : BasePlugin
 {
     public static Plugin Instance;
     public static string GameVersion => Common.LoadingSceneManager.VersionData;
-    public static string TargetGameVersion => "RELEASE 4.4.0b";
+    public static string TargetGameVersion => "RELEASE 4.4.0c";
     public readonly static string ModVersion = MyPluginInfo.PLUGIN_VERSION;
 
     public static bool AllPatched => PatchRegistry.AllPatched;
