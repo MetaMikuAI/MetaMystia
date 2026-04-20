@@ -47,6 +47,20 @@ public static partial class Dialog
                 {
                     var action = new DialogAction();
                     action.actionType = dialog.actions[j].actionType;
+
+                    if (dialog.actions[j].actionType == ActionType.CG && dialog.actions[j].cgSprite != null)
+                    {
+                        action.shouldSet = true;
+                        // Use empty GUID so LoadAssetAllowNull returns NullHandle gracefully
+                        // (game's LoadAssetAsync treats valid m_Operation as error).
+                        // The Run() patch intercepts and sets the CG sprite directly.
+                        action.m_SpriteAsset = new UnityEngine.AddressableAssets.AssetReferenceSprite("");
+                        // m_MaterialAsset must be non-null: MoveNext calls LoadAssetAllowNull(m_MaterialAsset) 
+                        // without a null check after loading the sprite.
+                        action.m_MaterialAsset = new UnityEngine.AddressableAssets.AssetReferenceT<UnityEngine.Material>("");
+                        AssetReferenceHelper.RegisterCGSprite(action.Pointer, dialog.actions[j].cgSprite);
+                    }
+
                     meta.dialogAction[j] = action;
                 }
             }
@@ -121,16 +135,28 @@ public static partial class Dialog
 
     public static void ShowTestDialog(System.Action onFinishCallback = null)
     {
+        // Load test CG from file
+        var imgPath = @"E:\Desktop\SpringTest.png";
+        var imgBytes = System.IO.File.ReadAllBytes(imgPath);
+        var tex = new UnityEngine.Texture2D(2, 2, UnityEngine.TextureFormat.RGBA32, false);
+        UnityEngine.ImageConversion.LoadImage(tex, imgBytes);
+        tex.hideFlags = UnityEngine.HideFlags.HideAndDontSave;
+        var testCG = UnityEngine.Sprite.Create(tex, new UnityEngine.Rect(0, 0, tex.width, tex.height), new UnityEngine.Vector2(0.5f, 0.5f));
+        testCG.name = "MetaMystia_TestCG";
+        testCG.hideFlags = UnityEngine.HideFlags.HideAndDontSave;
+
+        var cgAction = new[] { CustomAction.CG(testCG) };
+
         var dialogList = new CustomDialogList();
-        dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 2, Position.Right, "你为什么上来就粉评啊，夜雀食堂不是这样的啊！");
-        dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 2, Position.Right, "你应该先慢慢跟我提要求，我猜一猜你的喜好，再偶尔来点绿评暗示我你还不够满意，还嘲讽我「您完全没有文化底蕴是吗」");
-        dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 7, Position.Right, "最后我饭团加好料的时候开始提新的要求，我继续加料说「怎么口味这么刁」，然后给你满足你4个喜好tag的食物和酒水你才正式开启奖励符卡啊！");
-        dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 7, Position.Right, "夜雀食堂里根本不是这样的啊我不接受");
-        dialogList.AddDialog(14, SpeakerIdentity.Identity.Special, 13, Position.Left, "……");
-        dialogList.AddDialog(14, SpeakerIdentity.Identity.Special, 13, Position.Left, "米斯琪，你还好吗？");
-        dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 18, Position.Right, "没事的，这只是个测试");
-        dialogList.AddDialog(14, SpeakerIdentity.Identity.Special, 13, Position.Left, "……");
-        dialogList.AddDialog(14, SpeakerIdentity.Identity.Special, 16, Position.Left, "……好~");
+        dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 2, Position.Right, "你为什么上来就粉评啊，夜雀食堂不是这样的啊！", cgAction);
+        dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 2, Position.Right, "你应该先慢慢跟我提要求，我猜一猜你的喜好，再偶尔来点绿评暗示我你还不够满意，还嘲讽我「您完全没有文化底蕴是吗」", cgAction);
+        dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 7, Position.Right, "最后我饭团加好料的时候开始提新的要求，我继续加料说「怎么口味这么刁」，然后给你满足你4个喜好tag的食物和酒水你才正式开启奖励符卡啊！", cgAction);
+        dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 7, Position.Right, "夜雀食堂里根本不是这样的啊我不接受", cgAction);
+        dialogList.AddDialog(14, SpeakerIdentity.Identity.Special, 13, Position.Left, "……", cgAction);
+        dialogList.AddDialog(14, SpeakerIdentity.Identity.Special, 13, Position.Left, "米斯琪，你还好吗？", cgAction);
+        dialogList.AddDialog(-1, SpeakerIdentity.Identity.Self, 18, Position.Right, "没事的，这只是个测试", cgAction);
+        dialogList.AddDialog(14, SpeakerIdentity.Identity.Special, 13, Position.Left, "……", cgAction);
+        dialogList.AddDialog(14, SpeakerIdentity.Identity.Special, 16, Position.Left, "……好~", cgAction);
         BuildAndShow(dialogList, onFinishCallback);
     }
 
@@ -152,6 +178,12 @@ public static partial class Dialog
 public class CustomAction
 {
     public ActionType actionType { get; set; }
+    public UnityEngine.Sprite cgSprite { get; set; }
+
+    public static CustomAction CG(UnityEngine.Sprite sprite)
+    {
+        return new CustomAction { actionType = ActionType.CG, cgSprite = sprite };
+    }
 }
 
 public class CustomDialog

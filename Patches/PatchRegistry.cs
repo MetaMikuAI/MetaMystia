@@ -55,6 +55,7 @@ public static partial class PatchRegistry
         typeof(SpecialGuestDescriberPatch),
         typeof(DaySceneMapProfilePatch),
         typeof(DialogPannelPatch),
+        typeof(LoadedDialogActionDataPatch),
         typeof(DataBaseSchedulerPatch),
         typeof(RunTimeDayScenePatch)
     ];
