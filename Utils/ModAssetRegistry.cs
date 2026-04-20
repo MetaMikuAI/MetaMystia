@@ -46,15 +46,13 @@ public static partial class ModAssetRegistry
         {
             // 1. Register managed type in il2cpp
             ClassInjector.RegisterTypeInIl2Cpp<ModSpriteProvider>();
-            Log.LogInfo("[ModAssetRegistry] Registered ModSpriteProvider in il2cpp");
+            Log.LogInfo("Registered ModSpriteProvider in il2cpp");
 
             // 2. Create provider instance
             _provider = new ModSpriteProvider();
-            Log.LogInfo($"[ModAssetRegistry] Provider created: {_provider.ProviderId}");
 
             // 3. Create locator (ResourceLocationMap is a built-in IResourceLocator)
             _locator = new ResourceLocationMap("MetaMystia.ModAssetLocator", 16);
-            Log.LogInfo($"[ModAssetRegistry] Locator created: {_locator.LocatorId}");
 
             // 4. Register with Addressables
             var rm = Addressables.ResourceManager;
@@ -62,23 +60,21 @@ public static partial class ModAssetRegistry
             // Actual runtime type is ListWithEvents<IResourceProvider> (not List<>)
             var providerList = providers.Cast<ListWithEvents<IResourceProvider>>();
             providerList.Add(_provider.Cast<IResourceProvider>());
-            Log.LogInfo("[ModAssetRegistry] Provider added to ResourceManager");
 
             Addressables.AddResourceLocator(
                 _locator.Cast<IResourceLocator>(),
                 (string)null,
                 (IResourceLocation)null);
-            Log.LogInfo("[ModAssetRegistry] Locator added to Addressables");
 
             _initialized = true;
-            Log.LogInfo("[ModAssetRegistry] Initialization complete");
+            Log.LogInfo("Initialization complete");
 
             // 5. Flush any sprites registered before init
             FlushPendingRegistrations();
         }
         catch (Exception ex)
         {
-            Log.LogError($"[ModAssetRegistry] Initialization failed: {ex}");
+            Log.LogError($"Initialization failed: {ex}");
         }
     }
 
@@ -92,7 +88,7 @@ public static partial class ModAssetRegistry
         {
             RegisterInternal(key, sprite);
         }
-        Log.LogInfo($"[ModAssetRegistry] Flushed {_pendingRegistrations.Count} pending registrations");
+        Log.LogDebug($"Flushed {_pendingRegistrations.Count} pending registrations");
         _pendingRegistrations.Clear();
     }
 
@@ -112,7 +108,7 @@ public static partial class ModAssetRegistry
         if (!_initialized)
         {
             _pendingRegistrations.Add((key, sprite));
-            Log.LogDebug($"[ModAssetRegistry] Buffered registration: {key}");
+            Log.LogDebug($"Buffered registration: {key}");
             return;
         }
 
@@ -153,7 +149,7 @@ public static partial class ModAssetRegistry
         ModSpriteProvider.Unregister(key);
         // Note: removing from ResourceLocationMap at runtime is not straightforward;
         // the provider's CanProvide check will reject unregistered keys.
-        Log.LogDebug($"[ModAssetRegistry] Unregistered sprite: {key}");
+        Log.LogDebug($"Unregistered sprite: {key}");
     }
 
     // ── Internal ──
@@ -180,7 +176,7 @@ public static partial class ModAssetRegistry
             location.Cast<IResourceLocation>()
         );
 
-        Log.LogDebug($"[ModAssetRegistry] Registered sprite: {key} → {guid}");
+        Log.LogDebug($"Registered sprite: {key} → {guid}");
     }
 
     /// <summary>

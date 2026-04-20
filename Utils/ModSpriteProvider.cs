@@ -3,11 +3,8 @@ using System.Collections.Generic;
 using Il2CppInterop.Runtime;
 using Il2CppInterop.Runtime.Injection;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using UnityEngine.AddressableAssets.ResourceLocators;
 using UnityEngine.ResourceManagement.ResourceLocations;
 using UnityEngine.ResourceManagement.ResourceProviders;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
 
 namespace MetaMystia;
 
@@ -57,12 +54,12 @@ public partial class ModSpriteProvider : ResourceProviderBase
         var key = provideHandle.Location.InternalId;
         if (_sprites.TryGetValue(key, out var sprite))
         {
-            Log.LogDebug($"[ModSpriteProvider] Providing sprite for key: {key}");
+            Log.LogDebug($"Providing sprite for key: {key}");
             provideHandle.Complete(sprite, true, (Il2CppSystem.Exception)null);
         }
         else
         {
-            Log.LogWarning($"[ModSpriteProvider] Sprite not found for key: {key}");
+            Log.LogWarning($"Sprite not found for key: {key}");
             provideHandle.Complete<Sprite>(null, false,
                 new Il2CppSystem.Exception($"ModSpriteProvider: sprite not found for key '{key}'"));
         }
