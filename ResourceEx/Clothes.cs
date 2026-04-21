@@ -90,6 +90,7 @@ public static partial class ResourceExManager
             m_OverrideVisualAsset = templateClothProfile.m_OverrideVisualAsset,
             notebookHorizontalOffset = config.notebookHorizontalOffset,
             notebookVerticalOffset = config.notebookVerticalOffset,
+            notebookUITitleOffset = new UnityEngine.Vector2(config.notebookUITitleHorizontalOffset, config.notebookUITitleVerticalOffset),
             skinIndex = new CharacterSkinSets.SkinSelectionInfo()
             {
                 index = skinDlcIndex,

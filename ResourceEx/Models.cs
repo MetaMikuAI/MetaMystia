@@ -124,6 +124,8 @@ public class ClothConfig
     public float izkayaHorizontalOffset { get; set; } = 0f;
     public float notebookHorizontalOffset { get; set; } = 0f;
     public float notebookVerticalOffset { get; set; } = 0f;
+    public float notebookUITitleHorizontalOffset { get; set; } = 0f;
+    public float notebookUITitleVerticalOffset { get; set; } = 0f;
     public string PackageRoot { get; set; }
 }
 
