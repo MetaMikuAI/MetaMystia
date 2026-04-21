@@ -120,6 +120,10 @@ public class ClothConfig
     public string spritePath { get; set; }
     public string portraitPath { get; set; }
     public CharacterSpriteSetFullConfig pixelFullConfig { get; set; }
+    public int izakayaSkinIndex { get; set; } = -1;
+    public float izkayaHorizontalOffset { get; set; } = 0f;
+    public float notebookHorizontalOffset { get; set; } = 0f;
+    public float notebookVerticalOffset { get; set; } = 0f;
     public string PackageRoot { get; set; }
 }
 
