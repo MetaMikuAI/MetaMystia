@@ -44,7 +44,7 @@ public static partial class PatchRegistry
         typeof(GameTimeManagerPatch),
         typeof(WorkSceneCookingSelectionPannel__c__DisplayClass79_0Patch),
         typeof(UIManagerPatch),
-        typeof(GuestGroupController__c__DisplayClass295_0Patch),
+        typeof(GuestGroupController__c__DisplayClass299_0Patch),
 
         typeof(RunTimeAlbumPatch),
 
