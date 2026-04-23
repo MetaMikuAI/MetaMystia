@@ -109,11 +109,58 @@ internal static class RelayConstants
 [AutoLog]
 public sealed partial class TcpServer : IDisposable
 {
-    private readonly TcpListener listener;
-    private readonly ConcurrentDictionary<int, TcpClient> clients = new();
-    private int _nextUid = 0;
+    // ---- 内部：每个客机独立的发送会话（异步发送队列，避免主线程阻塞） ----
+    private sealed class ClientSession
+    {
+        public readonly TcpClient Tcp;
+        private readonly BlockingCollection<byte[]> _sendQueue = new(boundedCapacity: 512);
 
-    private readonly object sendLock = new();
+        public ClientSession(TcpClient tcp, int uid, TcpServer server)
+        {
+            Tcp = tcp;
+            Tcp.SendTimeout = 10_000; // 10s safety net
+            ThreadPool.QueueUserWorkItem(_ =>
+            {
+                try
+                {
+                    var stream = Tcp.GetStream();
+                    foreach (var data in _sendQueue.GetConsumingEnumerable())
+                    {
+                        stream.Write(data, 0, data.Length);
+                    }
+                }
+                catch (Exception)
+                {
+                    server.HandleClientDisconnected(uid);
+                }
+            });
+        }
+
+        public bool TrySend(byte[] data)
+        {
+            try { return _sendQueue.TryAdd(data); }
+            catch { return false; }
+        }
+
+        /// <summary>
+        /// 仅在队列未拥塞时入队（用于低优先级包如位置同步）
+        /// </summary>
+        public bool TrySendLowPriority(byte[] data)
+        {
+            if (_sendQueue.Count > _sendQueue.BoundedCapacity / 4) return false;
+            return TrySend(data);
+        }
+
+        public void Close()
+        {
+            try { Tcp.Close(); } catch { }
+            try { _sendQueue.CompleteAdding(); } catch { }
+        }
+    }
+
+    private readonly TcpListener listener;
+    private readonly ConcurrentDictionary<int, ClientSession> clients = new();
+    private int _nextUid = 0;
 
     private volatile bool running;
     private Thread heartbeatThread;
@@ -121,9 +168,17 @@ public sealed partial class TcpServer : IDisposable
     private const int HeartbeatLoopInterval = 3000;
     private const int BufferLen = 4096;
 
-    public TcpServer(int port)
+    public TcpServer(int port, bool enableIPv6 = false)
     {
-        listener = new TcpListener(IPAddress.Any, port);
+        if (enableIPv6)
+        {
+            listener = new TcpListener(IPAddress.IPv6Any, port);
+            listener.Server.DualMode = true;
+        }
+        else
+        {
+            listener = new TcpListener(IPAddress.Any, port);
+        }
     }
 
     /// <summary>
@@ -203,7 +258,7 @@ public sealed partial class TcpServer : IDisposable
         }
 
         int uid = AssignNextUid();
-        clients[uid] = tcp;
+        clients[uid] = new ClientSession(tcp, uid, this);
 
         var ip = ((IPEndPoint)tcp.Client.RemoteEndPoint).Address.ToString();
         Log.LogMessage($"[S] Client uid={uid} connected from {ip}");
@@ -297,27 +352,26 @@ public sealed partial class TcpServer : IDisposable
     {
         if (!running) return;
         byte[] data = packet.ToBytesWithLength();
-        List<int> failed = null;
 
-        lock (sendLock)
+        foreach (var kvp in clients)
         {
-            foreach (var kvp in clients)
-            {
-                try
-                {
-                    kvp.Value.GetStream().Write(data, 0, data.Length);
-                }
-                catch (Exception ex)
-                {
-                    Log.LogWarning($"[S] Broadcast to uid={kvp.Key} failed: {ex.Message}");
-                    (failed ??= new()).Add(kvp.Key);
-                }
-            }
+            if (!kvp.Value.TrySend(data))
+                Log.LogWarning($"[S] Broadcast to uid={kvp.Key}: send queue full, packet dropped.");
         }
+    }
 
-        if (failed != null)
-            foreach (var uid in failed)
-                HandleClientDisconnected(uid);
+    /// <summary>
+    /// 低优先级广播（拥塞时丢弃，用于位置同步等）
+    /// </summary>
+    public void BroadcastLowPriority(NetPacket packet)
+    {
+        if (!running) return;
+        byte[] data = packet.ToBytesWithLength();
+
+        foreach (var kvp in clients)
+        {
+            kvp.Value.TrySendLowPriority(data);
+        }
     }
 
     /// <summary>
@@ -325,21 +379,11 @@ public sealed partial class TcpServer : IDisposable
     /// </summary>
     public void SendTo(int uid, NetPacket packet)
     {
-        if (!running || !clients.TryGetValue(uid, out var client)) return;
+        if (!running || !clients.TryGetValue(uid, out var session)) return;
 
-        lock (sendLock)
-        {
-            try
-            {
-                byte[] data = packet.ToBytesWithLength();
-                client.GetStream().Write(data, 0, data.Length);
-            }
-            catch (Exception ex)
-            {
-                Log.LogWarning($"[S] SendTo uid={uid} failed: {ex.Message}");
-                HandleClientDisconnected(uid);
-            }
-        }
+        byte[] data = packet.ToBytesWithLength();
+        if (!session.TrySend(data))
+            Log.LogWarning($"[S] SendTo uid={uid}: send queue full, packet dropped.");
     }
 
     /// <summary>
@@ -358,28 +402,13 @@ public sealed partial class TcpServer : IDisposable
     public void SendRawToExcept(int exceptUid, byte[] dataWithLength)
     {
         if (!running) return;
-        List<int> failed = null;
 
-        lock (sendLock)
+        foreach (var kvp in clients)
         {
-            foreach (var kvp in clients)
-            {
-                if (kvp.Key == exceptUid) continue;
-                try
-                {
-                    kvp.Value.GetStream().Write(dataWithLength, 0, dataWithLength.Length);
-                }
-                catch (Exception ex)
-                {
-                    Log.LogWarning($"[S] SendRawToExcept uid={kvp.Key} failed: {ex.Message}");
-                    (failed ??= new()).Add(kvp.Key);
-                }
-            }
+            if (kvp.Key == exceptUid) continue;
+            if (!kvp.Value.TrySend(dataWithLength))
+                Log.LogWarning($"[S] SendRawToExcept uid={kvp.Key}: send queue full, packet dropped.");
         }
-
-        if (failed != null)
-            foreach (var uid in failed)
-                HandleClientDisconnected(uid);
     }
 
     // =========================
@@ -389,15 +418,7 @@ public sealed partial class TcpServer : IDisposable
     /// <summary>
     /// 断开指定客机
     /// </summary>
-    public void DisconnectClient(int uid)
-    {
-        if (clients.TryRemove(uid, out var client))
-        {
-            try { client.Close(); } catch { }
-            Log.LogMessage($"[S] Client uid={uid} disconnected.");
-            MpManager.OnClientDisconnected(uid);
-        }
-    }
+    public void DisconnectClient(int uid) => HandleClientDisconnected(uid);
 
     /// <summary>
     /// 断开所有客机
@@ -406,16 +427,16 @@ public sealed partial class TcpServer : IDisposable
     {
         foreach (var kvp in clients)
         {
-            try { kvp.Value.Close(); } catch { }
+            kvp.Value.Close();
         }
         clients.Clear();
     }
 
     private void HandleClientDisconnected(int uid)
     {
-        if (clients.TryRemove(uid, out var client))
+        if (clients.TryRemove(uid, out var session))
         {
-            try { client.Close(); } catch { }
+            session.Close();
             Log.LogMessage($"[S] Client uid={uid} disconnected.");
             MpManager.OnClientDisconnected(uid);
         }
@@ -440,9 +461,9 @@ public sealed partial class TcpServer : IDisposable
     /// </summary>
     public string GetClientIp(int uid)
     {
-        if (clients.TryGetValue(uid, out var client))
+        if (clients.TryGetValue(uid, out var session))
         {
-            try { return ((IPEndPoint)client.Client.RemoteEndPoint)?.Address.ToString() ?? "?"; }
+            try { return ((IPEndPoint)session.Tcp.Client.RemoteEndPoint)?.Address.ToString() ?? "?"; }
             catch { return "?"; }
         }
         return "?";
@@ -462,9 +483,10 @@ public sealed partial class TcpClientWrapper : IDisposable
 
     private Task receiveTask;
     private Task heartbeatTask;
+    private Task sendTask;
 
     private CancellationTokenSource cts;
-    private readonly object sendLock = new();
+    private BlockingCollection<byte[]> _sendQueue;
 
     private int closed = 0;
     private int connected = 0;
@@ -509,7 +531,17 @@ public sealed partial class TcpClientWrapper : IDisposable
 
         Log.LogMessage("[C] Connecting...");
 
-        var tcp = new TcpClient();
+        // Resolve address family: if the host parses as an IPv6 address, use InterNetworkV6;
+        // otherwise default to InterNetwork. DNS names use ConnectAsync which resolves automatically.
+        TcpClient tcp;
+        if (IPAddress.TryParse(host, out var parsedAddr) && parsedAddr.AddressFamily == AddressFamily.InterNetworkV6)
+        {
+            tcp = new TcpClient(AddressFamily.InterNetworkV6);
+        }
+        else
+        {
+            tcp = new TcpClient();
+        }
 
         try
         {
@@ -528,8 +560,11 @@ public sealed partial class TcpClientWrapper : IDisposable
             cts = new CancellationTokenSource();
             var loopToken = cts.Token;
 
+            _sendQueue = new BlockingCollection<byte[]>(boundedCapacity: 512);
+
             receiveTask = Task.Run(() => ReceiveLoopAsync(loopToken), loopToken);
             heartbeatTask = Task.Run(() => HeartbeatLoopAsync(loopToken), loopToken);
+            sendTask = Task.Run(() => SendLoopAsync(loopToken), loopToken);
 
             Volatile.Write(ref connected, 1);
             Log.LogMessage("[C] Connected.");
@@ -644,24 +679,59 @@ public sealed partial class TcpClientWrapper : IDisposable
     // 发送
     // =========================
 
-    public void Send(NetPacket packet)
+    private async Task SendLoopAsync(CancellationToken token)
     {
-        if (!IsConnected || stream == null)
-            return;
-
-        lock (sendLock)
+        try
         {
-            try
+            foreach (var data in _sendQueue.GetConsumingEnumerable(token))
             {
-                byte[] data = packet.ToBytesWithLength();
-                stream.Write(data, 0, data.Length);
-            }
-            catch (Exception ex)
-            {
-                Log.LogWarning($"[C] Send failed: {packet.GetFirstAction()}, reason {ex.Message}, {ex.StackTrace}");
-                _ = ScheduleReconnectAsync();
+                await stream!.WriteAsync(data, 0, data.Length, token);
             }
         }
+        catch (OperationCanceledException) { }
+        catch (Exception ex)
+        {
+            Log.LogWarning($"[C] SendLoop error: {ex.Message}");
+            await ScheduleReconnectAsync();
+        }
+    }
+
+    public void Send(NetPacket packet)
+    {
+        if (!IsConnected)
+            return;
+
+        try
+        {
+            byte[] data = packet.ToBytesWithLength();
+            if (!_sendQueue.TryAdd(data))
+                Log.LogWarning("[C] Send queue full, packet dropped.");
+        }
+        catch (Exception ex)
+        {
+            Log.LogWarning($"[C] Send enqueue failed: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// 发送队列是否拥塞（填充率 > 25%）
+    /// </summary>
+    public bool IsSendCongested => _sendQueue != null && _sendQueue.Count > _sendQueue.BoundedCapacity / 4;
+
+    /// <summary>
+    /// 低优先级发送：拥塞时直接丢弃（用于位置同步等）
+    /// </summary>
+    public void SendLowPriority(NetPacket packet)
+    {
+        if (!IsConnected || IsSendCongested)
+            return;
+
+        try
+        {
+            byte[] data = packet.ToBytesWithLength();
+            _sendQueue.TryAdd(data);
+        }
+        catch { }
     }
 
     // =========================
@@ -683,6 +753,7 @@ public sealed partial class TcpClientWrapper : IDisposable
         Volatile.Write(ref connected, 0);
 
         try { cts?.Cancel(); } catch { }
+        try { _sendQueue?.CompleteAdding(); } catch { }
 
         try { stream?.Dispose(); } catch { }
         try { client?.Dispose(); } catch { }

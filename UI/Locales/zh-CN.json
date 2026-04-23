@@ -176,5 +176,14 @@
     "MpMaxPlayersRange": "最大玩家数不能小于 2",
     "MpDescMaxPlayers": "查看或设置最大玩家数",
     "GameVersionMismatchNotify": "预期游戏版本: {0}, 当前版本: {1}, 可能会发生未知错误！",
-    "Il2CppInteropPatchedRestartRequired": "已自动更新 Il2CppInterop 补丁，请重启游戏以生效。"
+    "Il2CppInteropPatchedRestartRequired": "已自动更新 Il2CppInterop 补丁，请重启游戏以生效。",
+    "MpStartDeprecated": "⚠ '/mp start server' 已弃用，请使用 '/mp start'",
+    "MpStartedOnPort": "已在端口 {0} 启动主机 ✓",
+    "MpPortRange": "端口必须在 1 到 65535 之间",
+    "MpConnectInProgress": "正在连接中，请稍候...",
+    "MpIpv6Enabled": "IPv6 双栈监听已启用",
+    "MpIpv6Disabled": "IPv6 双栈监听已关闭",
+    "MpIpv6Restarted": "服务器已重启以应用 IPv6 设置",
+    "MpIpv6RejectConnected": "有客机连接时不能切换 IPv6 设置，请先断开连接",
+    "MpDescIpv6": "启用或关闭 IPv6 双栈监听"
 }

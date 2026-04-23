@@ -125,7 +125,7 @@ public partial class HelloAction : Action
             Version = Plugin.ModVersion,
             CurrentGameScene = MpManager.LocalScene,
             GameVersion = Plugin.GameVersion,
-            PeerDataBase = PlayerManager.Local.DataBase,
+            PeerDataBase = PlayerManager.Local.IncrementalDataBase,
             PeerSkin = PlayerManager.Local.Skin
         }.SendToHostOrBroadcast();
     }

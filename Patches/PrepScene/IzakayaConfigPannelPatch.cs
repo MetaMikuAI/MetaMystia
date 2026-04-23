@@ -59,9 +59,9 @@ public partial class IzakayaConfigPannelPatch
 
     }
 
-    [HarmonyPatch(nameof(IzakayaConfigPannel._SolveDailyCompletion_b__61_7))]
+    [HarmonyPatch(nameof(IzakayaConfigPannel._SolveDailyCompletion_b__64_7))]
     [HarmonyPrefix]
-    public static bool _SolveDailyCompletion_b__61_7_Prefix()
+    public static bool _SolveDailyCompletion_b__64_7_Prefix()
     {
         if (!MpManager.IsConnected)
         {
@@ -78,9 +78,9 @@ public partial class IzakayaConfigPannelPatch
         return SkipOriginal;
     }
 
-    [HarmonyPatch(nameof(IzakayaConfigPannel._SolveDailyCompletion_b__61_7))]
+    [HarmonyPatch(nameof(IzakayaConfigPannel._SolveDailyCompletion_b__64_7))]
     [HarmonyReversePatch]
-    private static void _SolveDailyCompletion_b__61_7_Original(IzakayaConfigPannel __instance)
+    private static void _SolveDailyCompletion_b__64_7_Original(IzakayaConfigPannel __instance)
     {
         throw new System.NotImplementedException();
     }
@@ -92,6 +92,6 @@ public partial class IzakayaConfigPannelPatch
         string[] ExceptPanels = ["WorkSceneTrayPannel(Clone)", "WorkSceneSustainedPannel(Clone)"];  // 白玉楼测验
         Panel.ClosePanelUntil("IzakayaConfigPannelNew(Clone)", ExceptPanels);
         WorkSceneManager.Clear();
-        _SolveDailyCompletion_b__61_7_Original(instanceRef);
+        _SolveDailyCompletion_b__64_7_Original(instanceRef);
     }
 }

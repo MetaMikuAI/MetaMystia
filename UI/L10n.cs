@@ -244,6 +244,17 @@ public enum TextId
     MpMaxPlayersHostOnly,
     MpMaxPlayersRange,
     MpDescMaxPlayers,
+    MpStartDeprecated,
+    MpStartedOnPort,
+    MpPortRange,
+    MpConnectInProgress,
+
+    // IPv6
+    MpIpv6Enabled,
+    MpIpv6Disabled,
+    MpIpv6Restarted,
+    MpIpv6RejectConnected,
+    MpDescIpv6,
 }
 
 public static class L10n

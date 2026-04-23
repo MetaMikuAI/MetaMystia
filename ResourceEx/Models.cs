@@ -120,6 +120,12 @@ public class ClothConfig
     public string spritePath { get; set; }
     public string portraitPath { get; set; }
     public CharacterSpriteSetFullConfig pixelFullConfig { get; set; }
+    public int izakayaSkinIndex { get; set; } = -1;
+    public float izkayaHorizontalOffset { get; set; } = 0f;
+    public float notebookHorizontalOffset { get; set; } = 0f;
+    public float notebookVerticalOffset { get; set; } = 0f;
+    public float notebookUITitleHorizontalOffset { get; set; } = 0f;
+    public float notebookUITitleVerticalOffset { get; set; } = 0f;
     public string PackageRoot { get; set; }
 }
 
@@ -172,6 +178,7 @@ public class DialogConfig
     public Common.DialogUtility.SpeakerIdentity.Identity characterType { get; set; }
     public int pid { get; set; }
     public Common.DialogUtility.Position position { get; set; }
+    public UI.CustomAction[] actions { get; set; }
     public string text { get; set; }
 }
 
@@ -263,6 +270,7 @@ public class MissionFinishConditionConfig
     public ConditionType conditionType { get; set; }
     public int? amount { get; set; }
     public int? tag { get; set; }
+    public int[] tags { get; set; }
     public SellableType? sellableType { get; set; }
     public string label { get; set; }
     public ProductType? productType { get; set; }

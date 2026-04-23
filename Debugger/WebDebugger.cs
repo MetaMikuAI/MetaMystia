@@ -341,8 +341,14 @@ namespace MetaMystia.Debugger
         private async Task HandleSearchResources(HttpListenerRequest request, HttpListenerResponse response)
         {
             string className = request.QueryString["className"];
+            string filter = request.QueryString["filter"];
             object result;
-            try { result = await RunOnMainThreadAsync(() => ReflectionEvaluator.FindResources(className)); }
+            try
+            {
+                result = string.IsNullOrWhiteSpace(filter)
+                    ? await RunOnMainThreadAsync(() => ReflectionEvaluator.FindResources(className))
+                    : await RunOnMainThreadAsync(() => ReflectionEvaluator.FindResources(className, filter));
+            }
             catch (Exception ex) { result = new { error = ex.Message }; }
             WriteJson(response, result);
         }

@@ -193,6 +193,20 @@ public abstract partial class Action
         MpManager.SendToHostOrBroadcast(packet);
     }
 
+    /// <summary>
+    /// 低优先级发送（拥塞时丢弃）
+    /// </summary>
+    protected void SendToHostOrBroadcastLowPriority()
+    {
+        if (!MpManager.IsConnected) return;
+        if (ShouldDiscardOnStory()) return;
+
+        LogActionSend();
+
+        var packet = NetPacket.FromSingleAction(this);
+        MpManager.SendToHostOrBroadcastLowPriority(packet);
+    }
+
     protected void SendToPeer(long peerId)
     {
         if (!MpManager.IsConnected) return;

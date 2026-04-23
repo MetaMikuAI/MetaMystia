@@ -16,7 +16,7 @@ public class Plugin : BasePlugin
 {
     public static Plugin Instance;
     public static string GameVersion => Common.LoadingSceneManager.VersionData;
-    public static string TargetGameVersion => "RELEASE 4.3.1";
+    public static string TargetGameVersion => "RELEASE 4.4.0d";
     public readonly static string ModVersion = MyPluginInfo.PLUGIN_VERSION;
 
     public static TraceLog tl = new TraceLog(); // for debug
@@ -66,6 +66,15 @@ public class Plugin : BasePlugin
         PatchRegistry.ApplyAll(harmony);
 
         Network.Action.RegisterAllFormatter();
+
+        try
+        {
+            ModAssetRegistry.Initialize();
+        }
+        catch (Exception ex)
+        {
+            Log.LogWarning($"Early ModAssetRegistry init failed (will retry later): {ex.Message}");
+        }
 
         try
         {

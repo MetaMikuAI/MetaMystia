@@ -1,6 +1,7 @@
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.Linq;
+using System.Threading.Tasks;
 
 using MetaMystia.Network;
 using MetaMystia.UI;
@@ -13,10 +14,42 @@ public static class MpCommands
     {
         var mpCmd = new Command("mp", "Multiplayer commands");
 
-        // /mp start
+        // /mp start [port]
         var startCmd = new Command("start", "Start multiplayer as host");
+        var startPortArg = new Argument<int>("port", () => MpManager.ConfigPort, "Server port");
+        startCmd.AddArgument(startPortArg);
         startCmd.SetHandler(ctx =>
         {
+            if (MpManager.IsRunning && MpManager.IsHost)
+            {
+                ctx.Log(TextId.MpAlreadyStarted.Get(MpManager.RoleName));
+                return;
+            }
+            if (MpManager.IsRunning && MpManager.IsClient)
+            {
+                ctx.Log(TextId.MpSwitchingToHost.Get());
+                MpManager.Stop();
+            }
+            int port = ctx.ParseResult.GetValueForArgument(startPortArg);
+            if (port < 1 || port > 65535)
+            {
+                ctx.Log(ConsoleFormat.Err(TextId.MpPortRange.Get()));
+                return;
+            }
+            if (MpManager.Start(MpManager.ROLE.Host, port))
+            {
+                if (port != MpManager.DEFAULT_PORT)
+                    ctx.Log(TextId.MpStartedOnPort.Get(port));
+                else
+                    ctx.Log(TextId.MpStartedAsHost.Get());
+            }
+        });
+
+        // /mp start server (deprecated alias)
+        var startServerCmd = new Command("server", "Start as host (deprecated, use '/mp start')");
+        startServerCmd.SetHandler(ctx =>
+        {
+            ctx.Log(ConsoleFormat.Warn(TextId.MpStartDeprecated.Get()));
             if (MpManager.IsRunning && MpManager.IsHost)
             {
                 ctx.Log(TextId.MpAlreadyStarted.Get(MpManager.RoleName));
@@ -30,6 +63,8 @@ public static class MpCommands
             if (MpManager.Start(MpManager.ROLE.Host))
                 ctx.Log(TextId.MpStartedAsHost.Get());
         });
+        startCmd.AddCommand(startServerCmd);
+
         mpCmd.AddCommand(startCmd);
 
         // /mp stop
@@ -56,7 +91,7 @@ public static class MpCommands
         {
             ctx.Log(ConsoleFormat.Header("Multiplayer Status"));
             ctx.Log($"  {ConsoleFormat.Dim("Role:")} {ConsoleFormat.Cmd(MpManager.RoleName)} {ConsoleFormat.Dim("|")} {ConsoleFormat.Dim("ID:")} {ConsoleFormat.Arg(MpManager.PlayerId)} {ConsoleFormat.Dim($"(uid={PlayerManager.Local.Uid})")}");
-            ctx.Log($"  {ConsoleFormat.Dim("Running:")} {(MpManager.IsRunning ? ConsoleFormat.Ok("Yes") : ConsoleFormat.Err("No"))} {ConsoleFormat.Dim("|")} {ConsoleFormat.Dim("Connected:")} {(MpManager.IsConnected ? ConsoleFormat.Ok("Yes") : ConsoleFormat.Err("No"))}");
+            ctx.Log($"  {ConsoleFormat.Dim("Running:")} {(MpManager.IsRunning ? ConsoleFormat.Ok("Yes") : ConsoleFormat.Err("No"))} {ConsoleFormat.Dim("|")} {ConsoleFormat.Dim("Connected:")} {(MpManager.IsConnected ? ConsoleFormat.Ok("Yes") : ConsoleFormat.Err("No"))} {ConsoleFormat.Dim("|")} {ConsoleFormat.Dim("IPv6:")} {(MpManager.EnableIPv6 ? ConsoleFormat.Ok("On") : ConsoleFormat.Dim("Off"))}");
             if (MpManager.IsConnected)
             {
                 ctx.Log($"  {ConsoleFormat.Dim("Ping:")} {MpManager.Latency}ms {ConsoleFormat.Dim("|")} {ConsoleFormat.Dim("Players:")} {MpManager.AllPlayersCount}/{ConfigManager.MaxPlayers.Value} {ConsoleFormat.Dim("|")} {ConsoleFormat.Dim("Scene:")} {MpManager.LocalScene}");
@@ -95,39 +130,48 @@ public static class MpCommands
         portArg.SetDefaultValue(null);
         connectCmd.AddArgument(addressArg);
         connectCmd.AddArgument(portArg);
-        connectCmd.SetHandler(async ctx =>
+        connectCmd.SetHandler(ctx =>
         {
             string address = ctx.ParseResult.GetValueForArgument(addressArg);
             int? port = ctx.ParseResult.GetValueForArgument(portArg);
-            bool result;
 
-            if (port.HasValue)
+            if (MpManager.IsConnected)
             {
-                result = await MpManager.ConnectToPeerAsync(address, port.Value);
+                ctx.Log(ConsoleFormat.Err(TextId.ConnectCommandConnected.Get(address)));
+                return;
             }
-            else
+            if (MpManager.IsConnecting)
             {
-                // Try parsing ip:port format
+                ctx.Log(ConsoleFormat.Warn(TextId.MpConnectInProgress.Get()));
+                return;
+            }
+
+            // Fire-and-forget: resolve address then connect on background thread
+            string host = address;
+            int resolvedPort = port ?? -1;
+
+            if (!port.HasValue)
+            {
                 int idx = address.LastIndexOf(':');
                 if (idx > 0 && idx != address.Length - 1)
                 {
-                    string host = address[..idx];
                     string portStr = address[(idx + 1)..];
                     if (int.TryParse(portStr, out int parsedPort))
-                        result = await MpManager.ConnectToPeerAsync(host, parsedPort);
-                    else
-                        result = await MpManager.ConnectToPeerAsync(address);
-                }
-                else
-                {
-                    result = await MpManager.ConnectToPeerAsync(address);
+                    {
+                        host = address[..idx];
+                        resolvedPort = parsedPort;
+                    }
                 }
             }
 
-            if (result)
-                ctx.Log(TextId.ConnectCommandConnected.Get(address));
-            else
-                ctx.Log(TextId.ConnectCommandFail.Get(address));
+            _ = Task.Run(async () =>
+            {
+                bool result = await MpManager.ConnectToPeerAsync(host, resolvedPort);
+                if (result)
+                    InGameConsole.ShowPassiveFromAnyThread(TextId.ConnectCommandConnected.Get(address));
+                else
+                    InGameConsole.ShowPassiveFromAnyThread(TextId.ConnectCommandFail.Get(address));
+            });
         });
         mpCmd.AddCommand(connectCmd);
 
@@ -250,11 +294,35 @@ public static class MpCommands
         });
         mpCmd.AddCommand(continueCmd);
 
+        // /mp ipv6 <enable|disable>
+        var ipv6Cmd = new Command("ipv6", "Enable or disable IPv6 dual-stack listening");
+        var ipv6ActionArg = new Argument<string>("action", "enable or disable")
+            .FromAmong("enable", "disable");
+        ipv6Cmd.AddArgument(ipv6ActionArg);
+        ipv6Cmd.SetHandler(ctx =>
+        {
+            string action = ctx.ParseResult.GetValueForArgument(ipv6ActionArg);
+            bool enable = action == "enable";
+            if (MpManager.IsConnectedHost)
+            {
+                ctx.Log(ConsoleFormat.Err(TextId.MpIpv6RejectConnected.Get()));
+                return;
+            }
+            ConfigManager.EnableIPv6.Value = enable;
+            ctx.Log(enable ? TextId.MpIpv6Enabled.Get() : TextId.MpIpv6Disabled.Get());
+            if (MpManager.IsRunning && MpManager.IsHost)
+            {
+                MpManager.Restart();
+                ctx.Log(TextId.MpIpv6Restarted.Get());
+            }
+        });
+        mpCmd.AddCommand(ipv6Cmd);
+
         // Default handler when /mp is called without subcommand
         mpCmd.SetHandler(ctx =>
         {
             ctx.Log(ConsoleFormat.Header(TextId.MpHelpHeader.Get()));
-            ctx.Log(ConsoleFormat.SubCmd("/mp start", null, TextId.MpDescStart.Get()));
+            ctx.Log(ConsoleFormat.SubCmd("/mp start", "[port]", TextId.MpDescStart.Get()));
             ctx.Log(ConsoleFormat.SubCmd("/mp stop", null, TextId.MpDescStop.Get()));
             ctx.Log(ConsoleFormat.SubCmd("/mp restart", null, TextId.MpDescRestart.Get()));
             ctx.Log(ConsoleFormat.SubCmd("/mp status", null, TextId.MpDescStatus.Get()));
@@ -264,14 +332,16 @@ public static class MpCommands
             ctx.Log(ConsoleFormat.SubCmd("/mp kick", "id|uid <target>", TextId.MpDescKick.Get()));
             ctx.Log(ConsoleFormat.SubCmd("/mp maxplayers", "[count]", TextId.MpDescMaxPlayers.Get()));
             ctx.Log(ConsoleFormat.SubCmd("/mp continue", "<day|prep>", TextId.MpDescContinue.Get()));
+            ctx.Log(ConsoleFormat.SubCmd("/mp ipv6", "<enable|disable>", TextId.MpDescIpv6.Get()));
             ctx.Log(ConsoleFormat.Line);
         });
 
         root.AddCommand(mpCmd);
 
-        CommandRegistry.RegisterCompletions("mp", 0, "start", "stop", "restart", "status", "id", "connect", "disconnect", "kick", "maxplayers", "continue");
+        CommandRegistry.RegisterCompletions("mp", 0, "start", "stop", "restart", "status", "id", "connect", "disconnect", "kick", "maxplayers", "continue", "ipv6");
 
         CommandRegistry.RegisterCompletions("mp continue", 0, "day", "prep");
+        CommandRegistry.RegisterCompletions("mp ipv6", 0, "enable", "disable");
         CommandRegistry.RegisterCompletions("mp kick", 0, "id", "uid");
         CommandRegistry.RegisterDynamicCompletions("mp kick id", 0, () =>
             PlayerManager.Peers.Values.Select(p => p.Id).ToArray());

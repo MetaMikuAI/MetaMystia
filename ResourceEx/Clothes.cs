@@ -84,12 +84,13 @@ public static partial class ResourceExManager
         {
             index = config.id,
             frameTime = 0f,
-            izakayaSkinIndex = -1,
-            izkayaHorizontalOffset = 0f,
+            izakayaSkinIndex = config.izakayaSkinIndex,
+            izkayaHorizontalOffset = config.izkayaHorizontalOffset,
             m_OverrideDynamicVisualAsset = null,
             m_OverrideVisualAsset = templateClothProfile.m_OverrideVisualAsset,
-            notebookHorizontalOffset = 0f,
-            notebookVerticalOffset = 0f,
+            notebookHorizontalOffset = config.notebookHorizontalOffset,
+            notebookVerticalOffset = config.notebookVerticalOffset,
+            notebookUITitleOffset = new UnityEngine.Vector2(config.notebookUITitleHorizontalOffset, config.notebookUITitleVerticalOffset),
             skinIndex = new CharacterSkinSets.SkinSelectionInfo()
             {
                 index = skinDlcIndex,

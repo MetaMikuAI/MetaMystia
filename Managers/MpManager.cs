@@ -21,11 +21,15 @@ public static partial class MpManager
     }
 
     #region Const Values
-    private const int TCP_PORT = 40815;
+    public const int DEFAULT_PORT = 40815;
     public const int HOST_UID = 0;
     public const int UNASSIGNED_UID = -1;
     private const string SyncActionCommandID = "SyncAction";
     #endregion
+
+    public static int ConfigPort => ConfigManager.DefaultPort?.Value ?? DEFAULT_PORT;
+    public static int CurrentPort { get; private set; } = DEFAULT_PORT;
+    public static bool EnableIPv6 => ConfigManager.EnableIPv6?.Value ?? false;
 
     /// <summary>
     /// 校验玩家 ID 是否合法：不能为空，不能包含空格、尖括号或控制字符
@@ -73,7 +77,7 @@ public static partial class MpManager
     public static bool IsRunning { get; private set; }
     public static bool IsHost => Role == ROLE.Host;
     public static bool IsClient => Role == ROLE.Client;
-    private static bool IsConnecting = false;
+    public static bool IsConnecting { get; private set; } = false;
     public static bool IsConnected => (IsHost ? server?.HasAnyClient : client?.IsConnected) ?? false;
     public static bool IsConnectedClient => IsConnected && IsClient;
     public static bool IsConnectedHost => IsConnected && IsHost;
@@ -119,14 +123,15 @@ public static partial class MpManager
         else
         {
             client?.Close();
-            server = new(TCP_PORT);
+            server = new(CurrentPort, EnableIPv6);
             server.Start();
             Role = ROLE.Host;
         }
     }
 
-    public static bool Start(ROLE r = ROLE.Host)
+    public static bool Start(ROLE r = ROLE.Host, int port = -1)
     {
+        if (port == -1) port = ConfigPort;
         Log.Info($"{DebugText}");
         if (!Plugin.AllPatched)
         {
@@ -143,15 +148,16 @@ public static partial class MpManager
 
         IsRunning = true;
         Role = r;
+        CurrentPort = port;
         PlayerManager.Local.Id = PlayerId;
 
         switch (r)
         {
             case ROLE.Host:
                 PlayerManager.Local.Uid = HOST_UID;
-                server = new(TCP_PORT);
+                server = new(CurrentPort, EnableIPv6);
                 server.Start();
-                Log.LogInfo("Starting MpManager as host");
+                Log.LogInfo($"Starting MpManager as host on port {CurrentPort}");
                 break;
             case ROLE.Client:
                 PlayerManager.Local.Uid = UNASSIGNED_UID;
@@ -185,12 +191,14 @@ public static partial class MpManager
 
     public static bool Restart()
     {
+        var port = CurrentPort;
         Stop();
-        return Start(Role);
+        return Start(Role, port);
     }
 
-    public static async Task<bool> ConnectToPeerAsync(string peerIp, int port = TCP_PORT, bool stop_existed_server = true)
+    public static async Task<bool> ConnectToPeerAsync(string peerIp, int port = -1, bool stop_existed_server = true)
     {
+        if (port == -1) port = ConfigPort;
         if (!IsRunning && !Start(ROLE.Client))
         {
             return false;
@@ -283,6 +291,7 @@ public static partial class MpManager
         {
             peerId = peer.Id;
             Log.LogMessage($"Client uid={uid} (id='{peerId}') disconnected");
+            InGameConsole.ShowPassiveFromAnyThread(TextId.PeerLeft.Get(peerId));
             Network.PeerLeaveAction.BroadcastPeerLeave(uid);
             PlayerManager.RemovePeer(uid);
         }
@@ -392,6 +401,21 @@ public static partial class MpManager
     }
 
     /// <summary>
+    /// 低优先级发送：拥塞时丢弃（用于位置同步等高频包）
+    /// </summary>
+    public static void SendToHostOrBroadcastLowPriority(NetPacket packet)
+    {
+        if (IsHost)
+        {
+            server?.BroadcastLowPriority(packet);
+        }
+        else
+        {
+            client?.SendLowPriority(packet);
+        }
+    }
+
+    /// <summary>
     /// 客机→主机
     /// </summary>
     public static void SendToHost(NetPacket packet)
@@ -427,10 +451,13 @@ public static partial class MpManager
             if (IsHost)
             {
                 server.DisconnectAllClients();
+                PlayerManager.ClearPeers();
+                CommandScheduler.RemoveKeyFromKeyQueue(PeerGetCharacterUnitNotNullCommand);
+                CommandScheduler.CancelInterval(SyncActionCommandID);
             }
             else
             {
-                client.Close();
+                client.Close(); // triggers OnDisconnected() internally
             }
             Log.LogMessage("All peer connections disconnected");
         }
@@ -443,6 +470,11 @@ public static partial class MpManager
     {
         if (!IsHost) return;
         server?.DisconnectClient(uid);
+        // 清理幽灵 Peer (Socket 意外断开而 PlayerManager 中残留 Peer)
+        if (PlayerManager.Peers.ContainsKey(uid))
+        {
+            OnClientDisconnected(uid);
+        }
     }
 
     /// <summary>
@@ -479,7 +511,7 @@ public static partial class MpManager
     {
         StringBuilder status = new();
         status.AppendLine($"Self: {RoleTag} {PlayerId} (uid={PlayerManager.Local.Uid})");
-        status.AppendLine($"Port: {TCP_PORT} | Running: {(IsRunning ? "Yes" : "No")} | Connected: {(IsConnected ? "Yes" : "No")}");
+        status.AppendLine($"Port: {CurrentPort} | Running: {(IsRunning ? "Yes" : "No")} | Connected: {(IsConnected ? "Yes" : "No")}");
         if (IsConnected)
         {
             status.AppendLine($"Ping: {Latency} ms | Players: {AllPlayersCount}");
@@ -535,10 +567,20 @@ public static partial class MpManager
         Log.Message($"LocalScene transit from {LocalScene} -> {newScene}");
         SceneTransitAction.Send(newScene);
         LocalScene = newScene;
-        if (newScene == Common.UI.Scene.MainScene && IsConnected)
+        if (newScene == Common.UI.Scene.MainScene)
         {
-            Log.Message($"Transit to {newScene}, disconnecting peers");
-            DisconnectPeer();
+            if (IsConnected)
+            {
+                Log.Message($"Transit to {newScene}, disconnecting peers");
+                DisconnectPeer();
+            }
+            else if (!PlayerManager.Peers.IsEmpty)
+            {
+                Log.Message($"Transit to {newScene}, clearing stale peers");
+                PlayerManager.ClearPeers();
+                CommandScheduler.RemoveKeyFromKeyQueue(PeerGetCharacterUnitNotNullCommand);
+                CommandScheduler.CancelInterval(SyncActionCommandID);
+            }
         }
     }
 

@@ -42,7 +42,7 @@ public partial class HelloAckAction : Action
         Log.LogMessage($"Assigned UID: {AssignedUid}");
 
         // 注册主机为 peer (uid=0)
-        var hostPeer = PlayerManager.AddPeer(0, HostInfo.PeerId, HostInfo.DataBase, HostInfo.Skin);
+        PlayerManager.AddPeer(0, HostInfo.PeerId, HostInfo.DataBase, HostInfo.Skin);
 
         // 注册已有的其他 peer
         foreach (var p in ExistingPeers)

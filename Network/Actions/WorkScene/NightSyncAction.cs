@@ -33,4 +33,5 @@ public partial class NightSyncAction : Action
     public static void Send() => SyncAction.Send();
 
     public new void SendToHostOrBroadcast() => base.SendToHostOrBroadcast();
+    public new void SendToHostOrBroadcastLowPriority() => base.SendToHostOrBroadcastLowPriority();
 }

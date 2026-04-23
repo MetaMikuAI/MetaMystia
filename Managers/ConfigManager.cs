@@ -28,6 +28,8 @@ public static partial class ConfigManager
     public static ConfigEntry<int> ConsoleHistorySize;
     public static ConfigEntry<string> ConsoleHistoryFile;
     public static ConfigEntry<int> MaxPlayers;
+    public static ConfigEntry<int> DefaultPort;
+    public static ConfigEntry<bool> EnableIPv6;
     public static ConfigEntry<string> LocaleOverride;
     public static ConfigEntry<bool> NoteBookSkinPortrait;
 
@@ -41,6 +43,7 @@ public static partial class ConfigManager
     // Player list layout
     public static ConfigEntry<float> PlayerListX;
     public static ConfigEntry<float> PlayerListY;
+    public static ConfigEntry<int> PlayerListFontSize;
 
     // Keybinds
     public static ConfigEntry<KeyCode> KeyToggleLog;
@@ -76,6 +79,15 @@ public static partial class ConfigManager
                 "Maximum number of players allowed (including host)\n最大玩家数（含主机）",
                 new BepInEx.Configuration.AcceptableValueRange<int>(2, int.MaxValue)));
 
+        DefaultPort = Config.Bind("Multiplayer", "DefaultPort", 40815,
+            new BepInEx.Configuration.ConfigDescription(
+                "Default TCP port for hosting a server\n主机默认 TCP 端口",
+                new BepInEx.Configuration.AcceptableValueRange<int>(1, 65535)));
+
+        EnableIPv6 = Config.Bind("Multiplayer", "EnableIPv6", false,
+            "Enable IPv6 dual-stack listening (IPv4 always works)\n" +
+            "启用 IPv6 双栈监听（IPv4 始终可用）");
+
         LocaleOverride = Config.Bind("General", "LocaleOverride", "",
             "Path to a directory containing locale override JSON files (en.json, zh-CN.json).\n" +
             "Supports absolute or relative path (relative to BepInEx/plugins/).\n" +
@@ -103,6 +115,8 @@ public static partial class ConfigManager
             "Player list panel X position (pixels from left)\n玩家列表面板X坐标（左侧像素偏移）");
         PlayerListY = Config.Bind("PlayerList", "Y", 8f,
             "Player list panel Y position (pixels from top)\n玩家列表面板Y坐标（顶部像素偏移）");
+        PlayerListFontSize = Config.Bind("PlayerList", "FontSize", 0,
+            "Player list font size (0 = auto based on screen height)\n玩家列表字体大小（0=根据屏幕高度自动）");
 
         // Keybinds
         KeyToggleLog = Config.Bind("Keybinds", "ToggleLog", KeyCode.RightShift,

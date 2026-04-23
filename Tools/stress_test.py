@@ -23,6 +23,8 @@ import argparse
 import sys
 import random
 import string
+import socket
+import select as _select
 
 from pwn import *
 
@@ -157,18 +159,20 @@ def build_player_skin(character_id: int = -1, selected_type: int = 0, skin_index
 def build_resource_database_empty() -> bytes:
     """
     ResourceDataBase 字段（按声明顺序）：
-      1. Foods         (List<int>)
-      2. Recipes       (List<int>)
-      3. Beverages     (List<int>)
-      4. Ingredients   (List<int>)
-      5. Cookers       (List<int>)
-      6. Items         (List<int>)
-      7. Izakayas      (List<int>)
-      8. SpecialGuests (List<int>)
-      9. NormalGuests  (List<int>)
+      1. DlcFlags      (DlcPack : byte)  ← 增量标识，None=0 表示全量模式
+      2. Foods         (List<int>)
+      3. Recipes       (List<int>)
+      4. Beverages     (List<int>)
+      5. Ingredients   (List<int>)
+      6. Cookers       (List<int>)
+      7. Items         (List<int>)
+      8. Izakayas      (List<int>)
+      9. SpecialGuests (List<int>)
+     10. NormalGuests  (List<int>)
     """
     return (
-        mp_object_header(9) +
+        mp_object_header(10) +
+        mp_byte(0) +          # DlcFlags = None
         mp_int_list([]) +  # Foods
         mp_int_list([]) +  # Recipes
         mp_int_list([]) +  # Beverages
@@ -374,6 +378,8 @@ class FakeClient:
         """连接到主机并完成 Hello/HelloAck 握手。"""
         try:
             self.tube = remote(self.host, self.port, level="error")
+            # 增大内核接收缓冲区，避免 drain 跟不上时 TCP 窗口迅速归零
+            self.tube.sock.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 4 * 1024 * 1024)
             log.info(f"[Client {self.client_index}] Connected to {self.host}:{self.port}")
         except Exception as e:
             self.error = f"Connection failed: {e}"
@@ -479,14 +485,18 @@ class FakeClient:
                 pass
 
     def drain_recv(self):
-        """后台线程：持续读取服务器发来的包（避免 TCP 缓冲区满）。"""
+        """后台线程：用原生 socket + select 持续读取服务器发来的包，避免 TCP 零窗口。"""
+        sock = self.tube.sock
         while self.running:
             try:
-                data = self.tube.recv(4096, timeout=1)
+                readable, _, _ = _select.select([sock], [], [], 0.5)
+                if not readable:
+                    continue
+                data = sock.recv(65536)
                 if not data:
                     break
                 self.bytes_recv += len(data)
-            except:
+            except (OSError, ValueError):
                 if not self.running:
                     break
                 continue
@@ -503,8 +513,8 @@ def main():
     parser.add_argument("-n", "--clients", type=int, default=10, help="Number of fake clients (default: 10)")
     parser.add_argument("-i", "--interval", type=float, default=0.5, help="Sync interval in seconds (default: 0.5)")
     parser.add_argument("-d", "--duration", type=float, default=60.0, help="Test duration in seconds (default: 60)")
-    parser.add_argument("--mod-version", default="0.21.0", help="Mod version to send in Hello")
-    parser.add_argument("--game-version", default="RELEASE 4.3.1", help="Game version to send in Hello")
+    parser.add_argument("--mod-version", default="0.21.1", help="Mod version to send in Hello")
+    parser.add_argument("--game-version", default="RELEASE 4.4.0", help="Game version to send in Hello")
     parser.add_argument("--stagger", type=float, default=0.2, help="Delay between client connections (default: 0.2s)")
     args = parser.parse_args()
 
@@ -534,6 +544,10 @@ def main():
 
         if client.connect_and_handshake():
             clients.append(client)
+            # 握手成功后立即启动 drain 线程，避免后续广播包填满 TCP 缓冲区
+            client.running = True
+            drain_thread = threading.Thread(target=client.drain_recv, daemon=True)
+            drain_thread.start()
         else:
             log.warning(f"[Client {i}] Failed to connect, skipping")
 
@@ -557,11 +571,7 @@ def main():
     log.info(f"Phase 3: Starting Sync flood ({args.duration}s)...")
 
     for client in clients:
-        # 启动接收线程（drain）
-        drain_thread = threading.Thread(target=client.drain_recv, daemon=True)
-        drain_thread.start()
-
-        # 启动 Sync 发送线程
+        # drain 线程已在握手后启动，这里只启动 Sync 发送线程
         sync_thread = threading.Thread(
             target=client.start_sync_loop,
             args=(args.interval, args.duration),

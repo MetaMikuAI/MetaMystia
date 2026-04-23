@@ -56,13 +56,73 @@ namespace MetaMystia.Debugger
             var result = new List<object>();
             foreach (var obj in objects)
             {
-                FoundResources.Add(obj);
+                object typed;
+                try { typed = Activator.CreateInstance(type, obj.Pointer); }
+                catch { typed = obj; }
+
+                FoundResources.Add(typed);
                 result.Add(new { 
                     name = obj.name, 
                     address = GetAddress(obj),
                     className = className
                 });
             }
+            return result;
+        }
+
+        public static object FindResources(string className, string filterExpression)
+        {
+            if (string.IsNullOrWhiteSpace(filterExpression))
+                return FindResources(className);
+
+            FoundResources.Clear();
+
+            Type type = null;
+            foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                type = asm.GetType(className);
+                if (type != null) break;
+            }
+
+            if (type == null)
+            {
+                throw new Exception($"Type '{className}' not found.");
+            }
+
+            var il2cppType = Il2CppInterop.Runtime.Il2CppType.From(type);
+            var objects = UnityEngine.Resources.FindObjectsOfTypeAll(il2cppType);
+
+            var result = new List<object>();
+            foreach (var obj in objects)
+            {
+                object typed;
+                try { typed = Activator.CreateInstance(type, obj.Pointer); }
+                catch { typed = obj; }
+
+                SharedVariables["$it"] = typed;
+                try
+                {
+                    var evalResult = Evaluate(filterExpression);
+                    bool pass = evalResult is true
+                                || (evalResult is string s && !string.IsNullOrEmpty(s))
+                                || (evalResult != null && evalResult is not false);
+                    if (!pass) continue;
+                }
+                catch
+                {
+                    continue;
+                }
+
+                FoundResources.Add(typed);
+                result.Add(new
+                {
+                    name = obj.name,
+                    address = GetAddress(obj),
+                    className = className
+                });
+            }
+
+            SharedVariables.Remove("$it");
             return result;
         }
 
@@ -311,17 +371,30 @@ namespace MetaMystia.Debugger
                     var parent = _lastTarget;
                     current = AccessIndexer(current, args, parent);
                 }
+                else if (c == '!' && _pos + 1 < _text.Length && _text[_pos + 1] == '=')
+                {
+                    _pos += 2; // Consume '!='
+                    string rhsExpr = _text.Substring(_pos).Trim();
+                    object rhsValue = EvaluateOrLiteral(rhsExpr);
+                    return !CompareValues(current, rhsValue);
+                }
                 else if (c == '=')
                 {
-                    if (_pos + 1 < _text.Length && _text[_pos + 1] == '=') break; // Equality not supported
+                    if (_pos + 1 < _text.Length && _text[_pos + 1] == '=')
+                    {
+                        _pos += 2; // Consume '=='
+                        string rhsExpr = _text.Substring(_pos).Trim();
+                        object rhsValue = EvaluateOrLiteral(rhsExpr);
+                        return CompareValues(current, rhsValue);
+                    }
 
                     _pos++; // Consume '='
-                    string rhsExpr = _text.Substring(_pos);
-                    var rhsParser = new CustomExpressionParser(rhsExpr);
-                    object rhsValue = rhsParser.Evaluate();
+                    string assignExpr = _text.Substring(_pos);
+                    var assignParser = new CustomExpressionParser(assignExpr);
+                    object assignValue = assignParser.Evaluate();
                     
-                    PerformAssignment(_lastTarget, rhsValue);
-                    return rhsValue;
+                    PerformAssignment(_lastTarget, assignValue);
+                    return assignValue;
                 }
                 else
                 {
@@ -781,6 +854,50 @@ namespace MetaMystia.Debugger
             if (arg == null) return null;
             if (targetType.IsAssignableFrom(arg.GetType())) return arg;
             return Convert.ChangeType(arg, targetType);
+        }
+
+        /// <summary>
+        /// Try to evaluate rhsExpr normally; if it fails (e.g. unresolved identifier like an enum name),
+        /// return the raw string so CompareValues can match via ToString/Enum.TryParse.
+        /// </summary>
+        private static object EvaluateOrLiteral(string rhsExpr)
+        {
+            try
+            {
+                return new CustomExpressionParser(rhsExpr).Evaluate();
+            }
+            catch
+            {
+                return rhsExpr;
+            }
+        }
+
+        private static bool CompareValues(object left, object right)
+        {
+            if (left == null && right == null) return true;
+            if (left == null || right == null) return false;
+
+            // Direct equality
+            if (left.Equals(right)) return true;
+
+            // Enum vs unresolved identifier (string from ParseRoot throwing → caught as string, or Type)
+            // The RHS like "OnTalkWithCharacter" will be resolved as a Type or throw.
+            // If left is enum, try parsing right's ToString() as the same enum type.
+            if (left.GetType().IsEnum)
+            {
+                string rightStr = right is Type t ? t.Name : right.ToString();
+                if (Enum.TryParse(left.GetType(), rightStr, out object parsed))
+                    return left.Equals(parsed);
+            }
+            if (right.GetType().IsEnum)
+            {
+                string leftStr = left is Type t ? t.Name : left.ToString();
+                if (Enum.TryParse(right.GetType(), leftStr, out object parsed))
+                    return right.Equals(parsed);
+            }
+
+            // Fallback: string comparison
+            return string.Equals(left.ToString(), right.ToString(), StringComparison.Ordinal);
         }
     }
 }

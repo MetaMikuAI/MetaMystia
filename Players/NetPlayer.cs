@@ -43,6 +43,17 @@ public abstract partial class NetPlayer
     /// </summary>
     public ResourceDataBase DataBase { get; set; } = new();
 
+    /// <summary>
+    /// 缓存的增量格式资源数据库。会话期间 DataBase 不变，避免重复 ToIncremental() 计算。
+    /// 对 Local: 首次访问时惰性计算；对 Peer: 在接收时直接缓存原始增量数据。
+    /// </summary>
+    public ResourceDataBase IncrementalDataBase
+    {
+        get => _incrementalDataBase ??= DataBase.ToIncremental();
+        set => _incrementalDataBase = value;
+    }
+    private ResourceDataBase _incrementalDataBase;
+
 
     #region 角色状态
     /// <summary>
