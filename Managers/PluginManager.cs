@@ -98,6 +98,14 @@ public partial class PluginManager : MonoBehaviour
                 Debugger ??= new Debugger.WebDebugger();
                 Debugger?.Start();
             }
+            if (Input.GetKeyDown(KeyCode.F3))
+            {
+                DaySceneMapPoc.RunPhase1_Register();
+            }
+            if (Input.GetKeyDown(KeyCode.F4))
+            {
+                DaySceneMapPoc.RunPhase2_Swap();
+            }
         }
     }
 
