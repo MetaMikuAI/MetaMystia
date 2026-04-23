@@ -118,7 +118,7 @@ public partial class IzakayaConfigurePatch
     [HarmonyPrefix]
     public static void StoreFood_Prefix(Sellable sellable)
     {
-        Log.LogWarning(sellable.ToString());
+        Log.LogInfo($"StoreFood: {sellable.Text.Name}");
         if (_skipPatchStoreFood) return;
         if (!MpManager.IsConnected) return;
 
