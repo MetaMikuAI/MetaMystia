@@ -264,9 +264,9 @@ public static partial class MpManager
     /// <summary>
     /// 主机对新客机握手完成后调用
     /// </summary>
-    public static void OnPeerHandshakeComplete(int uid, string peerId)
+    public static void OnPeerHandshakeComplete(int uid)
     {
-        CommandScheduler.EnqueueInterval(SyncActionCommandID, 0.5f, SyncAction.Send);
+        CommandScheduler.EnqueueInterval(SyncActionCommandID, 2f, SyncAction.Send);
     }
 
     /// <summary>

@@ -10,8 +10,10 @@ public partial class PlayerInfo
 {
     public int Uid { get; set; }
     public string PeerId { get; set; } = "";
-    public ResourceDataBase DataBase { get; set; }
+    public ResourceDataBase IncrementalDataBase { get; set; }
     public PlayerSkin Skin { get; set; }
+    public bool IsDayOver { get; set; }
+    public bool IsPrepOver { get; set; }
 
     public static PlayerInfo FromPlayer(NetPlayer player)
     {
@@ -19,8 +21,10 @@ public partial class PlayerInfo
         {
             Uid = player.Uid,
             PeerId = player.Id,
-            DataBase = player.IncrementalDataBase,
-            Skin = player.Skin
+            IncrementalDataBase = player.IncrementalDataBase,
+            Skin = player.Skin,
+            IsDayOver = player.IsDayOver,
+            IsPrepOver = player.IsPrepOver
         };
     }
 }

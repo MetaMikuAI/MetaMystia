@@ -14,12 +14,10 @@ namespace MetaMystia.Network;
 public partial class HelloAction : Action
 {
     public override ActionType Type => ActionType.HELLO;
-    public string PeerId { get; set; } = "";
     public string Version { get; set; } = "";
     public string GameVersion { get; set; } = "";
     public Scene CurrentGameScene { get; set; }
-    public ResourceDataBase PeerDataBase { get; set; } // TODO: 数据可能过大，考虑做优化
-    public PlayerSkin PeerSkin { get; set; }
+    public PlayerInfo PeerInfo { get; set; }
 
     protected override BepInEx.Logging.LogLevel OnReceiveLogLevel => BepInEx.Logging.LogLevel.Message;
     protected override BepInEx.Logging.LogLevel OnSendLogLevel => BepInEx.Logging.LogLevel.Message;
@@ -54,46 +52,45 @@ public partial class HelloAction : Action
         // --- 备菜/营业阶段不允许重连 ---
         if (MpManager.LocalScene == Scene.IzakayaPrepScene || MpManager.LocalScene == Scene.WorkScene)
         {
-            Log.LogWarning($"Rejecting connection from '{PeerId}' (uid={SenderUid}): " +
+            Log.LogWarning($"Rejecting connection from '{PeerInfo.PeerId}' (uid={SenderUid}): " +
                 $"reconnection not allowed in {MpManager.LocalScene}");
-            InGameConsole.ShowPassiveFromAnyThread(TextId.PrepWorkReconnectBlocked.Get(PeerId));
-            RejectAction.SendAndDisconnect(SenderUid, TextId.PrepWorkReconnectBlocked, PeerId);
+            InGameConsole.ShowPassiveFromAnyThread(TextId.PrepWorkReconnectBlocked.Get(PeerInfo.PeerId));
+            RejectAction.SendAndDisconnect(SenderUid, TextId.PrepWorkReconnectBlocked, PeerInfo.PeerId);
             return;
         }
 
         // --- 人数限制 ---
         if (MpManager.AllPlayersCount >= ConfigManager.MaxPlayers.Value)
         {
-            Log.LogWarning($"Rejecting connection from '{PeerId}' (uid={SenderUid}): " +
+            Log.LogWarning($"Rejecting connection from '{PeerInfo.PeerId}' (uid={SenderUid}): " +
                 $"room full ({MpManager.AllPlayersCount}/{ConfigManager.MaxPlayers.Value})");
             RejectAction.SendAndDisconnect(SenderUid,
                 TextId.RoomFull, MpManager.AllPlayersCount.ToString(), ConfigManager.MaxPlayers.Value.ToString());
             InGameConsole.ShowPassiveFromAnyThread(TextId.RoomFullHostNotify.Get(
-                PeerId, MpManager.AllPlayersCount, ConfigManager.MaxPlayers.Value));
+                PeerInfo.PeerId, MpManager.AllPlayersCount, ConfigManager.MaxPlayers.Value));
             return;
         }
 
         // --- PeerId 合法性校验 ---
-        if (!MpManager.IsValidPlayerId(PeerId))
+        if (!MpManager.IsValidPlayerId(PeerInfo.PeerId))
         {
-            Log.LogWarning($"Rejecting connection (uid={SenderUid}): invalid PeerId '{PeerId}'");
+            Log.LogWarning($"Rejecting connection (uid={SenderUid}): invalid PeerId '{PeerInfo.PeerId}'");
             RejectAction.SendAndDisconnect(SenderUid, TextId.MpPlayerIdInvalid);
             return;
         }
 
         // --- 重名检测 ---
-        if (PlayerManager.IsPeerIdOnline(PeerId))
+        if (PlayerManager.IsPeerIdOnline(PeerInfo.PeerId))
         {
-            Log.LogWarning($"Rejecting connection from '{PeerId}' (uid={SenderUid}): " +
+            Log.LogWarning($"Rejecting connection from '{PeerInfo.PeerId}' (uid={SenderUid}): " +
                 $"duplicate PeerId already online");
-            RejectAction.SendAndDisconnect(SenderUid, TextId.DuplicatePeerId, PeerId);
-            InGameConsole.ShowPassiveFromAnyThread(TextId.DuplicatePeerIdHostNotify.Get(PeerId));
+            RejectAction.SendAndDisconnect(SenderUid, TextId.DuplicatePeerId, PeerInfo.PeerId);
+            InGameConsole.ShowPassiveFromAnyThread(TextId.DuplicatePeerIdHostNotify.Get(PeerInfo.PeerId));
             return;
         }
 
-        int assignedUid = SenderUid;
-
-        var peer = PlayerManager.AddPeer(assignedUid, PeerId, PeerDataBase, PeerSkin);
+        PeerInfo.Uid = SenderUid;
+        var peer = PlayerManager.AddPeer(PeerInfo);
 
         // 如果主机当前在 DayScene，则为新加入的 peer 立即生成角色
         if (MpManager.LocalScene == Scene.DayScene)
@@ -103,15 +100,15 @@ public partial class HelloAction : Action
         }
 
         // 向新客机发送 HelloAck（携带分配的 UID + 所有已有 peer 信息）
-        HelloAckAction.SendTo(assignedUid, PeerId);
+        HelloAckAction.SendTo(PeerInfo.Uid);
 
         // 向所有已有客机通告新玩家加入
-        PeerJoinAction.BroadcastExcept(assignedUid, PeerId, PeerDataBase);
+        PeerJoinAction.BroadcastExcept(PeerInfo.Uid, PeerInfo);
 
         // 启动同步
-        MpManager.OnPeerHandshakeComplete(assignedUid, PeerId);
+        MpManager.OnPeerHandshakeComplete(PeerInfo.Uid);
 
-        InGameConsole.ShowPassiveFromAnyThread(TextId.MpConnected.Get(PeerId));
+        InGameConsole.ShowPassiveFromAnyThread(TextId.MpConnected.Get(PeerInfo.PeerId));
     }
 
     /// <summary>
@@ -119,14 +116,21 @@ public partial class HelloAction : Action
     /// </summary>
     public static void Send()
     {
+        PlayerInfo peerInfo = new PlayerInfo()
+        {
+            Uid = -1,
+            PeerId = MpManager.PlayerId,
+            IncrementalDataBase = PlayerManager.Local.IncrementalDataBase,
+            Skin = PlayerManager.Local.Skin,
+            IsDayOver = PlayerManager.LocalIsDayOver,
+            IsPrepOver = PlayerManager.LocalIsPrepOver
+        };
         new HelloAction
         {
-            PeerId = MpManager.PlayerId,
+            PeerInfo = peerInfo,
             Version = Plugin.ModVersion,
             CurrentGameScene = MpManager.LocalScene,
             GameVersion = Plugin.GameVersion,
-            PeerDataBase = PlayerManager.Local.IncrementalDataBase,
-            PeerSkin = PlayerManager.Local.Skin
         }.SendToHostOrBroadcast();
     }
 }

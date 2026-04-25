@@ -1,5 +1,6 @@
 using MemoryPack;
-
+using System.Linq;
+using Il2CppSystem.Net.Http.Headers;
 using MetaMystia.UI;
 
 namespace MetaMystia.Network;
@@ -42,14 +43,15 @@ public partial class HelloAckAction : Action
         Log.LogMessage($"Assigned UID: {AssignedUid}");
 
         // 注册主机为 peer (uid=0)
-        PlayerManager.AddPeer(0, HostInfo.PeerId, HostInfo.DataBase, HostInfo.Skin);
+        HostInfo.Uid = 0;
+        PlayerManager.AddPeer(HostInfo);
 
         // 注册已有的其他 peer
-        foreach (var p in ExistingPeers)
+        foreach (var peerInfo in ExistingPeers)
         {
-            PlayerManager.AddPeer(p.Uid, p.PeerId, p.DataBase, p.Skin);
+            PlayerManager.AddPeer(peerInfo);
         }
-
+        
         // 如果当前在 DayScene（重连），立即为所有 peer 生成角色
         if (MpManager.LocalScene == Common.UI.Scene.DayScene)
         {
@@ -63,7 +65,7 @@ public partial class HelloAckAction : Action
     /// <summary>
     /// 主机向指定客机发送 HelloAck
     /// </summary>
-    public static void SendTo(int clientUid, string clientPeerId)
+    public static void SendTo(int clientUid)
     {
         // 收集已有 peer（不含新加入者自身）
         var existingPeers = new System.Collections.Generic.List<PlayerInfo>();

@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 using Common.CharacterUtility;
+using MetaMystia.Network;
 
 namespace MetaMystia;
 
@@ -215,15 +216,22 @@ public static partial class PlayerManager
     /// <summary>
     /// 握手成功后，根据对端 UID 创建并注册 PeerPlayer
     /// </summary>
-    public static PeerPlayer AddPeer(int uid, string peerId, ResourceDataBase incrementalDataBase = null, PlayerSkin skin = null)
+    public static PeerPlayer AddPeer(PlayerInfo info)
     {
+        // TODO: refactor
+        var uid = info.Uid;
+        var peerId = info.PeerId;
+        var skin = info.Skin;
+        
         if (Peers.TryGetValue(uid, out var existing))
         {
             Log.LogWarning($"Peer with uid={uid} already exists (id='{existing.Id}'), replacing");
         }
-        var peer = new PeerPlayer(uid, incrementalDataBase) { Id = peerId };
+        var peer = new PeerPlayer(uid, info.IncrementalDataBase) { Id = peerId };
         if (skin != null) peer.Skin = skin;
         peer.ResetState();
+        peer.IsDayOver = info.IsDayOver;
+        peer.IsPrepOver = info.IsPrepOver;
         peer.ResetMotion();
         Peers[uid] = peer;
         Log.LogMessage($"Added peer '{peerId}' (uid={uid}, characterId='{peer.CharacterId}')");
