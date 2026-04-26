@@ -47,6 +47,7 @@ public static partial class PatchRegistry
         typeof(GuestGroupController__c__DisplayClass299_0Patch),
 
         typeof(RunTimeAlbumPatch),
+        typeof(RunTimeSchedulerPatch),
 
         // ResourceEx Patches
         typeof(DataBaseCharacterPatch),
