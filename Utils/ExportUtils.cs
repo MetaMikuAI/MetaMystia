@@ -958,4 +958,23 @@ public static partial class ExportUtils
             DumpRendererRecursive(t.GetChild(i), depth + 1, sb);
         }
     }
+
+    public static void DumpAllBuff()
+    {
+        var buffDescription = GameData.CoreLanguage.Collections.DataBaseLanguage.BuffDescription;
+        foreach (var kvp in buffDescription)
+        {
+            var id = kvp.Key;
+            var desc = kvp.Value;
+            Log.LogInfo($"Buff ID: {id}, Name: {desc.BriefName} Description: {desc.BriefDescription}");
+            var sprite = desc.Visual;
+            if (sprite != null)
+            {
+                var filename = $"Buff_{id}.png";
+                var filepath = Path.Combine(ExportRoot, filename);
+                Log.Warning($"Exporting buff sprite: {filepath}");
+                TrySaveSprite(sprite, filepath);
+            }
+        }
+    }
 }
