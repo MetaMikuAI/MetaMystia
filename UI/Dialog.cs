@@ -8,30 +8,53 @@ using UnityEngine.AddressableAssets;
 
 namespace MetaMystia.UI;
 
-// TODO: Refactor
 [AutoLog]
 public static partial class Dialog
 {
     public static DialogPackage ExampleDialog { get; private set; }
 
-    // TODO: support other Dialog MetaAction
+    private static DialogAction BuildDialogAction(CustomAction customAction, string packageRoot)
+    {
+        var action = new DialogAction();
+        action.actionType = customAction.actionType;
+        action.shouldSet = customAction.shouldSet;
+
+        // Keep native dialog loading paths stable: all asset refs must be non-null.
+        action.m_SpriteAsset = new AssetReferenceSprite("");
+        action.m_SpriteENAsset = new AssetReferenceSprite("");
+        action.m_SpriteJPAsset = new AssetReferenceSprite("");
+        action.m_SpriteKOAsset = new AssetReferenceSprite("");
+        action.m_SpriteCNTAsset = new AssetReferenceSprite("");
+        action.m_MaterialAsset = new AssetReferenceT<UnityEngine.Material>("");
+        action.m_BgmPackageAsset = new AssetReferenceT<GameData.Profile.LoopedBGMPackage>("");
+        action.m_AudioAsset = new AssetReferenceT<UnityEngine.AudioClip>("");
+
+        if (customAction.actionType == ActionType.CG || customAction.actionType == ActionType.BG)
+            action.m_SpriteAsset = ResolveSpriteReference(customAction, packageRoot);
+
+        if (customAction.actionType == ActionType.Sound)
+            action.m_AudioAsset = ResolveAudioReference(customAction, packageRoot);
+
+        return action;
+    }
+
     public static DialogPackage BuildDialogPackage(CustomDialogList dialogList)
     {
         if (dialogList == null)
         {
-            Log.LogWarning($"BuildDialogPackage called with null dialogList.");
+            Log.LogWarning("BuildDialogPackage called with null dialogList.");
             return null;
         }
 
         var newDialogPackage = UnityEngine.ScriptableObject.CreateInstance<DialogPackage>();
         var length = dialogList.Count;
-        var newMeta = new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<DialogMeta>(length);
+        var newMeta = new Il2CppReferenceArray<DialogMeta>(length);
+
         for (int i = 0; i < length; i++)
         {
             var dialog = dialogList[i];
 
             var meta = new DialogMeta();
-
             var si = new SpeakerIdentity();
             si.speakerType = dialog.speakerType;
             si.speakerId = dialog.characterId;
@@ -45,22 +68,7 @@ public static partial class Dialog
             {
                 meta.dialogAction = new Il2CppReferenceArray<DialogAction>(dialog.actions.Length);
                 for (int j = 0; j < dialog.actions.Length; j++)
-                {
-                    var action = new DialogAction();
-                    action.actionType = dialog.actions[j].actionType;
-                    action.shouldSet = dialog.actions[j].shouldSet;
-
-                    // For CG/BG actions, m_SpriteAsset and m_MaterialAsset must not be null
-                    // (LoadAssetAllowNull throws NullReferenceException on null input).
-                    // Provide empty refs with invalid keys so they safely return null handles.
-                    if (dialog.actions[j].actionType == ActionType.CG || dialog.actions[j].actionType == ActionType.BG)
-                    {
-                        action.m_SpriteAsset = ResolveSpriteReference(dialog.actions[j], dialogList.packageRoot);
-                        action.m_MaterialAsset = new AssetReferenceT<UnityEngine.Material>("");
-                    }
-
-                    meta.dialogAction[j] = action;
-                }
+                    meta.dialogAction[j] = BuildDialogAction(dialog.actions[j], dialogList.packageRoot);
             }
             else
             {
@@ -75,6 +83,7 @@ public static partial class Dialog
 
             newMeta[i] = meta;
         }
+
         newDialogPackage.dialogMeta = newMeta;
         newDialogPackage.name = dialogList.packageName;
 
@@ -100,12 +109,40 @@ public static partial class Dialog
             return new AssetReferenceSprite("");
         }
 
-        return ModAssetRegistry.CreateSpriteReference(key, sprite);
+        return RuntimeAddressables.RegisterSprite(key, sprite);
     }
 
-    private static void BuildAndShow(
-        CustomDialogList dialogList,
-        System.Action onFinishCallback = null)
+    private static AssetReferenceT<UnityEngine.AudioClip> ResolveAudioReference(CustomAction action, string packageRoot)
+    {
+        if (action == null || string.IsNullOrEmpty(action.sound))
+            return new AssetReferenceT<UnityEngine.AudioClip>("");
+
+        var key = ResourceExManager.ResolveAssetUri(action.sound, packageRoot);
+        if (string.IsNullOrEmpty(key))
+        {
+            Log.LogWarning($"Failed to resolve dialog sound URI: {action.sound}");
+            return new AssetReferenceT<UnityEngine.AudioClip>("");
+        }
+
+        if (!ResourceExManager.TryGetBytes(action.sound, out var audioBytes, packageRoot))
+        {
+            Log.LogWarning($"Dialog sound URI is not a loaded asset: {key}");
+            return new AssetReferenceT<UnityEngine.AudioClip>("");
+        }
+
+        try
+        {
+            var clip = WavLoader.LoadFromBytes(audioBytes, key);
+            return RuntimeAddressables.Register(key, clip);
+        }
+        catch (System.Exception ex)
+        {
+            Log.LogWarning($"Failed to decode dialog sound {key}: {ex.Message}");
+            return new AssetReferenceT<UnityEngine.AudioClip>("");
+        }
+    }
+
+    private static void BuildAndShow(CustomDialogList dialogList, System.Action onFinishCallback = null)
     {
         var newDialogPackage = BuildDialogPackage(dialogList);
         if (newDialogPackage == null)
@@ -117,13 +154,10 @@ public static partial class Dialog
             return;
         }
 
-
-        System.Action<Il2CppSystem.Collections.Generic.Dictionary<int, string>> overrideReplaceTextCallback = (replaceDict) =>
+        System.Action<Il2CppSystem.Collections.Generic.Dictionary<int, string>> overrideReplaceTextCallback = replaceDict =>
         {
             for (int i = 0; i < dialogList.Count; i++)
-            {
                 replaceDict[i] = dialogList[i].message;
-            }
         };
 
         Log.LogInfo("Calling OpenDialogMenu...");
@@ -143,15 +177,13 @@ public static partial class Dialog
             if (packageName == "OnTransitionToNight")
             {
                 ExampleDialog = dialogPackage;
-                Log.LogInfo($"Stored ExampleDialog(OnTransitionToNight) package.");
+                Log.LogInfo("Stored ExampleDialog(OnTransitionToNight) package.");
             }
             Log.LogDebug($"id={dialogPackage.name}, package={packageName}");
         });
 
         if (ExampleDialog == null)
-        {
-            Log.LogWarning($"ExampleDialog(OnTransitionToNight) package not found among loaded assets.");
-        }
+            Log.LogWarning("ExampleDialog(OnTransitionToNight) package not found among loaded assets.");
     }
 
     public static void ShowResourceExPackage(string packageName, System.Action onFinishCallback = null)
@@ -166,8 +198,7 @@ public static partial class Dialog
             Log.LogWarning($"Dialog package {packageName} not found in ResourceExManager.");
         }
     }
-
-};
+}
 
 public class CustomAction
 {
@@ -178,6 +209,11 @@ public class CustomAction
     /// Prefer a full rex URI in ResourceEx JSON config.
     /// </summary>
     public string sprite { get; set; }
+
+    /// <summary>
+    /// For Sound actions: relative path or rex URI to a WAV asset.
+    /// </summary>
+    public string sound { get; set; }
 
     public bool shouldSet { get; set; } = true;
 }
@@ -190,6 +226,7 @@ public class CustomDialog
     public string message;
     public Position position;
     public CustomAction[] actions;
+
     public CustomDialog(int characterId, SpeakerIdentity.Identity speakerType, int speakerPortrayalVariationId, Position position, string message, CustomAction[] actions = null)
     {
         this.characterId = characterId;
@@ -222,25 +259,16 @@ public class CustomDialogList
         dialogs.Add(dialog);
     }
 
-    public int Count
-    {
-        get { return dialogs.Count; }
-    }
+    public int Count => dialogs.Count;
 
-    public CustomDialog this[int index]
-    {
-        get { return dialogs[index]; }
-    }
+    public CustomDialog this[int index] => dialogs[index];
 
     public System.Action<Il2CppSystem.Collections.Generic.Dictionary<int, string>> GetOverrideReplaceTextCallback()
     {
-        System.Action<Il2CppSystem.Collections.Generic.Dictionary<int, string>> overrideReplaceTextCallback = (replaceDict) =>
+        return replaceDict =>
         {
             for (int i = 0; i < Count; i++)
-            {
                 replaceDict[i] = this[i].message;
-            }
         };
-        return overrideReplaceTextCallback;
     }
 }

@@ -39,6 +39,23 @@ public static partial class ResourceExManager
             && RexAssetRegistry.TryGetBytes(uri, out bytes);
     }
 
+    public static AudioClip GetAudioClip(string relativePath, string packageRoot = null)
+    {
+        if (!TryGetBytes(relativePath, out var bytes, packageRoot))
+            return null;
+
+        var key = ResolveAssetUri(relativePath, packageRoot) ?? relativePath;
+        try
+        {
+            return WavLoader.LoadFromBytes(bytes, key);
+        }
+        catch (System.Exception ex)
+        {
+            Log.LogWarning($"Failed to decode audio clip {key}: {ex.Message}");
+            return null;
+        }
+    }
+
     public static void PreloadAllImages()
     {
         Log.LogInfo($"Verifying declared ResourceEx images...");
