@@ -33,6 +33,7 @@ public static partial class ModAssetRegistry
     private static bool _initialized;
     private static ModSpriteProvider _provider;
     private static ResourceLocationMap _locator;
+    private static readonly HashSet<string> _registeredLocationGuids = new(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
     /// Register the custom provider and locator with Addressables.
@@ -80,13 +81,13 @@ public static partial class ModAssetRegistry
 
     // ── Pre-init buffering ──
 
-    private static readonly List<(string key, Sprite sprite)> _pendingRegistrations = new();
+    private static readonly Dictionary<string, Sprite> _pendingRegistrations = new(StringComparer.Ordinal);
 
     private static void FlushPendingRegistrations()
     {
-        foreach (var (key, sprite) in _pendingRegistrations)
+        foreach (var kvp in _pendingRegistrations)
         {
-            RegisterInternal(key, sprite);
+            RegisterInternal(kvp.Key, kvp.Value);
         }
         Log.LogDebug($"Flushed {_pendingRegistrations.Count} pending registrations");
         _pendingRegistrations.Clear();
@@ -107,7 +108,7 @@ public static partial class ModAssetRegistry
 
         if (!_initialized)
         {
-            _pendingRegistrations.Add((key, sprite));
+            _pendingRegistrations[key] = sprite;
             Log.LogDebug($"Buffered registration: {key}");
             return;
         }
@@ -162,6 +163,12 @@ public static partial class ModAssetRegistry
         // 1. Add to provider's sprite dictionary (indexed by GUID)
         ModSpriteProvider.Register(guid, sprite);
 
+        if (_registeredLocationGuids.Contains(guid))
+        {
+            Log.LogDebug($"Updated sprite registration: {key} -> {guid}");
+            return;
+        }
+
         // 2. Add location to locator map (also indexed by GUID)
         var location = new ResourceLocationBase(
             guid,                               // name (primaryKey)
@@ -176,7 +183,9 @@ public static partial class ModAssetRegistry
             location.Cast<IResourceLocation>()
         );
 
-        Log.LogDebug($"Registered sprite: {key} → {guid}");
+        _registeredLocationGuids.Add(guid);
+
+        Log.LogDebug($"Registered sprite: {key} -> {guid}");
     }
 
     /// <summary>

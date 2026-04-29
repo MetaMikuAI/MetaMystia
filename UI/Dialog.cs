@@ -55,7 +55,7 @@ public static partial class Dialog
                     // Provide empty refs with invalid keys so they safely return null handles.
                     if (dialog.actions[j].actionType == ActionType.CG || dialog.actions[j].actionType == ActionType.BG)
                     {
-                        action.m_SpriteAsset = dialog.actions[j].spriteAsset ?? new AssetReferenceSprite("");
+                        action.m_SpriteAsset = ResolveSpriteReference(dialog.actions[j], dialogList.packageRoot);
                         action.m_MaterialAsset = new AssetReferenceT<UnityEngine.Material>("");
                     }
 
@@ -79,6 +79,28 @@ public static partial class Dialog
         newDialogPackage.name = dialogList.packageName;
 
         return newDialogPackage;
+    }
+
+    private static AssetReferenceSprite ResolveSpriteReference(CustomAction action, string packageRoot)
+    {
+        if (action == null || string.IsNullOrEmpty(action.sprite))
+            return new AssetReferenceSprite("");
+
+        var key = ResourceExManager.ResolveAssetUri(action.sprite, packageRoot);
+        if (string.IsNullOrEmpty(key))
+        {
+            Log.LogWarning($"Failed to resolve dialog sprite URI: {action.sprite}");
+            return new AssetReferenceSprite("");
+        }
+
+        var sprite = ResourceExManager.GetSprite(action.sprite, packageRoot);
+        if (sprite == null)
+        {
+            Log.LogWarning($"Dialog sprite URI is not a loaded image: {key}");
+            return new AssetReferenceSprite("");
+        }
+
+        return ModAssetRegistry.CreateSpriteReference(key, sprite);
     }
 
     private static void BuildAndShow(
@@ -153,16 +175,9 @@ public class CustomAction
 
     /// <summary>
     /// For CG/BG actions: relative path to sprite image (e.g. "assets/CG/painting.png").
-    /// Used in ResourceEx JSON config; resolved to <see cref="spriteAsset"/> at load time.
+    /// Prefer a full rex URI in ResourceEx JSON config.
     /// </summary>
     public string sprite { get; set; }
-
-    /// <summary>
-    /// Runtime-only: the resolved AssetReferenceSprite for CG/BG actions.
-    /// Populated automatically when <see cref="sprite"/> is set during ResourceEx loading.
-    /// </summary>
-    [System.Text.Json.Serialization.JsonIgnore]
-    public AssetReferenceSprite spriteAsset { get; set; }
 
     public bool shouldSet { get; set; } = true;
 }
@@ -190,6 +205,7 @@ public class CustomDialogList
 {
     public List<CustomDialog> dialogs;
     public string packageName = "MetaMystia_CustomDialogPackage";
+    public string packageRoot;
 
     public CustomDialogList()
     {

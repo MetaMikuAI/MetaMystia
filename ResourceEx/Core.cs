@@ -227,31 +227,9 @@ public static partial class ResourceExManager
             {
                 var dialogList = new CustomDialogList();
                 dialogList.packageName = pkgConfig.name;
+                dialogList.packageRoot = packageRoot;
                 foreach (var d in pkgConfig.dialogList)
                 {
-                    // Resolve CG/BG sprite paths → ModAssetRegistry
-                    if (d.actions != null)
-                    {
-                        foreach (var action in d.actions)
-                        {
-                            if (string.IsNullOrEmpty(action.sprite)) continue;
-                            if (action.actionType != Common.DialogUtility.ActionType.CG &&
-                                action.actionType != Common.DialogUtility.ActionType.BG) continue;
-
-                            var key = ResolveAssetUri(action.sprite, packageRoot);
-                            var loadedSprite = GetSprite(action.sprite, packageRoot);
-                            if (loadedSprite != null)
-                            {
-                                ModAssetRegistry.RegisterSprite(key, loadedSprite);
-                                action.spriteAsset = ModAssetRegistry.CreateSpriteReference(key);
-                                Log.LogInfo($"[{packageName}] Registered dialog sprite: {action.sprite} -> {key}");
-                            }
-                            else
-                            {
-                                Log.LogWarning($"[{packageName}] Failed to load dialog sprite: {action.sprite}");
-                            }
-                        }
-                    }
                     dialogList.AddDialog(d.characterId, d.characterType, d.pid, d.position, d.text, d.actions);
                 }
                 _dialogPackageConfigs[pkgConfig.name] = dialogList;
