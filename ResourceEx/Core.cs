@@ -25,7 +25,7 @@ public static partial class ResourceExManager
 
     private static Dictionary<(int id, string type), CharacterConfig> _characterConfigs = new Dictionary<(int id, string type), CharacterConfig>();
     private static Dictionary<string, CharacterSpriteSetCompact> _characterSpriteSets = new Dictionary<string, CharacterSpriteSetCompact>();
-    private static Dictionary<string, CustomDialogList> _dialogPackageConfigs = new Dictionary<string, CustomDialogList>();
+    private static Dictionary<string, DialogPackageConfig> _dialogPackageConfigs = new Dictionary<string, DialogPackageConfig>();
     private static Dictionary<string, DialogPackage> _builtDialogPackages = new Dictionary<string, DialogPackage>();
     private static Dictionary<string, Merchant> _builtMerchants = new Dictionary<string, Merchant>();
 
@@ -225,14 +225,8 @@ public static partial class ResourceExManager
         {
             foreach (var pkgConfig in config.dialogPackages)
             {
-                var dialogList = new CustomDialogList();
-                dialogList.packageName = pkgConfig.name;
-                dialogList.packageRoot = packageRoot;
-                foreach (var d in pkgConfig.dialogList)
-                {
-                    dialogList.AddDialog(d.characterId, d.characterType, d.pid, d.position, d.text, d.actions);
-                }
-                _dialogPackageConfigs[pkgConfig.name] = dialogList;
+                pkgConfig.PackageRoot = packageRoot;
+                _dialogPackageConfigs[pkgConfig.name] = pkgConfig;
                 Log.LogInfo($"[{packageName}] Loaded dialog package: {pkgConfig.name}");
             }
         }

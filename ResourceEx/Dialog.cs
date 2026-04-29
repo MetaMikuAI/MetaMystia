@@ -1,43 +1,204 @@
-using GameData.Profile;
-using GameData.Core.Collections.DaySceneUtility;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 
-using MetaMystia.UI;
+using Common.DialogUtility;
+using Common.UI;
+using GameData.Core.Collections.DaySceneUtility;
+using GameData.Profile;
+
+using MetaMystia.ResourceEx.Addressables;
+using MetaMystia.ResourceEx.Models;
+
+using UnityEngine.AddressableAssets;
 
 namespace MetaMystia;
 
-
 public static partial class ResourceExManager
 {
+    public static DialogPackage ExampleDialog { get; private set; }
+
     public static bool ExistsDialogPackage(string name)
     {
         return _dialogPackageConfigs.ContainsKey(name);
     }
 
-    public static CustomDialogList GetDialogPackage(string name)
+    public static DialogPackageConfig GetDialogPackage(string name)
     {
         if (_dialogPackageConfigs.TryGetValue(name, out var pkg))
-        {
             return pkg;
-        }
+
         return null;
     }
 
     public static DialogPackage GetBuiltDialogPackage(string name)
     {
         if (_builtDialogPackages.TryGetValue(name, out var pkg))
-        {
             return pkg;
-        }
+
         Log.Warning($"Dialog package not built: {name}");
         return null;
+    }
+
+    private static DialogAction BuildDialogAction(DialogActionConfig actionConfig, string packageRoot)
+    {
+        var action = new DialogAction();
+        action.actionType = actionConfig.actionType;
+        action.shouldSet = actionConfig.shouldSet;
+
+        // Keep native dialog loading paths stable: all asset refs must be non-null.
+        action.m_SpriteAsset = new AssetReferenceSprite("");
+        action.m_SpriteENAsset = new AssetReferenceSprite("");
+        action.m_SpriteJPAsset = new AssetReferenceSprite("");
+        action.m_SpriteKOAsset = new AssetReferenceSprite("");
+        action.m_SpriteCNTAsset = new AssetReferenceSprite("");
+        action.m_MaterialAsset = new AssetReferenceT<UnityEngine.Material>("");
+        action.m_BgmPackageAsset = new AssetReferenceT<GameData.Profile.LoopedBGMPackage>("");
+        action.m_AudioAsset = new AssetReferenceT<UnityEngine.AudioClip>("");
+
+        if (actionConfig.actionType == ActionType.CG || actionConfig.actionType == ActionType.BG)
+            action.m_SpriteAsset = ResolveDialogSpriteReference(actionConfig, packageRoot);
+
+        if (actionConfig.actionType == ActionType.Sound)
+            action.m_AudioAsset = ResolveDialogAudioReference(actionConfig, packageRoot);
+
+        return action;
+    }
+
+    private static DialogPackage BuildDialogPackage(DialogPackageConfig dialogPackageConfig)
+    {
+        if (dialogPackageConfig == null)
+        {
+            Log.LogWarning("BuildDialogPackage called with null dialog package config.");
+            return null;
+        }
+
+        var newDialogPackage = UnityEngine.ScriptableObject.CreateInstance<DialogPackage>();
+        var length = dialogPackageConfig.Count;
+        var newMeta = new Il2CppReferenceArray<DialogMeta>(length);
+
+        for (int i = 0; i < length; i++)
+        {
+            var dialog = dialogPackageConfig[i];
+
+            var meta = new DialogMeta();
+            var si = new SpeakerIdentity();
+            si.speakerType = dialog.characterType;
+            si.speakerId = dialog.characterId;
+            si.speakerPortrayalVariationId = dialog.pid;
+            meta.speakerIdentity = si;
+
+            meta.dialogId = i;
+            meta.speakerPosition = dialog.position;
+
+            if (dialog.actions != null && dialog.actions.Length > 0)
+            {
+                meta.dialogAction = new Il2CppReferenceArray<DialogAction>(dialog.actions.Length);
+                for (int j = 0; j < dialog.actions.Length; j++)
+                    meta.dialogAction[j] = BuildDialogAction(dialog.actions[j], dialogPackageConfig.PackageRoot);
+            }
+            else
+            {
+                meta.dialogAction = new Il2CppReferenceArray<DialogAction>(0);
+            }
+
+            meta.isSpeakInForeground = true;
+            meta.isDark = false;
+            meta.useNameInText = true;
+            meta.useOverrideSprite = false;
+            meta.m_OverrideSpriteAsset = null;
+
+            newMeta[i] = meta;
+        }
+
+        newDialogPackage.dialogMeta = newMeta;
+        newDialogPackage.name = dialogPackageConfig.name;
+
+        return newDialogPackage;
+    }
+
+    private static AssetReferenceSprite ResolveDialogSpriteReference(DialogActionConfig actionConfig, string packageRoot)
+    {
+        if (actionConfig == null || string.IsNullOrEmpty(actionConfig.sprite))
+            return new AssetReferenceSprite("");
+
+        var key = ResolveAssetUri(actionConfig.sprite, packageRoot);
+        if (string.IsNullOrEmpty(key))
+        {
+            Log.LogWarning($"Failed to resolve dialog sprite URI: {actionConfig.sprite}");
+            return new AssetReferenceSprite("");
+        }
+
+        var sprite = GetSprite(actionConfig.sprite, packageRoot);
+        if (sprite == null)
+        {
+            Log.LogWarning($"Dialog sprite URI is not a loaded image: {key}");
+            return new AssetReferenceSprite("");
+        }
+
+        return RuntimeAddressables.RegisterSprite(key, sprite);
+    }
+
+    private static AssetReferenceT<UnityEngine.AudioClip> ResolveDialogAudioReference(DialogActionConfig actionConfig, string packageRoot)
+    {
+        if (actionConfig == null || string.IsNullOrEmpty(actionConfig.sound))
+            return new AssetReferenceT<UnityEngine.AudioClip>("");
+
+        var key = ResolveAssetUri(actionConfig.sound, packageRoot);
+        if (string.IsNullOrEmpty(key))
+        {
+            Log.LogWarning($"Failed to resolve dialog sound URI: {actionConfig.sound}");
+            return new AssetReferenceT<UnityEngine.AudioClip>("");
+        }
+
+        if (!TryGetBytes(actionConfig.sound, out var audioBytes, packageRoot))
+        {
+            Log.LogWarning($"Dialog sound URI is not a loaded asset: {key}");
+            return new AssetReferenceT<UnityEngine.AudioClip>("");
+        }
+
+        try
+        {
+            var clip = WavLoader.LoadFromBytes(audioBytes, key);
+            return RuntimeAddressables.Register(key, clip);
+        }
+        catch (System.Exception ex)
+        {
+            Log.LogWarning($"Failed to decode dialog sound {key}: {ex.Message}");
+            return new AssetReferenceT<UnityEngine.AudioClip>("");
+        }
+    }
+
+    private static void BuildAndShowDialog(DialogPackageConfig dialogPackageConfig, System.Action onFinishCallback = null)
+    {
+        var newDialogPackage = BuildDialogPackage(dialogPackageConfig);
+        if (newDialogPackage == null)
+        {
+            UniversalGameManager.OpenDialogMenu(
+                null,
+                onFinishCallback: onFinishCallback
+            );
+            return;
+        }
+
+        System.Action<Il2CppSystem.Collections.Generic.Dictionary<int, string>> overrideReplaceTextCallback = replaceDict =>
+        {
+            for (int i = 0; i < dialogPackageConfig.Count; i++)
+                replaceDict[i] = dialogPackageConfig[i].text;
+        };
+
+        Log.LogInfo("Calling OpenDialogMenu...");
+        UniversalGameManager.OpenDialogMenu(
+            newDialogPackage,
+            onFinishCallback: onFinishCallback,
+            overrideReplaceTextCallback: overrideReplaceTextCallback,
+            previousPanelVisualMode: 0
+        );
     }
 
     private static void BuildAllDialogPackages()
     {
         foreach (var kvp in _dialogPackageConfigs)
         {
-            _builtDialogPackages[kvp.Key] = Dialog.BuildDialogPackage(kvp.Value);
-            // DataBaseDay.allDialogPackages[kvp.Key] = _builtDialogPackages[kvp.Key]; // 尚未初始化
+            _builtDialogPackages[kvp.Key] = BuildDialogPackage(kvp.Value);
             Log.Info($"Built dialog package: {kvp.Key}");
         }
     }
@@ -68,9 +229,38 @@ public static partial class ResourceExManager
         if (string.IsNullOrEmpty(name)) return null;
 
         if (_dialogPackageConfigs.TryGetValue(name, out var config))
-        {
             return config.GetOverrideReplaceTextCallback();
-        }
+
         return null;
+    }
+
+    public static void DumpExampleDialog()
+    {
+        Utils.FindAndProcessResources<DialogPackage>(dialogPackage =>
+        {
+            var packageName = dialogPackage.name;
+            if (packageName == "OnTransitionToNight")
+            {
+                ExampleDialog = dialogPackage;
+                Log.LogInfo("Stored ExampleDialog(OnTransitionToNight) package.");
+            }
+            Log.LogDebug($"id={dialogPackage.name}, package={packageName}");
+        });
+
+        if (ExampleDialog == null)
+            Log.LogWarning("ExampleDialog(OnTransitionToNight) package not found among loaded assets.");
+    }
+
+    public static void ShowResourceExPackage(string packageName, System.Action onFinishCallback = null)
+    {
+        var dialogPackageConfig = GetDialogPackage(packageName);
+        if (dialogPackageConfig != null)
+        {
+            BuildAndShowDialog(dialogPackageConfig, onFinishCallback);
+        }
+        else
+        {
+            Log.LogWarning($"Dialog package {packageName} not found in ResourceExManager.");
+        }
     }
 }

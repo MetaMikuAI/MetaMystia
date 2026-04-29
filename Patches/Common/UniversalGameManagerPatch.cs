@@ -2,7 +2,6 @@ using HarmonyLib;
 using System.Collections.Generic;
 
 using Common.UI;
-
 using MetaMystia.UI;
 
 using static MetaMystia.Patch.HarmonyPrefixFlow;
@@ -28,11 +27,11 @@ public partial class UniversalGameManagerPatch
 
         if (dialogPackage.dialogContext == null)
         {
-            if (Dialog.ExampleDialog == null)
+            if (ResourceExManager.ExampleDialog == null)
             {
-                Dialog.DumpExampleDialog();
+                ResourceExManager.DumpExampleDialog();
             }
-            dialogPackage.dialogContext = Dialog.ExampleDialog.dialogContext;
+            dialogPackage.dialogContext = ResourceExManager.ExampleDialog.dialogContext;
             Log.Info($"Replaced dialogPackage.dialogContext with ExampleDialog.dialogContext");
         }
         if (ResourceExManager.ExistsDialogPackage(dialogPackage.name) && overrideReplaceTextCallback == null)

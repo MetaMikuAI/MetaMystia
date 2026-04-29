@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
+using Common.DialogUtility;
 using GameData.Profile;
 using static GameData.Core.Collections.DaySceneUtility.Collections.Product;
 using static GameData.Core.Collections.Sellable;
@@ -175,10 +177,10 @@ public class ResourceConfig
 public class DialogConfig
 {
     public int characterId { get; set; }
-    public Common.DialogUtility.SpeakerIdentity.Identity characterType { get; set; }
+    public SpeakerIdentity.Identity characterType { get; set; }
     public int pid { get; set; }
-    public Common.DialogUtility.Position position { get; set; }
-    public UI.CustomAction[] actions { get; set; }
+    public Position position { get; set; }
+    public DialogActionConfig[] actions { get; set; }
     public string text { get; set; }
 }
 
@@ -186,6 +188,40 @@ public class DialogPackageConfig
 {
     public string name { get; set; }
     public List<DialogConfig> dialogList { get; set; }
+
+    [JsonIgnore]
+    public string PackageRoot { get; set; }
+
+    public int Count => dialogList?.Count ?? 0;
+
+    public DialogConfig this[int index] => dialogList[index];
+
+    public System.Action<Il2CppSystem.Collections.Generic.Dictionary<int, string>> GetOverrideReplaceTextCallback()
+    {
+        return replaceDict =>
+        {
+            for (int i = 0; i < Count; i++)
+                replaceDict[i] = this[i].text;
+        };
+    }
+}
+
+public class DialogActionConfig
+{
+    public ActionType actionType { get; set; }
+
+    /// <summary>
+    /// For CG/BG actions: relative path to sprite image (e.g. "assets/CG/painting.png").
+    /// Prefer a full rex URI in ResourceEx JSON config.
+    /// </summary>
+    public string sprite { get; set; }
+
+    /// <summary>
+    /// For Sound actions: relative path or rex URI to a WAV asset.
+    /// </summary>
+    public string sound { get; set; }
+
+    public bool shouldSet { get; set; } = true;
 }
 
 public class IngredientConfig
