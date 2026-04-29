@@ -16,6 +16,9 @@ namespace MetaMystia;
 
 public static partial class ResourceExManager
 {
+    private const int CharacterPixelSpriteSize = 64;
+    private static readonly Vector2 CharacterPixelPivot = new Vector2(0.5f, 0.0f);
+
     /// <summary>
     /// 判断一个服装ID是否由 ResourceEx 注册
     /// </summary>
@@ -35,7 +38,7 @@ public static partial class ResourceExManager
             return false;
         }
 
-        portrait = GetSprite(config.portraitPath, config.PackageRoot, useCache: false);
+        portrait = GetSprite(config.portraitPath, config.PackageRoot);
         _clothPortraitCache[clothId] = portrait;
         return portrait != null;
     }
@@ -119,7 +122,7 @@ public static partial class ResourceExManager
         Sprite sprite = null;
         if (!string.IsNullOrEmpty(config.spritePath))
         {
-            sprite = GetSprite(config.spritePath, config.PackageRoot, new Vector2(0.5f, 0.5f), 26, 26);
+            sprite = GetSprite(config.spritePath, config.PackageRoot);
         }
 
         var lang = new GameData.CoreLanguage.ObjectLanguageBase(
@@ -264,8 +267,7 @@ public static partial class ResourceExManager
         return newArray;
     }
 
-    private static void ApplySprites(Il2CppReferenceArray<Sprite> targetArray, List<string> spritePaths, string packageRoot,
-        int pixelOffsetX = 0, int pixelOffsetY = 0)
+    private static void ApplySprites(Il2CppReferenceArray<Sprite> targetArray, List<string> spritePaths, string packageRoot)
     {
         if (spritePaths == null) return;
 
@@ -287,12 +289,51 @@ public static partial class ResourceExManager
             string path = spritePaths[i];
             if (string.IsNullOrEmpty(path)) continue;
 
-            var sprite = ResourceExManager.GetSprite(path, packageRoot, new Vector2(0.5f, 0.0f), 64, 64, pixelOffsetX, pixelOffsetY);
+            var sprite = CreateCharacterPixelSprite(ResourceExManager.GetSprite(path, packageRoot));
 
             if (sprite != null)
             {
                 targetArray[i] = sprite;
             }
         }
+    }
+
+    private static Sprite CreateCharacterPixelSprite(Sprite source)
+    {
+        if (source == null || source.texture == null)
+            return null;
+
+        var rect = source.rect;
+        int sourceWidth = Mathf.RoundToInt(rect.width);
+        int sourceHeight = Mathf.RoundToInt(rect.height);
+        int copyWidth = Mathf.Min(sourceWidth, CharacterPixelSpriteSize);
+        int copyHeight = Mathf.Min(sourceHeight, CharacterPixelSpriteSize);
+
+        var texture = new Texture2D(CharacterPixelSpriteSize, CharacterPixelSpriteSize, TextureFormat.RGBA32, false);
+        var clear = new Color[CharacterPixelSpriteSize * CharacterPixelSpriteSize];
+        for (int i = 0; i < clear.Length; i++)
+            clear[i] = Color.clear;
+        texture.SetPixels(clear);
+
+        int dstX = Mathf.Max(0, (CharacterPixelSpriteSize - sourceWidth) / 2);
+        int dstY = Mathf.Max(0, (CharacterPixelSpriteSize - sourceHeight) / 2);
+        int srcX = Mathf.RoundToInt(rect.x) + Mathf.Max(0, (sourceWidth - CharacterPixelSpriteSize) / 2);
+        int srcY = Mathf.RoundToInt(rect.y) + Mathf.Max(0, (sourceHeight - CharacterPixelSpriteSize) / 2);
+
+        texture.SetPixels(dstX, dstY, copyWidth, copyHeight, source.texture.GetPixels(srcX, srcY, copyWidth, copyHeight));
+        texture.Apply();
+        texture.name = source.name;
+        texture.filterMode = FilterMode.Point;
+        texture.wrapMode = TextureWrapMode.Clamp;
+        texture.hideFlags = HideFlags.HideAndDontSave;
+
+        var sprite = Sprite.Create(
+            texture,
+            new Rect(0f, 0f, CharacterPixelSpriteSize, CharacterPixelSpriteSize),
+            CharacterPixelPivot,
+            48f);
+        sprite.name = source.name;
+        sprite.hideFlags = HideFlags.HideAndDontSave;
+        return sprite;
     }
 }

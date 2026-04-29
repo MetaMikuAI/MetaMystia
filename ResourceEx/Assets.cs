@@ -11,7 +11,7 @@ public static partial class ResourceExManager
         return RexAssetRegistry.TryResolveUri(path, packageRoot, out var uri) ? uri : null;
     }
 
-    public static Sprite GetSprite(string relativePath, string packageRoot = null, Vector2? pivot = null, int width = 0, int height = 0, int pixelOffsetX = 0, int pixelOffsetY = 0, bool useCache = true)
+    public static Sprite GetSprite(string relativePath, string packageRoot = null)
     {
         if (!RexAssetRegistry.TryResolveUri(relativePath, packageRoot, out var uri))
         {
@@ -71,7 +71,6 @@ public static partial class ResourceExManager
                 {
                     if (!string.IsNullOrEmpty(portrait.path))
                     {
-                        // Default params for portraits: pivot (0.5, 0.5), no resize
                         GetSprite(portrait.path, charConfig.PackageRoot);
                         imageCount++;
                     }
@@ -88,8 +87,7 @@ public static partial class ResourceExManager
                     {
                         if (!string.IsNullOrEmpty(path))
                         {
-                            // Params for SpriteSetCompact: pivot (0.5, 0.0), 64x64 resize
-                            GetSprite(path, charConfig.PackageRoot, new Vector2(0.5f, 0.0f), 64, 64);
+                            GetSprite(path, charConfig.PackageRoot);
                             imageCount++;
                         }
                     }
@@ -100,8 +98,7 @@ public static partial class ResourceExManager
                     {
                         if (!string.IsNullOrEmpty(path))
                         {
-                            // Params for SpriteSetCompact: pivot (0.5, 0.0), 64x64 resize
-                            GetSprite(path, charConfig.PackageRoot, new Vector2(0.5f, 0.0f), 64, 64);
+                            GetSprite(path, charConfig.PackageRoot);
                             imageCount++;
                         }
                     }
@@ -137,7 +134,7 @@ public static partial class ResourceExManager
                     {
                         if (!string.IsNullOrEmpty(path))
                         {
-                            GetSprite(path, clothConfig.PackageRoot, new Vector2(0.5f, 0.0f), 64, 64);
+                            GetSprite(path, clothConfig.PackageRoot);
                             imageCount++;
                         }
                     }

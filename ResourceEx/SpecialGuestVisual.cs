@@ -71,7 +71,7 @@ public static partial class ResourceExManager
 
             Log.LogInfo(
                 $"Getting portrait sprite for characterId {config.id}, pid {portraitConfig.pid} from path {portraitConfig.path}");
-            var sprite = ResourceExManager.GetSprite(portraitConfig.path, config.PackageRoot, useCache: false);
+            var sprite = ResourceExManager.GetSprite(portraitConfig.path, config.PackageRoot);
             if (sprite != null)
             {
                 portraits[index] = sprite;

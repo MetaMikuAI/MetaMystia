@@ -3,7 +3,6 @@ using GameData.Core.Collections;
 using GameData.CoreLanguage.Collections;
 using MetaMystia.ResourceEx.Mappers;
 using MetaMystia.ResourceEx.Models;
-using UnityEngine;
 
 namespace MetaMystia;
 
@@ -24,7 +23,7 @@ public static partial class ResourceExManager
 
     private static void RegisterFoodLanguage(FoodConfig config)
     {
-        var sprite = GetSprite(config.spritePath, config.PackageRoot, new Vector2(0.5f, 0.5f));
+        var sprite = GetSprite(config.spritePath, config.PackageRoot);
         var lang = config.ToFoodLanguage(sprite);
         DataBaseLanguage.Foods[config.id] = lang;
         Log.Info($"Registered Food Language ID {config.id} ({config.name})");
