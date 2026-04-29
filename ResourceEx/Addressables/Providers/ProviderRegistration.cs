@@ -1,9 +1,9 @@
 using System;
 
-namespace MetaMystia.AddressableProviders;
+namespace MetaMystia.ResourceEx.Addressables.Providers;
 
 /// <summary>
-/// Metadata describing how <see cref="MetaMystia.RuntimeAddressables"/> routes a Unity asset type
+/// Metadata describing how <see cref="MetaMystia.ResourceEx.Addressables.RuntimeAddressables"/> routes a Unity asset type
 /// to its registered <see cref="UnityEngine.ResourceManagement.ResourceProviders.IResourceProvider"/>.
 /// </summary>
 public sealed class ProviderRegistration

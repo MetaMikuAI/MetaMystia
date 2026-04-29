@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.ResourceManagement.ResourceLocations;
 using UnityEngine.ResourceManagement.ResourceProviders;
 
-namespace MetaMystia.AddressableProviders;
+namespace MetaMystia.ResourceEx.Addressables.Providers;
 
 /// <summary>
 /// Built-in <see cref="IResourceProvider"/> serving in-memory <see cref="AudioClip"/> assets
@@ -15,7 +15,7 @@ namespace MetaMystia.AddressableProviders;
 /// </summary>
 public class InMemoryAudioClipProvider : ResourceProviderBase
 {
-    public const string ProviderIdConst = "MetaMystia.AddressableProviders.InMemoryAudioClipProvider";
+    public const string ProviderIdConst = "MetaMystia.ResourceEx.Addressables.Providers.InMemoryAudioClipProvider";
 
     private static readonly Dictionary<string, AudioClip> _assets = new();
 

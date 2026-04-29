@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using System;
 
 using MetaMystia.Patch;
+using MetaMystia.ResourceEx.Addressables;
 using MetaMystia.UI;
 using SgrYuki;
 

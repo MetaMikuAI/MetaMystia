@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Common.DialogUtility;
 using Common.UI;
 using GameData.Profile;
+using MetaMystia.ResourceEx.Addressables;
 using UnityEngine.AddressableAssets;
 
 namespace MetaMystia.UI;

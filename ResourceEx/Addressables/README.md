@@ -1,4 +1,4 @@
-# MetaMystia.RuntimeAddressables
+# MetaMystia.ResourceEx.Addressables.RuntimeAddressables
 
 [English](./README.en.md) | **中文**
 
@@ -65,7 +65,7 @@ someGameField.m_SpriteAsset = spriteRef;
 ### 注册 Sprite
 
 ```csharp
-using MetaMystia;
+using MetaMystia.ResourceEx.Addressables;
 
 Sprite mySprite = LoadFromSomewhere(...);
 var spriteRef = RuntimeAddressables.Register("mymod://cg/a", mySprite);

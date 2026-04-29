@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.ResourceManagement.ResourceLocations;
 using UnityEngine.ResourceManagement.ResourceProviders;
 
-namespace MetaMystia.AddressableProviders;
+namespace MetaMystia.ResourceEx.Addressables.Providers;
 
 /// <summary>
 /// Built-in <see cref="IResourceProvider"/> serving in-memory <see cref="Sprite"/> assets
@@ -19,7 +19,7 @@ namespace MetaMystia.AddressableProviders;
 /// </remarks>
 public class InMemorySpriteProvider : ResourceProviderBase
 {
-    public const string ProviderIdConst = "MetaMystia.AddressableProviders.InMemorySpriteProvider";
+    public const string ProviderIdConst = "MetaMystia.ResourceEx.Addressables.Providers.InMemorySpriteProvider";
 
     private static readonly Dictionary<string, Sprite> _assets = new();
 

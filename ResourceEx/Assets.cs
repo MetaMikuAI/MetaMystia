@@ -1,4 +1,5 @@
 using UnityEngine;
+using MetaMystia.ResourceEx.Addressables;
 using MetaMystia.ResourceEx.AssetManagement;
 
 namespace MetaMystia;

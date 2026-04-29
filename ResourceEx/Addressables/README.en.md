@@ -1,4 +1,4 @@
-# MetaMystia.RuntimeAddressables
+# MetaMystia.ResourceEx.Addressables.RuntimeAddressables
 
 **English** | [中文](./README.md)
 
@@ -73,7 +73,7 @@ the problem is.
 ### Register a Sprite
 
 ```csharp
-using MetaMystia;
+using MetaMystia.ResourceEx.Addressables;
 
 Sprite mySprite = LoadFromSomewhere(...);
 var spriteRef = RuntimeAddressables.Register("mymod://cg/a", mySprite);

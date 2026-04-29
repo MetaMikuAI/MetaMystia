@@ -6,14 +6,14 @@ using BepInEx.Logging;
 using Il2CppInterop.Runtime;
 using Il2CppInterop.Runtime.Injection;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using MetaMystia.AddressableProviders;
+using MetaMystia.ResourceEx.Addressables.Providers;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.AddressableAssets.ResourceLocators;
 using UnityEngine.ResourceManagement.ResourceLocations;
 using UnityEngine.ResourceManagement.ResourceProviders;
 
-namespace MetaMystia;
+namespace MetaMystia.ResourceEx.Addressables;
 
 /// <summary>
 /// Serves arbitrary in-memory Unity assets through the standard Unity Addressables pipeline.
@@ -71,9 +71,9 @@ public static class RuntimeAddressables
 
             try
             {
-                _locator = new ResourceLocationMap("MetaMystia.RuntimeAddressables.Locator", 32);
+                _locator = new ResourceLocationMap("MetaMystia.ResourceEx.Addressables.RuntimeAddressables.Locator", 32);
 
-                Addressables.AddResourceLocator(
+                UnityEngine.AddressableAssets.Addressables.AddResourceLocator(
                     _locator.Cast<IResourceLocator>(),
                     (string)null,
                     (IResourceLocation)null);
@@ -260,7 +260,7 @@ public static class RuntimeAddressables
 
     private static void AttachProviderToResourceManager(IResourceProvider provider)
     {
-        var providers = Addressables.ResourceManager.ResourceProviders;
+        var providers = UnityEngine.AddressableAssets.Addressables.ResourceManager.ResourceProviders;
         // Actual runtime type is ListWithEvents<IResourceProvider>, not List<>.
         var providerList = providers.Cast<ListWithEvents<IResourceProvider>>();
         providerList.Add(provider);

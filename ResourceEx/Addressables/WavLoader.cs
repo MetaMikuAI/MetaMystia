@@ -3,7 +3,7 @@ using System.IO;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using UnityEngine;
 
-namespace MetaMystia;
+namespace MetaMystia.ResourceEx.Addressables;
 
 /// <summary>
 /// Minimal 16-bit PCM WAV → <see cref="AudioClip"/> loader, for tests / mod assets.
