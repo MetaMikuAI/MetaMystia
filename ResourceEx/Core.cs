@@ -23,9 +23,6 @@ public static partial class ResourceExManager
     // Abstracted resource root path
     public static string ResourceRoot { get; set; } = Path.Combine(Paths.GameRootPath, "ResourceEx");
 
-    // Asset provider for efficient resource package access
-    private static readonly AssetProvider _assetProvider = new AssetProvider();
-
     private static Dictionary<(int id, string type), CharacterConfig> _characterConfigs = new Dictionary<(int id, string type), CharacterConfig>();
     private static Dictionary<string, CharacterSpriteSetCompact> _characterSpriteSets = new Dictionary<string, CharacterSpriteSetCompact>();
     private static Dictionary<string, CustomDialogList> _dialogPackageConfigs = new Dictionary<string, CustomDialogList>();
@@ -165,6 +162,11 @@ public static partial class ResourceExManager
         foreach (var package in packages)
         {
             _loadedPackages.Add(package);
+            RexAssetRegistry.RegisterPackage(package);
+        }
+
+        foreach (var package in packages)
+        {
             MergeResourcePackage(package);
         }
 
@@ -209,9 +211,6 @@ public static partial class ResourceExManager
         string packageName = package.PackageName;
         string packageRoot = package.PackageRoot;
 
-        // Register asset package to provider
-        _assetProvider.RegisterPackage(package.AssetPackage);
-
         if (config?.characters != null)
         {
             foreach (var charConfig in config.characters)
@@ -239,13 +238,13 @@ public static partial class ResourceExManager
                             if (action.actionType != Common.DialogUtility.ActionType.CG &&
                                 action.actionType != Common.DialogUtility.ActionType.BG) continue;
 
-                            var key = $"resex://{packageName}/{action.sprite}";
+                            var key = ResolveAssetUri(action.sprite, packageRoot);
                             var loadedSprite = GetSprite(action.sprite, packageRoot);
                             if (loadedSprite != null)
                             {
                                 ModAssetRegistry.RegisterSprite(key, loadedSprite);
                                 action.spriteAsset = ModAssetRegistry.CreateSpriteReference(key);
-                                Log.LogInfo($"[{packageName}] Registered dialog sprite: {action.sprite} → {key}");
+                                Log.LogInfo($"[{packageName}] Registered dialog sprite: {action.sprite} -> {key}");
                             }
                             else
                             {

@@ -12,7 +12,6 @@ public class ResourcePackage : IDisposable
 {
     public string ZipPath { get; }
     public string InternalPrefix { get; }
-    public string PackageRoot => $"{ZipPath}|{InternalPrefix}";
 
     private readonly MemoryStream _zipMemoryStream;
     private readonly ZipArchive _zipArchive;
@@ -64,6 +63,24 @@ public class ResourcePackage : IDisposable
         }
 
         return null;
+    }
+
+    public IEnumerable<string> GetFilePaths()
+    {
+        foreach (var entryName in _entryIndex.Keys)
+        {
+            if (!entryName.StartsWith(InternalPrefix, StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            if (entryName.EndsWith("/", StringComparison.Ordinal))
+                continue;
+
+            var relativePath = entryName.Substring(InternalPrefix.Length).Replace("\\", "/");
+            if (string.IsNullOrEmpty(relativePath))
+                continue;
+
+            yield return relativePath;
+        }
     }
 
     /// <summary>

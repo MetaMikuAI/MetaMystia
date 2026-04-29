@@ -1,21 +1,47 @@
 using UnityEngine;
+using MetaMystia.ResourceEx.AssetManagement;
 
 namespace MetaMystia;
 
 public static partial class ResourceExManager
 {
-    // Note: Sprite caching removed - different use cases require different sprite specs
-    // Images are loaded from memory-cached ZIP packages via AssetProvider
+    public static string ResolveAssetUri(string path, string packageRoot = null)
+    {
+        return RexAssetRegistry.TryResolveUri(path, packageRoot, out var uri) ? uri : null;
+    }
 
     public static Sprite GetSprite(string relativePath, string packageRoot = null, Vector2? pivot = null, int width = 0, int height = 0, int pixelOffsetX = 0, int pixelOffsetY = 0, bool useCache = true)
     {
-        Vector2 actualPivot = pivot ?? new Vector2(0.5f, 0.5f);
-        return _assetProvider.GetSprite(relativePath, packageRoot, actualPivot, width, height, pixelOffsetX, pixelOffsetY);
+        if (!RexAssetRegistry.TryResolveUri(relativePath, packageRoot, out var uri))
+        {
+            Log.LogWarning($"Failed to resolve ResourceEx asset URI: path={relativePath}, packageRoot={packageRoot}");
+            return null;
+        }
+
+        if (RexAssetRegistry.TryGetSprite(uri, out var sprite))
+            return sprite;
+
+        Log.LogWarning($"ResourceEx sprite not found or not an image: {uri}");
+        return null;
+    }
+
+    public static bool TryGetText(string path, out string text, string packageRoot = null)
+    {
+        text = null;
+        return RexAssetRegistry.TryResolveUri(path, packageRoot, out var uri)
+            && RexAssetRegistry.TryGetText(uri, out text);
+    }
+
+    public static bool TryGetBytes(string path, out byte[] bytes, string packageRoot = null)
+    {
+        bytes = null;
+        return RexAssetRegistry.TryResolveUri(path, packageRoot, out var uri)
+            && RexAssetRegistry.TryGetBytes(uri, out bytes);
     }
 
     public static void PreloadAllImages()
     {
-        Log.LogInfo($"Preloading all images...");
+        Log.LogInfo($"Verifying declared ResourceEx images...");
         int imageCount = 0;
 
         foreach (var charConfig in GetAllCharacterConfigs())
@@ -101,6 +127,6 @@ public static partial class ResourceExManager
             }
         }
 
-        Log.LogInfo($"Preloading complete. Loaded {imageCount} images from memory-cached packages.");
+        Log.LogInfo($"ResourceEx image verification complete. Checked {imageCount} declared image reference(s).");
     }
 }
