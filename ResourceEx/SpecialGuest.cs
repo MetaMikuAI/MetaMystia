@@ -244,7 +244,7 @@ public static partial class ResourceExManager
         RegisterSpecialGuestPortrayal(dummyPortrayal, config);
 
         var pixelSet = ScriptableObject.CreateInstance<CharacterSkinSets>();
-        pixelSet.defaultSkin = MakePixel(config.characterSpriteSetCompact, config.PackageRoot);
+        pixelSet.defaultSkin = MakePixel(config.characterSpriteSetCompact);
 
         dummyPortrayal.name = $"_ResourceEx_{config.name}";
         pixelSet.name = $"_ResourceEx_{config.name}";

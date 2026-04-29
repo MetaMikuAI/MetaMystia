@@ -139,6 +139,66 @@ public static class RuntimeAddressables
     }
 
     /// <summary>
+    /// Resolve a previously registered in-memory asset through RuntimeAddressables' central store.
+    /// This is the synchronous counterpart for game code that still needs a direct Unity object.
+    /// </summary>
+    public static bool TryGetAsset<T>(string key, out T asset)
+        where T : UnityEngine.Object
+    {
+        asset = null;
+        if (string.IsNullOrEmpty(key)) return false;
+        if (!_initialized) Initialize();
+
+        if (!_registrations.TryGetValue(typeof(T), out var reg))
+            return false;
+
+        var guid = KeyToGuid(key);
+        var obj = reg.GetAsset?.Invoke(guid);
+        if (obj is not T typed)
+            return false;
+
+        asset = typed;
+        return true;
+    }
+
+    /// <summary>Return an Addressables reference for an asset already registered under <paramref name="key"/>.</summary>
+    public static bool TryGetReference<T>(string key, out AssetReferenceT<T> reference)
+        where T : UnityEngine.Object
+    {
+        reference = null;
+        if (string.IsNullOrEmpty(key)) return false;
+        if (!_initialized) Initialize();
+
+        if (!_registrations.TryGetValue(typeof(T), out var reg))
+            return false;
+
+        var guid = KeyToGuid(key);
+        if (!reg.HasAsset(guid))
+            return false;
+
+        reference = new AssetReferenceT<T>(guid);
+        return true;
+    }
+
+    /// <summary>Return an <see cref="AssetReferenceSprite"/> for a Sprite already registered under <paramref name="key"/>.</summary>
+    public static bool TryGetSpriteReference(string key, out AssetReferenceSprite reference)
+    {
+        reference = null;
+        if (string.IsNullOrEmpty(key)) return false;
+        if (!_initialized) Initialize();
+
+        if (!_registrations.TryGetValue(typeof(Sprite), out var reg))
+            return false;
+
+        var guid = KeyToGuid(key);
+        if (!reg.HasAsset(guid))
+            return false;
+
+        reference = new AssetReferenceSprite(guid);
+        return true;
+    }
+
+    /// <summary>
     /// Register a custom provider for asset type <typeparamref name="T"/>.
     /// Call once after constructing your provider and registering its il2cpp type.
     /// </summary>
@@ -147,7 +207,8 @@ public static class RuntimeAddressables
         string providerId,
         Action<string, T> addAsset,
         Func<string, bool> removeAsset = null,
-        Func<string, bool> hasAsset = null)
+        Func<string, bool> hasAsset = null,
+        Func<string, T> getAsset = null)
         where T : UnityEngine.Object
     {
         if (!_initialized) Initialize();
@@ -165,6 +226,7 @@ public static class RuntimeAddressables
             ProviderId = providerId,
             AssetType = typeof(T),
             AddAsset = (guid, obj) => addAsset(guid, (T)obj),
+            GetAsset = getAsset == null ? (_ => null) : (guid => getAsset(guid)),
             RemoveAsset = removeAsset ?? (_ => false),
             HasAsset = hasAsset ?? (_ => false),
         };
@@ -235,6 +297,7 @@ public static class RuntimeAddressables
             ProviderId = InMemorySpriteProvider.ProviderIdConst,
             AssetType = typeof(Sprite),
             AddAsset = (guid, obj) => InMemorySpriteProvider.AddAsset(guid, (Sprite)obj),
+            GetAsset = guid => InMemorySpriteProvider.GetAsset(guid),
             RemoveAsset = InMemorySpriteProvider.RemoveAsset,
             HasAsset = InMemorySpriteProvider.HasAsset,
         };
@@ -253,6 +316,7 @@ public static class RuntimeAddressables
             ProviderId = InMemoryAudioClipProvider.ProviderIdConst,
             AssetType = typeof(AudioClip),
             AddAsset = (guid, obj) => InMemoryAudioClipProvider.AddAsset(guid, (AudioClip)obj),
+            GetAsset = guid => InMemoryAudioClipProvider.GetAsset(guid),
             RemoveAsset = InMemoryAudioClipProvider.RemoveAsset,
             HasAsset = InMemoryAudioClipProvider.HasAsset,
         };

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using MetaMystia.ResourceEx.Addressables;
 using UnityEngine;
 
 namespace MetaMystia.ResourceEx.AssetManagement;
@@ -62,35 +63,11 @@ public readonly struct RexUri
         return true;
     }
 
-    public static string BuildPackageRoot(string packageName)
-    {
-        return $"{Prefix}{packageName}/";
-    }
-
     public static bool IsValidPackageName(string packageName)
     {
         return !string.IsNullOrWhiteSpace(packageName)
             && packageName.IndexOf('/') < 0
             && packageName.IndexOf('\\') < 0;
-    }
-
-    public static bool TryGetPackageNameFromRoot(string packageRoot, out string packageName)
-    {
-        packageName = null;
-
-        if (string.IsNullOrWhiteSpace(packageRoot))
-            return false;
-
-        if (!packageRoot.StartsWith(Prefix, StringComparison.OrdinalIgnoreCase))
-            return false;
-
-        var remainder = packageRoot.Substring(Prefix.Length).Replace('\\', '/').Trim('/');
-        if (string.IsNullOrWhiteSpace(remainder))
-            return false;
-
-        var slash = remainder.IndexOf('/');
-        packageName = slash >= 0 ? remainder.Substring(0, slash) : remainder;
-        return IsValidPackageName(packageName);
     }
 
     public static string NormalizePath(string path)
@@ -171,10 +148,13 @@ public sealed class RexTextAsset : RexAsset
 
 public sealed class RexAudioAsset : RexAsset
 {
-    public RexAudioAsset(string uri, string packageName, string path, byte[] bytes)
+    public RexAudioAsset(string uri, string packageName, string path, byte[] bytes, AudioClip clip = null)
         : base(uri, packageName, path, bytes, RexAssetKind.Audio)
     {
+        Clip = clip;
     }
+
+    public AudioClip Clip { get; }
 }
 
 public sealed class RexBinaryAsset : RexAsset
@@ -189,8 +169,6 @@ public sealed class RexBinaryAsset : RexAsset
 public static partial class RexAssetRegistry
 {
     private static readonly Dictionary<string, RexAsset> _assets = new(StringComparer.OrdinalIgnoreCase);
-    private static readonly Dictionary<string, RexImageAsset> _images = new(StringComparer.OrdinalIgnoreCase);
-    private static readonly Dictionary<string, RexTextAsset> _texts = new(StringComparer.OrdinalIgnoreCase);
 
     private static readonly HashSet<string> ImageExtensions = new(StringComparer.OrdinalIgnoreCase)
     {
@@ -259,7 +237,7 @@ public static partial class RexAssetRegistry
             $"{imageCount} image(s), {textCount} text file(s), {audioCount} audio file(s), {binaryCount} binary file(s).");
     }
 
-    public static bool TryResolveUri(string assetPath, string packageRoot, out string uri)
+    public static bool TryResolveUri(string assetPath, string packageName, out string uri)
     {
         uri = null;
 
@@ -269,58 +247,10 @@ public static partial class RexAssetRegistry
             return true;
         }
 
-        if (!RexUri.TryGetPackageNameFromRoot(packageRoot, out var packageName))
-            return false;
-
         if (!RexUri.TryBuild(packageName, assetPath, out parsed))
             return false;
 
         uri = parsed.Value;
-        return true;
-    }
-
-    public static bool TryGetAsset(string uri, out RexAsset asset)
-    {
-        asset = null;
-        if (!RexUri.TryParse(uri, out var parsed))
-            return false;
-
-        return _assets.TryGetValue(parsed.Value, out asset);
-    }
-
-    public static bool TryGetSprite(string uri, out Sprite sprite)
-    {
-        sprite = null;
-        if (!RexUri.TryParse(uri, out var parsed))
-            return false;
-
-        if (!_images.TryGetValue(parsed.Value, out var asset))
-            return false;
-
-        sprite = asset.Sprite;
-        return sprite != null;
-    }
-
-    public static bool TryGetText(string uri, out string text)
-    {
-        text = null;
-        if (!RexUri.TryParse(uri, out var parsed))
-            return false;
-
-        if (!_texts.TryGetValue(parsed.Value, out var asset))
-            return false;
-
-        text = asset.Text;
-        return true;
-    }
-
-    public static bool TryGetBytes(string uri, out byte[] bytes)
-    {
-        bytes = null;
-        if (!TryGetAsset(uri, out var asset))
-            return false;
-
-        bytes = asset.Bytes;
         return true;
     }
 
@@ -335,7 +265,7 @@ public static partial class RexAssetRegistry
             return new RexTextAsset(uri.Value, uri.PackageName, uri.Path, bytes, Encoding.UTF8.GetString(bytes));
 
         if (AudioExtensions.Contains(extension))
-            return new RexAudioAsset(uri.Value, uri.PackageName, uri.Path, bytes);
+            return CreateAudioAsset(uri, bytes);
 
         return new RexBinaryAsset(uri.Value, uri.PackageName, uri.Path, bytes);
     }
@@ -367,6 +297,7 @@ public static partial class RexAssetRegistry
             sprite.name = name;
             sprite.hideFlags = HideFlags.HideAndDontSave;
 
+            RuntimeAddressables.RegisterSprite(uri.Value, sprite);
             return new RexImageAsset(uri.Value, uri.PackageName, uri.Path, bytes, texture, sprite);
         }
         catch (Exception ex)
@@ -377,19 +308,26 @@ public static partial class RexAssetRegistry
         }
     }
 
+    private static RexAsset CreateAudioAsset(RexUri uri, byte[] bytes)
+    {
+        try
+        {
+            var clip = WavLoader.LoadFromBytes(bytes, uri.Value);
+            RuntimeAddressables.Register(uri.Value, clip);
+            return new RexAudioAsset(uri.Value, uri.PackageName, uri.Path, bytes, clip);
+        }
+        catch (Exception ex)
+        {
+            Log.LogWarning($"Failed to register audio resource {uri.Value}: {ex.Message}");
+            return new RexAudioAsset(uri.Value, uri.PackageName, uri.Path, bytes);
+        }
+    }
+
     private static void RegisterAsset(RexAsset asset)
     {
         if (_assets.ContainsKey(asset.Uri))
             Log.LogWarning($"Duplicate rex asset URI '{asset.Uri}' detected. Overwriting previous asset.");
 
         _assets[asset.Uri] = asset;
-        _images.Remove(asset.Uri);
-        _texts.Remove(asset.Uri);
-
-        if (asset is RexImageAsset imageAsset)
-            _images[asset.Uri] = imageAsset;
-
-        if (asset is RexTextAsset textAsset)
-            _texts[asset.Uri] = textAsset;
     }
 }

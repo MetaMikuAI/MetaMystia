@@ -72,7 +72,6 @@ public static partial class ResourceExManager
     public static void Initialize()
     {
         LoadAllResourcePackages();
-        PreloadAllImages();
     }
 
     // 加载逻辑
@@ -209,13 +208,14 @@ public static partial class ResourceExManager
     {
         var config = package.Config;
         string packageName = package.PackageName;
-        string packageRoot = package.PackageRoot;
+        string packageLabel = package.PackageLabel;
+
+        NormalizePackageResourceUris(config, packageLabel);
 
         if (config?.characters != null)
         {
             foreach (var charConfig in config.characters)
             {
-                charConfig.PackageRoot = packageRoot;
                 _characterConfigs[(charConfig.id, charConfig.type)] = charConfig;
                 Log.LogInfo($"[{packageName}] Loaded config for character {charConfig.name} ({charConfig.id}, {charConfig.type})");
             }
@@ -225,7 +225,6 @@ public static partial class ResourceExManager
         {
             foreach (var pkgConfig in config.dialogPackages)
             {
-                pkgConfig.PackageRoot = packageRoot;
                 _dialogPackageConfigs[pkgConfig.name] = pkgConfig;
                 Log.LogInfo($"[{packageName}] Loaded dialog package: {pkgConfig.name}");
             }
@@ -235,7 +234,6 @@ public static partial class ResourceExManager
         {
             foreach (var ingredientConfig in config.ingredients)
             {
-                ingredientConfig.PackageRoot = packageRoot;
                 IngredientConfigs[ingredientConfig.id] = ingredientConfig;
                 Log.LogInfo($"[{packageName}] Loaded config for ingredient {ingredientConfig.id}");
             }
@@ -245,7 +243,6 @@ public static partial class ResourceExManager
         {
             foreach (var foodConfig in config.foods)
             {
-                foodConfig.PackageRoot = packageRoot;
                 FoodConfigs[foodConfig.id] = foodConfig;
                 Log.LogInfo($"[{packageName}] Loaded config for food {foodConfig.name} ({foodConfig.id})");
             }
@@ -255,7 +252,6 @@ public static partial class ResourceExManager
         {
             foreach (var beverageConfig in config.beverages)
             {
-                beverageConfig.PackageRoot = packageRoot;
                 BeverageConfigs[beverageConfig.id] = beverageConfig;
                 Log.LogInfo($"[{packageName}] Loaded config for beverage {beverageConfig.name} ({beverageConfig.id})");
             }
@@ -273,7 +269,6 @@ public static partial class ResourceExManager
         {
             foreach (var missionNodeConfig in config.missionNodes)
             {
-                // missionNodeConfig.PackageRoot = packageRootInfo;
                 MissionNodeConfigs.Add(missionNodeConfig);
                 Log.LogInfo($"[{packageName}] Loaded config for mission node {missionNodeConfig.title}");
             }
@@ -283,7 +278,6 @@ public static partial class ResourceExManager
         {
             foreach (var eventNodeConfig in config.eventNodes)
             {
-                // eventNodeConfig.PackageRoot = packageRootInfo;
                 EventNodeConfigs.Add(eventNodeConfig);
                 Log.LogInfo($"[{packageName}] Loaded config for event node {eventNodeConfig.debugLabel}");
             }
@@ -302,10 +296,106 @@ public static partial class ResourceExManager
         {
             foreach (var clothConfig in config.clothes)
             {
-                clothConfig.PackageRoot = packageRoot;
                 ClothConfigs[clothConfig.id] = clothConfig;
                 Log.LogInfo($"[{packageName}] Loaded config for cloth {clothConfig.name} ({clothConfig.id})");
             }
         }
+    }
+
+    private static void NormalizePackageResourceUris(ResourceConfig config, string packageLabel)
+    {
+        if (config == null)
+            return;
+
+        if (config.characters != null)
+        {
+            foreach (var charConfig in config.characters)
+            {
+                if (charConfig.portraits != null)
+                {
+                    foreach (var portrait in charConfig.portraits)
+                        portrait.path = ResolveAssetUriOrSelf(portrait.path, packageLabel);
+                }
+
+                if (charConfig.characterSpriteSetCompact != null)
+                {
+                    var pixelConfig = charConfig.characterSpriteSetCompact;
+                    NormalizeConfigAssetUris(pixelConfig.mainSprite, packageLabel);
+                    NormalizeConfigAssetUris(pixelConfig.eyeSprite, packageLabel);
+                }
+            }
+        }
+
+        if (config.dialogPackages != null)
+        {
+            foreach (var dialogPackage in config.dialogPackages)
+            {
+                if (dialogPackage.dialogList == null) continue;
+                for (int dialogIndex = 0; dialogIndex < dialogPackage.dialogList.Count; dialogIndex++)
+                {
+                    var dialog = dialogPackage.dialogList[dialogIndex];
+                    if (dialog?.actions == null) continue;
+
+                    for (int actionIndex = 0; actionIndex < dialog.actions.Length; actionIndex++)
+                    {
+                        var action = dialog.actions[actionIndex];
+                        if (action == null) continue;
+
+                        action.sprite = ResolveAssetUriOrSelf(action.sprite, packageLabel);
+                        action.sound = ResolveAssetUriOrSelf(action.sound, packageLabel);
+                    }
+                }
+            }
+        }
+
+        if (config.ingredients != null)
+        {
+            foreach (var ingredientConfig in config.ingredients)
+                ingredientConfig.spritePath = ResolveAssetUriOrSelf(ingredientConfig.spritePath, packageLabel);
+        }
+
+        if (config.foods != null)
+        {
+            foreach (var foodConfig in config.foods)
+                foodConfig.spritePath = ResolveAssetUriOrSelf(foodConfig.spritePath, packageLabel);
+        }
+
+        if (config.beverages != null)
+        {
+            foreach (var beverageConfig in config.beverages)
+                beverageConfig.spritePath = ResolveAssetUriOrSelf(beverageConfig.spritePath, packageLabel);
+        }
+
+        if (config.clothes != null)
+        {
+            foreach (var clothConfig in config.clothes)
+            {
+                clothConfig.spritePath = ResolveAssetUriOrSelf(clothConfig.spritePath, packageLabel);
+                clothConfig.portraitPath = ResolveAssetUriOrSelf(clothConfig.portraitPath, packageLabel);
+
+                if (clothConfig.pixelFullConfig == null) continue;
+                NormalizeConfigAssetUris(clothConfig.pixelFullConfig.mainSprite, packageLabel);
+                NormalizeConfigAssetUris(clothConfig.pixelFullConfig.eyeSprite, packageLabel);
+                NormalizeConfigAssetUris(clothConfig.pixelFullConfig.hairSprite, packageLabel);
+                NormalizeConfigAssetUris(clothConfig.pixelFullConfig.backSprite, packageLabel);
+            }
+        }
+    }
+
+    private static void NormalizeConfigAssetUris(List<string> paths, string packageLabel)
+    {
+        if (paths == null)
+            return;
+
+        for (int i = 0; i < paths.Count; i++)
+            paths[i] = ResolveAssetUriOrSelf(paths[i], packageLabel);
+    }
+
+    private static string ResolveAssetUriOrSelf(string path, string packageLabel)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+            return path;
+
+        return ResolveAssetUri(path, packageLabel) ?? path;
     }
 }

@@ -58,6 +58,7 @@ public class InMemorySpriteProvider : ResourceProviderBase
     }
 
     internal static void AddAsset(string guid, Sprite sprite) => _assets[guid] = sprite;
+    internal static Sprite GetAsset(string guid) => _assets.TryGetValue(guid, out var sprite) ? sprite : null;
     internal static bool RemoveAsset(string guid) => _assets.Remove(guid);
     internal static bool HasAsset(string guid) => _assets.ContainsKey(guid);
 }

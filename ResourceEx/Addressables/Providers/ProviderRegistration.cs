@@ -17,6 +17,9 @@ public sealed class ProviderRegistration
     /// <summary>Insert / overwrite an asset in the provider's internal store.</summary>
     public Action<string, UnityEngine.Object> AddAsset { get; init; }
 
+    /// <summary>Return an asset from the provider's internal store by GUID, or null when absent.</summary>
+    public Func<string, UnityEngine.Object> GetAsset { get; init; }
+
     /// <summary>Remove an asset from the provider's internal store. Returns true if present.</summary>
     public Func<string, bool> RemoveAsset { get; init; }
 

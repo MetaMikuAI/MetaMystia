@@ -38,7 +38,9 @@ public static partial class ResourceExManager
             return false;
         }
 
-        portrait = GetSprite(config.portraitPath, config.PackageRoot);
+        if (!TryGetSprite(config.portraitPath, out portrait))
+            portrait = null;
+
         _clothPortraitCache[clothId] = portrait;
         return portrait != null;
     }
@@ -122,7 +124,7 @@ public static partial class ResourceExManager
         Sprite sprite = null;
         if (!string.IsNullOrEmpty(config.spritePath))
         {
-            sprite = GetSprite(config.spritePath, config.PackageRoot);
+            TryGetSprite(config.spritePath, out sprite);
         }
 
         var lang = new GameData.CoreLanguage.ObjectLanguageBase(
@@ -158,7 +160,7 @@ public static partial class ResourceExManager
             var config = sortedConfigs[i];
             if (config.pixelFullConfig != null)
             {
-                var pixelFull = MakePixelFull(config.pixelFullConfig, config.PackageRoot);
+                var pixelFull = MakePixelFull(config.pixelFullConfig);
                 _clothPixelFullCache[i] = pixelFull;
                 dlcsArray[i] = pixelFull; // CharacterSpriteSetFull 继承自 CharacterSpriteSetCompact
                 Log.Info($"Built cloth pixel full for ID {config.id} ({config.name}), dlcIndex={i}");
@@ -182,7 +184,7 @@ public static partial class ResourceExManager
         return _characterSpriteSets.TryGetValue(name, out var spriteSet) ? spriteSet : null;
     }
 
-    public static CharacterSpriteSetCompact MakePixel(CharacterSpriteSetCompactConfig pixelConfig, string packageRoot)
+    public static CharacterSpriteSetCompact MakePixel(CharacterSpriteSetCompactConfig pixelConfig)
     {
         var template = DataBaseCharacter.FallbackCompactPixel;
 
@@ -191,8 +193,8 @@ public static partial class ResourceExManager
         var mainSprites = CopySpriteArray(template.MainSprite);
         var eyeSprites = CopySpriteArray(template.EyeSprite);
 
-        ApplySprites(mainSprites, pixelConfig.mainSprite, packageRoot);
-        ApplySprites(eyeSprites, pixelConfig.eyeSprite, packageRoot);
+        ApplySprites(mainSprites, pixelConfig.mainSprite);
+        ApplySprites(eyeSprites, pixelConfig.eyeSprite);
 
         pixel.Initialize(
             mainSprites,
@@ -217,7 +219,7 @@ public static partial class ResourceExManager
         return pixel;
     }
 
-    public static CharacterSpriteSetFull MakePixelFull(CharacterSpriteSetFullConfig pixelConfig, string packageRoot)
+    public static CharacterSpriteSetFull MakePixelFull(CharacterSpriteSetFullConfig pixelConfig)
     {
         var template = DataBaseCharacter.FallbackFullPixel;
 
@@ -226,10 +228,10 @@ public static partial class ResourceExManager
         var hairSprites = CopySpriteArray(template.HairSprite);
         var backSprites = CopySpriteArray(template.BackSprite);
 
-        ApplySprites(mainSprites, pixelConfig.mainSprite, packageRoot);
-        ApplySprites(eyeSprites, pixelConfig.eyeSprite, packageRoot);
-        ApplySprites(hairSprites, pixelConfig.hairSprite, packageRoot);
-        ApplySprites(backSprites, pixelConfig.backSprite, packageRoot);
+        ApplySprites(mainSprites, pixelConfig.mainSprite);
+        ApplySprites(eyeSprites, pixelConfig.eyeSprite);
+        ApplySprites(hairSprites, pixelConfig.hairSprite);
+        ApplySprites(backSprites, pixelConfig.backSprite);
 
         var pixelFull = ScriptableObject.CreateInstance<CharacterSpriteSetFull>();
         pixelFull.Initialize(
@@ -267,9 +269,9 @@ public static partial class ResourceExManager
         return newArray;
     }
 
-    private static void ApplySprites(Il2CppReferenceArray<Sprite> targetArray, List<string> spritePaths, string packageRoot)
+    private static void ApplySprites(Il2CppReferenceArray<Sprite> targetArray, List<string> spriteUris)
     {
-        if (spritePaths == null) return;
+        if (spriteUris == null) return;
 
         if (targetArray == null)
         {
@@ -277,19 +279,22 @@ public static partial class ResourceExManager
             return;
         }
 
-        if (spritePaths.Count != targetArray.Length)
+        if (spriteUris.Count != targetArray.Length)
         {
             Log.LogError(
-                $"Sprite count mismatch! Expected {targetArray.Length}, got {spritePaths.Count}. Refusing to load sprites.");
+                $"Sprite count mismatch! Expected {targetArray.Length}, got {spriteUris.Count}. Refusing to load sprites.");
             return;
         }
 
-        for (int i = 0; i < spritePaths.Count; i++)
+        for (int i = 0; i < spriteUris.Count; i++)
         {
-            string path = spritePaths[i];
-            if (string.IsNullOrEmpty(path)) continue;
+            string uri = spriteUris[i];
+            if (string.IsNullOrEmpty(uri)) continue;
 
-            var sprite = CreateCharacterPixelSprite(ResourceExManager.GetSprite(path, packageRoot));
+            if (!TryGetSprite(uri, out var source))
+                continue;
+
+            var sprite = CreateCharacterPixelSprite(source);
 
             if (sprite != null)
             {

@@ -51,6 +51,7 @@ public class InMemoryAudioClipProvider : ResourceProviderBase
     public override void Release(IResourceLocation location, Il2CppSystem.Object asset) { }
 
     internal static void AddAsset(string guid, AudioClip clip) => _assets[guid] = clip;
+    internal static AudioClip GetAsset(string guid) => _assets.TryGetValue(guid, out var clip) ? clip : null;
     internal static bool RemoveAsset(string guid) => _assets.Remove(guid);
     internal static bool HasAsset(string guid) => _assets.ContainsKey(guid);
 }

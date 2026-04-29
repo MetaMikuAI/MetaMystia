@@ -23,7 +23,7 @@ public static partial class ResourceExManager
 
     private static void RegisterFoodLanguage(FoodConfig config)
     {
-        var sprite = GetSprite(config.spritePath, config.PackageRoot);
+        TryGetSprite(config.spritePath, out var sprite);
         var lang = config.ToFoodLanguage(sprite);
         DataBaseLanguage.Foods[config.id] = lang;
         Log.Info($"Registered Food Language ID {config.id} ({config.name})");

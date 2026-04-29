@@ -1,147 +1,33 @@
 using UnityEngine;
 using MetaMystia.ResourceEx.Addressables;
 using MetaMystia.ResourceEx.AssetManagement;
+using UnityEngine.AddressableAssets;
 
 namespace MetaMystia;
 
 public static partial class ResourceExManager
 {
-    public static string ResolveAssetUri(string path, string packageRoot = null)
+    public static string ResolveAssetUri(string path, string packageLabel)
     {
-        return RexAssetRegistry.TryResolveUri(path, packageRoot, out var uri) ? uri : null;
+        return RexAssetRegistry.TryResolveUri(path, packageLabel, out var uri) ? uri : null;
     }
 
-    public static Sprite GetSprite(string relativePath, string packageRoot = null)
+    public static bool TryGetSprite(string uri, out Sprite sprite)
     {
-        if (!RexAssetRegistry.TryResolveUri(relativePath, packageRoot, out var uri))
-        {
-            Log.LogWarning($"Failed to resolve ResourceEx asset URI: path={relativePath}, packageRoot={packageRoot}");
-            return null;
-        }
-
-        if (RexAssetRegistry.TryGetSprite(uri, out var sprite))
-            return sprite;
-
-        Log.LogWarning($"ResourceEx sprite not found or not an image: {uri}");
-        return null;
+        sprite = null;
+        return RexUri.IsRexUri(uri) && RuntimeAddressables.TryGetAsset(uri, out sprite);
     }
 
-    public static bool TryGetText(string path, out string text, string packageRoot = null)
+    public static bool TryGetSpriteReference(string uri, out AssetReferenceSprite reference)
     {
-        text = null;
-        return RexAssetRegistry.TryResolveUri(path, packageRoot, out var uri)
-            && RexAssetRegistry.TryGetText(uri, out text);
+        reference = null;
+        return RexUri.IsRexUri(uri) && RuntimeAddressables.TryGetSpriteReference(uri, out reference);
     }
 
-    public static bool TryGetBytes(string path, out byte[] bytes, string packageRoot = null)
+    public static bool TryGetAudioReference(string uri, out AssetReferenceT<AudioClip> reference)
     {
-        bytes = null;
-        return RexAssetRegistry.TryResolveUri(path, packageRoot, out var uri)
-            && RexAssetRegistry.TryGetBytes(uri, out bytes);
+        reference = null;
+        return RexUri.IsRexUri(uri) && RuntimeAddressables.TryGetReference(uri, out reference);
     }
 
-    public static AudioClip GetAudioClip(string relativePath, string packageRoot = null)
-    {
-        if (!TryGetBytes(relativePath, out var bytes, packageRoot))
-            return null;
-
-        var key = ResolveAssetUri(relativePath, packageRoot) ?? relativePath;
-        try
-        {
-            return WavLoader.LoadFromBytes(bytes, key);
-        }
-        catch (System.Exception ex)
-        {
-            Log.LogWarning($"Failed to decode audio clip {key}: {ex.Message}");
-            return null;
-        }
-    }
-
-    public static void PreloadAllImages()
-    {
-        Log.LogInfo($"Verifying declared ResourceEx images...");
-        int imageCount = 0;
-
-        foreach (var charConfig in GetAllCharacterConfigs())
-        {
-            // Preload Portraits
-            if (charConfig.portraits != null)
-            {
-                foreach (var portrait in charConfig.portraits)
-                {
-                    if (!string.IsNullOrEmpty(portrait.path))
-                    {
-                        GetSprite(portrait.path, charConfig.PackageRoot);
-                        imageCount++;
-                    }
-                }
-            }
-
-            // Preload SpriteSetCompact
-            if (charConfig.characterSpriteSetCompact != null)
-            {
-                var config = charConfig.characterSpriteSetCompact;
-                if (config.mainSprite != null)
-                {
-                    foreach (var path in config.mainSprite)
-                    {
-                        if (!string.IsNullOrEmpty(path))
-                        {
-                            GetSprite(path, charConfig.PackageRoot);
-                            imageCount++;
-                        }
-                    }
-                }
-                if (config.eyeSprite != null)
-                {
-                    foreach (var path in config.eyeSprite)
-                    {
-                        if (!string.IsNullOrEmpty(path))
-                        {
-                            GetSprite(path, charConfig.PackageRoot);
-                            imageCount++;
-                        }
-                    }
-                }
-            }
-        }
-
-        // Preload cloth images
-        foreach (var clothConfig in ClothConfigs.Values)
-        {
-            // Preload cloth item sprite
-            if (!string.IsNullOrEmpty(clothConfig.spritePath))
-            {
-                GetSprite(clothConfig.spritePath, clothConfig.PackageRoot);
-                imageCount++;
-            }
-
-            // Preload cloth portrait
-            if (!string.IsNullOrEmpty(clothConfig.portraitPath))
-            {
-                GetSprite(clothConfig.portraitPath, clothConfig.PackageRoot);
-                imageCount++;
-            }
-
-            // Preload cloth pixel sprites
-            if (clothConfig.pixelFullConfig != null)
-            {
-                var pixelConfig = clothConfig.pixelFullConfig;
-                foreach (var paths in new[] { pixelConfig.mainSprite, pixelConfig.eyeSprite, pixelConfig.hairSprite, pixelConfig.backSprite })
-                {
-                    if (paths == null) continue;
-                    foreach (var path in paths)
-                    {
-                        if (!string.IsNullOrEmpty(path))
-                        {
-                            GetSprite(path, clothConfig.PackageRoot);
-                            imageCount++;
-                        }
-                    }
-                }
-            }
-        }
-
-        Log.LogInfo($"ResourceEx image verification complete. Checked {imageCount} declared image reference(s).");
-    }
 }

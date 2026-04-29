@@ -15,7 +15,7 @@ public static partial class ResourceExManager
 
     private static void RegisterBeverageLanguage(BeverageConfig config)
     {
-        var sprite = GetSprite(config.spritePath, config.PackageRoot);
+        TryGetSprite(config.spritePath, out var sprite);
         var lang = config.ToBeverageLanguage(sprite);
         DataBaseLanguage.Beverages[config.id] = lang; // Beverages 是 private 的，不能用 TryAdd
         Log.Info($"Registered language for beverage {config.id}: {config.name}");

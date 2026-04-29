@@ -222,8 +222,7 @@ public static partial class ResourcePackageLoader
             PackageName = candidate.PackageName,
             PackageLabel = packageLabel,
             Config = candidate.Config,
-            AssetPackage = resourcePackage,
-            PackageRoot = RexUri.BuildPackageRoot(packageLabel)
+            AssetPackage = resourcePackage
         };
     }
 
@@ -274,5 +273,4 @@ public class LoadedResourcePackage
     public string PackageLabel { get; set; }
     public ResourceConfig Config { get; set; }
     public ResourcePackage AssetPackage { get; set; }
-    public string PackageRoot { get; set; } // Format: "rex://packageLabel/"
 }

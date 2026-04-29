@@ -5,7 +5,6 @@ using Common.UI;
 using GameData.Core.Collections.DaySceneUtility;
 using GameData.Profile;
 
-using MetaMystia.ResourceEx.Addressables;
 using MetaMystia.ResourceEx.Models;
 
 using UnityEngine.AddressableAssets;
@@ -38,7 +37,7 @@ public static partial class ResourceExManager
         return null;
     }
 
-    private static DialogAction BuildDialogAction(DialogActionConfig actionConfig, string packageRoot)
+    private static DialogAction BuildDialogAction(DialogActionConfig actionConfig)
     {
         var action = new DialogAction();
         action.actionType = actionConfig.actionType;
@@ -55,10 +54,10 @@ public static partial class ResourceExManager
         action.m_AudioAsset = new AssetReferenceT<UnityEngine.AudioClip>("");
 
         if (actionConfig.actionType == ActionType.CG || actionConfig.actionType == ActionType.BG)
-            action.m_SpriteAsset = ResolveDialogSpriteReference(actionConfig, packageRoot);
+            action.m_SpriteAsset = ResolveDialogSpriteReference(actionConfig);
 
         if (actionConfig.actionType == ActionType.Sound)
-            action.m_AudioAsset = ResolveDialogAudioReference(actionConfig, packageRoot);
+            action.m_AudioAsset = ResolveDialogAudioReference(actionConfig);
 
         return action;
     }
@@ -93,7 +92,7 @@ public static partial class ResourceExManager
             {
                 meta.dialogAction = new Il2CppReferenceArray<DialogAction>(dialog.actions.Length);
                 for (int j = 0; j < dialog.actions.Length; j++)
-                    meta.dialogAction[j] = BuildDialogAction(dialog.actions[j], dialogPackageConfig.PackageRoot);
+                    meta.dialogAction[j] = BuildDialogAction(dialog.actions[j]);
             }
             else
             {
@@ -115,56 +114,32 @@ public static partial class ResourceExManager
         return newDialogPackage;
     }
 
-    private static AssetReferenceSprite ResolveDialogSpriteReference(DialogActionConfig actionConfig, string packageRoot)
+    private static AssetReferenceSprite ResolveDialogSpriteReference(DialogActionConfig actionConfig)
     {
         if (actionConfig == null || string.IsNullOrEmpty(actionConfig.sprite))
             return new AssetReferenceSprite("");
 
-        var key = ResolveAssetUri(actionConfig.sprite, packageRoot);
-        if (string.IsNullOrEmpty(key))
+        if (!TryGetSpriteReference(actionConfig.sprite, out var reference))
         {
-            Log.LogWarning($"Failed to resolve dialog sprite URI: {actionConfig.sprite}");
+            Log.LogWarning($"Dialog sprite URI is not registered in Addressables: {actionConfig.sprite}");
             return new AssetReferenceSprite("");
         }
 
-        var sprite = GetSprite(actionConfig.sprite, packageRoot);
-        if (sprite == null)
-        {
-            Log.LogWarning($"Dialog sprite URI is not a loaded image: {key}");
-            return new AssetReferenceSprite("");
-        }
-
-        return RuntimeAddressables.RegisterSprite(key, sprite);
+        return reference;
     }
 
-    private static AssetReferenceT<UnityEngine.AudioClip> ResolveDialogAudioReference(DialogActionConfig actionConfig, string packageRoot)
+    private static AssetReferenceT<UnityEngine.AudioClip> ResolveDialogAudioReference(DialogActionConfig actionConfig)
     {
         if (actionConfig == null || string.IsNullOrEmpty(actionConfig.sound))
             return new AssetReferenceT<UnityEngine.AudioClip>("");
 
-        var key = ResolveAssetUri(actionConfig.sound, packageRoot);
-        if (string.IsNullOrEmpty(key))
+        if (!TryGetAudioReference(actionConfig.sound, out var reference))
         {
-            Log.LogWarning($"Failed to resolve dialog sound URI: {actionConfig.sound}");
+            Log.LogWarning($"Dialog sound URI is not registered in Addressables: {actionConfig.sound}");
             return new AssetReferenceT<UnityEngine.AudioClip>("");
         }
 
-        if (!TryGetBytes(actionConfig.sound, out var audioBytes, packageRoot))
-        {
-            Log.LogWarning($"Dialog sound URI is not a loaded asset: {key}");
-            return new AssetReferenceT<UnityEngine.AudioClip>("");
-        }
-
-        try
-        {
-            var clip = WavLoader.LoadFromBytes(audioBytes, key);
-            return RuntimeAddressables.Register(key, clip);
-        }
-        catch (System.Exception ex)
-        {
-            Log.LogWarning($"Failed to decode dialog sound {key}: {ex.Message}");
-            return new AssetReferenceT<UnityEngine.AudioClip>("");
-        }
+        return reference;
     }
 
     private static void BuildAndShowDialog(DialogPackageConfig dialogPackageConfig, System.Action onFinishCallback = null)

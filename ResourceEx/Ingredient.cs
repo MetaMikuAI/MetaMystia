@@ -15,7 +15,7 @@ public static partial class ResourceExManager
 
     private static void RegisterIngredientLanguage(IngredientConfig config)
     {
-        var sprite = GetSprite(config.spritePath, config.PackageRoot);
+        TryGetSprite(config.spritePath, out var sprite);
         var lang = config.ToIngredientLanguage(sprite);
         DataBaseLanguage.Ingredients[config.id] = lang; // Ingredients 是 private 的，不能用 TryAdd
         Log.Info($"Registered language for ingredient {config.id}: {config.name}");

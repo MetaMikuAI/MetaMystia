@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 using Common.DialogUtility;
 using GameData.Profile;
 using static GameData.Core.Collections.DaySceneUtility.Collections.Product;
@@ -23,7 +22,6 @@ public class CharacterConfig
     public CharacterSpriteSetCompactConfig characterSpriteSetCompact { get; set; }
     public KizunaEventConfig kizuna { get; set; }
     public SpawnMarkerConfig spawnMarker { get; set; }
-    public string PackageRoot { get; set; }
 }
 
 public class SpawnMarkerConfig
@@ -128,7 +126,6 @@ public class ClothConfig
     public float notebookVerticalOffset { get; set; } = 0f;
     public float notebookUITitleHorizontalOffset { get; set; } = 0f;
     public float notebookUITitleVerticalOffset { get; set; } = 0f;
-    public string PackageRoot { get; set; }
 }
 
 public class CharacterSpriteSetFullConfig
@@ -189,9 +186,6 @@ public class DialogPackageConfig
     public string name { get; set; }
     public List<DialogConfig> dialogList { get; set; }
 
-    [JsonIgnore]
-    public string PackageRoot { get; set; }
-
     public int Count => dialogList?.Count ?? 0;
 
     public DialogConfig this[int index] => dialogList[index];
@@ -238,7 +232,6 @@ public class IngredientConfig
     public List<int> tags { get; set; }
 
     public string spritePath { get; set; }
-    public string PackageRoot { get; set; }
 }
 
 public class BeverageConfig
@@ -251,7 +244,6 @@ public class BeverageConfig
     public List<int> tags { get; set; }
 
     public string spritePath { get; set; }
-    public string PackageRoot { get; set; }
 }
 
 public class RecipeConfig
@@ -273,7 +265,6 @@ public class FoodConfig
     public List<int> tags { get; set; }
     public List<int> banTags { get; set; }
     public string spritePath { get; set; }
-    public string PackageRoot { get; set; }
 }
 
 public class MissionNodeConfig
