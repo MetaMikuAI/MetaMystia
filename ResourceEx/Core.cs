@@ -23,12 +23,9 @@ public static partial class ResourceExManager
     // Abstracted resource root path
     public static string ResourceRoot { get; set; } = Path.Combine(Paths.GameRootPath, "ResourceEx");
 
-    // Asset provider for efficient resource package access
-    private static readonly AssetProvider _assetProvider = new AssetProvider();
-
     private static Dictionary<(int id, string type), CharacterConfig> _characterConfigs = new Dictionary<(int id, string type), CharacterConfig>();
     private static Dictionary<string, CharacterSpriteSetCompact> _characterSpriteSets = new Dictionary<string, CharacterSpriteSetCompact>();
-    private static Dictionary<string, CustomDialogList> _dialogPackageConfigs = new Dictionary<string, CustomDialogList>();
+    private static Dictionary<string, DialogPackageConfig> _dialogPackageConfigs = new Dictionary<string, DialogPackageConfig>();
     private static Dictionary<string, DialogPackage> _builtDialogPackages = new Dictionary<string, DialogPackage>();
     private static Dictionary<string, Merchant> _builtMerchants = new Dictionary<string, Merchant>();
 
@@ -75,7 +72,6 @@ public static partial class ResourceExManager
     public static void Initialize()
     {
         LoadAllResourcePackages();
-        PreloadAllImages();
     }
 
     // 加载逻辑
@@ -165,6 +161,11 @@ public static partial class ResourceExManager
         foreach (var package in packages)
         {
             _loadedPackages.Add(package);
+            RexAssetRegistry.RegisterPackage(package);
+        }
+
+        foreach (var package in packages)
+        {
             MergeResourcePackage(package);
         }
 
@@ -207,16 +208,14 @@ public static partial class ResourceExManager
     {
         var config = package.Config;
         string packageName = package.PackageName;
-        string packageRoot = package.PackageRoot;
+        string packageLabel = package.PackageLabel;
 
-        // Register asset package to provider
-        _assetProvider.RegisterPackage(package.AssetPackage);
+        NormalizePackageResourceUris(config, packageLabel);
 
         if (config?.characters != null)
         {
             foreach (var charConfig in config.characters)
             {
-                charConfig.PackageRoot = packageRoot;
                 _characterConfigs[(charConfig.id, charConfig.type)] = charConfig;
                 Log.LogInfo($"[{packageName}] Loaded config for character {charConfig.name} ({charConfig.id}, {charConfig.type})");
             }
@@ -226,36 +225,7 @@ public static partial class ResourceExManager
         {
             foreach (var pkgConfig in config.dialogPackages)
             {
-                var dialogList = new CustomDialogList();
-                dialogList.packageName = pkgConfig.name;
-                foreach (var d in pkgConfig.dialogList)
-                {
-                    // Resolve CG/BG sprite paths → ModAssetRegistry
-                    if (d.actions != null)
-                    {
-                        foreach (var action in d.actions)
-                        {
-                            if (string.IsNullOrEmpty(action.sprite)) continue;
-                            if (action.actionType != Common.DialogUtility.ActionType.CG &&
-                                action.actionType != Common.DialogUtility.ActionType.BG) continue;
-
-                            var key = $"resex://{packageName}/{action.sprite}";
-                            var loadedSprite = GetSprite(action.sprite, packageRoot);
-                            if (loadedSprite != null)
-                            {
-                                ModAssetRegistry.RegisterSprite(key, loadedSprite);
-                                action.spriteAsset = ModAssetRegistry.CreateSpriteReference(key);
-                                Log.LogInfo($"[{packageName}] Registered dialog sprite: {action.sprite} → {key}");
-                            }
-                            else
-                            {
-                                Log.LogWarning($"[{packageName}] Failed to load dialog sprite: {action.sprite}");
-                            }
-                        }
-                    }
-                    dialogList.AddDialog(d.characterId, d.characterType, d.pid, d.position, d.text, d.actions);
-                }
-                _dialogPackageConfigs[pkgConfig.name] = dialogList;
+                _dialogPackageConfigs[pkgConfig.name] = pkgConfig;
                 Log.LogInfo($"[{packageName}] Loaded dialog package: {pkgConfig.name}");
             }
         }
@@ -264,7 +234,6 @@ public static partial class ResourceExManager
         {
             foreach (var ingredientConfig in config.ingredients)
             {
-                ingredientConfig.PackageRoot = packageRoot;
                 IngredientConfigs[ingredientConfig.id] = ingredientConfig;
                 Log.LogInfo($"[{packageName}] Loaded config for ingredient {ingredientConfig.id}");
             }
@@ -274,7 +243,6 @@ public static partial class ResourceExManager
         {
             foreach (var foodConfig in config.foods)
             {
-                foodConfig.PackageRoot = packageRoot;
                 FoodConfigs[foodConfig.id] = foodConfig;
                 Log.LogInfo($"[{packageName}] Loaded config for food {foodConfig.name} ({foodConfig.id})");
             }
@@ -284,7 +252,6 @@ public static partial class ResourceExManager
         {
             foreach (var beverageConfig in config.beverages)
             {
-                beverageConfig.PackageRoot = packageRoot;
                 BeverageConfigs[beverageConfig.id] = beverageConfig;
                 Log.LogInfo($"[{packageName}] Loaded config for beverage {beverageConfig.name} ({beverageConfig.id})");
             }
@@ -302,7 +269,6 @@ public static partial class ResourceExManager
         {
             foreach (var missionNodeConfig in config.missionNodes)
             {
-                // missionNodeConfig.PackageRoot = packageRootInfo;
                 MissionNodeConfigs.Add(missionNodeConfig);
                 Log.LogInfo($"[{packageName}] Loaded config for mission node {missionNodeConfig.title}");
             }
@@ -312,7 +278,6 @@ public static partial class ResourceExManager
         {
             foreach (var eventNodeConfig in config.eventNodes)
             {
-                // eventNodeConfig.PackageRoot = packageRootInfo;
                 EventNodeConfigs.Add(eventNodeConfig);
                 Log.LogInfo($"[{packageName}] Loaded config for event node {eventNodeConfig.debugLabel}");
             }
@@ -331,10 +296,106 @@ public static partial class ResourceExManager
         {
             foreach (var clothConfig in config.clothes)
             {
-                clothConfig.PackageRoot = packageRoot;
                 ClothConfigs[clothConfig.id] = clothConfig;
                 Log.LogInfo($"[{packageName}] Loaded config for cloth {clothConfig.name} ({clothConfig.id})");
             }
         }
+    }
+
+    private static void NormalizePackageResourceUris(ResourceConfig config, string packageLabel)
+    {
+        if (config == null)
+            return;
+
+        if (config.characters != null)
+        {
+            foreach (var charConfig in config.characters)
+            {
+                if (charConfig.portraits != null)
+                {
+                    foreach (var portrait in charConfig.portraits)
+                        portrait.path = ResolveAssetUriOrSelf(portrait.path, packageLabel);
+                }
+
+                if (charConfig.characterSpriteSetCompact != null)
+                {
+                    var pixelConfig = charConfig.characterSpriteSetCompact;
+                    NormalizeConfigAssetUris(pixelConfig.mainSprite, packageLabel);
+                    NormalizeConfigAssetUris(pixelConfig.eyeSprite, packageLabel);
+                }
+            }
+        }
+
+        if (config.dialogPackages != null)
+        {
+            foreach (var dialogPackage in config.dialogPackages)
+            {
+                if (dialogPackage.dialogList == null) continue;
+                for (int dialogIndex = 0; dialogIndex < dialogPackage.dialogList.Count; dialogIndex++)
+                {
+                    var dialog = dialogPackage.dialogList[dialogIndex];
+                    if (dialog?.actions == null) continue;
+
+                    for (int actionIndex = 0; actionIndex < dialog.actions.Length; actionIndex++)
+                    {
+                        var action = dialog.actions[actionIndex];
+                        if (action == null) continue;
+
+                        action.sprite = ResolveAssetUriOrSelf(action.sprite, packageLabel);
+                        action.sound = ResolveAssetUriOrSelf(action.sound, packageLabel);
+                    }
+                }
+            }
+        }
+
+        if (config.ingredients != null)
+        {
+            foreach (var ingredientConfig in config.ingredients)
+                ingredientConfig.spritePath = ResolveAssetUriOrSelf(ingredientConfig.spritePath, packageLabel);
+        }
+
+        if (config.foods != null)
+        {
+            foreach (var foodConfig in config.foods)
+                foodConfig.spritePath = ResolveAssetUriOrSelf(foodConfig.spritePath, packageLabel);
+        }
+
+        if (config.beverages != null)
+        {
+            foreach (var beverageConfig in config.beverages)
+                beverageConfig.spritePath = ResolveAssetUriOrSelf(beverageConfig.spritePath, packageLabel);
+        }
+
+        if (config.clothes != null)
+        {
+            foreach (var clothConfig in config.clothes)
+            {
+                clothConfig.spritePath = ResolveAssetUriOrSelf(clothConfig.spritePath, packageLabel);
+                clothConfig.portraitPath = ResolveAssetUriOrSelf(clothConfig.portraitPath, packageLabel);
+
+                if (clothConfig.pixelFullConfig == null) continue;
+                NormalizeConfigAssetUris(clothConfig.pixelFullConfig.mainSprite, packageLabel);
+                NormalizeConfigAssetUris(clothConfig.pixelFullConfig.eyeSprite, packageLabel);
+                NormalizeConfigAssetUris(clothConfig.pixelFullConfig.hairSprite, packageLabel);
+                NormalizeConfigAssetUris(clothConfig.pixelFullConfig.backSprite, packageLabel);
+            }
+        }
+    }
+
+    private static void NormalizeConfigAssetUris(List<string> paths, string packageLabel)
+    {
+        if (paths == null)
+            return;
+
+        for (int i = 0; i < paths.Count; i++)
+            paths[i] = ResolveAssetUriOrSelf(paths[i], packageLabel);
+    }
+
+    private static string ResolveAssetUriOrSelf(string path, string packageLabel)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+            return path;
+
+        return ResolveAssetUri(path, packageLabel) ?? path;
     }
 }

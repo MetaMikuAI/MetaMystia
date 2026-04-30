@@ -203,6 +203,15 @@ public static partial class ResourcePackageLoader
 
     private static LoadedResourcePackage CreateLoadedPackage(PackageCandidate candidate)
     {
+        var packageLabel = !string.IsNullOrWhiteSpace(candidate.Config?.packInfo?.label)
+            ? candidate.Config.packInfo.label
+            : candidate.PackageName;
+        if (!RexUri.IsValidPackageName(packageLabel))
+        {
+            Log.LogWarning($"[{candidate.PackageName}] Invalid pack label '{packageLabel}' for rex URI. Falling back to zip file name.");
+            packageLabel = candidate.PackageName;
+        }
+
         var resourcePackage = new ResourcePackage(
             candidate.ZipPath,
             candidate.InternalPrefix,
@@ -211,9 +220,9 @@ public static partial class ResourcePackageLoader
         return new LoadedResourcePackage
         {
             PackageName = candidate.PackageName,
+            PackageLabel = packageLabel,
             Config = candidate.Config,
-            AssetPackage = resourcePackage,
-            PackageRoot = $"{candidate.ZipPath}|{candidate.InternalPrefix}"
+            AssetPackage = resourcePackage
         };
     }
 
@@ -261,7 +270,7 @@ public static partial class ResourcePackageLoader
 public class LoadedResourcePackage
 {
     public string PackageName { get; set; }
+    public string PackageLabel { get; set; }
     public ResourceConfig Config { get; set; }
     public ResourcePackage AssetPackage { get; set; }
-    public string PackageRoot { get; set; } // Format: "zipPath|internalPrefix"
 }

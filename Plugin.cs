@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using System;
 
 using MetaMystia.Patch;
+using MetaMystia.ResourceEx.Addressables;
 using MetaMystia.UI;
 using SgrYuki;
 
@@ -67,11 +68,11 @@ public class Plugin : BasePlugin
 
         try
         {
-            ModAssetRegistry.Initialize();
+            RuntimeAddressables.Initialize();
         }
         catch (Exception ex)
         {
-            Log.LogWarning($"Early ModAssetRegistry init failed (will retry later): {ex.Message}");
+            Log.LogWarning($"Early RuntimeAddressables init failed (will retry later): {ex.Message}");
         }
 
         try
