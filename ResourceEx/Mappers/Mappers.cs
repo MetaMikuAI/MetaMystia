@@ -178,13 +178,13 @@ public static partial class Mappers
     {
         var condition = new FinishCondition();
         condition.conditionType = config.conditionType;
+        condition.label = config?.label ?? "";
 
         switch (config.conditionType)
         {
             case FinishCondition.ConditionType.ServeInWork:
                 condition.amount = config.amount.HasValue ? config.amount.Value : 0;
                 condition.sellableType = config.sellableType.HasValue ? config.sellableType.Value : SellableType.Food;
-                condition.label = config.label != null ? config.label : "";
                 break;
             case FinishCondition.ConditionType.SubmitItem:
                 var product = condition.product;
